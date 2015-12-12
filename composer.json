@@ -1,0 +1,25 @@
+{
+    "name": "eduardokum/laravel-boleto",
+    "description": "Biblioteca com boletos para o laravel",
+    "keywords": [
+        "eduardokum",
+        "laravel-boleto"
+    ],
+    "homepage": "https://github.com/eduardokum/laravel-boleto",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Eduardo Gusmão",
+            "email": "eduguscontra3@hotmail.com"
+        }
+    ],
+    "require": {
+        "php" : ">=5.3.0",
+        "itbz/fpdf": "^1.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "Eduardokum\\LaravelBoleto\\": "src"
+        }
+    }
+}
