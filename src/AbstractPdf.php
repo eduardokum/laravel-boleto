@@ -119,7 +119,7 @@ class AbstractPdf extends FPDF
      * @param $size
      * @param float $dec
      */
-    protected function TextFitCell( $w, $h, $txt, $border, $ln, $align, $size, $dec = 0.1 ) {
+    protected function textFitCell( $w, $h, $txt, $border, $ln, $align, $size, $dec = 0.1 ) {
         $fSize = $this->FontSizePt;
         $this->SetFontSize($size);
         while($this->GetStringWidth($txt) > $w) {
@@ -134,7 +134,7 @@ class AbstractPdf extends FPDF
      * @param int $x
      * @param int $y
      */
-    protected function Rotate($angle, $x = -1, $y = -1) {
+    protected function rotate($angle, $x = -1, $y = -1) {
         if ($x == -1)
             $x = $this->x;
         if ($y == -1)

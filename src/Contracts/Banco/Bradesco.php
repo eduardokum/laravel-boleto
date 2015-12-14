@@ -1,7 +1,8 @@
 <?php
 namespace Eduardokum\LaravelBoleto\Contracts\Banco;
 
-interface Bradesco
-{
+use Eduardokum\LaravelBoleto\Contracts\Boleto;
 
+interface Bradesco extends Boleto
+{
 }

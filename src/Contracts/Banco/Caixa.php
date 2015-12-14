@@ -1,7 +1,9 @@
 <?php
 namespace Eduardokum\LaravelBoleto\Contracts\Banco;
 
-interface Caixa
+use Eduardokum\LaravelBoleto\Contracts\Boleto;
+
+interface Caixa extends Boleto
 {
 
 }

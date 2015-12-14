@@ -1,7 +1,9 @@
 <?php
 namespace Eduardokum\LaravelBoleto\Contracts\Banco;
 
-interface Santander
+use Eduardokum\LaravelBoleto\Contracts\Boleto;
+
+interface Santander extends Boleto
 {
 
 }

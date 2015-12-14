@@ -1,7 +1,9 @@
 <?php
 namespace Eduardokum\LaravelBoleto\Contracts\Banco;
 
-interface Hsbc
+use Eduardokum\LaravelBoleto\Contracts\Boleto;
+
+interface Hsbc extends Boleto
 {
 
 }

@@ -2,6 +2,7 @@
 namespace Eduardokum\LaravelBoleto;
 
 use Carbon\Carbon;
+use Eduardokum\LaravelBoleto\Render\Pdf;
 
 class AbstractBoleto
 {
@@ -13,111 +14,234 @@ class AbstractBoleto
     const COD_BANCO_ITAU = '341';
     const COD_BANCO_HSBC = '399';
 
+    protected $bank;
+
+    public $logo;
+    public $agency;
+    public $account;
+    public $bookCollection;
+    public $bookCollectionVariation;
+    public $number;
+
+    public $identification;
+    public $documentSpecie;
+    public $acceptance = 'N';
+    public $date;
+    public $processingDate;
+    public $amount;
+    public $expiryDate;
+    public $numeroMoeda = 9;
+    public $ourNumber;
+    public $assignorIdentification;
+    public $assignorName;
+    public $assignorAddress;
+    public $assignorStateProvince;
+    public $draweeIdentification;
+    public $draweeName;
+    public $draweeAddress;
+    public $draweeStateProvince;
+
+    protected $demonstratives = [];
+    protected $instructions = [];
+    protected $agencyAccount;
+    protected $line;
+    protected $barcode;
+    protected $paymentLocal = 'Pagável em qualquer Banco até o vencimento';
 
     /**
-     * @param        $date
-     * @param string $format
+     * AbstractBoleto constructor.
      *
-     * @return float
+     * @param $bank
      */
-    protected function dueFactor($date, $format = 'Y-m-d') {
-        $date = Carbon::createFromFormat($format, $date)->setTime(0,0,0);
-        echo round(($date->timestamp-mktime(0,0,0,10,07,1997))/86400);
-    }
-
-    /**
-     * @param        $factor
-     * @param string $format
-     *
-     * @return bool|string
-     */
-    protected function dueFactorBack($factor, $format = 'Y-m-d') {
-        return Carbon::create(1997, 10, 7, 0, 0, 0)->addDay($factor)->format($format);
-    }
-
-
-    /**
-     * @param        $date
-     * @param string $format
-     *
-     * @return string
-     */
-    protected function julianDay($date, $format = 'Y-m-d')
+    public function __construct($bank)
     {
-        $date = Carbon::createFromFormat($format, $date);
-        $dateDiff = Carbon::create(null, 12, 31)->subYear(1)->diffInDays($date);
-        return $dateDiff . substr($date->year, -1);
+        $this->bank = $bank;
+        $this->processingDate = Carbon::now();
     }
 
-
-    /**
-     * @param     $n
-     * @param int $factor
-     * @param int $base
-     * @param int $rest
-     * @param int $whenTen
-     *
-     * @return int
-     */
-    protected function module11($n, $factor=2, $base=9, $rest=0, $whenTen=0) {
-        $sum = 0;
-        for ($i = strlen($n); $i > 0; $i--) {
-            $ns[$i] = substr($n, $i - 1, 1);
-            $partial[$i] = $ns[$i] * $factor;
-            $sum += $partial[$i];
-            if ($factor == $base) {
-                $factor = 1;
-            }
-            $factor++;
-        }
-
-        if ($rest == 0) {
-            $sum *= 10;
-            $digito = $sum % 11;
-            if ($digito == 10) {
-                $digito = $whenTen;
-            }
-            return $digito;
-        }
-        return $sum % 11;
+    public function getAmount()
+    {
+        return $this->amount;
     }
 
-    /**
-     * @param     $n
-     * @param int $earlyFactor
-     * @param int $lastFactor
-     *
-     * @return int
-     */
-    protected function reverseModule11($n, $earlyFactor = 2, $lastFactor = 9) {
-        $factor = $lastFactor;
-        $sum = 0;
-        for ($i = strlen($n); $i > 0; $i--) {
-            $sum += substr($n, $i - 1, 1) * $factor;
-            if (--$factor < $earlyFactor)
-                $factor = $lastFactor;
-        }
+    public function getLogo()
+    {
+        return $this->logo ? $this->logo : "http://dummyimage.com/300x70/f5/0.png&text=Sem+Logo";
+    }
 
-        $module = $sum % 11;
-        if ($module > 9)
+    public function getBank($withVerification = false)
+    {
+        if($withVerification)
         {
-            return 0;
+            return sprintf('%s-%s', $this->bank, Util::module11($this->bank));
         }
+        return $this->bank;
+    }
 
-        return $module;
+    public function getIdentification()
+    {
+        $this->identification;
+    }
+
+    public function getAgencyAccount()
+    {
+        return $this->agencyAccount;
+    }
+
+    public function getAgency()
+    {
+        return $this->agency;
+    }
+
+    public function getAccount()
+    {
+        return $this->account;
+    }
+
+    public function getOurNumber()
+    {
+        return $this->ourNumber;
+    }
+
+    public function getNumber()
+    {
+        return $this->number;
+    }
+
+    public function getLine()
+    {
+        return $this->line;
+    }
+
+    public function getBarCode()
+    {
+        return $this->barcode;
+    }
+
+    public function getExpiryDate()
+    {
+        return is_string($this->expiryDate) ? Carbon::createFromFormat('Y-m-d', $this->expiryDate) : $this->expiryDate;
+    }
+
+    public function getProcessingDate()
+    {
+        return is_string($this->processingDate) ? Carbon::createFromFormat('Y-m-d', $this->processingDate) : $this->processingDate;
+    }
+
+    public function getDate()
+    {
+        return is_string($this->date) ? Carbon::createFromFormat('Y-m-d', $this->date) : $this->date;
+    }
+
+    public function getDemonstratives()
+    {
+        return $this->demonstratives;
+    }
+
+    public function getInstructions()
+    {
+        return $this->instructions;
+    }
+
+    public function getPaymentLocal()
+    {
+        return $this->paymentLocal;
+    }
+
+    public function getDocumentSpecie()
+    {
+        return $this->documentSpecie;
+    }
+
+    public function getAcceptance()
+    {
+        return is_bool($this->acceptance) || is_numeric($this->acceptance) ? ($this->acceptance ? 'S' : 'N') : $this->acceptance;
+    }
+
+    public function getBookCollection($withDescription = false)
+    {
+        return $this->bookCollection;
+    }
+
+    public function getAssignorIdentification()
+    {
+        return $this->assignorIdentification;
+    }
+
+    public function getAssignorName()
+    {
+        return $this->assignorName;
+    }
+
+    public function getAssignorAddress()
+    {
+        return $this->assignorAddress;
+    }
+
+    public function getAssignorStateProvince()
+    {
+        return $this->assignorStateProvince;
+    }
+
+    public function getDraweeName()
+    {
+        return $this->draweeName;
+    }
+
+    public function getDraweeIdentification()
+    {
+        return $this->draweeIdentification;
+    }
+
+    public function getDraweeAddress()
+    {
+        return $this->draweeAddress;
+    }
+
+    public function getDraweeStateProvince()
+    {
+        return $this->draweeStateProvince;
     }
 
     /**
-     * @param $n
+     * Add a demonstrative string to a billet.
      *
-     * @return int
+     * @param $demonstrative
+     *
+     * @throws \Exception
      */
-    protected function module10($n) {
-        $chars = array_reverse(str_split($n, 1));
-        $odd = array_intersect_key($chars, array_fill_keys(range(1, count($chars), 2), null));
-        $even = array_intersect_key($chars, array_fill_keys(range(0, count($chars), 2), null));
-        $even = array_map(function($n) { return ($n >= 5)?2 * $n - 9:2 * $n; }, $even);
-        $total = array_sum($odd) + array_sum($even);
-        return ((floor($total / 10) + 1) * 10 - $total) % 10;
+    public function addDemonstrative($demonstrative)
+    {
+        if(count($demonstrative) >= 5 )
+        {
+            throw new \Exception('Too many demonstratives. Max of 5');
+        }
+
+        $this->demonstrative[] = $demonstrative;
     }
+
+    /**
+     * Add a instruction string to a billet.
+     *
+     * @param $instruction
+     *
+     * @throws \Exception
+     */
+    public function addInstruction($instruction)
+    {
+        if(count($instruction) >= 5 )
+        {
+            throw new \Exception('Too many instructions. Max of 5');
+        }
+
+        $this->instructions[] = $instruction;
+    }
+
+    public function render()
+    {
+        $pdf = new Pdf();
+        $pdf->addBoleto($this);
+        return $pdf->gerarBoleto($pdf::OUTPUT_STANDARD, true);
+    }
+
 }

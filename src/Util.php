@@ -1,6 +1,8 @@
 <?php
 namespace Eduardokum\LaravelBoleto;
 
+use Carbon\Carbon;
+
 final class Util
 {
 
@@ -387,6 +389,146 @@ final class Util
         }
 
         return $date_time->format('Y-m-d');
+    }
+
+    /**
+     * @param $n
+     * @param $loop
+     * @param $insert
+     *
+     * @return string
+     */
+    public static function numberFormatBilletGeral($n, $loop, $insert) {
+        return str_pad(self::onlyNumbers($n), $loop, $insert, STR_PAD_LEFT);
+    }
+
+    /**
+     * @param $n
+     * @param $loop
+     * @param $insert
+     *
+     * @return string
+     */
+    public static function numberFormatBilletValue($n, $loop, $insert) {
+        return str_pad(self::onlyNumbers(number_format((float)$n, '2', ',', '.')), $loop, $insert, STR_PAD_LEFT);
+    }
+
+    /**
+     * @param $n
+     * @param $loop
+     * @param $insert
+     *
+     * @return string
+     */
+    public static function numberFormatBilletAgreement($n, $loop, $insert) {
+        return str_pad(self::onlyNumbers($n), $loop, $insert, STR_PAD_RIGHT);
+    }
+
+    /**
+     * @param        $date
+     * @param string $format
+     *
+     * @return float
+     */
+    public static function dueFactor($date, $format = 'Y-m-d') {
+        $date = ($date instanceof Carbon) ? $date :  Carbon::createFromFormat($format, $date)->setTime(0,0,0);
+        return round(($date->timestamp-mktime(0,0,0,10,07,1997))/86400);
+    }
+
+    /**
+     * @param        $factor
+     * @param string $format
+     *
+     * @return bool|string
+     */
+    public static function dueFactorBack($factor, $format = 'Y-m-d') {
+        return Carbon::create(1997, 10, 7, 0, 0, 0)->addDay($factor)->format($format);
+    }
+
+
+    /**
+     * @param        $date
+     * @param string $format
+     *
+     * @return string
+     */
+    public static function julianDay($date, $format = 'Y-m-d')
+    {
+        $date = ($date instanceof Carbon) ? $date : Carbon::createFromFormat($format, $date);
+        $dateDiff = Carbon::create(null, 12, 31)->subYear(1)->diffInDays($date);
+        return $dateDiff . substr($date->year, -1);
+    }
+
+
+    /**
+     * @param     $n
+     * @param int $factor
+     * @param int $base
+     * @param int $rest
+     * @param int $whenTen
+     *
+     * @return int
+     */
+    public static function module11($n, $factor=2, $base=9, $rest=0, $whenTen=0) {
+        $sum = 0;
+        for ($i = strlen($n); $i > 0; $i--) {
+            $ns[$i] = substr($n, $i - 1, 1);
+            $partial[$i] = $ns[$i] * $factor;
+            $sum += $partial[$i];
+            if ($factor == $base) {
+                $factor = 1;
+            }
+            $factor++;
+        }
+
+        if ($rest == 0) {
+            $sum *= 10;
+            $digito = $sum % 11;
+            if ($digito == 10) {
+                $digito = $whenTen;
+            }
+            return $digito;
+        }
+        return $sum % 11;
+    }
+
+    /**
+     * @param     $n
+     * @param int $earlyFactor
+     * @param int $lastFactor
+     *
+     * @return int
+     */
+    public static function reverseModule11($n, $earlyFactor = 2, $lastFactor = 9) {
+        $factor = $lastFactor;
+        $sum = 0;
+        for ($i = strlen($n); $i > 0; $i--) {
+            $sum += substr($n, $i - 1, 1) * $factor;
+            if (--$factor < $earlyFactor)
+                $factor = $lastFactor;
+        }
+
+        $module = $sum % 11;
+        if ($module > 9)
+        {
+            return 0;
+        }
+
+        return $module;
+    }
+
+    /**
+     * @param $n
+     *
+     * @return int
+     */
+    public static function module10($n) {
+        $chars = array_reverse(str_split($n, 1));
+        $odd = array_intersect_key($chars, array_fill_keys(range(1, count($chars), 2), null));
+        $even = array_intersect_key($chars, array_fill_keys(range(0, count($chars), 2), null));
+        $even = array_map(function($n) { return ($n >= 5)?2 * $n - 9:2 * $n; }, $even);
+        $total = array_sum($odd) + array_sum($even);
+        return ((floor($total / 10) + 1) * 10 - $total) % 10;
     }
 
 }

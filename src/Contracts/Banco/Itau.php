@@ -1,7 +1,9 @@
 <?php
 namespace Eduardokum\LaravelBoleto\Contracts\Banco;
 
-interface Itau
+use Eduardokum\LaravelBoleto\Contracts\Boleto;
+
+interface Itau extends Boleto
 {
 
 }
