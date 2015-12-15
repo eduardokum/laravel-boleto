@@ -425,6 +425,52 @@ final class Util
     }
 
     /**
+     * @param        $tipo
+     * @param        $valor
+     * @param        $tamanho
+     * @param int    $dec
+     * @param string $sFill
+     *
+     * @return string
+     * @throws \Exception
+     */
+    public static function formatCnab($tipo, $valor, $tamanho, $dec = 0, $sFill = '')
+    {
+        $string = $valor;
+        if (in_array(strtoupper($tipo), array('9', 9, 'N', '9L', 'NL'))) {
+            if (strtoupper($tipo) == '9L' || strtoupper($tipo) == 'NL') {
+                $string = self::onlyNumbers($string);
+            }
+            $left = '';
+            $sFill = 0;
+            $type = 's';
+            $string = ($dec > 0) ? sprintf("%.{$dec}f", $string) : $string;
+            $string = str_replace(array(',', '.'), '', $string);
+        } else if (in_array(strtoupper($tipo), array('A', 'X'))) {
+            $left = '-';
+            $type = 's';
+            $string = strtoupper(self::normalizeChars($string));
+        } else if (in_array(strtoupper($tipo), array('AM', 'XM'))) {
+            $left = '-';
+            $type = 's';
+            $string = (self::normalizeChars($string));
+        } else if (strtoupper($tipo) == 'L') {
+            $left = '-';
+            $type = 's';
+            $string = self::normalizeChars($string);
+        } else if (strtoupper($tipo) == 'D') {
+            $tamanho = 6;
+            $left = '-';
+            $type = 's';
+            $string = $string->format('dmy');
+        } else {
+            throw new \Exception('Tipo inválido');
+        }
+        $string = substr($string, 0, $tamanho);
+        return sprintf("%{$left}{$sFill}{$tamanho}{$type}", $string);
+    }
+
+    /**
      * @param        $date
      * @param string $format
      *
