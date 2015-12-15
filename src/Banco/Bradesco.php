@@ -14,72 +14,71 @@ class Bradesco  extends AbstractBoleto implements BradescoContract
     }
 
 
-    public function process()
+    public function preProcessamento()
     {
-        if(!in_array($this->getBookCollection(), ['06','09','16','19','21','22', '6','9']))
+        if(!in_array($this->getCarteira(), ['06','09','16','19','21','22', '6','9']))
         {
             throw new \Exception('Carteira inválida, aceito somente {06,09,16,19,21,22}');
         }
-        $this->bookCollection = sprintf('%02s',$this->getBookCollection());
+        $this->carteira = sprintf('%02s',$this->getCarteira());
 
-        $this->paymentLocal = 'Pagável Preferencialmente em qualquer Agência Bradesco';
-        $this->agencyAccount = sprintf('%s-%s %s-%s', $this->agency, Util::module11($this->agency), $this->account, Util::module11($this->account));
-
-        $this->generateBarCode();
-        $this->generateLine();
+        $this->localPagamento = 'Pagável Preferencialmente em qualquer Agência Bradesco';
+        $this->agenciaConta = sprintf('%s-%s %s-%s', $this->getAgencia(), Util::modulo11($this->getAgencia()), $this->getConta(), Util::modulo11($this->getConta()));
     }
 
 
-    private function generateBarCode()
+    protected function gerarCodigoBarras()
     {
-        $this->barcode = $this->getBank();
-        $this->barcode .= $this->numeroMoeda;
-        $this->barcode .= Util::dueFactor($this->getExpiryDate());
-        $this->barcode .= Util::numberFormatBilletValue($this->getAmount(), 10, 0);
-        $this->barcode .= Util::numberFormatBilletGeral($this->getAgency(),4,0);
-        $this->barcode .= Util::numberFormatBilletGeral($this->getBookCollection(),2,0);
-        $this->barcode .= $this->generateOurNumber();
-        $this->barcode .= Util::numberFormatBilletGeral($this->getAccount(),7,0);
-        $this->barcode .= '0';
+        $this->codigoBarras = $this->getBanco();
+        $this->codigoBarras .= $this->numeroMoeda;
+        $this->codigoBarras .= Util::fatorVencimento($this->getDataVencimento());
+        $this->codigoBarras .= Util::numberFormatValue($this->getValor(), 10, 0);
+        $this->codigoBarras .= Util::numberFormatGeral($this->getAgencia(),4,0);
+        $this->codigoBarras .= Util::numberFormatGeral($this->getCarteira(),2,0);
+        $this->codigoBarras .= $this->gerarNossoNumero();
+        $this->codigoBarras .= Util::numberFormatGeral($this->getConta(),7,0);
+        $this->codigoBarras .= '0';
 
-        $r = Util::module11($this->barcode, 9, 1);
+        $r = Util::modulo11($this->codigoBarras, 9, 1);
         $dv = ($r == 0 || $r == 1 || $r == 10)?1:(11 - $r);
-        $this->barcode = substr($this->barcode, 0, 4) . $dv . substr($this->barcode, 4);
+        $this->codigoBarras = substr($this->codigoBarras, 0, 4) . $dv . substr($this->codigoBarras, 4);
 
-        return $this->barcode;
+        return $this->codigoBarras;
     }
 
-    private function generateOurNumber() {
-        $ourNumber = Util::numberFormatBilletGeral($this->getNumber(), 11, 0);
-        $dv = Util::module11($ourNumber, 7, 0, 'P');
-        $this->ourNumber = $this->getBookCollection() . '/' . $ourNumber.'-'.$dv;
-
-        return $ourNumber;
-    }
-
-    private function generateLine()
+    protected function gerarLinha()
     {
-        if(strlen($this->barcode) == 44) {
-            $campo1 = substr($this->barcode, 0, 4) . substr($this->barcode, 19, 5);
-            $campo1 = $campo1 . Util::module10($campo1);
+        if(strlen($this->codigoBarras) == 44) {
+            $campo1 = substr($this->codigoBarras, 0, 4) . substr($this->codigoBarras, 19, 5);
+            $campo1 = $campo1 . Util::modulo10($campo1);
             $campo1 = substr($campo1, 0, 5) . '.' . substr($campo1, 5, 5);
 
-            $campo2 = substr($this->barcode, 24, 10);
-            $campo2 = $campo2 . Util::module10($campo2);
+            $campo2 = substr($this->codigoBarras, 24, 10);
+            $campo2 = $campo2 . Util::modulo10($campo2);
             $campo2 = substr($campo2, 0, 5) . '.' . substr($campo2, 5, 6);
 
-            $campo3 = substr($this->barcode, 34, 10);
-            $campo3 = $campo3 . Util::module10($campo3);
+            $campo3 = substr($this->codigoBarras, 34, 10);
+            $campo3 = $campo3 . Util::modulo10($campo3);
             $campo3 = substr($campo3, 0, 5) . '.' . substr($campo3, 5, 6);
 
-            $campo4 = substr($this->barcode, 4, 1);
+            $campo4 = substr($this->codigoBarras, 4, 1);
 
-            $campo5 = substr($this->barcode, 5, 4) . substr($this->barcode, 9, 10);
+            $campo5 = substr($this->codigoBarras, 5, 4) . substr($this->codigoBarras, 9, 10);
 
-            $this->line = "$campo1 $campo2 $campo3 $campo4 $campo5";
+            $this->linha = "$campo1 $campo2 $campo3 $campo4 $campo5";
+
+            return $this->linha;
         } else {
             throw new \Exception('Código de barras não gerado ou inválido');
         }
+    }
+
+    private function gerarNossoNumero() {
+        $nossoNumero = Util::numberFormatGeral($this->getNumero(), 11, 0);
+        $dv = Util::modulo11($nossoNumero, 7, 0, 'P');
+        $this->nossoNumero = $this->getCarteira() . '/' . $nossoNumero.'-'.$dv;
+
+        return $nossoNumero;
     }
 
 }

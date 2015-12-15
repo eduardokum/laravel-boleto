@@ -116,17 +116,16 @@ class AbstractPdf extends FPDF
      * @param $border
      * @param $ln
      * @param $align
-     * @param $size
      * @param float $dec
      */
-    protected function textFitCell( $w, $h, $txt, $border, $ln, $align, $size, $dec = 0.1 ) {
-        $fSize = $this->FontSizePt;
-        $this->SetFontSize($size);
-        while($this->GetStringWidth($txt) > $w) {
+    protected function textFitCell($w, $h, $txt, $border, $ln, $align,$dec = 0.1 ) {
+        $fsize = $this->FontSizePt;
+        $size = $fsize;
+        while($this->GetStringWidth($txt) > ($w-2)) {
             $this->SetFontSize($size -= $dec);
         }
         $this->Cell($w, $h, $txt, $border, $ln, $align);
-        $this->SetFontSize($fSize);
+        $this->SetFontSize($fsize);
     }
 
     /**

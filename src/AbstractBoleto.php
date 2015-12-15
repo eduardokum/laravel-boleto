@@ -14,54 +14,54 @@ class AbstractBoleto
     const COD_BANCO_ITAU = '341';
     const COD_BANCO_HSBC = '399';
 
-    protected $bank;
+    protected $banco;
 
     public $logo;
-    public $agency;
-    public $account;
-    public $bookCollection;
-    public $bookCollectionVariation;
-    public $number;
+    public $agencia;
+    public $conta;
+    public $carteira;
+    public $carteiraDescricao;
+    public $numero;
 
-    public $identification;
-    public $documentSpecie;
-    public $acceptance = 'N';
-    public $date;
-    public $processingDate;
-    public $amount;
-    public $expiryDate;
+    public $identificacao;
+    public $especieDocumento;
+    public $aceite = 'N';
+    public $dataDocumento;
+    public $dataProcessamento;
+    public $dataVencimento;
+    public $valor;
     public $numeroMoeda = 9;
-    public $ourNumber;
-    public $assignorIdentification;
-    public $assignorName;
-    public $assignorAddress;
-    public $assignorStateProvince;
-    public $draweeIdentification;
-    public $draweeName;
-    public $draweeAddress;
-    public $draweeStateProvince;
+    public $nossoNumero;
+    public $cedenteDocumento;
+    public $cedenteNome;
+    public $cedenteEndereco;
+    public $cedenteCidadeUF;
+    public $sacadoDocumento;
+    public $sacadoNome;
+    public $sacadoEndereco;
+    public $sacadoCidadeUF;
 
-    protected $demonstratives = [];
-    protected $instructions = [];
-    protected $agencyAccount;
-    protected $line;
-    protected $barcode;
-    protected $paymentLocal = 'Pagável em qualquer Banco até o vencimento';
+    protected $demonstrativos = [];
+    protected $instrucoes = [];
+    protected $agenciaConta;
+    protected $linha;
+    protected $codigoBarras;
+    protected $localPagamento = 'Pagável em qualquer Banco até o vencimento';
 
     /**
      * AbstractBoleto constructor.
      *
-     * @param $bank
+     * @param $banco
      */
-    public function __construct($bank)
+    public function __construct($banco)
     {
-        $this->bank = $bank;
-        $this->processingDate = Carbon::now();
+        $this->banco = $banco;
+        $this->dataProcessamento = Carbon::now();
     }
 
-    public function getAmount()
+    public function getValor()
     {
-        return $this->amount;
+        return $this->valor;
     }
 
     public function getLogo()
@@ -69,179 +69,203 @@ class AbstractBoleto
         return $this->logo ? $this->logo : "http://dummyimage.com/300x70/f5/0.png&text=Sem+Logo";
     }
 
-    public function getBank($withVerification = false)
+    public function getBanco($verificacao = false)
     {
-        if($withVerification)
+        if($verificacao)
         {
-            return sprintf('%s-%s', $this->bank, Util::module11($this->bank));
+            return sprintf('%s-%s', $this->banco, Util::modulo11($this->banco));
         }
-        return $this->bank;
+        return $this->banco;
     }
 
-    public function getIdentification()
+    public function getIdentificacao()
     {
-        $this->identification;
+        return $this->identificacao;
     }
 
-    public function getAgencyAccount()
+    public function getAgenciaConta()
     {
-        return $this->agencyAccount;
+        return $this->agenciaConta;
     }
 
-    public function getAgency()
+    public function getAgencia()
     {
-        return $this->agency;
+        return $this->agencia;
     }
 
-    public function getAccount()
+    public function getConta()
     {
-        return $this->account;
+        return $this->conta;
     }
 
-    public function getOurNumber()
+    public function getNossoNumero()
     {
-        return $this->ourNumber;
+        return $this->nossoNumero;
     }
 
-    public function getNumber()
+    public function getNumero()
     {
-        return $this->number;
+        return $this->numero;
     }
 
-    public function getLine()
+    public function getLinha()
     {
-        return $this->line;
+        return $this->linha;
     }
 
-    public function getBarCode()
+    public function getCodigoBarras()
     {
-        return $this->barcode;
+        return $this->codigoBarras;
     }
 
-    public function getExpiryDate()
+    public function getDataVencimento()
     {
-        return is_string($this->expiryDate) ? Carbon::createFromFormat('Y-m-d', $this->expiryDate) : $this->expiryDate;
+        return is_string($this->dataVencimento) ? Carbon::createFromFormat('Y-m-d', $this->dataVencimento) : $this->dataVencimento;
     }
 
-    public function getProcessingDate()
+    public function getDataProcessamento()
     {
-        return is_string($this->processingDate) ? Carbon::createFromFormat('Y-m-d', $this->processingDate) : $this->processingDate;
+        return is_string($this->dataProcessamento) ? Carbon::createFromFormat('Y-m-d', $this->dataProcessamento) : $this->dataProcessamento;
     }
 
-    public function getDate()
+    public function getDataDocumento()
     {
-        return is_string($this->date) ? Carbon::createFromFormat('Y-m-d', $this->date) : $this->date;
+        return is_string($this->dataDocumento) ? Carbon::createFromFormat('Y-m-d', $this->dataDocumento) : $this->dataDocumento;
     }
 
-    public function getDemonstratives()
+    public function getDemonstrativos()
     {
-        return $this->demonstratives;
+        return $this->demonstrativos;
     }
 
-    public function getInstructions()
+    public function getInstrucoes()
     {
-        return $this->instructions;
+        return $this->instrucoes;
     }
 
-    public function getPaymentLocal()
+    public function getLocalPagamento()
     {
-        return $this->paymentLocal;
+        return $this->localPagamento;
     }
 
-    public function getDocumentSpecie()
+    public function getEspecieDocumento()
     {
-        return $this->documentSpecie;
+        return $this->especieDocumento;
     }
 
-    public function getAcceptance()
+    public function getAceite()
     {
-        return is_bool($this->acceptance) || is_numeric($this->acceptance) ? ($this->acceptance ? 'S' : 'N') : $this->acceptance;
+        return is_bool($this->aceite) || is_numeric($this->aceite) ? ($this->aceite ? 'S' : 'N') : $this->aceite;
     }
 
-    public function getBookCollection($withDescription = false)
+    public function getCarteira($descticao = false)
     {
-        return $this->bookCollection;
+        return $this->carteira . ($descticao?' - '.$this->carteiraDescricao:'');
     }
 
-    public function getAssignorIdentification()
+    public function getCedenteDocumento()
     {
-        return $this->assignorIdentification;
+        return $this->cedenteDocumento;
     }
 
-    public function getAssignorName()
+    public function getCedenteNome()
     {
-        return $this->assignorName;
+        return $this->cedenteNome;
     }
 
-    public function getAssignorAddress()
+    public function getCedenteEndereco()
     {
-        return $this->assignorAddress;
+        return $this->cedenteEndereco;
     }
 
-    public function getAssignorStateProvince()
+    public function getCedenteCidadeUF()
     {
-        return $this->assignorStateProvince;
+        return $this->cedenteCidadeUF;
     }
 
-    public function getDraweeName()
+    public function getSacadoNome()
     {
-        return $this->draweeName;
+        return $this->sacadoNome;
     }
 
-    public function getDraweeIdentification()
+    public function getSacadoDocumento()
     {
-        return $this->draweeIdentification;
+        return $this->sacadoDocumento;
     }
 
-    public function getDraweeAddress()
+    public function getSacadoEndereco()
     {
-        return $this->draweeAddress;
+        return $this->sacadoEndereco;
     }
 
-    public function getDraweeStateProvince()
+    public function getSacadoCidadeUF()
     {
-        return $this->draweeStateProvince;
+        return $this->sacadoCidadeUF;
     }
 
     /**
      * Add a demonstrative string to a billet.
      *
-     * @param $demonstrative
+     * @param $demonstrativo
      *
      * @throws \Exception
      */
-    public function addDemonstrative($demonstrative)
+    public function addDemonstrative($demonstrativo)
     {
-        if(count($demonstrative) >= 5 )
+        if(count($demonstrativo) >= 5 )
         {
-            throw new \Exception('Too many demonstratives. Max of 5');
+            throw new \Exception('Too many demonstrativos. Max of 5');
         }
 
-        $this->demonstrative[] = $demonstrative;
+        $this->demonstrativos[] = $demonstrativo;
     }
 
     /**
      * Add a instruction string to a billet.
      *
-     * @param $instruction
+     * @param $instrucao
      *
      * @throws \Exception
      */
-    public function addInstruction($instruction)
+    public function addInstruction($instrucao)
     {
-        if(count($instruction) >= 5 )
+        if(count($instrucao) >= 5 )
         {
-            throw new \Exception('Too many instructions. Max of 5');
+            throw new \Exception('Too many instrucoes. Max of 5');
         }
 
-        $this->instructions[] = $instruction;
+        $this->instrucoes[] = $instrucao;
+    }
+
+    protected function preProcessamento()
+    {}
+
+    protected function gerarCodigoBarras()
+    {
+        throw new \Exception('O método gerarCodigoBarras precisa ser implementando');
+    }
+
+    protected function gerarLinha()
+    {
+        throw new \Exception('O método gerarLinha precisa ser implementando');
+    }
+
+    public function processar()
+    {
+        if(method_exists($this, 'preProcessamento'))
+        {
+            $this->preProcessamento();
+        }
+
+        $this->gerarCodigoBarras();
+        $this->gerarLinha();
     }
 
     public function render()
     {
         $pdf = new Pdf();
         $pdf->addBoleto($this);
-        return $pdf->gerarBoleto($pdf::OUTPUT_STANDARD, true);
+        return $pdf->gerarBoleto($pdf::OUTPUT_STANDARD, false);
     }
 
 }

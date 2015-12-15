@@ -15,14 +15,14 @@ interface Boleto
      *
      * @return mixed
      */
-    public function getLine();
+    public function getLinha();
 
     /**
      * Get bill value.
      *
      * @return mixed
      */
-    public function getAmount();
+    public function getValor();
 
 
     /**
@@ -30,7 +30,7 @@ interface Boleto
      *
      * @return mixed
      */
-    public function getBarCode();
+    public function getCodigoBarras();
 
     /**
      * Return full path logo.
@@ -44,93 +44,93 @@ interface Boleto
      *
      * @return mixed
      */
-    public function process();
+    public function processar();
 
     /**
      * Return bank code, with and without verification.
      *
-     * @param bool $withVerification
+     * @param bool $verificacao
      *
      * @return mixed
      */
-    public function getBank($withVerification = false);
+    public function getBanco($verificacao = false);
 
     /**
      * Return billet string identification.
      *
      * @return mixed
      */
-    public function getIdentification();
+    public function getIdentificacao();
 
     /**
      * Return formatted Agency and Account
      *
      * @return mixed
      */
-    public function getAgencyAccount();
+    public function getAgenciaConta();
 
     /**
      * Return billet identification on our system.
      *
      * @return mixed
      */
-    public function getOurNumber();
+    public function getNossoNumero();
 
     /**
      * Return billet identification on bank.
      *
      * @return mixed
      */
-    public function getNumber();
+    public function getNumero();
 
     /**
      * Return billet expiration.
      *
      * @return Carbon
      */
-    public function getExpiryDate();
+    public function getDataVencimento();
 
     /**
      * Return billet processing.
      *
      * @return Carbon
      */
-    public function getProcessingDate();
+    public function getDataProcessamento();
 
     /**
      * Return billet date.
      *
      * @return Carbon
      */
-    public function getDate();
+    public function getDataDocumento();
 
     /**
      * Return list of demonstratives.
      *
      * @return array
      */
-    public function getDemonstratives();
+    public function getDemonstrativos();
 
     /**
      * Return list of instructions.
      *
      * @return array
      */
-    public function getInstructions();
+    public function getInstrucoes();
 
     /**
      * Return payment local
      *
      * @return mixed
      */
-    public function getPaymentLocal();
+    public function getLocalPagamento();
 
     /**
      * Return document specie.
      *
      * @return mixed
      */
-    public function getDocumentSpecie();
+    public function getEspecieDocumento();
 
 
     /**
@@ -138,17 +138,17 @@ interface Boleto
      *
      * @return mixed
      */
-    public function getAcceptance();
+    public function getAceite();
 
 
     /**
      * Returb book collection.
      *
-     * @param bool $withDescription
+     * @param bool $descricao
      *
      * @return mixed
      */
-    public function getBookCollection($withDescription = false);
+    public function getCarteira($descricao = false);
 
     ###########################################################################
     ################################## ASSIGNOR ###############################
@@ -159,28 +159,28 @@ interface Boleto
      *
      * @return mixed
      */
-    public function getAssignorIdentification();
+    public function getCedenteDocumento();
 
     /**
      * Return assignor name.
      *
      * @return mixed
      */
-    public function getAssignorName();
+    public function getCedenteNome();
 
     /**
      * Return assignor address.
      *
      * @return mixed
      */
-    public function getAssignorAddress();
+    public function getCedenteEndereco();
 
     /**
      * Return assignor state and province.
      *
      * @return mixed
      */
-    public function getAssignorStateProvince();
+    public function getCedenteCidadeUF();
 
     ###########################################################################
     ################################## DRAWEE #################################
@@ -191,28 +191,28 @@ interface Boleto
      *
      * @return mixed
      */
-    public function getDraweeIdentification();
+    public function getSacadoDocumento();
 
     /**
      * Return drawee name.
      *
      * @return mixed
      */
-    public function getDraweeName();
+    public function getSacadoNome();
 
     /**
      * Return drawee address.
      *
      * @return mixed
      */
-    public function getDraweeAddress();
+    public function getSacadoEndereco();
 
     /**
      * Return drawee state and province.
      *
      * @return mixed
      */
-    public function getDraweeStateProvince();
+    public function getSacadoCidadeUF();
 
     /**
      * Render billet.
@@ -220,5 +220,4 @@ interface Boleto
      * @return mixed
      */
     public function render();
-
 }

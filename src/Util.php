@@ -398,7 +398,7 @@ final class Util
      *
      * @return string
      */
-    public static function numberFormatBilletGeral($n, $loop, $insert) {
+    public static function numberFormatGeral($n, $loop, $insert) {
         return str_pad(self::onlyNumbers($n), $loop, $insert, STR_PAD_LEFT);
     }
 
@@ -409,7 +409,7 @@ final class Util
      *
      * @return string
      */
-    public static function numberFormatBilletValue($n, $loop, $insert) {
+    public static function numberFormatValue($n, $loop, $insert) {
         return str_pad(self::onlyNumbers(number_format((float)$n, '2', ',', '.')), $loop, $insert, STR_PAD_LEFT);
     }
 
@@ -420,7 +420,7 @@ final class Util
      *
      * @return string
      */
-    public static function numberFormatBilletAgreement($n, $loop, $insert) {
+    public static function numberFormatConvenio($n, $loop, $insert) {
         return str_pad(self::onlyNumbers($n), $loop, $insert, STR_PAD_RIGHT);
     }
 
@@ -430,7 +430,7 @@ final class Util
      *
      * @return float
      */
-    public static function dueFactor($date, $format = 'Y-m-d') {
+    public static function fatorVencimento($date, $format = 'Y-m-d') {
         $date = ($date instanceof Carbon) ? $date :  Carbon::createFromFormat($format, $date)->setTime(0,0,0);
         return round(($date->timestamp-mktime(0,0,0,10,07,1997))/86400);
     }
@@ -441,7 +441,7 @@ final class Util
      *
      * @return bool|string
      */
-    public static function dueFactorBack($factor, $format = 'Y-m-d') {
+    public static function fatorVencimentoBack($factor, $format = 'Y-m-d') {
         return Carbon::create(1997, 10, 7, 0, 0, 0)->addDay($factor)->format($format);
     }
 
@@ -452,7 +452,7 @@ final class Util
      *
      * @return string
      */
-    public static function julianDay($date, $format = 'Y-m-d')
+    public static function dataJuliano($date, $format = 'Y-m-d')
     {
         $date = ($date instanceof Carbon) ? $date : Carbon::createFromFormat($format, $date);
         $dateDiff = Carbon::create(null, 12, 31)->subYear(1)->diffInDays($date);
@@ -469,7 +469,7 @@ final class Util
      *
      * @return int
      */
-    public static function module11($n, $factor=2, $base=9, $rest=0, $whenTen=0) {
+    public static function modulo11($n, $factor=2, $base=9, $rest=0, $whenTen=0) {
         $sum = 0;
         for ($i = strlen($n); $i > 0; $i--) {
             $ns[$i] = substr($n, $i - 1, 1);
@@ -499,7 +499,7 @@ final class Util
      *
      * @return int
      */
-    public static function reverseModule11($n, $earlyFactor = 2, $lastFactor = 9) {
+    public static function modulo11Reverso($n, $earlyFactor = 2, $lastFactor = 9) {
         $factor = $lastFactor;
         $sum = 0;
         for ($i = strlen($n); $i > 0; $i--) {
@@ -522,7 +522,7 @@ final class Util
      *
      * @return int
      */
-    public static function module10($n) {
+    public static function modulo10($n) {
         $chars = array_reverse(str_split($n, 1));
         $odd = array_intersect_key($chars, array_fill_keys(range(1, count($chars), 2), null));
         $even = array_intersect_key($chars, array_fill_keys(range(0, count($chars), 2), null));

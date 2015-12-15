@@ -66,11 +66,11 @@ class Pdf extends AbstractPdf
         $this->SetFont($this->PadraoFont, '', $this->fcel);
         $this->Cell(25, $this->cell, $this->_('Linha Digitável: '), 0, 0);
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-        $this->Cell( 0, $this->cell, $this->_( $this->boleto[$i]->getLine() ), 0, 1);
+        $this->Cell( 0, $this->cell, $this->_( $this->boleto[$i]->getLinha() ), 0, 1);
         $this->SetFont($this->PadraoFont, '', $this->fcel);
         $this->Cell(25, $this->cell, $this->_('Valor: '), 0, 0);
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-        $this->Cell( 0, $this->cell, $this->_( Util::nReal($this->boleto[$i]->getAmount()) ));
+        $this->Cell( 0, $this->cell, $this->_( Util::nReal($this->boleto[$i]->getValor()) ));
         $this->SetFont($this->PadraoFont, '', $this->fcel);
 
         $this->traco('Recibo do Pagador', 4);
@@ -85,13 +85,13 @@ class Pdf extends AbstractPdf
 
         $this->Image( $this->boleto[$i]->getLogo() ,20, ($this->GetY()), 0 , 12, 'PNG');
         $this->Cell(56);
-        $this->Cell(0, $this->desc, $this->_( $this->boleto[$i]->getIdentification() ),0,1);
+        $this->Cell(0, $this->desc, $this->_( $this->boleto[$i]->getIdentificacao() ),0,1);
         $this->Cell(56);
-        $this->Cell(0, $this->desc, $this->_( Util::maskString($this->boleto[$i]->getAssignorIdentification(), '##.###.###/####-##') ),0,1);
+        $this->Cell(0, $this->desc, $this->_( Util::maskString($this->boleto[$i]->getCedenteDocumento(), '##.###.###/####-##') ),0,1);
         $this->Cell(56);
-        $this->Cell(0, $this->desc, $this->_( $this->boleto[$i]->getAssignorAddress() ),0,1);
+        $this->Cell(0, $this->desc, $this->_( $this->boleto[$i]->getCedenteEndereco() ),0,1);
         $this->Cell(56);
-        $this->Cell(0, $this->desc, $this->_( $this->boleto[$i]->getAssignorStateProvince() ),0,1);
+        $this->Cell(0, $this->desc, $this->_( $this->boleto[$i]->getCedenteCidadeUF() ),0,1);
         $this->Ln(10);
 
         return $this;
@@ -99,12 +99,12 @@ class Pdf extends AbstractPdf
 
     public function Topo($i) {
 
-        $this->Image( $this->logoPath . $this->boleto[$i]->getBank() . '.png', 20, ($this->GetY()-2), 28);
+        $this->Image( $this->logoPath . $this->boleto[$i]->getBanco() . '.png', 20, ($this->GetY()-2), 28);
         $this->Cell(29, 6, '', 'B');
         $this->SetFont('','B',13);
-        $this->Cell(15, 6, $this->boleto[$i]->getBank(true), 'LBR', 0, 'C');
+        $this->Cell(15, 6, $this->boleto[$i]->getBanco(true), 'LBR', 0, 'C');
         $this->SetFont('','B',10);
-        $this->Cell(0, 6, $this->boleto[$i]->getLine() ,'B',1,'R');
+        $this->Cell(0, 6, $this->boleto[$i]->getLinha() ,'B',1,'R');
         $this->risco();
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
@@ -116,12 +116,12 @@ class Pdf extends AbstractPdf
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
 
-        $this->textFitCell(75, $this->cell, $this->_( $this->boleto[$i]->getAssignorName() ), 'LR', 0, 'L', $this->PadraoFont);
+        $this->textFitCell(75, $this->cell, $this->_( $this->boleto[$i]->getCedenteNome() ), 'LR', 0, 'L');
 
-        $this->Cell(35, $this->cell, $this->_( $this->boleto[$i]->getAgencyAccount() ), 'R');
+        $this->Cell(35, $this->cell, $this->_( $this->boleto[$i]->getAgenciaConta() ), 'R');
         $this->Cell(10, $this->cell, $this->_( 'R$' ), 'R');
         $this->Cell(20, $this->cell, $this->_( '1' ), 'R');
-        $this->Cell(30, $this->cell, $this->_( $this->boleto[$i]->getOurNumber() ), 'R' , 1, 'R');
+        $this->Cell(30, $this->cell, $this->_( $this->boleto[$i]->getNossoNumero() ), 'R' , 1, 'R');
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
         $this->Cell(50, $this->desc, $this->_('Número do Documento'), 'TLR');
@@ -130,10 +130,10 @@ class Pdf extends AbstractPdf
         $this->Cell(50, $this->desc, $this->_('Valor do Documento'), 'TR' , 1);
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-        $this->Cell(50, $this->cell, $this->_( $this->boleto[$i]->getNumber() ), 'LR');
-        $this->Cell(40, $this->cell, $this->_( Util::maskString($this->boleto[$i]->getAssignorIdentification() , '##.###.###/####-##' ) ), 'R');
-        $this->Cell(30, $this->cell, $this->_( $this->boleto[$i]->getExpiryDate()->format('d/m/Y') ), 'R');
-        $this->Cell(50, $this->cell, $this->_( Util::nReal($this->boleto[$i]->getAmount())), 'R', 1, 'R');
+        $this->Cell(50, $this->cell, $this->_( $this->boleto[$i]->getNumero() ), 'LR');
+        $this->Cell(40, $this->cell, $this->_( Util::maskString($this->boleto[$i]->getCedenteDocumento() , '##.###.###/####-##' ) ), 'R');
+        $this->Cell(30, $this->cell, $this->_( $this->boleto[$i]->getDataVencimento()->format('d/m/Y') ), 'R');
+        $this->Cell(50, $this->cell, $this->_( Util::nReal($this->boleto[$i]->getValor())), 'R', 1, 'R');
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
         $this->Cell(30, $this->desc, $this->_('(-) Descontos/Abatimentos'), 'TLR');
@@ -153,7 +153,7 @@ class Pdf extends AbstractPdf
         $this->Cell(0, $this->desc, $this->_('Pagador'), 'TLR', 1);
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-        $this->Cell(0, $this->cell, $this->_( $this->boleto[$i]->getDraweeName() ), 'BLR', 1);
+        $this->Cell(0, $this->cell, $this->_( $this->boleto[$i]->getSacadoNome() ), 'BLR', 1);
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
         $this->Cell(100, $this->desc, $this->_('Demonstrativo'), 0, 0,'L');
@@ -163,9 +163,9 @@ class Pdf extends AbstractPdf
         $pulaLinha = 16;
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-        if(count($this->boleto[$i]->getDemonstratives()) > 0)
+        if(count($this->boleto[$i]->getDemonstrativos()) > 0)
         {
-            foreach ($this->boleto[$i]->getDemonstratives() as $d) {
+            foreach ($this->boleto[$i]->getDemonstrativos() as $d) {
                 $pulaLinha -= 2;
                 $this->Cell (0, $this->cell, $this->_ ( $d ), 0, 1);
             }
@@ -182,12 +182,12 @@ class Pdf extends AbstractPdf
         $this->SetFillColor(255,255,204);
 
         $this->SetDrawColor('00','00', '80');
-        $this->Image($this->logoPath . $this->boleto[$i]->getBank() . '.png', 20, ($this->GetY()-2), 28);
+        $this->Image($this->logoPath . $this->boleto[$i]->getBanco() . '.png', 20, ($this->GetY()-2), 28);
         $this->Cell(29, 6, '', '');
         $this->SetFont('','',13);
-        $this->Cell(15, 6, $this->boleto[$i]->getBank(true), 'LR', 0, 'C');
+        $this->Cell(15, 6, $this->boleto[$i]->getBanco(true), 'LR', 0, 'C');
         $this->SetFont('','',10);
-        $this->Cell(0, 6, $this->boleto[$i]->getLine() ,'',1,'R');
+        $this->Cell(0, 6, $this->boleto[$i]->getLinha() ,'',1,'R');
         $this->Ln(1);
         $this->risco();
 
@@ -212,12 +212,12 @@ class Pdf extends AbstractPdf
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
 
-        $this->textFitCell(75, $this->cell, $this->_( $this->boleto[$i]->getAssignorName() ), 'LR', 0, 'L', $this->PadraoFont);
+        $this->textFitCell(75, $this->cell, $this->_( $this->boleto[$i]->getCedenteNome() ), 'LR', 0, 'L');
 
-        $this->Cell(35, $this->cell, $this->_( $this->boleto[$i]->getAgencyAccount() ), '');
+        $this->Cell(35, $this->cell, $this->_( $this->boleto[$i]->getAgenciaConta() ), '');
         $this->Cell(10, $this->cell, $this->_( 'R$' ), '');
         $this->Cell(20, $this->cell, $this->_( '1' ), '');
-        $this->Cell(30, $this->cell, $this->_( $this->boleto[$i]->getOurNumber() ), '' , 1, '');
+        $this->Cell(30, $this->cell, $this->_( $this->boleto[$i]->getNossoNumero() ), '' , 1, '');
 
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
@@ -234,10 +234,10 @@ class Pdf extends AbstractPdf
         $this->Cell(50, $this->desc, $this->_('Valor do Documento'), 'T' , 1);
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-        $this->Cell(50, $this->cell, $this->_( $this->boleto[$i]->getNumber() ), '');
-        $this->Cell(40, $this->cell, $this->_( Util::maskString($this->boleto[$i]->getAssignorIdentification(),'##.###.###/####-##') ), '');
-        $this->Cell(30, $this->cell, $this->_( $this->boleto[$i]->getExpiryDate()->format('d/m/Y') ), '');
-        $this->Cell(50, $this->cell, $this->_( Util::nReal($this->boleto[$i]->getAmount()) ), '', 1, 'R');
+        $this->Cell(50, $this->cell, $this->_( $this->boleto[$i]->getNumero() ), '');
+        $this->Cell(40, $this->cell, $this->_( Util::maskString($this->boleto[$i]->getCedenteDocumento(),'##.###.###/####-##') ), '');
+        $this->Cell(30, $this->cell, $this->_( $this->boleto[$i]->getDataVencimento()->format('d/m/Y') ), '');
+        $this->Cell(50, $this->cell, $this->_( Util::nReal($this->boleto[$i]->getValor()) ), '', 1, 'R');
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
         $this->riscoBB($this->GetX(),$this->GetY());
@@ -269,7 +269,7 @@ class Pdf extends AbstractPdf
         $this->Cell(0, $this->desc, $this->_('Pagador'), 'T', 1);
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-        $this->Cell(0, $this->cell, $this->_( $this->boleto[$i]->getDraweeName() ), 'B', 1);
+        $this->Cell(0, $this->cell, $this->_( $this->boleto[$i]->getSacadoNome() ), 'B', 1);
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
         $this->Cell(100, $this->desc, $this->_('Demonstrativo'), 0, 0,'L');
@@ -279,9 +279,9 @@ class Pdf extends AbstractPdf
         $pulaLinha = 16;
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-        if(count($this->boleto[$i]->getDemonstratives()) > 0 )
+        if(count($this->boleto[$i]->getDemonstrativos()) > 0 )
         {
-            foreach ($this->boleto[$i]->getDemonstratives() as $d) {
+            foreach ($this->boleto[$i]->getDemonstrativos() as $d) {
                 $pulaLinha -= 2;
                 $this->Cell (0, $this->cell, $this->_ ( $d ), 0, 1);
             }
@@ -295,12 +295,12 @@ class Pdf extends AbstractPdf
 
     public function Bottom($i){
 
-        $this->Image($this->logoPath . $this->boleto[$i]->getBank() . '.png', 20, ($this->GetY()-2), 28);
+        $this->Image($this->logoPath . $this->boleto[$i]->getBanco() . '.png', 20, ($this->GetY()-2), 28);
         $this->Cell(29, 6, '', 'B');
         $this->SetFont($this->PadraoFont, 'B', 13);
-        $this->Cell(15, 6, $this->boleto[$i]->getBank(true), 'LBR', 0, 'C');
+        $this->Cell(15, 6, $this->boleto[$i]->getBanco(true), 'LBR', 0, 'C');
         $this->SetFont($this->PadraoFont, 'B', 10);
-        $this->Cell(0, 6, $this->boleto[$i]->getLine() ,'B',1,'R');
+        $this->Cell(0, 6, $this->boleto[$i]->getLinha() ,'B',1,'R');
         $this->risco();
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
@@ -308,16 +308,16 @@ class Pdf extends AbstractPdf
         $this->Cell(50, $this->desc, $this->_('Vencimento'), 'TR', 1);
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-        $this->Cell(120, $this->cell, $this->_( $this->boleto[$i]->getPaymentLocal() ), 'LR');
-        $this->Cell(50, $this->cell, $this->_( $this->boleto[$i]->getExpiryDate()->format('d/m/Y') ), 'R', 1, 'R');
+        $this->Cell(120, $this->cell, $this->_( $this->boleto[$i]->getLocalPagamento() ), 'LR');
+        $this->Cell(50, $this->cell, $this->_( $this->boleto[$i]->getDataVencimento()->format('d/m/Y') ), 'R', 1, 'R');
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
         $this->Cell(120, $this->desc, $this->_('Beneficiário'), 'TLR');
         $this->Cell(50, $this->desc, $this->_('Agência/Código beneficiário'), 'TR', 1);
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-        $this->Cell(120, $this->cell, $this->_( $this->boleto[$i]->getAssignorName() ), 'LR');
-        $this->Cell(50, $this->cell, $this->_( $this->boleto[$i]->getAgencyAccount() ), 'R', 1, 'R');
+        $this->Cell(120, $this->cell, $this->_( $this->boleto[$i]->getCedenteNome() ), 'LR');
+        $this->Cell(50, $this->cell, $this->_( $this->boleto[$i]->getAgenciaConta() ), 'R', 1, 'R');
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
         $this->Cell(30, $this->desc, $this->_('Data do documento'), 'TLR');
@@ -328,16 +328,16 @@ class Pdf extends AbstractPdf
         $this->Cell(50, $this->desc, $this->_('Nosso número'), 'TR', 1);
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-        $this->Cell(30, $this->cell, $this->_( $this->boleto[$i]->getDate()->format('d/m/Y') ), 'LR');
-        $this->Cell(40, $this->cell, $this->_( $this->boleto[$i]->getNumber() ), 'R');
-        $this->Cell(15, $this->cell, $this->_( $this->boleto[$i]->getDocumentSpecie() ), 'R');
-        $this->Cell(10, $this->cell, $this->_( $this->boleto[$i]->getAcceptance() ), 'R');
-        $this->Cell(25, $this->cell, $this->_( $this->boleto[$i]->getProcessingDate()->format('d/m/Y') ), 'R');
-        $this->Cell(50, $this->cell, $this->_( $this->boleto[$i]->getOurNumber() ), 'R', 1, 'R');
+        $this->Cell(30, $this->cell, $this->_( $this->boleto[$i]->getDataDocumento()->format('d/m/Y') ), 'LR');
+        $this->Cell(40, $this->cell, $this->_( $this->boleto[$i]->getNumero() ), 'R');
+        $this->Cell(15, $this->cell, $this->_( $this->boleto[$i]->getEspecieDocumento() ), 'R');
+        $this->Cell(10, $this->cell, $this->_( $this->boleto[$i]->getAceite() ), 'R');
+        $this->Cell(25, $this->cell, $this->_( $this->boleto[$i]->getDataProcessamento()->format('d/m/Y') ), 'R');
+        $this->Cell(50, $this->cell, $this->_( $this->boleto[$i]->getNossoNumero() ), 'R', 1, 'R');
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
 
-        if( $this->boleto[$i]->getBank() == '033' ) {
+        if( $this->boleto[$i]->getBanco() == '033' ) {
             $this->Cell(55, $this->desc, $this->_('Carteira'), 'TLR');
         } else {
             $this->Cell(30, $this->desc, $this->_('Uso do Banco'), 'TLR');
@@ -350,16 +350,16 @@ class Pdf extends AbstractPdf
         $this->Cell(50, $this->desc, $this->_('Valor Documento'), 'TR', 1);
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-        if( $this->boleto[$i]->getBank() == '033' ) {
-            $this->TextFitCell(55, $this->cell, $this->_( $this->boleto[$i]->getBookCollection(true)), 'LR', 0, 'L', 10);
+        if( $this->boleto[$i]->getBanco() == '033' ) {
+            $this->TextFitCell(55, $this->cell, $this->_( $this->boleto[$i]->getCarteira(true)), 'LR', 0, 'L');
         } else {
             $this->Cell(30, $this->cell, $this->_( '' ), 'LR');
-            $this->Cell(25, $this->cell, $this->_( strtoupper( $this->boleto[$i]->getBookCollection() ) ), 'R');
+            $this->Cell(25, $this->cell, $this->_( strtoupper( $this->boleto[$i]->getCarteira() ) ), 'R');
         }
         $this->Cell(12, $this->cell, $this->_( 'R$' ), 'R');
         $this->Cell(28, $this->cell, $this->_( '1' ), 'R');
-        $this->Cell(25, $this->cell, $this->_( Util::nReal($this->boleto[$i]->getAmount()) ), 'R');
-        $this->Cell(50, $this->cell, $this->_( Util::nReal($this->boleto[$i]->getAmount()) ), 'R', 1, 'R');
+        $this->Cell(25, $this->cell, $this->_( Util::nReal($this->boleto[$i]->getValor()) ), 'R');
+        $this->Cell(50, $this->cell, $this->_( Util::nReal($this->boleto[$i]->getValor()) ), 'R', 1, 'R');
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
         $this->Cell(120, $this->desc, $this->_('Instruções (Texto de responsabilidade do beneficiário)'), 'TLR');
@@ -400,9 +400,9 @@ class Pdf extends AbstractPdf
         $this->Cell(0, $this->desc, $this->_('Pagador'), 'LR', 1);
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-        $this->Cell(0, $this->cell, $this->_( $this->boleto[$i]->getDraweeName() ), 'LR', 1);
-        $this->Cell(0, $this->cell, $this->_( $this->boleto[$i]->getDraweeAddress() ), 'LR', 1);
-        $this->Cell(0, $this->cell, $this->_( $this->boleto[$i]->getDraweeStateProvince() ), 'LR', 1);
+        $this->Cell(0, $this->cell, $this->_( $this->boleto[$i]->getSacadoNome() ), 'LR', 1);
+        $this->Cell(0, $this->cell, $this->_( $this->boleto[$i]->getSacadoEndereco() ), 'LR', 1);
+        $this->Cell(0, $this->cell, $this->_( $this->boleto[$i]->getSacadoCidadeUF() ), 'LR', 1);
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
         $this->Cell(120, $this->cell, $this->_(''), 'BLR');
@@ -418,12 +418,12 @@ class Pdf extends AbstractPdf
         $xOriginal = $this->GetX();
         $yOriginal = $this->GetY();
 
-        if(count($this->boleto[$i]->getInstructions()) > 0)
+        if(count($this->boleto[$i]->getInstrucoes()) > 0)
         {
             $this->SetXY($xInstrucoes, $yInstrucoes);
             $this->Ln(4);
             $this->SetFont($this->PadraoFont,'B',  $this->fcel);
-            foreach($this->boleto[$i]->getInstructions() as $in )
+            foreach($this->boleto[$i]->getInstrucoes() as $in )
                 $this->Cell (0, $this->cell, $this->_ ($in), 0, 1);
 
             $this->SetXY($xOriginal, $yOriginal);
@@ -434,12 +434,12 @@ class Pdf extends AbstractPdf
     public function BottomBB($i){
 
         $this->SetDrawColor('00','00', '80');
-        $this->Image($this->logoPath . $this->boleto[$i]->getBank() . '.png', 20, ($this->GetY()-2), 28);
+        $this->Image($this->logoPath . $this->boleto[$i]->getBanco() . '.png', 20, ($this->GetY()-2), 28);
         $this->Cell(29, 6, '', '');
         $this->SetFont('','',13);
-        $this->Cell(15, 6, $this->boleto[$i]->getBank(true), 'LR', 0, 'C');
+        $this->Cell(15, 6, $this->boleto[$i]->getBanco(true), 'LR', 0, 'C');
         $this->SetFont('','',10);
-        $this->Cell(0, 6, $this->boleto[$i]->getLine() ,'',1,'R');
+        $this->Cell(0, 6, $this->boleto[$i]->getLinha() ,'',1,'R');
         $this->Ln(1);
         $this->risco();
 
@@ -452,8 +452,8 @@ class Pdf extends AbstractPdf
         $this->Cell(50, $this->desc, $this->_('Vencimento'), '', 1,'L',true);
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-        $this->Cell(120, $this->cell, $this->_( $this->boleto[$i]->getPaymentLocal() ), '');
-        $this->Cell(50, $this->cell, $this->_( $this->boleto[$i]->getExpiryDate()->format('d/m/Y') ), '', 1, 'R',true);
+        $this->Cell(120, $this->cell, $this->_( $this->boleto[$i]->getLocalPagamento() ), '');
+        $this->Cell(50, $this->cell, $this->_( $this->boleto[$i]->getDataVencimento()->format('d/m/Y') ), '', 1, 'R',true);
         $this->riscoBB($x,$y);
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
@@ -464,8 +464,8 @@ class Pdf extends AbstractPdf
         $this->Cell(50, $this->desc, $this->_('Agência/Código beneficiário'), 'T', 1);
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-        $this->Cell(120, $this->cell, $this->_( $this->boleto[$i]->getAssignorName() ), '');
-        $this->Cell(50, $this->cell, $this->_( $this->boleto[$i]->getBank(true) ), '', 1, '');
+        $this->Cell(120, $this->cell, $this->_( $this->boleto[$i]->getCedenteNome() ), '');
+        $this->Cell(50, $this->cell, $this->_( $this->boleto[$i]->getBanco(true) ), '', 1, '');
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
         $this->riscoBB($this->GetX(),$this->GetY());
@@ -487,12 +487,12 @@ class Pdf extends AbstractPdf
         $this->Cell(50, $this->desc, $this->_('Nosso número'), 'T', 1);
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-        $this->Cell(30, $this->cell, $this->_( $this->boleto[$i]->getDate()->format('d/m/Y') ), '');
-        $this->Cell(40, $this->cell, $this->_( $this->boleto[$i]->getNumber() ), '');
-        $this->Cell(15, $this->cell, $this->_( $this->boleto[$i]->getDocumentSpecie() ), '');
-        $this->Cell(10, $this->cell, $this->_( $this->boleto[$i]->getAcceptance() ), '');
-        $this->Cell(25, $this->cell, $this->_( $this->boleto[$i]->getProcessingDate()->format('d/m/Y') ), '');
-        $this->Cell(50, $this->cell, $this->_( $this->boleto[$i]->getOurNumber() ), '', 1, 'R');
+        $this->Cell(30, $this->cell, $this->_( $this->boleto[$i]->getDataDocumento()->format('d/m/Y') ), '');
+        $this->Cell(40, $this->cell, $this->_( $this->boleto[$i]->getNumero() ), '');
+        $this->Cell(15, $this->cell, $this->_( $this->boleto[$i]->getEspecieDocumento() ), '');
+        $this->Cell(10, $this->cell, $this->_( $this->boleto[$i]->getAceite() ), '');
+        $this->Cell(25, $this->cell, $this->_( $this->boleto[$i]->getDataProcessamento()->format('d/m/Y') ), '');
+        $this->Cell(50, $this->cell, $this->_( $this->boleto[$i]->getNossoNumero() ), '', 1, 'R');
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
         $x = $this->GetX(); $y = $this->GetY();
@@ -516,11 +516,11 @@ class Pdf extends AbstractPdf
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
         $this->Cell(30, $this->cell, $this->_( '' ), '', 0, '', true);
         $this->riscoBB($x, $y);
-        $this->Cell(25, $this->cell, $this->_( $this->boleto[$i]->getBookCollection() ), '');
+        $this->Cell(25, $this->cell, $this->_( $this->boleto[$i]->getCarteira() ), '');
         $this->Cell(12, $this->cell, $this->_( 'R$' ), '');
         $this->Cell(28, $this->cell, $this->_(  '1' ), '');
-        $this->Cell(25, $this->cell, $this->_( Util::nReal($this->boleto[$i]->getAmount()) ), '');
-        $this->Cell(50, $this->cell, $this->_( Util::nReal($this->boleto[$i]->getAmount()) ), '', 1, 'R');
+        $this->Cell(25, $this->cell, $this->_( Util::nReal($this->boleto[$i]->getValor()) ), '');
+        $this->Cell(50, $this->cell, $this->_( Util::nReal($this->boleto[$i]->getValor()) ), '', 1, 'R');
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
         $this->Cell(120, $this->desc, $this->_('Instruções (Texto de responsabilidade do beneficiário)'), 'T');
@@ -568,9 +568,9 @@ class Pdf extends AbstractPdf
         $this->Cell(0, $this->desc, $this->_('Pagador'), '', 1);
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-        $this->Cell(0, $this->cell, $this->_( $this->boleto[$i]->getDraweeName() ), '', 1);
-        $this->Cell(0, $this->cell, $this->_( $this->boleto[$i]->getDraweeAddress() ), '', 1);
-        $this->Cell(0, $this->cell, $this->_( $this->boleto[$i]->getDraweeStateProvince() ), '', 1);
+        $this->Cell(0, $this->cell, $this->_( $this->boleto[$i]->getSacadoNome() ), '', 1);
+        $this->Cell(0, $this->cell, $this->_( $this->boleto[$i]->getSacadoEndereco() ), '', 1);
+        $this->Cell(0, $this->cell, $this->_( $this->boleto[$i]->getSacadoCidadeUF() ), '', 1);
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
         $this->Cell(120, $this->cell, $this->_('Pagador/Avalista'), 'TB');
@@ -587,12 +587,12 @@ class Pdf extends AbstractPdf
         $xOriginal = $this->GetX();
         $yOriginal = $this->GetY();
 
-        if(count($this->boleto[$i]->getInstructions()) > 0)
+        if(count($this->boleto[$i]->getInstrucoes()) > 0)
         {
             $this->SetXY($xInstrucoes, $yInstrucoes);
             $this->Ln(1);
             $this->SetFont($this->PadraoFont,'B',  $this->fcel);
-            foreach($this->boleto[$i]->getInstructions() as $in )
+            foreach($this->boleto[$i]->getInstrucoes() as $in )
                 $this->Cell (0, $this->cell, $this->_ ($in), 0, 1);
 
         }
@@ -604,7 +604,7 @@ class Pdf extends AbstractPdf
     public function codigoBarras($i){
         $this->Ln(2);
         $this->Cell(0, 15, '', 0, 1, 'L');
-        $this->i25($this->GetX(),  $this->GetY()-15, $this->boleto[$i]->getBarCode(),0.89,14);
+        $this->i25($this->GetX(),  $this->GetY()-15, $this->boleto[$i]->getCodigoBarras(),0.89,14);
         $this->traco('Corte na linha pontilhada',2);
     }
 
@@ -623,7 +623,7 @@ class Pdf extends AbstractPdf
             throw new \Exception ('Nenhum Boleto adicionado');
 
         for( $i = 0 ; $i < $this->totalBoletos ; $i ++ ){
-            if( $this->boleto[$i]->getBank() == '001' ) {
+            if( $this->boleto[$i]->getBanco() == '001' ) {
                 $this->AddPage();
                 $this->instrucoes($i)->logoEmpresa($i)->TopoBB($i)->BottomBB($i)->codigoBarras($i);
             } else {
