@@ -1,46 +1,117 @@
 <?php
 namespace Eduardokum\LaravelBoleto\Cnab;
 
-use Eduardokum\LaravelBoleto\Cnab\Contracts\Remessa\Detalhe;
-use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Cnab\Contracts\Cnab;
+use Eduardokum\LaravelBoleto\Cnab\Remessa\Detalhe;
 
-abstract class AbstractCnab
+abstract class AbstractCnab implements Cnab
 {
 
-    const HEADER = 'header';
-    const DETALHE = 'detalhe';
-    const TRAILER = 'trailer';
+    /**
+     * Contagem dos registros Detalhes
+     * @var int
+     */
+    protected $iRegistros = 0;
 
-    private $iRegistros = 0;
+    /**
+     * Array contendo o cnab.
+     *
+     * @var array
+     */
     private $aRegistros = [
         self::HEADER => [],
         self::DETALHE => [],
         self::TRAILER => [],
     ];
+
+    /**
+     * Variavel com ponteiro para linha que esta sendo editada.
+     * @var
+     */
     private $atual;
+
+    /**
+     * Caracter de fim de linha
+     *
+     * @var string
+     */
     protected $fimLinha = "\n";
+
+    /**
+     * Caracter de fim de arquivo
+     *
+     * @var null
+     */
     protected $fimArquivo = null;
 
+    /**
+     * ID do arquivo remessa, sequencial.
+     *
+     * @var
+     */
     public $idremessa;
 
+    /**
+     * Carteira de cobrança.
+     *
+     * @var
+     */
+    public $carteira;
+
+    /**
+     * Array com as variaveis requeridas para a classe.
+     *
+     * @var array
+     */
+    public $variaveisRequeridas = [];
+
+
+    /**
+     * Função para gerar o cabeçalho do arquivo.
+     *
+     * @return mixed
+     */
     protected abstract function header();
 
-    protected abstract function adicionaDetalhe(Detalhe $boleto);
+    /**
+     * Função para adicionar detalhe ao arquivo.
+     *
+     * @param Detalhe $detalhe
+     *
+     * @return mixed
+     */
+    public abstract function addDetalhe(Detalhe $detalhe);
 
+    /**
+     * Função que gera o trailer (footer) do arquivo.
+     *
+     * @return mixed
+     */
     protected abstract function trailer();
 
+    /**
+     * Função que mostra a quantidade de linhas do arquivo.
+     *
+     * @return int
+     */
     protected function getCount()
     {
         return count($this->aRegistros[self::DETALHE]) + 2;
     }
 
+    /**
+     * Função para add valor a linha nas posições informadas.
+     *
+     * @param $i
+     * @param $f
+     * @param $value
+     *
+     * @return array
+     * @throws \Exception
+     */
     protected function add($i, $f, $value)
     {
         $i--;
-
-        if (!in_array($this->atual, [self::DETALHE, self::TRAILER, self::HEADER])) {
-            throw new \Exception('Ultilize antes ' . __CLASS__ . '->iniciaLinha($tipo)');
-        }
 
         if ($i > 398 || $f > 400) {
             throw new \Exception('$ini ou $fim ultrapassam o limite máximo de 400');
@@ -58,11 +129,8 @@ abstract class AbstractCnab
 
         $value = sprintf("%{$t}s", $value);
         $value = str_split($value, 1);
-        if($this->atual == self::DETALHE)
-        {
-            return array_splice($this->aRegistros[$this->atual][$this->iRegistros], $i, $t, $value);
-        }
-        return array_splice($this->aRegistros[$this->atual], $i, $t, $value);
+
+        return array_splice($this->atual, $i, $t, $value);
     }
 
     protected function rem()
@@ -70,66 +138,133 @@ abstract class AbstractCnab
 
     }
 
-    protected function inicia($tipo)
+    /**
+     * Inicia a edição do header
+     */
+    protected function iniciaHeader()
     {
-        $tipo = Util::lower($tipo);
-        if(in_array($tipo, [self::DETALHE, self::TRAILER, self::HEADER])) {
-            $this->atual = $tipo;
-            if($this == self::DETALHE)
-            {
-                $this->iRegistros++;
-                $this->aRegistros[$tipo][$this->iRegistros] = array_fill(0,400, ' ');
-            }
-            else
-            {
-                $this->aRegistros[$tipo] = array_fill(0,400, ' ');
-            }
-        } else {
-            throw new \Exception('$tipo é inválido, aceito: {detalhe,trailer,header}');
-        }
+        $this->aRegistros[self::HEADER] = array_fill(0,400, ' ');
+        $this->atual = &$this->aRegistros[self::HEADER];
     }
 
+    /**
+     * Inicia a edição do trailer (footer).
+     */
+    protected function iniciaTrailer()
+    {
+        $this->aRegistros[self::TRAILER] = array_fill(0,400, ' ');
+        $this->atual = &$this->aRegistros[self::TRAILER];
+    }
 
+    /**
+     * Inicia uma nova linha de detalhe e marca com a atual de edição
+     */
+    protected function iniciaDetalhe()
+    {
 
+        if(property_exists($this, 'variaveisRequeridas'))
+        {
+            $errors = false;
+            $aErrors = [];
+            foreach($this->variaveisRequeridas as $var)
+            {
+                if(!isset($this->$var))
+                {
+                    $errors = true;
+                    $aErrors[] = $var;
+                }
+            }
+
+            if($errors)
+            {
+                throw new \Exception('As variáveis [' . implode(', ', $aErrors) . '] devem ser preenchidas');
+            }
+        }
+
+        $this->iRegistros++;
+        $this->aRegistros[self::DETALHE][$this->iRegistros] = array_fill(0,400, ' ');
+        $this->atual = &$this->aRegistros[self::DETALHE][$this->iRegistros];
+    }
+
+    /**
+     * Retorna a carteira
+     *
+     * @param string $default
+     *
+     * @return string
+     */
+    protected function getCarteira($default = ' ')
+    {
+        return $this->carteira ? $this->carteira : $default;
+    }
+
+    /**
+     * Retorna o id da remessa
+     *
+     * @return string
+     */
+    protected function getID()
+    {
+        return $this->idremessa;
+    }
+
+    /**
+     * Valida se a linha esta correta.
+     *
+     * @param array $a
+     *
+     * @return string
+     * @throws \Exception
+     */
+    private function valida(array $a) {
+        $a = array_filter($a, 'strlen');
+        if (count($a) != 400) {
+            throw new \Exception('$a não possui 400 posições, possui: ' . count($a));
+        }
+        return implode('', $a);
+    }
+
+    /**
+     * Gera o arquivo, retorna a string.
+     *
+     * @return string
+     * @throws \Exception
+     */
     public function gerar()
     {
         $stringRemessa = '';
-//        if(!$this->aRegistros) { throw new \Exception('Nenhuma linha detalhe foi adicionada'); }
+        if($this->iRegistros < 1)
+        {
+            throw new \Exception('Nenhuma linha detalhe foi adicionada');
+        }
 
         $this->header();
-        $stringRemessa .= $this->get(self::HEADER).$this->fimLinha;
+        $stringRemessa .= $this->valida($this->aRegistros[self::HEADER]) . $this->fimLinha;
 
-//        for($i=1;$i<=$this->aRegistros;$i++){
-//            $stringRemessa .= $this->get('detalhe',$i).$this->fimLinha;
-//        }
-//
+        foreach($this->aRegistros[self::DETALHE] as $i => $detalhe)
+        {
+            $stringRemessa .= $this->valida($detalhe) . $this->fimLinha;
+        }
+
         $this->trailer();
-        $stringRemessa .= $this->get('trailer');
+        $stringRemessa .= $this->valida($this->aRegistros[self::TRAILER]);
 
         if(!empty($this->fim_arquivo)) {
             $stringRemessa .= $this->fimArquivo;
         }
-//        dd($this->aRegistros);
 
         return $stringRemessa;
     }
 
-
-    private function get($tipo, $count = null) {
-
-        if( !in_array($tipo, array('detalhe','trailer','header') ) ) {
-            throw new \Exception('$tipo: '.$tipo.', incorreto');
-        }
-
-        $arrayWork = array_filter(!isset($count) ? $this->aRegistros[$tipo] : $this->aRegistros[$tipo][$count], 'strlen');
-        if(isset($arrayWork) ) {
-            if (count($arrayWork) != 400) {
-                throw new \Exception('$a não possui 400 posições, possui: ' . count($arrayWork));
+    public function __call($name, $arguments)
+    {
+        if(strtolower(substr($name, 0, 3)) == 'get')
+        {
+            $name = lcfirst(substr($name, 3));
+            if(property_exists($this, $name))
+            {
+                return $this->$name;
             }
-            return implode('', $arrayWork);
-        } else {
-            throw new \Exception('Campo '.$tipo.' não gerado ou inválido');
         }
     }
-
 }

@@ -5,5 +5,5 @@ use Eduardokum\LaravelBoleto\Cnab\Contracts\Remessa;
 
 interface Santander extends Remessa
 {
-
+    public function gerar();
 }

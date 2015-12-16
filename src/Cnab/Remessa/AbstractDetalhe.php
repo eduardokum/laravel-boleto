@@ -1,171 +1,230 @@
 <?php
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa;
 
+use Carbon\Carbon;
+use Eduardokum\LaravelBoleto\Util;
+
 class AbstractDetalhe
 {
-    public function getNumero()
+    public $numero;
+    public $ocorrencia = '01';
+    public $numeroDocumento;
+    private $numeroControle;
+    public $dataVencimento;
+    public $dataDocumento;
+    public $tipoCobranca;
+    public $especie;
+    public $aceite;
+    public $instrucao1;
+    public $instrucao2;
+    public $dataLimiteDesconto;
+    public $valorDesconto;
+    public $valorIOF;
+    public $valorMora;
+    public $valorAbatimento;
+    public $valor;
+    public $tipoMoeda;
+    public $diasProtesto;
+    public $dataMulta;
+    public $taxaMulta;
+    public $valorMulta;
+    public $xDiasMulta;
+    public $naoReceberDias;
+    public $sacadoDocumento;
+    public $sacadoNome;
+    public $sacadoEndereco;
+    public $sacadoBairro;
+    public $sacadoCEP;
+    public $sacadoCidade;
+    public $sacadoEstado;
+    public $sacadorAvalista;
+
+    public function getNumero($default = ' ')
     {
-        // TODO: Implement getNumero() method.
+        return $this->isEmpty($this->numero) ? $default : $this->numero;
+    }
+
+    public function getOcorrencia()
+    {
+        return $this->ocorrencia;
     }
 
     public function getNumeroDocumento()
     {
-        // TODO: Implement getNumeroDocumento() method.
+        return $this->isEmpty($this->numeroDocumento) ? $this->getNumero() : $this->numeroDocumento;
     }
 
     public function getNumeroControle()
     {
-        // TODO: Implement getNumeroControle() method.
+        return $this->isEmpty($this->numeroControle) ? $this->getNumero() : Util::controle2array($this->numeroControle);
     }
 
-    public function getDataVencimento()
+    public function getNumeroControleString()
     {
-        // TODO: Implement getDataVencimento() method.
+        return $this->isEmpty($this->numeroControle) ? $this->getNumero() : $this->numeroControle;
+    }
+
+    public function setNumeroControle(array $controle)
+    {
+        $this->numeroControle = Util::array2Controle($controle);
+    }
+
+    public function getDataVencimento($default = ' ')
+    {
+        return $this->isEmpty($this->dataVencimento)
+            ? (is_string($default) ? Carbon::createFromFormat('Y-m-d', $default) : $default)
+            : (is_string($this->dataVencimento) ? Carbon::createFromFormat('Y-m-d', $this->dataVencimento) : $this->dataVencimento);
     }
 
     public function getDataDocumento()
     {
-        // TODO: Implement getDataDocumento() method.
+        return $this->isEmpty($this->dataDocumento)
+            ? Carbon::now()
+            : (is_string($this->dataDocumento) ? Carbon::createFromFormat('Y-m-d', $this->dataDocumento) : $this->dataDocumento);
     }
 
-    public function getCarteira()
+    public function getDataLimiteDesconto($default = ' ')
     {
-        // TODO: Implement getCarteira() method.
+        return $this->isEmpty($this->dataLimiteDesconto)
+            ? $this->getDataVencimento($default)
+            : (is_string($this->dataLimiteDesconto) ? Carbon::createFromFormat('Y-m-d', $this->dataLimiteDesconto) : $this->dataLimiteDesconto);
     }
 
-    public function getTipoCobranca()
+    public function getDataMulta($default = '0')
     {
-        // TODO: Implement getTipoCobranca() method.
+        return $this->isEmpty($this->dataMulta)
+            ? $default
+            : (is_string($this->dataMulta) ? Carbon::createFromFormat('Y-m-d', $this->dataMulta) : $this->dataMulta);
     }
 
-    public function getEspecie()
+    public function getTipoCobranca($default = ' ')
     {
-        // TODO: Implement getEspecie() method.
+        return $this->isEmpty($this->tipoCobranca) ? $default : $this->tipoCobranca;
     }
 
-    public function getAceite()
+    public function getEspecie($default = ' ')
     {
-        // TODO: Implement getAceite() method.
+        return $this->isEmpty($this->especie) ? $default : $this->especie;
     }
 
-    public function getInstrucao1()
+    public function getAceite($default = ' ')
     {
-        // TODO: Implement getInstrucao1() method.
+        return $this->isEmpty($this->aceite) ? $default : $this->aceite;
     }
 
-    public function getInstrucao2()
+    public function getInstrucao1($default = ' ')
     {
-        // TODO: Implement getInstrucao2() method.
+        return $this->isEmpty($this->instrucao1) ? $default : $this->instrucao1;
     }
 
-    public function getDataLimiteDesconto()
+    public function getInstrucao2($default = ' ')
     {
-        // TODO: Implement getDataLimiteDesconto() method.
+        return $this->isEmpty($this->instrucao2) ? $default : $this->instrucao2;
     }
 
-    public function getValorDesconto()
+    public function getValorDesconto($default = ' ')
     {
-        // TODO: Implement getValorDesconto() method.
+        return Util::nFloat($this->isEmpty($this->valorDesconto) ? $default : $this->valorDesconto);
     }
 
-    public function getvalorIOF()
+    public function getvalorIOF($default = ' ')
     {
-        // TODO: Implement getvalorIOF() method.
+        return Util::nFloat($this->isEmpty($this->valorIOF) ? $default : $this->valorIOF);
     }
 
-    public function getValorMora()
+    public function getValorMora($default = ' ')
     {
-        // TODO: Implement getValorMora() method.
+        return Util::nFloat($this->isEmpty($this->valorMora) ? $default : $this->valorMora);
     }
 
-    public function getValorAbatimento()
+    public function getValorAbatimento($default = ' ')
     {
-        // TODO: Implement getValorAbatimento() method.
+        return Util::nFloat($this->isEmpty($this->valorAbatimento) ? $default : $this->valorAbatimento);
     }
 
-    public function getValor()
+    public function getValor($default = ' ')
     {
-        // TODO: Implement getValor() method.
+        return Util::nFloat($this->isEmpty($this->valor) ? $default : $this->valor);
     }
 
-    public function getTipoMoeda()
+    public function getTipoMoeda($default = ' ')
     {
-        // TODO: Implement getTipoMoeda() method.
+        return $this->isEmpty($this->tipoMoeda) ? $default : $this->tipoMoeda;
     }
 
-    public function getDiasProtesto()
+    public function getDiasProtesto($default = ' ')
     {
-        // TODO: Implement getDiasProtesto() method.
+        return $this->isEmpty($this->diasProtesto) ? $default : $this->diasProtesto;
     }
 
-    public function getDataMulta()
+    public function getTaxaMulta($default = ' ')
     {
-        // TODO: Implement getDataMulta() method.
+        return Util::nFloat($this->isEmpty($this->taxaMulta) ? $default : $this->taxaMulta);
     }
 
-    public function getTaxaMulta()
+    public function getValorMulta($default = ' ')
     {
-        // TODO: Implement getTaxaMulta() method.
+        return Util::nFloat($this->isEmpty($this->valorMulta) ? $default : $this->valorMulta);
     }
 
-    public function getValorMulta()
+    public function getXDiasMulta($default = ' ')
     {
-        // TODO: Implement getValorMulta() method.
+        return $this->isEmpty($this->xDiasMulta) ? $default : $this->xDiasMulta;
     }
 
-    public function getXDiasMulta()
+    public function getNaoReceberDias($default = ' ')
     {
-        // TODO: Implement getXDiasMulta() method.
-    }
-
-    public function getNaoReceberDias()
-    {
-        // TODO: Implement getNaoReceberDias() method.
+        return $this->isEmpty($this->naoReceberDias) ? $default : $this->naoReceberDias;
     }
 
     public function getSacadoTipoDocumento()
     {
-        // TODO: Implement getSacadoTipoDocumento() method.
+        return Util::onlyNumbers($this->sacadoDocumento) > 11 ? '02' : '01';
     }
 
-    public function getSacadoDocumento()
+    public function getSacadoDocumento($default = ' ')
     {
-        // TODO: Implement getSacadoDocumento() method.
+        return Util::onlyNumbers($this->isEmpty($this->sacadoDocumento) ? $default : $this->sacadoDocumento);
     }
 
-    public function getSacadoNome()
+    public function getSacadoNome($default = ' ')
     {
-        // TODO: Implement getSacadoNome() method.
+        return $this->isEmpty($this->sacadoNome) ? $default : $this->sacadoNome;
     }
 
-    public function getSacadoEndereco()
+    public function getSacadoEndereco($default = ' ')
     {
-        // TODO: Implement getSacadoEndereco() method.
+        return $this->isEmpty($this->sacadoEndereco) ? $default : $this->sacadoEndereco;
     }
 
-    public function getSacadoBairro()
+    public function getSacadoBairro($default = ' ')
     {
-        // TODO: Implement getSacadoBairro() method.
+        return $this->isEmpty($this->sacadoBairro) ? $default : $this->sacadoBairro;
     }
 
-    public function getSacadoCEP()
+    public function getSacadoCEP($default = ' ')
     {
-        // TODO: Implement getSacadoCEP() method.
+        return $this->isEmpty($this->sacadoCEP) ? $default : $this->sacadoCEP;
     }
 
-    public function getSacadoCidade()
+    public function getSacadoCidade($default = ' ')
     {
-        // TODO: Implement getSacadoCidade() method.
+        return $this->isEmpty($this->sacadoCidade) ? $default : $this->sacadoCidade;
     }
 
-    public function getSacadoEstado()
+    public function getSacadoEstado($default = ' ')
     {
-        // TODO: Implement getSacadoEstado() method.
+        return $this->isEmpty($this->sacadoEstado) ? $default : $this->sacadoEstado;
     }
 
-    public function getSacadorAvalista()
+    public function getSacadorAvalista($default = ' ')
     {
-        // TODO: Implement getSacadorAvalista() method.
+        return $this->isEmpty($this->sacadorAvalista) ? $default : $this->sacadorAvalista;
+    }
+
+    private function isEmpty($value)
+    {
+        return $value == '' || $value == ' ' || $value == null || $value == false;
     }
 
 }

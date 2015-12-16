@@ -577,4 +577,50 @@ final class Util
         return ((floor($total / 10) + 1) * 10 - $total) % 10;
     }
 
+    /**
+     * @param array $a
+     *
+     * @return string
+     * @throws \Exception
+     */
+    public static function array2Controle(array $a)
+    {
+        if(preg_match('/[0-9]/', array_keys($a)))
+        {
+            throw new \Exception('Somente chave alfanumérica no array, para separar o controle pela chave');
+        }
+
+        $controle = '';
+        foreach($a as $key => $value)
+        {
+            $controle .= sprintf('%s%s', $key, $value);
+        }
+
+        if(strlen($controle) > 25)
+        {
+            throw new \Exception('Controle muito grande, máximo permitido de 25 caracteres');
+        }
+
+        return $controle;
+    }
+
+    /**
+     * @param $controle
+     *
+     * @return null|string
+     */
+    public static function controle2array($controle)
+    {
+        $matches = '';
+        $matches_founded = '';
+        preg_match_all('/(([A-Za-zÀ-Úà-ú]{1,1})([0-9]*))/', $controle, $matches, PREG_SET_ORDER);
+        if ($matches) {
+            foreach ($matches as $match) {
+                $matches_founded[$match[2]] = $match[3];
+            }
+            return $matches_founded;
+        }
+        return null;
+    }
+
 }

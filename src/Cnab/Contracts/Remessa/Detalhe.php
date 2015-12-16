@@ -4,70 +4,72 @@ namespace Eduardokum\LaravelBoleto\Cnab\Contracts\Remessa;
 interface Detalhe
 {
 
-    public function getNumero();
+    public function getOcorrencia();
+
+    public function getNumero($default = ' ');
 
     public function getNumeroDocumento();
 
+    public function setNumeroControle(array $controle);
+
     public function getNumeroControle();
 
-    public function getDataVencimento();
+    public function getNumeroControleString();
+
+    public function getDataVencimento($default = ' ');
 
     public function getDataDocumento();
 
-    public function getCarteira();
+    public function getDataLimiteDesconto($default = ' ');
 
-    public function getTipoCobranca();
+    public function getDataMulta($default = ' ');
 
-    public function getEspecie();
+    public function getTipoCobranca($default = ' ');
 
-    public function getAceite();
+    public function getEspecie($default = ' ');
 
-    public function getInstrucao1();
+    public function getAceite($default = ' ');
 
-    public function getInstrucao2();
+    public function getInstrucao1($default = ' ');
 
-    public function getDataLimiteDesconto();
+    public function getInstrucao2($default = ' ');
 
-    public function getValorDesconto();
+    public function getValorDesconto($default = ' ');
 
-    public function getvalorIOF();
+    public function getvalorIOF($default = ' ');
 
-    public function getValorMora();
+    public function getValorMora($default = ' ');
 
-    public function getValorAbatimento();
+    public function getValorAbatimento($default = ' ');
 
-    public function getValor();
+    public function getValor($default = ' ');
 
-    public function getTipoMoeda();
+    public function getTipoMoeda($default = ' ');
 
-    public function getDiasProtesto();
+    public function getDiasProtesto($default = ' ');
 
-    public function getDataMulta();
+    public function getTaxaMulta($default = ' ');
 
-    public function getTaxaMulta();
+    public function getValorMulta($default = ' ');
 
-    public function getValorMulta();
+    public function getXDiasMulta($default = ' ');
 
-    public function getXDiasMulta();
+    public function getNaoReceberDias($default = ' ');
 
-    public function getNaoReceberDias();
+    public function getSacadoDocumento($default = ' ');
 
-    public function getSacadoTipoDocumento();
+    public function getSacadoNome($default = ' ');
 
-    public function getSacadoDocumento();
+    public function getSacadoEndereco($default = ' ');
 
-    public function getSacadoNome();
+    public function getSacadoBairro($default = ' ');
 
-    public function getSacadoEndereco();
+    public function getSacadoCEP($default = ' ');
 
-    public function getSacadoBairro();
+    public function getSacadoCidade($default = ' ');
 
-    public function getSacadoCEP();
+    public function getSacadoEstado($default = ' ');
 
-    public function getSacadoCidade();
-
-    public function getSacadoEstado();
-
-    public function getSacadorAvalista();
+    public function getSacadorAvalista($default = ' ');
 
 }

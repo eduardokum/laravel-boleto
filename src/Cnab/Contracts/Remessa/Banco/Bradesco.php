@@ -5,4 +5,5 @@ use Eduardokum\LaravelBoleto\Cnab\Contracts\Remessa;
 
 interface Bradesco extends Remessa
 {
+    public function gerar();
 }
