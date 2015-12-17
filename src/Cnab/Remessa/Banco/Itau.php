@@ -127,22 +127,22 @@ class Itau extends AbstractCnab implements Remessa
     {
         $this->iniciaHeader();
 
-        $this->add(1,         1,      '0');
-        $this->add(2,         2,      '1');
-        $this->add(3,         9,      'REMESSA');
-        $this->add(10,        11,     '01');
-        $this->add(12,        26,     Util::formatCnab('X', 'COBRANCA', 15));
-        $this->add(27,        30,     Util::formatCnab('9', $this->getAgencia(), 4));
-        $this->add(31,        32,     '00');
-        $this->add(33,        37,     Util::formatCnab('9', $this->getConta(),5));
-        $this->add(38,        38,     Util::modulo10($this->getAgencia().$this->getConta()));
-        $this->add(39,        46,     '');
-        $this->add(47,        76,     Util::formatCnab('X', $this->getCedenteNome(), 30));
-        $this->add(77,        79,     self::COD_BANCO_ITAU);
-        $this->add(80,        94,     Util::formatCnab('X', 'BANCO ITAU SA', 15));
-        $this->add(95,        100,    date('dmy'));
-        $this->add(101,       394,    '');
-        $this->add(395,       400,    Util::formatCnab('9', 1, 6));
+        $this->add(1, 1, '0');
+        $this->add(2, 2, '1');
+        $this->add(3, 9, 'REMESSA');
+        $this->add(10, 11, '01');
+        $this->add(12, 26, Util::formatCnab('X', 'COBRANCA', 15));
+        $this->add(27, 30, Util::formatCnab('9', $this->getAgencia(), 4));
+        $this->add(31, 32, '00');
+        $this->add(33, 37, Util::formatCnab('9', $this->getConta(),5));
+        $this->add(38, 38, Util::modulo10($this->getAgencia().$this->getConta()));
+        $this->add(39, 46, '');
+        $this->add(47, 76, Util::formatCnab('X', $this->getCedenteNome(), 30));
+        $this->add(77, 79, self::COD_BANCO_ITAU);
+        $this->add(80, 94, Util::formatCnab('X', 'BANCO ITAU SA', 15));
+        $this->add(95, 100, date('dmy'));
+        $this->add(101, 394, '');
+        $this->add(395, 400, Util::formatCnab('9', 1, 6));
 
         return $this;
     }
@@ -151,52 +151,52 @@ class Itau extends AbstractCnab implements Remessa
     {
         $this->iniciaDetalhe();
 
-        $this->add(1,         1,      '1');
-        $this->add(2,         3,      '02');
-        $this->add(4,         17,     Util::formatCnab('L', $this->getCedenteDocumento(), 14));
-        $this->add(18,        21,     Util::formatCnab('9', $this->getAgencia(), 4));
-        $this->add(22,        23,     '00');
-        $this->add(24,        28,     Util::formatCnab('9', $this->getConta(), 5));
-        $this->add(29,        29,     Util::modulo10($this->getAgencia().$this->getConta()));
-        $this->add(30,        33,     '');
-        $this->add(34,        37,     '0000');
-        $this->add(38,        62,     Util::formatCnab('X', $detalhe->getNumeroControleString(), 25));
-        $this->add(63,        70,     Util::formatCnab('9', $detalhe->getNumero(), 8));
-        $this->add(71,        83,     Util::formatCnab('9', '0', 13, 2));
-        $this->add(84,        86,     Util::formatCnab('9', $this->getCarteira('109'), 3));
-        $this->add(87,        107,    '');
-        $this->add(108,       108,    'I');
-        $this->add(109,       110,    '01');
-        $this->add(111,       120,    Util::formatCnab('X', $detalhe->getNumeroDocumento(), 10));
-        $this->add(121,       126,    Util::formatCnab('d', $detalhe->getDataVencimento(), 6));
-        $this->add(127,       139,    Util::formatCnab('9', $detalhe->getValor(), 13, 2));
-        $this->add(140,       142,    341);
-        $this->add(143,       147,    '00000');
-        $this->add(148,       149,    $detalhe->getEspecie('01'));
-        $this->add(150,       150,    $detalhe->getAceite('N'));
-        $this->add(151,       156,    Util::formatCnab('D', $detalhe->getDataDocumento(), 6));
-        $this->add(157,       158,    $detalhe->getInstrucao1('00'));
-        $this->add(159,       160,    $detalhe->getInstrucao2('00'));
-        $this->add(161,       173,    Util::formatCnab('9', $detalhe->getValorMora(), 13, 2));
-        $this->add(174,       179,    Util::formatCnab('D', $detalhe->getDataLimiteDesconto(), 6));
-        $this->add(180,       192,    Util::formatCnab('9', $detalhe->getValorDesconto(), 13, 2));
-        $this->add(193,       205,    Util::formatCnab('9', $detalhe->getvalorIOF(), 13, 2));
-        $this->add(206,       218,    Util::formatCnab('9', $detalhe->getValorAbatimento(), 13, 2));
-        $this->add(219,       220,    Util::formatCnab('9L', $detalhe->getSacadoTipoDocumento(), 2));
-        $this->add(221,       234,    Util::formatCnab('L', $detalhe->getSacadoDocumento(), 14));
-        $this->add(235,       264,    Util::formatCnab('X', $detalhe->getSacadoNome(), 30));
-        $this->add(265,       274,    '');
-        $this->add(275,       314,    Util::formatCnab('X', $detalhe->getSacadoEndereco(), 40));
-        $this->add(315,       326,    Util::formatCnab('X', $detalhe->getSacadoBairro(), 12));
-        $this->add(327,       334,    Util::formatCnab('L', $detalhe->getSacadoCEP(), 8));
-        $this->add(335,       349,    Util::formatCnab('A', $detalhe->getSacadoCidade(), 15));
-        $this->add(350,       351,    Util::formatCnab('A', $detalhe->getSacadoEstado(), 2));
-        $this->add(352,       381,    Util::formatCnab('A', $detalhe->getSacadorAvalista(), 30));
-        $this->add(382,       385,    '');
-        $this->add(386,       391,    Util::formatCnab('D', $detalhe->getDataVencimento(), 6));
-        $this->add(392,       393,    Util::formatCnab('9', $detalhe->getDiasProtesto(), 2));
-        $this->add(394,       394,    '');
-        $this->add(395,       400,    Util::formatCnab('9', $this->iRegistros+1, 6));
+        $this->add(1, 1, '1');
+        $this->add(2, 3, '02');
+        $this->add(4, 17, Util::formatCnab('L', $this->getCedenteDocumento(), 14));
+        $this->add(18, 21, Util::formatCnab('9', $this->getAgencia(), 4));
+        $this->add(22, 23, '00');
+        $this->add(24, 28, Util::formatCnab('9', $this->getConta(), 5));
+        $this->add(29, 29, Util::modulo10($this->getAgencia().$this->getConta()));
+        $this->add(30, 33, '');
+        $this->add(34, 37, '0000');
+        $this->add(38, 62, Util::formatCnab('X', $detalhe->getNumeroControleString(), 25));
+        $this->add(63, 70, Util::formatCnab('9', $detalhe->getNumero(), 8));
+        $this->add(71, 83, Util::formatCnab('9', '0', 13, 2));
+        $this->add(84, 86, Util::formatCnab('9', $this->getCarteira('109'), 3));
+        $this->add(87, 107, '');
+        $this->add(108, 108, 'I');
+        $this->add(109, 110, '01');
+        $this->add(111, 120, Util::formatCnab('X', $detalhe->getNumeroDocumento(), 10));
+        $this->add(121, 126, Util::formatCnab('d', $detalhe->getDataVencimento(), 6));
+        $this->add(127, 139, Util::formatCnab('9', $detalhe->getValor(), 13, 2));
+        $this->add(140, 142, 341);
+        $this->add(143, 147, '00000');
+        $this->add(148, 149, $detalhe->getEspecie('01'));
+        $this->add(150, 150, $detalhe->getAceite('N'));
+        $this->add(151, 156, Util::formatCnab('D', $detalhe->getDataDocumento(), 6));
+        $this->add(157, 158, $detalhe->getInstrucao1('00'));
+        $this->add(159, 160, $detalhe->getInstrucao2('00'));
+        $this->add(161, 173, Util::formatCnab('9', $detalhe->getValorMora(), 13, 2));
+        $this->add(174, 179, Util::formatCnab('D', $detalhe->getDataLimiteDesconto(), 6));
+        $this->add(180, 192, Util::formatCnab('9', $detalhe->getValorDesconto(), 13, 2));
+        $this->add(193, 205, Util::formatCnab('9', $detalhe->getvalorIOF(), 13, 2));
+        $this->add(206, 218, Util::formatCnab('9', $detalhe->getValorAbatimento(), 13, 2));
+        $this->add(219, 220, Util::formatCnab('9L', $detalhe->getSacadoTipoDocumento(), 2));
+        $this->add(221, 234, Util::formatCnab('L', $detalhe->getSacadoDocumento(), 14));
+        $this->add(235, 264, Util::formatCnab('X', $detalhe->getSacadoNome(), 30));
+        $this->add(265, 274, '');
+        $this->add(275, 314, Util::formatCnab('X', $detalhe->getSacadoEndereco(), 40));
+        $this->add(315, 326, Util::formatCnab('X', $detalhe->getSacadoBairro(), 12));
+        $this->add(327, 334, Util::formatCnab('L', $detalhe->getSacadoCEP(), 8));
+        $this->add(335, 349, Util::formatCnab('A', $detalhe->getSacadoCidade(), 15));
+        $this->add(350, 351, Util::formatCnab('A', $detalhe->getSacadoEstado(), 2));
+        $this->add(352, 381, Util::formatCnab('A', $detalhe->getSacadorAvalista(), 30));
+        $this->add(382, 385, '');
+        $this->add(386, 391, Util::formatCnab('D', $detalhe->getDataVencimento(), 6));
+        $this->add(392, 393, Util::formatCnab('9', $detalhe->getDiasProtesto(), 2));
+        $this->add(394, 394, '');
+        $this->add(395, 400, Util::formatCnab('9', $this->iRegistros+1, 6));
 
         return $this;
     }
@@ -205,9 +205,9 @@ class Itau extends AbstractCnab implements Remessa
     {
         $this->iniciaTrailer();
 
-        $this->add(1,         1,      '9');
-        $this->add(2,         394,    '');
-        $this->add(395,       400,    Util::formatCnab('9', $this->getCount(), 6));
+        $this->add(1, 1, '9');
+        $this->add(2, 394, '');
+        $this->add(395, 400, Util::formatCnab('9', $this->getCount(), 6));
 
         return $this;
     }

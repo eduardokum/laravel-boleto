@@ -101,35 +101,35 @@ class Bb extends AbstractCnab implements Remessa
             $this->convenioLider = $this->getConvenio();
         }
 
-        $this->add(1,         1,      '0');
-        $this->add(2,         2,      '1');
-        $this->add(3,         9,      'REMESSA');
-        $this->add(10,        11,     '01');
-        $this->add(12,        19,     Util::formatCnab('X', 'COBRANCA', 8));
-        $this->add(20,        26,     '');
-        $this->add(27,        30,     Util::formatCnab('9', $this->getAgencia(), 4));
-        $this->add(31,        31,     Util::modulo11($this->getAgencia()));
-        $this->add(32,        39,     Util::formatCnab('9', $this->getConta(),8));
-        $this->add(40,        40,     Util::modulo11($this->getConta()));
-        $this->add(41,        46,     '000000');
-        $this->add(47,        76,     Util::formatCnab('X', $this->getCedenteNome(), 30));
-        $this->add(77,        79,     Util::formatCnab('X', self::COD_BANCO_BB, 3));
-        $this->add(79,        94,     Util::formatCnab('X', 'BANCODOBRASIL', 15));
-        $this->add(80,        100,    date('dmy'));
-        $this->add(101,       107,    Util::formatCnab('9', $this->getID(), 7));
+        $this->add(1, 1, '0');
+        $this->add(2, 2, '1');
+        $this->add(3, 9, 'REMESSA');
+        $this->add(10, 11, '01');
+        $this->add(12, 19, Util::formatCnab('X', 'COBRANCA', 8));
+        $this->add(20, 26, '');
+        $this->add(27, 30, Util::formatCnab('9', $this->getAgencia(), 4));
+        $this->add(31, 31, Util::modulo11($this->getAgencia()));
+        $this->add(32, 39, Util::formatCnab('9', $this->getConta(),8));
+        $this->add(40, 40, Util::modulo11($this->getConta()));
+        $this->add(41, 46, '000000');
+        $this->add(47, 76, Util::formatCnab('X', $this->getCedenteNome(), 30));
+        $this->add(77, 79, Util::formatCnab('X', self::COD_BANCO_BB, 3));
+        $this->add(79, 94, Util::formatCnab('X', 'BANCODOBRASIL', 15));
+        $this->add(80, 100, date('dmy'));
+        $this->add(101, 107, Util::formatCnab('9', $this->getID(), 7));
 
         if(strlen($this->getConvenio()) < 7)
         {
-            $this->add(108,       394,    '');
+            $this->add(108, 394, '');
         }
         else
         {
-            $this->add(108,       129,    '');
-            $this->add(130,       136, Util::formatCnab('9', $this->getConvenioLider(), 7));
-            $this->add(137,       394,    '');
+            $this->add(108, 129, '');
+            $this->add(130, 136, Util::formatCnab('9', $this->getConvenioLider(), 7));
+            $this->add(137, 394, '');
         }
 
-        $this->add(395,       400,    Util::formatCnab('N', 1, 6));
+        $this->add(395, 400, Util::formatCnab('N', 1, 6));
 
         return $this;
     }
@@ -177,94 +177,94 @@ class Bb extends AbstractCnab implements Remessa
 
         $idArquivo = $convenio6 ? 1 : 7;
 
-        $this->add(1,         1,      $idArquivo );
-        $this->add(2,         3,      '02');
-        $this->add(4,         17,     Util::formatCnab('L', $this->cedenteDocumento, 14));
-        $this->add(18,        21,     Util::formatCnab('9', $this->getAgencia(), 4));
-        $this->add(22,        22,     Util::modulo11($this->getAgencia()));
-        $this->add(23,        30,     Util::formatCnab('9', $this->getConta(), 8));
-        $this->add(31,        31,     Util::modulo11($this->getConta()));
+        $this->add(1, 1, $idArquivo );
+        $this->add(2, 3, '02');
+        $this->add(4, 17, Util::formatCnab('L', $this->cedenteDocumento, 14));
+        $this->add(18, 21, Util::formatCnab('9', $this->getAgencia(), 4));
+        $this->add(22, 22, Util::modulo11($this->getAgencia()));
+        $this->add(23, 30, Util::formatCnab('9', $this->getConta(), 8));
+        $this->add(31, 31, Util::modulo11($this->getConta()));
 
         if($convenio6)
         {
-            $this->add(32,        37,     Util::formatCnab('9', $this->getConvenio(), 6));
-            $this->add(38,        62,     Util::formatCnab('X', $detalhe->getNumeroControleString(), 25));
-            $this->add(63,        73,     $nossoNumero);
-            $this->add(64,        74,     Util::modulo11($nossoNumero));
-            $this->add(75,        76,     '00');
-            $this->add(77,        78,     '00');
-            $this->add(79,        81,     '');
-            $this->add(82,        82,     ($detalhe->getSacadorAvalista()?'A':''));
-            $this->add(83,        85,     Util::formatCnab('X', $prefixoTitulo, 3));
-            $this->add(86,        88,     Util::formatCnab('9', $this->carteiraVariacao, 3));
-            $this->add(89,        89,     '0');
-            $this->add(90,        94,     '00000');
-            $this->add(95,        95,     '0');
+            $this->add(32, 37, Util::formatCnab('9', $this->getConvenio(), 6));
+            $this->add(38, 62, Util::formatCnab('X', $detalhe->getNumeroControleString(), 25));
+            $this->add(63, 73, $nossoNumero);
+            $this->add(64, 74, Util::modulo11($nossoNumero));
+            $this->add(75, 76, '00');
+            $this->add(77, 78, '00');
+            $this->add(79, 81, '');
+            $this->add(82, 82, ($detalhe->getSacadorAvalista()?'A':''));
+            $this->add(83, 85, Util::formatCnab('X', $prefixoTitulo, 3));
+            $this->add(86, 88, Util::formatCnab('9', $this->carteiraVariacao, 3));
+            $this->add(89, 89, '0');
+            $this->add(90, 94, '00000');
+            $this->add(95, 95, '0');
         }
         else
         {
-            $this->add(32,        38,     Util::formatCnab('9', $this->getConvenio(), 7));
-            $this->add(39,        63,     Util::formatCnab('X', $detalhe->getNumeroControleString(), 25));
-            $this->add(64,        80,     $nossoNumero);
-            $this->add(81,        82,     '00');
-            $this->add(83,        84,     '00');
-            $this->add(85,        87,     '');
-            $this->add(88,        88,     ($detalhe->getSacadorAvalista()?'A':''));
-            $this->add(89,        91,     '');
-            $this->add(92,        94,     Util::formatCnab('9', $this->carteiraVariacao, 3));
-            $this->add(95,        95,     '0');
+            $this->add(32, 38, Util::formatCnab('9', $this->getConvenio(), 7));
+            $this->add(39, 63, Util::formatCnab('X', $detalhe->getNumeroControleString(), 25));
+            $this->add(64, 80, $nossoNumero);
+            $this->add(81, 82, '00');
+            $this->add(83, 84, '00');
+            $this->add(85, 87, '');
+            $this->add(88, 88, ($detalhe->getSacadorAvalista()?'A':''));
+            $this->add(89, 91, '');
+            $this->add(92, 94, Util::formatCnab('9', $this->carteiraVariacao, 3));
+            $this->add(95, 95, '0');
         }
 
-        $this->add(96,        101,    '000000');
-        $this->add(102,       106,    Util::formatCnab('X', $detalhe->getTipoCobranca(), 5));
-        $this->add(107,       108,    $this->getCarteira('17'));
-        $this->add(109,       110,    Util::formatCnab('N', $detalhe->getOcorrencia(), 2));
-        $this->add(111,       120,    Util::formatCnab('X', $detalhe->getNumeroDocumento(), 10));
-        $this->add(121,       126,    Util::formatCnab('D', $detalhe->getDataVencimento(), 6));
-        $this->add(127,       139,    Util::formatCnab('9', $detalhe->getValor(),13,2));
-        $this->add(140,       142,    self::COD_BANCO_BB);
-        $this->add(143,       146,    '0000');
-        $this->add(147,       147,    '');
-        $this->add(148,       149,    $detalhe->getEspecie('01'));
-        $this->add(150,       150,    $detalhe->getAceite('N'));
-        $this->add(151,       156,    Util::formatCnab('D', $detalhe->getDataDocumento(), 6));
-        $this->add(157,       158,    Util::formatCnab('9', $detalhe->getInstrucao1('00'), 2));
-        $this->add(159,       160,    Util::formatCnab('9', $detalhe->getInstrucao2('00'), 2));
-        $this->add(161,       173,    Util::formatCnab('9', $detalhe->getValorMora(), 13, 2));
-        $this->add(174,       179,    Util::formatCnab('9', $detalhe->getDataLimiteDesconto('0'), 6));
-        $this->add(180,       192,    Util::formatCnab('9', $detalhe->getValorDesconto(), 13, 2));
-        $this->add(193,       205,    Util::formatCnab('9', $detalhe->getvalorIOF(), 13, 2));
-        $this->add(206,       218,    Util::formatCnab('9', $detalhe->getValorAbatimento(), 13, 2));
-        $this->add(219,       220,    Util::formatCnab('9', $detalhe->getSacadoTipoDocumento(), 2));
-        $this->add(221,       234,    Util::formatCnab('9', $detalhe->getSacadoDocumento(), 14));
-        $this->add(235,       271,    Util::formatCnab('X', $detalhe->getSacadoNome(), 37));
-        $this->add(272,       274,    '');
+        $this->add(96, 101, '000000');
+        $this->add(102, 106, Util::formatCnab('X', $detalhe->getTipoCobranca(), 5));
+        $this->add(107, 108, $this->getCarteira('17'));
+        $this->add(109, 110, Util::formatCnab('N', $detalhe->getOcorrencia(), 2));
+        $this->add(111, 120, Util::formatCnab('X', $detalhe->getNumeroDocumento(), 10));
+        $this->add(121, 126, Util::formatCnab('D', $detalhe->getDataVencimento(), 6));
+        $this->add(127, 139, Util::formatCnab('9', $detalhe->getValor(),13,2));
+        $this->add(140, 142, self::COD_BANCO_BB);
+        $this->add(143, 146, '0000');
+        $this->add(147, 147, '');
+        $this->add(148, 149, $detalhe->getEspecie('01'));
+        $this->add(150, 150, $detalhe->getAceite('N'));
+        $this->add(151, 156, Util::formatCnab('D', $detalhe->getDataDocumento(), 6));
+        $this->add(157, 158, Util::formatCnab('9', $detalhe->getInstrucao1('00'), 2));
+        $this->add(159, 160, Util::formatCnab('9', $detalhe->getInstrucao2('00'), 2));
+        $this->add(161, 173, Util::formatCnab('9', $detalhe->getValorMora(), 13, 2));
+        $this->add(174, 179, Util::formatCnab('9', $detalhe->getDataLimiteDesconto('0'), 6));
+        $this->add(180, 192, Util::formatCnab('9', $detalhe->getValorDesconto(), 13, 2));
+        $this->add(193, 205, Util::formatCnab('9', $detalhe->getvalorIOF(), 13, 2));
+        $this->add(206, 218, Util::formatCnab('9', $detalhe->getValorAbatimento(), 13, 2));
+        $this->add(219, 220, Util::formatCnab('9', $detalhe->getSacadoTipoDocumento(), 2));
+        $this->add(221, 234, Util::formatCnab('9', $detalhe->getSacadoDocumento(), 14));
+        $this->add(235, 271, Util::formatCnab('X', $detalhe->getSacadoNome(), 37));
+        $this->add(272, 274, '');
 
         if($convenio6)
         {
-            $this->add(275,       326,    Util::formatCnab('X', $detalhe->getSacadoEndereco(), 52));
+            $this->add(275, 326, Util::formatCnab('X', $detalhe->getSacadoEndereco(), 52));
         }
         else
         {
-            $this->add(275,       311,    Util::formatCnab('X', $detalhe->getSacadoEndereco(), 37));
-            $this->add(312,       326,    '');
+            $this->add(275, 311, Util::formatCnab('X', $detalhe->getSacadoEndereco(), 37));
+            $this->add(312, 326, '');
         }
-        $this->add(327,       334,    Util::formatCnab('9', $detalhe->getSacadoCEP(), 8));
-        $this->add(335,       349,    Util::formatCnab('X', $detalhe->getSacadoCidade(), 15));
-        $this->add(350,       351,    Util::formatCnab('X', $detalhe->getSacadoEstado(), 2));
-        $this->add(352,       391,    Util::formatCnab('X', $detalhe->getSacadorAvalista(), 40));
-        $this->add(392,       393,    Util::formatCnab('9', $detalhe->getDiasProtesto(), 2));
-        $this->add(394,       394,    '');
-        $this->add(395,       400,    Util::formatCnab('N', $this->iRegistros+1, 6));
+        $this->add(327, 334, Util::formatCnab('9', $detalhe->getSacadoCEP(), 8));
+        $this->add(335, 349, Util::formatCnab('X', $detalhe->getSacadoCidade(), 15));
+        $this->add(350, 351, Util::formatCnab('X', $detalhe->getSacadoEstado(), 2));
+        $this->add(352, 391, Util::formatCnab('X', $detalhe->getSacadorAvalista(), 40));
+        $this->add(392, 393, Util::formatCnab('9', $detalhe->getDiasProtesto(), 2));
+        $this->add(394, 394, '');
+        $this->add(395, 400, Util::formatCnab('N', $this->iRegistros+1, 6));
     }
 
     protected function trailer()
     {
         $this->iniciaTrailer();
 
-        $this->add(1,         1,      '9');
-        $this->add(2,         394,    '');
-        $this->add(395,       400,    Util::formatCnab('N', $this->getCount(), 6));
+        $this->add(1, 1, '9');
+        $this->add(2, 394, '');
+        $this->add(395, 400, Util::formatCnab('N', $this->getCount(), 6));
 
         return $this;
     }
