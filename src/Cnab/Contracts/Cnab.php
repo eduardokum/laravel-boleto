@@ -13,4 +13,5 @@ interface Cnab
     const COD_BANCO_BRADESCO = '237';
     const COD_BANCO_ITAU = '341';
     const COD_BANCO_HSBC = '399';
+
 }

@@ -1,8 +1,7 @@
 <?php
-namespace Eduardokum\LaravelBoleto\Cnab;
+namespace Eduardokum\LaravelBoleto\Cnab\Remessa;
 
 use Eduardokum\LaravelBoleto\Cnab\Contracts\Cnab;
-use Eduardokum\LaravelBoleto\Cnab\Remessa\Detalhe;
 
 abstract class AbstractCnab implements Cnab
 {
@@ -133,16 +132,13 @@ abstract class AbstractCnab implements Cnab
         return array_splice($this->atual, $i, $t, $value);
     }
 
-    protected function rem()
-    {
-
-    }
-
     /**
      * Inicia a edição do header
      */
     protected function iniciaHeader()
     {
+        $this->validaVariaveisRequeridas();
+
         $this->aRegistros[self::HEADER] = array_fill(0,400, ' ');
         $this->atual = &$this->aRegistros[self::HEADER];
     }
@@ -152,6 +148,8 @@ abstract class AbstractCnab implements Cnab
      */
     protected function iniciaTrailer()
     {
+        $this->validaVariaveisRequeridas();
+
         $this->aRegistros[self::TRAILER] = array_fill(0,400, ' ');
         $this->atual = &$this->aRegistros[self::TRAILER];
     }
@@ -161,25 +159,7 @@ abstract class AbstractCnab implements Cnab
      */
     protected function iniciaDetalhe()
     {
-
-        if(property_exists($this, 'variaveisRequeridas'))
-        {
-            $errors = false;
-            $aErrors = [];
-            foreach($this->variaveisRequeridas as $var)
-            {
-                if(!isset($this->$var))
-                {
-                    $errors = true;
-                    $aErrors[] = $var;
-                }
-            }
-
-            if($errors)
-            {
-                throw new \Exception('As variáveis [' . implode(', ', $aErrors) . '] devem ser preenchidas');
-            }
-        }
+        $this->validaVariaveisRequeridas();
 
         $this->iRegistros++;
         $this->aRegistros[self::DETALHE][$this->iRegistros] = array_fill(0,400, ' ');
@@ -224,6 +204,35 @@ abstract class AbstractCnab implements Cnab
         return implode('', $a);
     }
 
+    private function validaVariaveisRequeridas()
+    {
+
+        $this->variaveisRequeridas =
+            array_merge(
+                $this->variaveisRequeridas,
+                [
+                    'idremessa',
+                    'carteira'
+                ]
+            );
+
+        $errors = false;
+        $aErrors = [];
+        foreach($this->variaveisRequeridas as $var)
+        {
+            if(!isset($this->$var))
+            {
+                $errors = true;
+                $aErrors[] = $var;
+            }
+        }
+
+        if($errors)
+        {
+            throw new \Exception('As variáveis [' . implode(', ', $aErrors) . '] devem ser preenchidas');
+        }
+    }
+
     /**
      * Gera o arquivo, retorna a string.
      *
@@ -266,5 +275,7 @@ abstract class AbstractCnab implements Cnab
                 return $this->$name;
             }
         }
+
+        throw new \Exception('Método ' . $name . ' não existe');
     }
 }

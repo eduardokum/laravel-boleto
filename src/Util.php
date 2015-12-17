@@ -193,7 +193,7 @@ final class Util
      * @param boolean $showThousands
      * @return string
      */
-    public static function nFloat($number, $decimals = 2, $showThousands = true)
+    public static function nFloat($number, $decimals = 2, $showThousands = false)
     {
         if(is_null($number) || !is_numeric($number)) {return '';}
         $pontuacao = preg_replace('/[0-9]/', '', $number);
@@ -323,6 +323,25 @@ final class Util
         $result = $big > 0.01 ? (($small*100)/$big) : $defaultOnZero;
         return self::nFloat($result);
     }
+
+    /**
+     * Return percentage of value;
+     *
+     * @param     $big
+     * @param     $percent
+     *
+     * @return string
+     */
+    public static function percent($big, $percent)
+    {
+        if( $percent < 0.01 )
+        {
+            return 0;
+        }
+        return self::nFloat($big * ($percent / 100));
+    }
+
+
 
     /**
      * Função para mascarar uma string, mascara tipo ##-##-##

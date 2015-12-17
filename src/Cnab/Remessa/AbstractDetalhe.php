@@ -122,6 +122,11 @@ class AbstractDetalhe
         return $this->isEmpty($this->instrucao2) ? $default : $this->instrucao2;
     }
 
+    public function getInstrucoes()
+    {
+        return [$this->getInstrucao1('00'), $this->getInstrucao2('00')];
+    }
+
     public function getValorDesconto($default = ' ')
     {
         return Util::nFloat($this->isEmpty($this->valorDesconto) ? $default : $this->valorDesconto);

@@ -1,14 +1,13 @@
 <?php
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Banco;
 
-use Eduardokum\LaravelBoleto\Cnab\AbstractCnab;
+use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractCnab;
 use Eduardokum\LaravelBoleto\Cnab\Contracts\Remessa;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Detalhe;
 use Eduardokum\LaravelBoleto\Util;
 
 class Bb extends AbstractCnab implements Remessa
 {
-
     const ESPECIE_DUPLICATA = '01';
     const ESPECIE_NOTA_PROMISSORIA = '02';
     const ESPECIE_NOTA_SEGURO = '03';
@@ -72,14 +71,7 @@ class Bb extends AbstractCnab implements Remessa
     public $convenio;
     public $convenioLider;
 
-    public function __construct()
-    {
-        $this->fimLinha = chr(13).chr(10);
-        $this->fimArquivo = chr(13).chr(10);
-    }
-
-    protected $variaveisRequeridas = [
-        'idremessa',
+    public $variaveisRequeridas = [
         'conta',
         'agencia',
         'convenio',
@@ -87,6 +79,12 @@ class Bb extends AbstractCnab implements Remessa
         'cedenteDocumento',
         'cedenteNome'
     ];
+
+    public function __construct()
+    {
+        $this->fimLinha = chr(13).chr(10);
+        $this->fimArquivo = chr(13).chr(10);
+    }
 
     protected function header()
     {

@@ -34,6 +34,8 @@ interface Detalhe
 
     public function getInstrucao2($default = ' ');
 
+    public function getInstrucoes();
+
     public function getValorDesconto($default = ' ');
 
     public function getvalorIOF($default = ' ');

@@ -1,7 +1,7 @@
 <?php
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Banco;
 
-use Eduardokum\LaravelBoleto\Cnab\AbstractCnab;
+use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractCnab;
 use Eduardokum\LaravelBoleto\Cnab\Contracts\Remessa;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Detalhe;
 use Eduardokum\LaravelBoleto\Util;
@@ -61,6 +61,10 @@ class Bradesco extends AbstractCnab implements Remessa
         'cedenteNome'
     ];
 
+    public function __construct() {
+        $this->fimLinha = chr(13).chr(10);
+        $this->fimArquivo = chr(13).chr(10);
+    }
 
     protected function header()
     {
@@ -146,7 +150,7 @@ class Bradesco extends AbstractCnab implements Remessa
 
         $this->add(21,        37,     Util::formatCnab('A', $idempresa, 17));
         $this->add(38,        62,     Util::formatCnab('A', $detalhe->getNumeroControleString(), 25));
-        $this->add(63,        65,     237);
+        $this->add(63,        65,     self::COD_BANCO_BRADESCO);
         $this->add(66,        66,     $tipoMulta);
         $this->add(67,        70,     Util::formatCnab('N', $multa, 4, 2));
         $this->add(71,        81,     Util::formatCnab('N', $detalhe->getNumero(), 11));
