@@ -1,9 +1,7 @@
 <?php
-namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Header;
+namespace Eduardokum\LaravelBoleto\Cnab\Retorno;
 
-use Eduardokum\LaravelBoleto\Cnab\Retorno\AbstractDetalhe;
-
-class Bb extends AbstractDetalhe
+class Header extends AbstractDetalhe
 {
     public $operacaoCodigo;
     public $operacao;
@@ -14,6 +12,7 @@ class Bb extends AbstractDetalhe
     public $conta;
     public $contaDigito;
     public $cedenteNome;
+    public $cedenteCodigo;
     public $data;
     public $convenio;
 }

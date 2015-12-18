@@ -639,7 +639,7 @@ final class Util
             }
             return $matches_founded;
         }
-        return null;
+        return $controle;
     }
 
 }

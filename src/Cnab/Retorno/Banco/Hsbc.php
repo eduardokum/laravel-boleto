@@ -15,7 +15,6 @@ class Hsbc extends AbstractCnab implements Retorno
         parent::__construct($file);
 
         $this->banco = self::COD_BANCO_HSBC;
-        $this->bancoDesc = $this->bancos[self::COD_BANCO_HSBC];
         $this->agencia = (int)substr($this->file[0], 27, 4);
         $this->conta = (int)substr($this->file[0], 37, 7);
     }

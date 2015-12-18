@@ -15,7 +15,6 @@ class Santander extends AbstractCnab implements Retorno
         parent::__construct($file);
 
         $this->banco = self::COD_BANCO_SANTANDER;
-        $this->bancoDesc = $this->bancos[self::COD_BANCO_SANTANDER];
         $this->agencia = (int)substr($this->file[0], 26, 4);
         $this->conta = (int)substr($this->file[0], 30, 8);
     }
