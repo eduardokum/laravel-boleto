@@ -105,6 +105,7 @@ foreach($retorno as $registro)
 {
 	dd($registro->getDados());
 }
+```
 
 Métodos disponíveis:
 
