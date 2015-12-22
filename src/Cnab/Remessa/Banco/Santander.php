@@ -43,7 +43,7 @@ class Santander extends AbstractCnab implements Remessa
 
     protected $total = 0;
 
-    public $variaveisRequeridas = [
+    protected $variaveisRequeridas = [
         'conta',
         'agencia',
         'codigoTransmissao',

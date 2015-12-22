@@ -69,7 +69,7 @@ class Hsbc extends AbstractCnab implements Remessa
     public $cedenteDocumento;
     public $cedenteNome;
 
-    public $variaveisRequeridas = [
+    protected $variaveisRequeridas = [
         'agencia',
         'conta',
         'range',

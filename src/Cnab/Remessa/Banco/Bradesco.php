@@ -53,7 +53,7 @@ class Bradesco extends AbstractCnab implements Remessa
     const INSTRUCAO_COBRAR_ENCAR_APOS_15 = '14';
     const INSTRUCAO_CENCEDER_DESC_APOS_VENC = '15';
 
-    public $variaveisRequeridas = [
+    protected $variaveisRequeridas = [
         'agencia',
         'conta',
         'contaRazao',

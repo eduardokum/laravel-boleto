@@ -12,7 +12,7 @@ class AbstractDetalhe
     private $numeroControle;
     public $dataVencimento;
     public $dataDocumento;
-    public $tipoCobranca;
+    public $tipoCobrancaBB;
     public $especie;
     public $aceite;
     public $instrucao1;
@@ -23,7 +23,7 @@ class AbstractDetalhe
     public $valorMora;
     public $valorAbatimento;
     public $valor;
-    public $tipoMoeda;
+    public $tipoMoeda = '9';
     public $diasProtesto;
     public $dataMulta;
     public $taxaMulta;
@@ -97,9 +97,9 @@ class AbstractDetalhe
             : (is_string($this->dataMulta) ? Carbon::createFromFormat('Y-m-d', $this->dataMulta) : $this->dataMulta);
     }
 
-    public function getTipoCobranca($default = ' ')
+    public function getTipoCobrancaBB($default = ' ')
     {
-        return $this->isEmpty($this->tipoCobranca) ? $default : $this->tipoCobranca;
+        return $this->isEmpty($this->tipoCobrancaBB) ? $default : $this->tipoCobrancaBB;
     }
 
     public function getEspecie($default = ' ')

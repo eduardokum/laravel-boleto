@@ -37,7 +37,7 @@ class Caixa  extends AbstractCnab implements Remessa
     public $cedenteCodigo;
     public $cedenteNome;
 
-    public $variaveisRequeridas = [
+    protected $variaveisRequeridas = [
         'agencia',
         'cedenteDocumento',
         'cedenteCodigo',

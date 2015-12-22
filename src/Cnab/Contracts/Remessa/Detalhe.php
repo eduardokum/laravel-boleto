@@ -24,7 +24,7 @@ interface Detalhe
 
     public function getDataMulta($default = ' ');
 
-    public function getTipoCobranca($default = ' ');
+    public function getTipoCobrancaBB($default = ' ');
 
     public function getEspecie($default = ' ');
 

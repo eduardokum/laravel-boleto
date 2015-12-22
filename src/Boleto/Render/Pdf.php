@@ -618,7 +618,9 @@ class Pdf extends AbstractPdf
         $nomeBoleto = "boletosPDF/". date('dmYHis') .".pdf";
 
         if($this->totalBoletos == 0)
+        {
             throw new \Exception ('Nenhum Boleto adicionado');
+        }
 
         for( $i = 0 ; $i < $this->totalBoletos ; $i ++ ){
             if( $this->boleto[$i]->getBanco() == '001' ) {

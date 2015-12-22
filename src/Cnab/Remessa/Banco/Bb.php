@@ -8,6 +8,11 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Bb extends AbstractCnab implements Remessa
 {
+    const TIPO_COBRANCA_DESCONTADA = '04DSC';
+    const TIPO_COBRANCA_VENDOR = '08VDR';
+    const TIPO_COBRANCA_VINCULADA = '02VIN';
+    const TIPO_COBRANCA_SIMPLES = '';
+
     const ESPECIE_DUPLICATA = '01';
     const ESPECIE_NOTA_PROMISSORIA = '02';
     const ESPECIE_NOTA_SEGURO = '03';
@@ -71,7 +76,7 @@ class Bb extends AbstractCnab implements Remessa
     public $convenio;
     public $convenioLider;
 
-    public $variaveisRequeridas = [
+    protected $variaveisRequeridas = [
         'conta',
         'agencia',
         'convenio',
@@ -216,7 +221,7 @@ class Bb extends AbstractCnab implements Remessa
         }
 
         $this->add(96, 101, '000000');
-        $this->add(102, 106, Util::formatCnab('X', $detalhe->getTipoCobranca(), 5));
+        $this->add(102, 106, Util::formatCnab('X', $detalhe->getTipoCobrancaBB(), 5));
         $this->add(107, 108, $this->getCarteira('17'));
         $this->add(109, 110, Util::formatCnab('N', $detalhe->getOcorrencia(), 2));
         $this->add(111, 120, Util::formatCnab('X', $detalhe->getNumeroDocumento(), 10));

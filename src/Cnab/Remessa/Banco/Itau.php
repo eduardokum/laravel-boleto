@@ -112,7 +112,7 @@ class Itau extends AbstractCnab implements Remessa
     public $conta;
     public $cedenteDocumento;
 
-    public $variaveisRequeridas = [
+    protected $variaveisRequeridas = [
         'conta',
         'agencia',
         'cedenteDocumento',

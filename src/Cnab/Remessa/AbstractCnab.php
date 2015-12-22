@@ -62,7 +62,7 @@ abstract class AbstractCnab implements Cnab
      *
      * @var array
      */
-    public $variaveisRequeridas = [];
+    protected $variaveisRequeridas = [];
 
 
     /**
