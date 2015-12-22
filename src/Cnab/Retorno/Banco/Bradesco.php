@@ -104,7 +104,7 @@ class Bradesco extends AbstractCnab implements Retorno
         $this->detalhe[$i]->valorOutrosCreditos = Util::nFloat($this->rem(280, 292, $detalhe)/100);
 
         $this->detalhe[$i]->motivoProtesto = $this->rem(295, 295, $detalhe);
-        $this->detalhe[$i]->motivosRejeicao = str_split($this->rem(319, 328, $detalhe), 2);
+        $this->detalhe[$i]->rejeicao = str_split($this->rem(319, 328, $detalhe), 2);
         $this->detalhe[$i]->numeroCartorio = $this->rem(369, 370, $detalhe);
         $this->detalhe[$i]->numeroProtocolo = $this->rem(371, 380, $detalhe);
 

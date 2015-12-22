@@ -120,7 +120,7 @@ abstract class AbstractCnab implements Cnab, \Countable, \SeekableIterator
         '487' => 'Deutsche Bank S.A. - Banco Alemão',
         '064' => 'Goldman Sachs do Brasil Banco Múltiplo S.A.',
         '062' => 'Hipercard Banco Múltiplo S.A.',
-        '399' => 'HSBC Bank Brasil S.A. - Banco Múltiplo',
+        '399' => 'HSBC Bank Brasil S.A.',
         '492' => 'ING Bank N.V.',
         '652' => 'Itaú Unibanco Holding S.A.',
         '341' => 'Itaú Unibanco S.A.',
@@ -136,6 +136,7 @@ abstract class AbstractCnab implements Cnab, \Countable, \SeekableIterator
     protected $banco;
     protected $isRetorno = false;
     protected $totais = [
+        'valor' => 0,
         'liquidados' => 0,
         'baixados' => 0,
         'entradas' => 0,

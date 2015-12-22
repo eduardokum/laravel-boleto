@@ -186,7 +186,7 @@ class Itau extends AbstractCnab implements Retorno
         $this->detalhe[$i]->dataCredito = $this->detalhe[$i]->get('dataCredito', false, true) ? Carbon::createFromFormat('dmy', $this->detalhe[$i]->get('dataCredito'))->setTime(0, 0, 0) : null;
         $this->detalhe[$i]->dataComplementar = $this->detalhe[$i]->get('dataComplementar', false, true) ? Carbon::createFromFormat('dmy', $this->detalhe[$i]->get('dataComplementar'))->setTime(0, 0, 0) : null;
 
-        if(in_array($this->detalhe[$i]->get('ocorrencia'), ['06','07','08']))
+        if(in_array($this->detalhe[$i]->get('ocorrencia'), ['06','07','08','10']))
         {
             $this->detalhe[$i]->liquidacaoNome = $this->liquidacoes[$this->detalhe[$i]->get('liquidacaoCodigo', 'XX', true)];
             $this->totais['liquidados']++;
@@ -197,7 +197,7 @@ class Itau extends AbstractCnab implements Retorno
             $this->totais['entradas']++;
             $this->detalhe[$i]->setTipoOcorrencia(Detalhe::OCORRENCIA_ENTRADA);
         }
-        elseif(in_array($this->detalhe[$i]->get('ocorrencia'), ['05','09','10','32','47','59','72']))
+        elseif(in_array($this->detalhe[$i]->get('ocorrencia'), ['05','09','32','47','59','72']))
         {
             $this->totais['baixados']++;
             $this->detalhe[$i]->setTipoOcorrencia(Detalhe::OCORRENCIA_BAIXADA);
