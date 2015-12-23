@@ -42,7 +42,8 @@ class Santander extends AbstractCnab implements Retorno
         '03' => 'Apólice ou nota de seguro',
         '05' => 'Recibo',
         '06' => 'Duplicata de serviço',
-        '07' => 'Letra de câmbio'
+        '07' => 'Letra de câmbio',
+        'XX' => 'Desconhecida',
     );
 
     private $indicativosCredito = [
