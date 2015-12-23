@@ -40,13 +40,13 @@ class Santander  extends AbstractBoleto implements SantanderContract
             $this->carteira = '102';
         }
 
-        $this->agenciaConta = sprintf('%s-%s / %s', $this->getAgencia(), Util::modulo11($this->agencia), $this->cedenteCodigo);
+        $this->agenciaConta = sprintf('%s-%s / %s', $this->getAgencia(), Util::modulo11($this->getAgencia()), $this->cedenteCodigo);
         $this->localPagamento = 'Pagar preferencialmente no Grupo Santander Banespa - GC';
     }
 
     protected function gerarCodigoBarras()
     {
-        $this->codigoBarras = $this->banco;
+        $this->codigoBarras = $this->getBanco();
         $this->codigoBarras .= $this->numeroMoeda;
         $this->codigoBarras .= Util::fatorVencimento($this->getDataVencimento());
         $this->codigoBarras .= Util::numberFormatValue($this->getValor(), 10, 0);
@@ -56,7 +56,7 @@ class Santander  extends AbstractBoleto implements SantanderContract
         $this->codigoBarras .= 0; // Valor IOS
         $this->codigoBarras .= Util::numberFormatGeral($this->getCarteira(),3,0);
 
-        $r = Util::modulo11($this->codigoBarras, 9, 1);
+        $r = Util::modulo11($this->codigoBarras, 2, 9, 1);
         $dv = ($r == 0 || $r == 1 || $r == 10)?1:(11 - $r);
         $this->codigoBarras = substr($this->codigoBarras, 0, 4) . $dv . substr($this->codigoBarras, 4);
 
@@ -91,11 +91,8 @@ class Santander  extends AbstractBoleto implements SantanderContract
     }
 
     private function geraNossoNumero() {
-        $nossonumero = '00000';
-        $nossonumero .= Util::numberFormatGeral($this->getNumero(),7,0) . Util::modulo11($this->getNumero());
+        $nossonumero = Util::numberFormatGeral($this->getNumero(),7,0) . Util::modulo11($this->getNumero());
         $this->nossoNumero = Util::numberFormatGeral($this->getNumero(),7,0) . '-' . Util::modulo11($this->getNumero());
-        return $nossonumero;
+        return sprintf('%013s', $nossonumero);
     }
-
-
 }

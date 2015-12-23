@@ -175,6 +175,9 @@ abstract class AbstractCnab implements Cnab, \Countable, \SeekableIterator
         {
             $this->file = file($file);
         }
+        if(is_string($file)) {
+            $this->file = preg_split('/\r\n|\r|\n/', $file);
+        }
         else
         {
             throw new \Exception("Arquivo: $file, não existe");
