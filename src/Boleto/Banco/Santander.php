@@ -5,18 +5,18 @@ use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
 use Eduardokum\LaravelBoleto\Boleto\Contracts\Banco\Santander as SantanderContract;
 use Eduardokum\LaravelBoleto\Util;
 
-class Santander  extends AbstractBoleto implements SantanderContract
+class Santander extends AbstractBoleto implements SantanderContract
 {
 
     public $cedenteCodigo;
 
     private $carteiraDesc = array(
-        1   => 'ELETRÔNICA COM REGISTRO',
-        3   => 'CAUCIONADA ELETRÔNICA',
-        4   => 'COBRANÇA SEM REGISTRO',
-        5   => 'RÁPIDA COM REGISTRO',
-        6   => 'CAUCIONADA RAPIDA',
-        7   => 'DESCONTADA ELETRÔNICA',
+        1 => 'ELETRÔNICA COM REGISTRO',
+        3 => 'CAUCIONADA ELETRÔNICA',
+        4 => 'COBRANÇA SEM REGISTRO',
+        5 => 'RÁPIDA COM REGISTRO',
+        6 => 'CAUCIONADA RAPIDA',
+        7 => 'DESCONTADA ELETRÔNICA',
         101 => 'COBRANÇA SIMPLES RÁPIDA COM REGISTRO',
         102 => 'COBRANÇA SIMPLES SEM REGISTRO',
     );
@@ -28,36 +28,35 @@ class Santander  extends AbstractBoleto implements SantanderContract
 
     protected function preProcessamento()
     {
-        if(!in_array($this->getCarteira(), ['1','3','4','5','6','7','101','102']))
-        {
+        if (!in_array($this->getCarteira(), ['1', '3', '4', '5', '6', '7', '101', '102'])) {
             throw new \Exception('Carteira inválida, aceito somente {1,3,4,5,6,7,101,102}');
         }
 
         $this->carteiraDescricao = $this->carteiraDesc[(int)$this->getCarteira()];
-        if(in_array($this->getCarteira(), ['1','3','5','6','7','101']) ) {
+        if (in_array($this->getCarteira(), ['1', '3', '5', '6', '7', '101'])) {
             $this->carteira = '101';
         } else {
             $this->carteira = '102';
         }
 
-        $this->agenciaConta = sprintf('%s-%s / %s', $this->getAgencia(), Util::modulo11($this->agencia), $this->cedenteCodigo);
+        $this->agenciaConta = sprintf('%s-%s / %s', $this->getAgencia(), Util::modulo11($this->getAgencia()), $this->getConta());
+
         $this->localPagamento = 'Pagar preferencialmente no Grupo Santander Banespa - GC';
     }
 
     protected function gerarCodigoBarras()
     {
-        $this->codigoBarras = $this->banco;
+        $this->codigoBarras = $this->getBanco();
         $this->codigoBarras .= $this->numeroMoeda;
         $this->codigoBarras .= Util::fatorVencimento($this->getDataVencimento());
         $this->codigoBarras .= Util::numberFormatValue($this->getValor(), 10, 0);
         $this->codigoBarras .= $this->numeroMoeda;
-        $this->codigoBarras .= Util::numberFormatGeral($this->cedenteCodigo,7,0);
+        $this->codigoBarras .= Util::numberFormatGeral($this->getConta(), 7, 0);
         $this->codigoBarras .= $this->geraNossoNumero();
         $this->codigoBarras .= 0; // Valor IOS
-        $this->codigoBarras .= Util::numberFormatGeral($this->getCarteira(),3,0);
-
-        $r = Util::modulo11($this->codigoBarras, 9, 1);
-        $dv = ($r == 0 || $r == 1 || $r == 10)?1:(11 - $r);
+        $this->codigoBarras .= Util::numberFormatGeral($this->getCarteira(), 3, 0);
+        $r = Util::modulo11($this->codigoBarras, 2, 9, 1);
+        $dv = ($r == 0 || $r == 1 || $r == 10) ? 1 : (11 - $r);
         $this->codigoBarras = substr($this->codigoBarras, 0, 4) . $dv . substr($this->codigoBarras, 4);
 
         return $this->codigoBarras;
@@ -65,7 +64,7 @@ class Santander  extends AbstractBoleto implements SantanderContract
 
     protected function gerarLinha()
     {
-        if(strlen($this->codigoBarras) == 44) {
+        if (strlen($this->codigoBarras) == 44) {
             $campo1 = substr($this->codigoBarras, 0, 3) . substr($this->codigoBarras, 3, 1) . substr($this->codigoBarras, 19, 1) . substr($this->codigoBarras, 20, 4);
             $campo1 = $campo1 . Util::modulo10($campo1);
             $campo1 = substr($campo1, 0, 5) . '.' . substr($campo1, 5);
@@ -90,12 +89,10 @@ class Santander  extends AbstractBoleto implements SantanderContract
         }
     }
 
-    private function geraNossoNumero() {
-        $nossonumero = '00000';
-        $nossonumero .= Util::numberFormatGeral($this->getNumero(),7,0) . Util::modulo11($this->getNumero());
-        $this->nossoNumero = Util::numberFormatGeral($this->getNumero(),7,0) . '-' . Util::modulo11($this->getNumero());
-        return $nossonumero;
+    private function geraNossoNumero()
+    {
+        $nossonumero = Util::numberFormatGeral($this->getNumero(), 7, 0) . Util::modulo11($this->getNumero());
+        $this->nossoNumero = Util::numberFormatGeral($this->getNumero(), 7, 0) . '-' . Util::modulo11($this->getNumero());
+        return str_pad($nossonumero, 13, "0", STR_PAD_LEFT); #completo com zeros na esquerda até atingir 13 caracteres
     }
-
-
 }
