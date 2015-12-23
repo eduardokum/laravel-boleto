@@ -15,8 +15,7 @@
     ],
     "require": {
         "php" : ">=5.3.0",
-        "itbz/fpdf": "^1.*",
-        "nesbot/carbon" : "1.*"
+        "itbz/fpdf": "^1.7"
     },
     "autoload": {
         "psr-4": {
