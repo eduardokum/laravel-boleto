@@ -88,7 +88,12 @@ class Pdf extends AbstractPdf
         $this->Cell(56);
         $this->Cell(0, $this->desc, $this->_( Util::maskString($this->boleto[$i]->getCedenteDocumento(), '##.###.###/####-##') ),0,1);
         $this->Cell(56);
-        $this->Cell(0, $this->desc, $this->_( $this->boleto[$i]->getCedenteEndereco() ),0,1);
+        $endereco = explode("_", $this->boleto[$i]->getCedenteEndereco());
+        $this->Cell(0, $this->desc, $this->_( $endereco[0] ),0,1);
+        $this->Cell(56);
+        $this->Cell(0, $this->desc, $this->_( $endereco[1] ),0,1);
+        $this->Cell(56);
+        $this->Cell(0, $this->desc, $this->_( $endereco[2] ),0,1);
         $this->Cell(56);
         $this->Cell(0, $this->desc, $this->_( $this->boleto[$i]->getCedenteCidadeUF() ),0,1);
         $this->Ln(10);
@@ -314,7 +319,8 @@ class Pdf extends AbstractPdf
         $this->Cell(50, $this->desc, $this->_('Agência/Código beneficiário'), 'TR', 1);
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-        $this->Cell(120, $this->cell, $this->_( $this->boleto[$i]->getCedenteNome() ), 'LR');
+        $this->Cell(60, $this->cell, $this->_( $this->boleto[$i]->getCedenteNome() ), 'L');
+        $this->Cell(60, $this->cell, $this->_( 'CPF/CNPJ - ' . Util::maskString($this->boleto[$i]->getCedenteDocumento(), sizeof($this->boleto[$i]->getCedenteDocumento()) > 11 ? '##.###.###/####-##' : '###.###.###-##')), 'R');
         $this->Cell(50, $this->cell, $this->_( $this->boleto[$i]->getAgenciaConta() ), 'R', 1, 'R');
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
@@ -398,9 +404,14 @@ class Pdf extends AbstractPdf
         $this->Cell(0, $this->desc, $this->_('Pagador'), 'LR', 1);
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-        $this->Cell(0, $this->cell, $this->_( $this->boleto[$i]->getSacadoNome() ), 'LR', 1);
-        $this->Cell(0, $this->cell, $this->_( $this->boleto[$i]->getSacadoEndereco() ), 'LR', 1);
-        $this->Cell(0, $this->cell, $this->_( $this->boleto[$i]->getSacadoCidadeUF() ), 'LR', 1);
+        $this->Cell(60, $this->cell, $this->_($this->boleto[$i]->getSacadoNome()), 'L');
+        $this->Cell(0, $this->cell, $this->_('CPF/CNPJ - ' . Util::maskString($this->boleto[$i]->getSacadoDocumento(), sizeof($this->boleto[$i]->getSacadoDocumento()) > 11 ? '##.###.###/####-##' : '###.###.###-##')), 'R', 1);
+        $endereco = explode('_', $this->boleto[$i]->getSacadoEndereco());
+        $this->Cell(60, $this->cell, $this->_($endereco[0]), 'L');
+        $this->Cell(0, $this->cell, $this->_(!empty($endereco[1])?'CEP - ' . Util::maskString($endereco[1], '#####-###'): ""), 'R' );
+        $this->Ln();
+        $this->Cell(60, $this->cell, $this->_($endereco[2]), 'L');
+        $this->Cell(0, $this->cell, $this->_($this->boleto[$i]->getSacadoCidadeUF()), 'R', 1);
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
         $this->Cell(120, $this->cell, $this->_(''), 'BLR');
