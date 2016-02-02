@@ -216,7 +216,7 @@ class AbstractBoleto
             throw new \Exception('Too many demonstrativos. Max of 5');
         }
 
-        $this->demonstrativos[] = $demonstrativo;
+        $this->demonstrativos[] = preg_replace('/(%)/', '%$1', $demonstrativo);
     }
 
     /**
@@ -233,7 +233,7 @@ class AbstractBoleto
             throw new \Exception('Too many instrucoes. Max of 5');
         }
 
-        $this->instrucoes[] = $instrucao;
+        $this->instrucoes[] = preg_replace('/(%)/', '%$1', $instrucao);
     }
 
     protected function preProcessamento()
