@@ -50,12 +50,12 @@ $pdf->gerarBoleto();
 $remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Banco\Bb();
 $remessa->idremessa = 1;
 $remessa->carteira = '5';
-$remessa->agencia = '2144';
-$remessa->conta = '1300112774';
+$remessa->agencia = '1234';
+$remessa->conta = '12345678900';
 $remessa->carteiraVariacao = '12';
 $remessa->convenio = '123123';
-$remessa->cedenteNome = 'NEW LIFE SAO PAULO COMERCIO DE PRODUTOS HOSPI';
-$remessa->cedenteDocumento = '03.993.940/0001-17';
+$remessa->cedenteNome = 'ACME';
+$remessa->cedenteDocumento = '99.999.999-9999/99';
 
 $detalhe = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Detalhe();
 $detalhe->numero = '1';

@@ -7,9 +7,6 @@ use Eduardokum\LaravelBoleto\Util;
 
 class AbstractBoleto
 {
-
-
-
     protected $banco;
 
     public $logo;
@@ -212,7 +209,7 @@ class AbstractBoleto
      *
      * @throws \Exception
      */
-    public function addDemonstrative($demonstrativo)
+    public function addDemonstrativo($demonstrativo)
     {
         if(count($demonstrativo) >= 5 )
         {
@@ -229,7 +226,7 @@ class AbstractBoleto
      *
      * @throws \Exception
      */
-    public function addInstruction($instrucao)
+    public function addInstrucao($instrucao)
     {
         if(count($instrucao) >= 5 )
         {
