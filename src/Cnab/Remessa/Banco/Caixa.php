@@ -158,6 +158,5 @@ class Caixa  extends AbstractCnab implements Remessa
                 throw new \Exception('Codigo de cedente inválido, formato: PPPXXXXXXXXD');
             }
         }
-
     }
 }

@@ -34,7 +34,7 @@ class Santander  extends AbstractBoleto implements SantanderContract
         }
 
         $this->carteiraDescricao = $this->carteiraDesc[(int)$this->getCarteira()];
-        if(in_array($this->getCarteira(), ['1','3','5','6','7','101']) ) {
+        if(in_array($this->getCarteira(), ['1','5','101']) ) {
             $this->carteira = '101';
         } else {
             $this->carteira = '102';

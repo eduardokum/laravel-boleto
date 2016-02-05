@@ -10,7 +10,6 @@ class Bb  extends AbstractBoleto implements BbContract
 
     public $nossoNumeroFormato;
     public $convenio;
-    public $contrato;
     protected $convenioFormato;
 
     public function __construct()

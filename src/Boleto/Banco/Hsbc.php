@@ -22,9 +22,18 @@ class Hsbc  extends AbstractBoleto implements HsbcContract
 
         $this->carteira = Util::lower($this->getCarteira());
 
-        if(!in_array($this->getCarteira(), ['cnr','csb']))
+        if(!in_array($this->getCarteira(), ['1', '3', 'cnr','csb']))
         {
             throw new \Exception('Carteira inválida, aceito somente {cnr,csb}');
+        }
+
+        if($this->getCarteira() == '1')
+        {
+            $this->carteira = 'csb';
+        }
+        if($this->getCarteira() == '3')
+        {
+            $this->carteira = 'cnr';
         }
 
         if($this->getCarteira() == 'csb') {
