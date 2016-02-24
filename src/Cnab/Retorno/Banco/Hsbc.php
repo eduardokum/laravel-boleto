@@ -1,31 +1,46 @@
 <?php
+/**
+ *   Copyright (c) 2016 Eduardo Gusmão
+ *
+ *   Permission is hereby granted, free of charge, to any person obtaining a
+ *   copy of this software and associated documentation files (the "Software"),
+ *   to deal in the Software without restriction, including without limitation
+ *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *   and/or sell copies of the Software, and to permit persons to whom the
+ *   Software is furnished to do so, subject to the following conditions:
+ *
+ *   The above copyright notice and this permission notice shall be included in all
+ *   copies or substantial portions of the Software.
+ *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ *   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *   PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ *   COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ *   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ *   IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Banco;
 
-use Carbon\Carbon;
-use Eduardokum\LaravelBoleto\Cnab\Contracts\Retorno;
-use Eduardokum\LaravelBoleto\Cnab\Retorno\AbstractCnab;
-use Eduardokum\LaravelBoleto\Cnab\Retorno\Detalhe;
+use Eduardokum\LaravelBoleto\Cnab\Retorno\AbstractRetorno;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno;
 use Eduardokum\LaravelBoleto\Util;
 
-class Hsbc extends AbstractCnab implements Retorno
+class Hsbc extends AbstractRetorno implements Retorno
 {
 
-    public $agencia;
-    public $conta;
+    /**
+     * Código do banco
+     * @var string
+     */
+    protected $codigoBanco = self::COD_BANCO_SANTANDER;
 
-    private $especies = array(
-        '01' => 'DP – Duplicata Mercantil',
-        '02' => 'NP – Nota Promissória',
-        '03' => 'NS – Nota de Seguro',
-        '05' => 'RC – Recibo',
-        '10' => 'DS – Duplicata de Serviços',
-        '08' => 'SD - Com complementação do bloqueto pelo cliente',
-        '09' => 'CE – Cobrança com emissão total do bloqueto pelo Banco',
-        '98' => 'PD – Cobrança com emissão total do bloqueto pelo cliente',
-        'XX' => 'Desconhecido',
-    );
-
-    private $ocorrencias = array(
+    /**
+     * Array com as ocorrencias do banco;
+     *
+     * @var array
+     */
+    private $ocorrencias = [
         '02' => 'Entrada confirmada',
         '03' => 'Entrada rejeitada ou Instrução rejeitada',
         '06' => 'Liquidação normal em dinheiro',
@@ -60,17 +75,14 @@ class Hsbc extends AbstractCnab implements Retorno
         '72' => 'Concessão de Desconto Aceito.',
         '73' => 'Cancelamento Condição de Desconto Fixo Aceito',
         '74' => 'Cancelamento de Desconto Diário Aceito.',
-        'XX' => 'Desconhecido'
-    );
+    ];
 
-    private $liquidacoes = array(
-        '0' => 'Pagamento em agência do HSBC',
-        '1' => 'Pagamento por compensação',
-        '2' => 'Pagamento em banco correspondente',
-        'X' => 'Desconhecido',
-    );
-
-    private $rejeicoes = array(
+    /**
+     * Array com as possiveis rejeicoes do banco.
+     *
+     * @var array
+     */
+    private $rejeicoes = [
         '01' => 'Valor do desconto não informado/inválido.',
         '02' => 'Inexistência de agência do HSBC na praça do sacado. ',
         '03' => 'CEP do sacado incorreto ou inválido.',
@@ -156,114 +168,97 @@ class Hsbc extends AbstractCnab implements Retorno
         '87' => 'Valor da instrução inválido.',
         '88' => 'Instrução inválida para tipo de carteira.',
         '89' => 'Valor do desconto informado não coincide com o registro do título.',
-        'XX' => 'Desconhecido',
-    );
-
-    private $indicativosCredito = [
-        '' => 'Crédito normal',
-        '0' => 'Crédito no dia',
-        '1' => 'Crédito no dia - retroativo',
-        'X' => 'Desconhecido',
     ];
 
-    public function __construct($file)
+    /**
+     * Roda antes dos metodos de processar
+     */
+    protected function init()
     {
-        parent::__construct($file);
-
-        $this->banco = self::COD_BANCO_HSBC;
-        $this->agencia = (int)substr($this->file[0], 27, 4);
-        $this->conta = (int)substr($this->file[0], 37, 7);
+        $this->totais = [
+            'valor_recebido' => 0,
+            'liquidados' => 0,
+            'entradas' => 0,
+            'baixados' => 0,
+            'erros' => 0,
+            'alterados' => 0,
+        ];
     }
 
     protected function processarHeader(array $header)
     {
-        $this->header->operacaoCodigo = $this->rem(2, 2, $header);
-        $this->header->operacao = $this->rem(3, 9, $header);
-        $this->header->servicoCodigo = $this->rem(10, 11, $header);
-        $this->header->servico = $this->rem(12, 26, $header);
-        $this->header->agencia = $this->rem(28, 31, $header);
-        $this->header->conta = $this->rem(34, 44, $header);
-        $this->header->cedenteNome = $this->rem(47, 76, $header);
-        $this->header->data = $this->rem(95, 100, $header);
-        $this->header->dataCredito = $this->rem(120, 125, $header);
+        $this->getHeader()
+            ->setOperacaoCodigo($this->rem(2, 2, $header))
+            ->setOperacao($this->rem(3, 9, $header))
+            ->setServicoCodigo($this->rem(10, 11, $header))
+            ->setServico($this->rem(12, 26, $header))
+            ->setAgencia($this->rem(28, 31, $header))
+            ->setConta($this->rem(34, 43, $header))
+            ->setContaDigito($this->rem(44, 44, $header))
+            ->setData($this->rem(95, 100, $header));
 
-        $this->header->data = trim($this->header->data, '0 ') == "" ? null : Carbon::createFromFormat('dmy', $this->header->data)->setTime(0, 0, 0);
-        $this->header->dataCredito = $this->header->get('dataCredito', false, true) ?  Carbon::createFromFormat('dmy', $this->header->get('dataCredito'))->setTime(0, 0, 0) : null;
+        return true;
     }
 
     protected function processarDetalhe(array $detalhe)
     {
-        $i = $this->i;
 
-        $this->detalhe[$i] = new Detalhe($detalhe);
-        $this->detalhe[$i]->liquidacaoCodigo = $this->rem(36, 36, $detalhe);
-        $this->detalhe[$i]->numeroControle = Util::controle2array($this->rem(38, 62, $detalhe));
-        $this->detalhe[$i]->nossoNumero = $this->rem(63, 73, $detalhe);
-        $this->detalhe[$i]->numero = $this->rem(127, 137, $detalhe);
-        $this->detalhe[$i]->numeroDocumento = $this->rem(117, 126, $detalhe);
-        $this->detalhe[$i]->dataOcorrencia = $this->rem(111, 116, $detalhe);
-        $this->detalhe[$i]->dataVencimento = $this->rem(147, 152, $detalhe);
-        $this->detalhe[$i]->ocorrencia = $this->rem(109, 110, $detalhe);
-        $this->detalhe[$i]->bancoCobrador = $this->rem(166, 168, $detalhe);
-        $this->detalhe[$i]->agenciaCobradora = $this->rem(169, 173, $detalhe);
-        $this->detalhe[$i]->especie = $this->rem(174, 175, $detalhe);
-        $this->detalhe[$i]->valor = Util::nFloat($this->rem(153, 165, $detalhe)/100);
-        $this->detalhe[$i]->valorTarifa = Util::nFloat($this->rem(176, 188, $detalhe)/100);
-        $this->detalhe[$i]->valorAbatimento = Util::nFloat($this->rem(228, 240, $detalhe)/100);
-        $this->detalhe[$i]->valorDesconto = Util::nFloat($this->rem(241, 253, $detalhe)/100);
-        $this->detalhe[$i]->valorRecebido = Util::nFloat($this->rem(254, 266, $detalhe)/100);
-        $this->detalhe[$i]->valorMora = Util::nFloat($this->rem(267, 279, $detalhe)/100);
-        $this->detalhe[$i]->rejeicao = $this->rem(302, 303, $detalhe);
-        $this->detalhe[$i]->indicativoCredito = $this->rem(304, 304, $detalhe);
+        $d = $this->detalheAtual();
+        $d->setNossoNumero($this->rem(63, 73, $detalhe))
+            ->setNumeroDocumento($this->rem(117, 126, $detalhe))
+            ->setOcorrencia($this->rem(109, 110, $detalhe))
+            ->setOcorrenciaDescricao(array_get($this->ocorrencias, $d->getOcorrencia(), 'Desconhecida'))
+            ->setDataOcorrencia($this->rem(111, 116, $detalhe))
+            ->setDataVencimento($this->rem(147, 152, $detalhe))
+            ->setValor(Util::nFloat($this->rem(153, 165, $detalhe)/100, 2, false))
+            ->setValorTarifa(Util::nFloat($this->rem(176, 188, $detalhe)/100, 2, false))
+            ->setValorAbatimento(Util::nFloat($this->rem(228, 240, $detalhe)/100, 2, false))
+            ->setValorDesconto(Util::nFloat($this->rem(241, 253, $detalhe)/100, 2, false))
+            ->setValorRecebido(Util::nFloat($this->rem(254, 266, $detalhe)/100, 2, false))
+            ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe)/100, 2, false));
 
-        $this->totais['valor'] += $this->detalhe[$i]->valor;
+        $this->totais['valor_recebido'] += $d->getValorRecebido();
 
-        $this->detalhe[$i]->especieNome = $this->especies[$this->detalhe[$i]->get('especie', 'XX', true)];
-        $this->detalhe[$i]->ocorrenciaNome = $this->ocorrencias[$this->detalhe[$i]->get('ocorrencia', 'XX', true)];
-        $this->detalhe[$i]->liquidacaoNome = $this->liquidacoes[$this->detalhe[$i]->get('liquidacaoCodigo', 'X', true)];
-        $this->detalhe[$i]->indicativoCreditoNome = $this->indicativosCredito[$this->detalhe[$i]->get('indicativoCredito', 'X', true)];
-
-        $this->detalhe[$i]->dataOcorrencia = $this->detalhe[$i]->get('dataOcorrencia', false, true) ? Carbon::createFromFormat('dmy', $this->detalhe[$i]->get('dataOcorrencia'))->setTime(0, 0, 0) : null;
-        $this->detalhe[$i]->dataVencimento = $this->detalhe[$i]->get('dataVencimento', false, true) ? Carbon::createFromFormat('dmy', $this->detalhe[$i]->get('dataVencimento'))->setTime(0, 0, 0) : null;
-
-        if(in_array($this->detalhe[$i]->get('ocorrencia'), ['06','07','15','16','31','32','33','36','38','39']))
+        if($d->hasOcorrencia('06','07','15','16','31','32','33','36','38','39'))
         {
-            $this->detalhe[$i]->liquidacaoNome = $this->liquidacoes[$this->detalhe[$i]->get('liquidacaoCodigo', 'XX', true)];
             $this->totais['liquidados']++;
-            $this->detalhe[$i]->setTipoOcorrencia(Detalhe::OCORRENCIA_LIQUIDADA);
+            $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
         }
-        elseif(in_array($this->detalhe[$i]->get('ocorrencia'), ['02']))
+        elseif($d->hasOcorrencia('02'))
         {
             $this->totais['entradas']++;
-            $this->detalhe[$i]->setTipoOcorrencia(Detalhe::OCORRENCIA_ENTRADA);
+            $d->setOcorrenciaTipo($d::OCORRENCIA_ENTRADA);
         }
-        elseif(in_array($this->detalhe[$i]->get('ocorrencia'), ['09','10','16','37']))
+        elseif($d->hasOcorrencia('09','10','16','37'))
         {
             $this->totais['baixados']++;
-            $this->detalhe[$i]->setTipoOcorrencia(Detalhe::OCORRENCIA_BAIXADA);
+            $d->setOcorrenciaTipo($d::OCORRENCIA_BAIXADA);
         }
-        elseif(in_array($this->detalhe[$i]->get('ocorrencia'), ['03']))
+        elseif($d->hasOcorrencia('03'))
         {
             $this->totais['erros']++;
-            $this->detalhe[$i]->setErro($this->rejeicoes[$this->detalhe[$i]->get('rejeicao', 'XX', true)]);
+            $d->setError(array_get($this->rejeicoes, $this->rem(302, 303, $detalhe), 'Desconhecido'));
         }
         else
         {
             $this->totais['alterados']++;
-            $this->detalhe[$i]->setTipoOcorrencia(Detalhe::OCORRENCIA_ALTERACAO);
+            $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
         }
 
-        $this->i++;
+        return true;
     }
 
     protected function processarTrailer(array $trailer)
     {
-        $this->trailer->quantidadeTitulos = (int)$this->i;
-        $this->trailer->valorTitulos = Util::nFloat($this->totais['valor']);
-        $this->trailer->quantidadeErros = (int)$this->totais['erros'];
-        $this->trailer->quantidadeEntradas = (int)$this->totais['entradas'];
-        $this->trailer->quantidadeLiquidados = (int)$this->totais['liquidados'];
-        $this->trailer->quantidadeBaixados = (int)$this->totais['baixados'];
-        $this->trailer->quantidadeAlterados = (int)$this->totais['alterados'];
+        $this->getTrailer()
+            ->setQuantidadeTitulos((int) $this->count())
+            ->setValorTitulos((float) Util::nFloat($this->totais['valor_recebido'], 2, false))
+            ->setQuantidadeErros((int) $this->totais['erros'])
+            ->setQuantidadeEntradas((int) $this->totais['entradas'])
+            ->setQuantidadeLiquidados((int) $this->totais['liquidados'])
+            ->setQuantidadeBaixados((int) $this->totais['baixados'])
+            ->setQuantidadeAlterados((int) $this->totais['alterados']);
+
+        return true;
     }
 }

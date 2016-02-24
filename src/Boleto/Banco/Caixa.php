@@ -1,173 +1,128 @@
 <?php
+/**
+ *   Copyright (c) 2016 Eduardo Gusmão
+ *
+ *   Permission is hereby granted, free of charge, to any person obtaining a
+ *   copy of this software and associated documentation files (the "Software"),
+ *   to deal in the Software without restriction, including without limitation
+ *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *   and/or sell copies of the Software, and to permit persons to whom the
+ *   Software is furnished to do so, subject to the following conditions:
+ *
+ *   The above copyright notice and this permission notice shall be included in all
+ *   copies or substantial portions of the Software.
+ *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ *   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *   PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ *   COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ *   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ *   IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
-use Eduardokum\LaravelBoleto\Boleto\Contracts\Banco\Caixa as CaixaContract;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
 
-class Caixa  extends AbstractBoleto implements CaixaContract
+class Caixa  extends AbstractBoleto implements BoletoContract
 {
-
-    const CEF_TIPO_POS16 = 'pos16';
-    const CEF_TIPO_POS11 = 'pos11';
-
-    private $carteiraDesc = array(
-        11 => 'CS',
-        12 => 'CR',
-        9  => 'CR',
-        14 => 'SR',
-        82 => 'SR'
-    );
-
-    public $tipo;
-    public $cedenteCodigo;
-
-    public function __construct()
+    /**
+     * Código do banco
+     * @var string
+     */
+    protected $codigoBanco = self::COD_BANCO_CEF;
+    /**
+     * Define as carteiras disponíveis para este banco
+     * @var array
+     */
+    protected $carteiras = ['SR', 'RG'];
+    /**
+     * Espécie do documento, coódigo para remessa
+     * @var string
+     */
+    protected $especiesCodigo = [
+        'DM' => '01',
+        'NP' => '02',
+        'DS' => '03',
+        'NS' => '05',
+        'LC' => '06',
+    ];
+    /**
+     * Método que valida se o banco tem todos os campos obrigadotorios preenchidos
+     */
+    public function isValid()
     {
-        parent::__construct(self::COD_BANCO_CEF);
+        if(
+            empty($this->numero) ||
+            empty($this->agencia) ||
+            empty($this->conta) ||
+            empty($this->carteira)
+        )
+        {
+            return false;
+        }
+        return true;
     }
-
-    public function preProcessamento()
+    /**
+     * Gera o Nosso Número.
+     *
+     * @throws Exception
+     * @return string
+     */
+    protected function gerarNossoNumero()
     {
-        if (! in_array($this->getCarteira(), ['12', '14'])) {
-            throw new \Exception('Carteira inválida, aceito somente {12,14}');
+        $numero = $this->getNumero();
+        $composicao = '1';
+        if ($this->getCarteira() == 'SR'){
+            $composicao = '2';
         }
 
-        $this->corrigirCedenteCodigo();
-
-        if ($this->getCarteira() == 12) {
-            $this->carteira = 9;
+        $carteira = $composicao. '4';
+        // As 15 próximas posições no nosso número são a critério do beneficiário, utilizando o sequencial
+        // Depois, calcula-se o código verificador por módulo 11
+        $numero = $carteira.Util::numberFormatGeral($numero, 15);
+        return $numero;
+    }
+    /**
+     * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
+     *
+     * @return string
+     */
+    public function getNossoNumeroBoleto()
+    {
+        return $this->getNossoNumero() . '-' . Util::modulo11($this->getNossoNumero());
+    }
+    /**
+     * Método para gerar o código da posição de 20 a 44
+     *
+     * @return string
+     * @throws \Exception
+     */
+    protected function getCampoLivre()
+    {
+        if ($this->campoLivre) {
+            return $this->campoLivre;
+        }
+        $nossoNumero = Util::numberFormatGeral($this->gerarNossoNumero(), 17);
+        $beneficiario = Util::numberFormatGeral($this->getConta(), 6);
+        // Código do beneficiário + DV]
+        $campoLivre = $beneficiario . Util::modulo11($beneficiario);
+        // Sequencia 1 (posições 3-5 NN) + Constante 1 (1 => registrada, 2 => sem registro)
+        $carteira = $this->getCarteira();
+        if ($carteira == 'SR'){
+            $constante = '2';
         } else {
-            if ($this->getCarteira() == 14) {
-                $this->carteira = 82;
-            }
+            $constante = '1';
         }
-
-        if (strlen($this->cedenteCodigo) != 11) {
-            throw new Exception("Codigo do cedente inválido... PPPXXXXXXXX");
-        }
-
-        $AAAA = $this->getAgencia();
-        $PPP = substr($this->cedenteCodigo, 0, 3);
-        $XXXXXXXX = substr($this->cedenteCodigo, 3);
-        $DV = Util::modulo11("$AAAA$PPP$XXXXXXXX");
-
-        $this->tipo = (empty($this->tipo)) ? self::CEF_TIPO_POS11 : $this->tipo;
-
-        if ($this->tipo == self::CEF_TIPO_POS16) {
-
-            if ($PPP != '870') {
-                throw new Exception("16 posições somente válido para código de operação 870");
-            }
-            if ($this->getCarteira() != '82') {
-                throw new Exception("Válido para esse tipo de boleto somente carteira sem registro");
-            }
-        }
-
-        $this->agenciaConta = "$AAAA.$PPP.$XXXXXXXX-$DV";
-        $this->localPagamento = 'Preferencialmente nas casas lotéricas até o valor limite';
+        $campoLivre .= substr($nossoNumero, 2, 3) . $constante;
+        // Sequencia 2 (posições 6-8 NN) + Constante 2 (4-Beneficiário)
+        $campoLivre .= substr($nossoNumero, 5, 3) . '4';
+        // Sequencia 3 (posições 9-17 NN)
+        $campoLivre .= substr($nossoNumero, 8, 9);
+        // DV do Campo Livre
+        $campoLivre .= Util::modulo11($campoLivre);
+        return $this->campoLivre = $campoLivre;
     }
-
-
-    protected function gerarCodigoBarras()
-    {
-        if( $this->tipo == self::CEF_TIPO_POS11 ) {
-
-            $this->codigoBarras = $this->getBanco();
-            $this->codigoBarras .= $this->numeroMoeda;
-            $this->codigoBarras .= Util::fatorVencimento($this->getDataVencimento());
-            $this->codigoBarras .= Util::numberFormatValue($this->getValor(), 10, 0);
-            $this->codigoBarras .= $this->gerarNossoNumero();
-            $this->codigoBarras .= Util::numberFormatGeral($this->getAgencia(),4,0);
-            $this->codigoBarras .= Util::numberFormatGeral($this->cedenteCodigo,11,0);
-
-        } else if($this->tipo == self::CEF_TIPO_POS16 ) {
-
-            $this->codigoBarras = $this->getBanco();
-            $this->codigoBarras .= $this->numeroMoeda;
-            $this->codigoBarras .= Util::fatorVencimento($this->getDataVencimento());
-            $this->codigoBarras .= Util::numberFormatValue($this->getValor(), 10, 0);
-            $this->codigoBarras .= substr($this->cedenteCodigo, -5);
-            $this->codigoBarras .= $this->getAgencia();
-            $this->codigoBarras .= 87;
-            $this->codigoBarras .= $this->gerarNossoNumero();
-
-        } else {
-            throw new Exception("Tipo do bloqueto inválido");
-        }
-
-        $r = Util::modulo11($this->codigoBarras, 9, 1);
-        $dv = ($r == 0 || $r == 1 || $r == 10)?1:(11 - $r);
-        $this->codigoBarras = substr($this->codigoBarras, 0, 4) . $dv . substr($this->codigoBarras, 4);
-
-        $this->carteira = $this->carteiraDesc[$this->getCarteira()];
-
-        return $this->codigoBarras;
-    }
-
-
-
-    protected function gerarLinha()
-    {
-        if(strlen($this->codigoBarras) == 44) {
-            $campo1 = substr($this->codigoBarras, 0, 4) . substr($this->codigoBarras, 19, 5);
-            $campo1 = $campo1 . Util::modulo10($campo1);
-            $campo1 = substr($campo1, 0, 5) . '.' . substr($campo1, 5, 5);
-
-            $campo2 = substr($this->codigoBarras, 24, 10);
-            $campo2 = $campo2 . Util::modulo10($campo2);
-            $campo2 = substr($campo2, 0, 5) . '.' . substr($campo2, 5, 6);
-
-            $campo3 = substr($this->codigoBarras, 34, 10);
-            $campo3 = $campo3 . Util::modulo10($campo3);
-            $campo3 = substr($campo3, 0, 5) . '.' . substr($campo3, 5, 6);
-
-            $campo4 = substr($this->codigoBarras, 4, 1);
-
-            $campo5 = substr($this->codigoBarras, 5, 4) . substr($this->codigoBarras, 9, 10);
-
-            $this->linha = "$campo1 $campo2 $campo3 $campo4 $campo5";
-
-            return $this->linha;
-        } else {
-            throw new \Exception('Código de barras não gerado ou inválido');
-        }
-    }
-
-    private function gerarNossoNumero() {
-        if( $this->tipo == self::CEF_TIPO_POS11 ) {
-
-            $tNN  = 10-strlen($this->getCarteira());
-            $nossoNumero = substr($this->getNumero(), ($tNN*-1) );
-            $nossoNumero = $this->getCarteira().Util::numberFormatGeral($nossoNumero, $tNN, '0');
-            $d = 11 - (Util::modulo11($nossoNumero, 9, 1));
-            $dv = ($d==10||$d==11)?'0':$d;
-            $nossoNumero = $nossoNumero;
-            $this->nossoNumero = $nossoNumero.'-'.$dv;
-            return $nossoNumero;
-
-        } else if($this->tipo == self::CEF_TIPO_POS16 ) {
-
-            $nossoNumero = "8".Util::numberFormatGeral(substr($this->numero,-14), 14, 0);
-            $d = 11 - (Util::modulo11($nossoNumero, 9, 1));
-            $dv = ($d>9)?'0':$d;
-            $nossoNumero = $nossoNumero;
-            $this->nossoNumero = $nossoNumero.'-'.$dv;
-            return $nossoNumero;
-        }
-    }
-
-    private function corrigirCedenteCodigo()
-    {
-        $_4first = substr($this->cedenteCodigo, 0, 4);
-        $agencia = Util::numberFormatGeral($this->getAgencia(), 4, '0');
-        if ($_4first != $agencia) {
-            if (strlen($this->cedenteCodigo) == 12) {
-                $this->cedenteCodigo = substr($this->cedenteCodigo, 0, 11);
-            }
-        } else {
-            $this->cedenteCodigo = substr($this->cedenteCodigo, 4, 11);
-        }
-    }
-
 }

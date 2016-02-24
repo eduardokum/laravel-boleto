@@ -1,19 +1,45 @@
 <?php
+/**
+ *   Copyright (c) 2016 Eduardo Gusmão
+ *
+ *   Permission is hereby granted, free of charge, to any person obtaining a
+ *   copy of this software and associated documentation files (the "Software"),
+ *   to deal in the Software without restriction, including without limitation
+ *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *   and/or sell copies of the Software, and to permit persons to whom the
+ *   Software is furnished to do so, subject to the following conditions:
+ *
+ *   The above copyright notice and this permission notice shall be included in all
+ *   copies or substantial portions of the Software.
+ *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ *   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *   PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ *   COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ *   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ *   IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Banco;
 
-use Carbon\Carbon;
-use Eduardokum\LaravelBoleto\Cnab\Contracts\Retorno;
-use Eduardokum\LaravelBoleto\Cnab\Retorno\AbstractCnab;
-use Eduardokum\LaravelBoleto\Cnab\Retorno\Detalhe;
+use Eduardokum\LaravelBoleto\Cnab\Retorno\AbstractRetorno;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno;
 use Eduardokum\LaravelBoleto\Util;
 
-class Itau extends AbstractCnab implements Retorno
+class Itau extends AbstractRetorno implements Retorno
 {
+    /**
+     * Código do banco
+     * @var string
+     */
+    protected $codigoBanco = self::COD_BANCO_ITAU;
 
-    public $agencia;
-    public $conta;
-
-    private $ocorrencias = array(
+    /**
+     * Array com as ocorrencias do banco;
+     *
+     * @var array
+     */
+    private $ocorrencias = [
         '02' => 'entrada confirmada',
         '03' => 'entrada rejeitada (nota 20 - tabela 1)',
         '04' => 'alteração de dados - nova entrada',
@@ -71,159 +97,99 @@ class Itau extends AbstractCnab implements Retorno
         '72' => 'baixa por crédito em c/c através do sispag sem título correspondente',
         '73' => 'confirmação de entrada na cobrança simples – entrada não aceita na cobrança contratual',
         '76' => 'cheque compensado',
-        'XX' => 'Desconhecido',
-    );
+    ];
 
-    private $especies = array(
-        '01' => 'duplicata mercantil',
-        '02' => 'nota promissória',
-        '03' => 'nota de seguro',
-        '04' => 'mensalidade escolar',
-        '05' => 'recibo',
-        '06' => 'contrato',
-        '07' => 'cosseguros',
-        '08' => 'duplicata de serviço',
-        '09' => 'letra de câmbio',
-        '13' => 'nota de débitos',
-        '15' => 'documento de dívida',
-        '16' => 'encargos condominiais',
-        '17' => 'conta de prestação de serviços',
-        '99' => 'diversos',
-        'XX' => 'Desconhecido',
-    );
-    private $liquidacoes = array(
-        'AA' => 'caixa eletrônico banco itaú - disponível',
-        'AC' => 'pagamento em cartório automatizado - a compensar',
-        'BC' => 'bancos correspondentes - disponível',
-        'BF' => 'itaú bankfone - disponível',
-        'BL' => 'itaú bankline - disponível',
-        'B0' => 'outros bancos - recebimento off-line - a compensar',
-        'B1' => 'outros bancos - pelo código de barras - a compensar',
-        'B2' => 'outros bancos - pela linha digitável - a compensar',
-        'B3' => 'outros bancos - pelo auto atendimento - a compensar',
-        'B4' => 'outros bancos - recebimento em casa lotérica - a compensar',
-        'B5' => 'outros bancos - correspondente - a compensar',
-        'B6' => 'outros bancos - telefone - a compensar',
-        'B7' => 'outros bancos - arquivo eletrônico (pagamento efetuado por meio de troca de arquivos) - a compensar',
-        'CC' => 'agência itaú - com cheque de outro banco ou (cheque itaú)* - a compensar',
-        'CI' => 'correspondente itaú - disponível',
-        'CK' => 'sispag - sistema de contas a pagar itaú - disponível',
-        'CP' => 'agência itaú - por débito em conta corrente, cheque itaú* ou dinheiro - disponível',
-        'DG' => 'agência itaú - capturado em off-line - disponível',
-        'LC' => 'pagamento em cartório de protesto com cheque - a compensar',
-        'Q0' => 'agendamento - pagamento agendado via bankline ou outro canal eletrônico e liquidado na data indicada - disponível',
-        'XX' => 'Desconhecido',
-    );
-
-    public function __construct($file)
+    /**
+     * Roda antes dos metodos de processar
+     */
+    protected function init()
     {
-        parent::__construct($file);
-
-        $this->banco = self::COD_BANCO_ITAU;
-        $this->agencia = (int)substr($this->file[0], 26, 4);
-        $this->conta = (int)substr($this->file[0], 32, 5);
+        $this->totais = [
+            'liquidados' => 0,
+            'entradas' => 0,
+            'baixados' => 0,
+            'erros' => 0,
+            'alterados' => 0,
+        ];
     }
 
     protected function processarHeader(array $header)
     {
-        $this->header->operacaoCodigo = $this->rem(2, 2, $header);
-        $this->header->operacao = $this->rem(3, 9, $header);
-        $this->header->servicoCodigo = $this->rem(10, 11, $header);
-        $this->header->servico = $this->rem(12, 26, $header);
-        $this->header->agencia = $this->rem(27, 30, $header);
-        $this->header->conta = $this->rem(33, 37, $header);
-        $this->header->contaDigito = $this->rem(38, 38, $header);
-        $this->header->cedenteNome = $this->rem(47, 76, $header);
-        $this->header->data = $this->rem(95, 100, $header);
-        $this->header->dataCredito = $this->rem(114, 119, $header);
+        $this->getHeader()
+            ->setOperacaoCodigo($this->rem(2, 2, $header))
+            ->setOperacao($this->rem(3, 9, $header))
+            ->setServicoCodigo($this->rem(10, 11, $header))
+            ->setServico($this->rem(12, 26, $header))
+            ->setAgencia($this->rem(27, 30, $header))
+            ->setConta($this->rem(33, 37, $header))
+            ->setContaDigito($this->rem(38, 38, $header))
+            ->setData($this->rem(95, 100, $header));
 
-        $this->header->data = trim($this->header->data, '0 ') == "" ? null : Carbon::createFromFormat('dmy', $this->header->data)->setTime(0, 0, 0);
-        $this->header->dataCredito = $this->header->get('dataCredito', false, true) ?  Carbon::createFromFormat('dmy', $this->header->get('dataCredito'))->setTime(0, 0, 0) : null;
+        return true;
     }
 
     protected function processarDetalhe(array $detalhe)
     {
-        $i = $this->i;
 
-        $this->detalhe[$i] = new Detalhe($detalhe);
-        $this->detalhe[$i]->numeroControle = Util::controle2array($this->rem(38, 62, $detalhe));
-        $this->detalhe[$i]->numero = $this->rem(63, 70, $detalhe);
-        $this->detalhe[$i]->nossoNumero = $this->rem(86, 93, $detalhe);
-        $this->detalhe[$i]->nossoNumeroDigito = $this->rem(94, 94, $detalhe);
-        $this->detalhe[$i]->numeroDocumento = $this->rem(117, 126, $detalhe);
-        $this->detalhe[$i]->ocorrencia = $this->rem(109, 110, $detalhe);
-        $this->detalhe[$i]->dataOcorrencia = $this->rem(111, 116, $detalhe);
-        $this->detalhe[$i]->dataCredito = $this->rem(296, 301, $detalhe);
-        $this->detalhe[$i]->dataVencimento = $this->rem(147, 152, $detalhe);
-        $this->detalhe[$i]->confTituloBanco = $this->rem(127, 134, $detalhe);
-        $this->detalhe[$i]->bancoCobrador = $this->rem(166, 168, $detalhe);
-        $this->detalhe[$i]->agenciaCobradora = $this->rem(169, 172, $detalhe);
-        $this->detalhe[$i]->agenciaCobradoraDigito = $this->rem(173, 173, $detalhe);
-        $this->detalhe[$i]->especie = $this->rem(174, 175, $detalhe);
-        $this->detalhe[$i]->valor = Util::nFloat($this->rem(153, 165, $detalhe)/100);
-        $this->detalhe[$i]->valorTarifa = Util::nFloat($this->rem(176, 188, $detalhe)/100);
-        $this->detalhe[$i]->valorIOF = Util::nFloat($this->rem(215, 227, $detalhe)/100);
-        $this->detalhe[$i]->valorAbatimento = Util::nFloat($this->rem(228, 240, $detalhe)/100);
-        $this->detalhe[$i]->valorDesconto = Util::nFloat($this->rem(241, 253, $detalhe)/100);
-        $this->detalhe[$i]->valorRecebido = Util::nFloat($this->rem(254, 266, $detalhe)/100);
-        $this->detalhe[$i]->valorMora = Util::nFloat($this->rem(267, 279, $detalhe)/100);
-        $this->detalhe[$i]->valorOutrosCreditos = Util::nFloat($this->rem(280, 292, $detalhe)/100);
-        $this->detalhe[$i]->valorComplementar = Util::nFloat($this->rem(312, 324, $detalhe)/100);
-        $this->detalhe[$i]->dda = $this->rem(293, 293, $detalhe);
-        $this->detalhe[$i]->instrucaoCancelada = $this->rem(302, 305, $detalhe);
-        $this->detalhe[$i]->dataComplementar = $this->rem(306, 311, $detalhe);
-        $this->detalhe[$i]->sacadoNome = $this->rem(325, 354, $detalhe);
-        $this->detalhe[$i]->motivosRejeicao = str_split($this->rem(378, 385, $detalhe), 2);
-        $this->detalhe[$i]->liquidacaoCodigo = $this->rem(393, 394, $detalhe);
+        $d = $this->detalheAtual();
 
-        $this->detalhe[$i]->liquidacaoNome = 'Desconhecido';
-        $this->detalhe[$i]->ocorrenciaNome = $this->ocorrencias[$this->detalhe[$i]->get('ocorrencia', 'XX', true)];
-        $this->detalhe[$i]->especieNome = $this->especies[$this->detalhe[$i]->get('especie', 'XX', true)];
-        $this->detalhe[$i]->bancoCobradorNome = $this->bancos[$this->detalhe[$i]->get('bancoCobrador', 'XXX', true)];
+        $d->setNossoNumero($this->rem(86, 94, $detalhe))
+            ->setNumeroDocumento($this->rem(117, 126, $detalhe))
+            ->setOcorrencia($this->rem(109, 110, $detalhe))
+            ->setOcorrenciaDescricao(array_get($this->ocorrencias, $d->getOcorrencia(), 'Desconhecida'))
+            ->setDataOcorrencia($this->rem(111, 116, $detalhe))
+            ->setDataVencimento($this->rem(147, 152, $detalhe))
+            ->setDataCredito($this->rem(296, 301, $detalhe))
+            ->setValor(Util::nFloat($this->rem(153, 165, $detalhe)/100, 2, false))
+            ->setValorTarifa(Util::nFloat($this->rem(176, 188, $detalhe)/100, 2, false))
+            ->setValorIOF(Util::nFloat($this->rem(215, 227, $detalhe)/100, 2, false))
+            ->setValorAbatimento(Util::nFloat($this->rem(228, 240, $detalhe)/100, 2, false))
+            ->setValorDesconto(Util::nFloat($this->rem(241, 253, $detalhe)/100, 2, false))
+            ->setValorRecebido(Util::nFloat($this->rem(254, 266, $detalhe)/100, 2, false))
+            ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe)/100, 2, false))
+            ->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe)/100, 2, false));
 
-        $this->detalhe[$i]->dataOcorrencia = $this->detalhe[$i]->get('dataOcorrencia', false, true) ? Carbon::createFromFormat('dmy', $this->detalhe[$i]->get('dataOcorrencia'))->setTime(0, 0, 0) : null;
-        $this->detalhe[$i]->dataVencimento = $this->detalhe[$i]->get('dataVencimento', false, true) ? Carbon::createFromFormat('dmy', $this->detalhe[$i]->get('dataVencimento'))->setTime(0, 0, 0) : null;
-        $this->detalhe[$i]->dataCredito = $this->detalhe[$i]->get('dataCredito', false, true) ? Carbon::createFromFormat('dmy', $this->detalhe[$i]->get('dataCredito'))->setTime(0, 0, 0) : null;
-        $this->detalhe[$i]->dataComplementar = $this->detalhe[$i]->get('dataComplementar', false, true) ? Carbon::createFromFormat('dmy', $this->detalhe[$i]->get('dataComplementar'))->setTime(0, 0, 0) : null;
-
-        if(in_array($this->detalhe[$i]->get('ocorrencia'), ['06','07','08','10']))
+        if($d->hasOcorrencia('06','07','08','10'))
         {
-            $this->detalhe[$i]->liquidacaoNome = $this->liquidacoes[$this->detalhe[$i]->get('liquidacaoCodigo', 'XX', true)];
             $this->totais['liquidados']++;
-            $this->detalhe[$i]->setTipoOcorrencia(Detalhe::OCORRENCIA_LIQUIDADA);
+            $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
         }
-        elseif(in_array($this->detalhe[$i]->get('ocorrencia'), ['02','64','71','73']))
+        elseif($d->hasOcorrencia('02','64','71','73'))
         {
             $this->totais['entradas']++;
-            $this->detalhe[$i]->setTipoOcorrencia(Detalhe::OCORRENCIA_ENTRADA);
+            $d->setOcorrenciaTipo($d::OCORRENCIA_ENTRADA);
         }
-        elseif(in_array($this->detalhe[$i]->get('ocorrencia'), ['05','09','32','47','59','72']))
+        elseif($d->hasOcorrencia('05','09','32','47','59','72'))
         {
             $this->totais['baixados']++;
-            $this->detalhe[$i]->setTipoOcorrencia(Detalhe::OCORRENCIA_BAIXADA);
+            $d->setOcorrenciaTipo($d::OCORRENCIA_BAIXADA);
         }
-        elseif(in_array($this->detalhe[$i]->get('ocorrencia'), ['03','15','16','60','03',]))
+        elseif($d->hasOcorrencia('03','15','16','60','03'))
         {
             $this->totais['erros']++;
-            $this->detalhe[$i]->setErro('Desconhecido');
+            $d->setError('Desconhecido');
         }
         else
         {
             $this->totais['alterados']++;
-            $this->detalhe[$i]->setTipoOcorrencia(Detalhe::OCORRENCIA_ALTERACAO);
+            $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
         }
 
-        $this->i++;
+        return true;
     }
 
     protected function processarTrailer(array $trailer)
     {
-        $this->trailer->quantidadeTitulos = (int)$this->rem(18, 25, $trailer) + (int)$this->rem(58, 65, $trailer) + (int)$this->rem(178, 185, $trailer);
-        $this->trailer->valorTitulos = Util::nFloat($this->rem(221, 234, $trailer)/100);
-        $this->trailer->quantidadeErros = (int)$this->totais['erros'];
-        $this->trailer->quantidadeEntradas = (int)$this->totais['entradas'];
-        $this->trailer->quantidadeLiquidados = (int)$this->totais['liquidados'];
-        $this->trailer->quantidadeBaixados = (int)$this->totais['baixados'];
-        $this->trailer->quantidadeAlterados = (int)$this->totais['alterados'];
+
+        $this->getTrailer()
+            ->setQuantidadeTitulos((int)$this->rem(18, 25, $trailer) + (int)$this->rem(58, 65, $trailer) + (int)$this->rem(178, 185, $trailer))
+            ->setValorTitulos((float) Util::nFloat($this->rem(221, 234, $trailer)/100, 2, false))
+            ->setQuantidadeErros((int) $this->totais['erros'])
+            ->setQuantidadeEntradas((int) $this->totais['entradas'])
+            ->setQuantidadeLiquidados((int) $this->totais['liquidados'])
+            ->setQuantidadeBaixados((int) $this->totais['baixados'])
+            ->setQuantidadeAlterados((int) $this->totais['alterados']);
+
+        return true;
     }
 }

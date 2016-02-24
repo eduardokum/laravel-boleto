@@ -1,89 +1,175 @@
 <?php
+/**
+ *   Copyright (c) 2016 Eduardo Gusmão
+ *
+ *   Permission is hereby granted, free of charge, to any person obtaining a
+ *   copy of this software and associated documentation files (the "Software"),
+ *   to deal in the Software without restriction, including without limitation
+ *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *   and/or sell copies of the Software, and to permit persons to whom the
+ *   Software is furnished to do so, subject to the following conditions:
+ *
+ *   The above copyright notice and this permission notice shall be included in all
+ *   copies or substantial portions of the Software.
+ *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ *   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *   PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ *   COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ *   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ *   IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
-use Eduardokum\LaravelBoleto\Boleto\Contracts\Banco\Itau as ItauContract;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
 
-class Itau extends AbstractBoleto implements ItauContract
+class Itau extends AbstractBoleto implements BoletoContract
 {
-
-    public function __construct()
+    /**
+     * Código do banco
+     * @var string
+     */
+    protected $codigoBanco = '341';
+    /**
+     * Variáveis adicionais.
+     * @var array
+     */
+    public $variaveis_adicionais = [
+        'carteira' => '',
+    ];
+    /**
+     * Define as carteiras disponíveis para este banco
+     * @var array
+     */
+    protected $carteiras = [
+        '102','103','104','105','106','107','108','109','110','111','112','113',
+        '114','115','120','121','122','126','129','131','138','139','140','141',
+        '142','143','146','147','150','166','168','169','172','173','174','175',
+        '177','178','179','180','195','196','198','210','212','221','280','305',
+        '352','354','358','359','364','365','458','459','880','986',
+    ];
+    /**
+     * Espécie do documento, coódigo para remessa
+     * @var string
+     */
+    protected $especiesCodigo = [
+        'DM' => '01',
+        'NP' => '02',
+        'NS' => '03',
+        'REC' => '05',
+        'CT' => '06',
+        'NS' => '07',
+        'DS' => '08',
+        'LC' => '09',
+        'ND' => '13',
+        'CDA' => '15',
+        'EC' => '16',
+        'DS' => '17',
+    ];
+    /**
+     * Campo obrigatório para emissão de boletos com carteira 198 fornecido pelo Banco com 5 dígitos
+     * @var int
+     */
+    protected $codigoCliente;
+    /**
+     * Dígito verificador da carteira/nosso número para impressão no boleto
+     * @var int
+     */
+    protected $carteiraDv;
+    /**
+     * Define o código do cliente
+     *
+     * @param int $codigoCliente
+     * @return $this
+     */
+    public function setCodigoCliente($codigoCliente)
     {
-        parent::__construct(self::COD_BANCO_ITAU);
+        $this->codigoCliente = $codigoCliente;
+        return $this;
     }
-
-    protected function preProcessamento()
+    /**
+     * Retorna o código do cliente
+     *
+     * @return int
+     */
+    public function getCodigoCliente()
     {
-        $this->agenciaConta = sprintf('%s/%s-%s', $this->getAgencia(), $this->getConta(), Util::modulo10($this->getAgencia().$this->getConta()));
-        $this->localPagamento = 'Pagável Preferencialmente em qualquer Agência itaú';
-        $this->especieDocumento = 'DM';
-
-        if(!in_array($this->getCarteira(), ['109','112','115','175']))
+        return $this->codigoCliente;
+    }
+    /**
+     * Método que valida se o banco tem todos os campos obrigadotorios preenchidos
+     */
+    public function isValid()
+    {
+        if(
+            empty($this->numero) ||
+            empty($this->agencia) ||
+            empty($this->conta) ||
+            empty($this->carteira) ||
+            (in_array($this->getCarteira(), ['107', '122', '142', '143', '196', '198']) && empty($this->codigoCliente))
+        )
         {
-            throw new \Exception('Carteira inválida, aceito somente {109,112,115,175}');
+            return false;
         }
+        return true;
     }
-
-    protected function gerarCodigoBarras()
+    /**
+     * Gera o Nosso Número.
+     *
+     * @return string
+     */
+    protected function gerarNossoNumero()
     {
-        $this->codigoBarras = $this->getBanco();
-        $this->codigoBarras .= $this->numeroMoeda;
-        $this->codigoBarras .= Util::fatorVencimento($this->getDataVencimento());
-        $this->codigoBarras .= Util::numberFormatValue($this->getValor(), 10, 0);
-        $this->codigoBarras .= Util::numberFormatGeral($this->getCarteira(),3,0);
-        $this->codigoBarras .= $this->geraNossoNumero();
-        $this->codigoBarras .= Util::numberFormatGeral($this->getAgencia(),4,0);
-        $this->codigoBarras .= Util::numberFormatGeral($this->getConta(),5,0);
-        $this->codigoBarras .= Util::modulo10($this->getAgencia().$this->getConta());
-        $this->codigoBarras .= '000';
-
-        $d = 11 - (Util::modulo11($this->codigoBarras, 9, 1));
-        $dv = ($d == 0 || $d == 1 || $d == 10 || $d == 11)?1:$d;
-        $this->codigoBarras = substr($this->codigoBarras, 0, 4) . $dv . substr($this->codigoBarras, 4);
-
-        return $this->codigoBarras;
+        $this->getCampoLivre(); // Força o calculo do DV.
+        return Util::numberFormatGeral($this->getNumero(), 8) . $this->carteiraDv;
     }
-
-    protected function gerarLinha()
+    /**
+     * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
+     *
+     * @return string
+     */
+    public function getNossoNumeroBoleto()
     {
-        if(strlen($this->codigoBarras) == 44) {
-            $campo1 = substr($this->codigoBarras, 0, 4) . substr($this->codigoBarras, 19, 3) . substr($this->codigoBarras, 22, 2);
-            $campo1 = $campo1 . Util::modulo10($campo1);
-            $campo1 = substr($campo1, 0, 5) . '.' . substr($campo1, 5, 5);
-
-            $campo2 = substr($this->codigoBarras, 24, 6) . substr($this->codigoBarras, 30, 4);
-            $campo2 = $campo2 . Util::modulo10($campo2);
-            $campo2 = substr($campo2, 0, 5) . '.' . substr($campo2, 5, 6);
-
-            $campo3 = substr($this->codigoBarras, 34, 10);
-            $campo3 = $campo3 . Util::modulo10($campo3);
-            $campo3 = substr($campo3, 0, 5) . '.' . substr($campo3, 5, 6);
-
-            $campo4 = substr($this->codigoBarras, 4, 1);
-
-            $campo5 = substr($this->codigoBarras, 5, 4) . substr($this->codigoBarras, 9, 10);
-
-            $this->linha = "$campo1 $campo2 $campo3 $campo4 $campo5";
-
-            return $this->linha;
-        } else {
-            throw new \Exception('Código de barras não gerado ou inválido'.strlen($this->codigoBarras));
-        }
+        return $this->getCarteira() . '/' . substr_replace($this->getNossoNumero(), '-', -1, 0);
     }
-
-    private function geraNossoNumero() {
-
-        if( $this->getAgencia() && $this->getConta() && $this->getCarteira()  ) {
-
-            $nossonumero    = Util::numberFormatGeral($this->getNumero(), 8, 0);
-            $dv             = Util::modulo10($this->getAgencia() . $this->getConta() . $this->getCarteira() . $nossonumero);
-            $this->nossoNumero = $this->getCarteira() . '/' . $nossonumero.'-'.$dv;
-            return $nossonumero.$dv;
-
-        } else {
-            throw new Exception('Todos os parâmetros devem ser informados {numero,contaCorrente,agencia}');
+    /**
+     * Método para gerar o código da posição de 20 a 44
+     *
+     * @return string
+     * @throws \Exception
+     */
+    protected function getCampoLivre()
+    {
+        if ($this->campoLivre) {
+            return $this->campoLivre;
         }
-    }
 
+        $numero = Util::numberFormatGeral($this->getNumero(), 8);
+        $carteira = Util::numberFormatGeral($this->getCarteira(), 3);
+        $agencia = Util::numberFormatGeral($this->getAgencia(), 4);
+        $conta = Util::numberFormatGeral($this->getConta(), 5);
+        // Carteira 198 - (Nosso Número com 15 posições) - Anexo 5 do manual
+        if (in_array($this->getCarteira(), ['107', '122', '142', '143', '196', '198'])) {
+            $codigo = $carteira . $numero .
+                Util::numberFormatGeral($this->getNumeroDocumento(), 7) .
+                Util::numberFormatGeral($this->getCodigoCliente(), 5);
+            // Define o DV da carteira para a view
+            $this->carteiraDv = $modulo = Util::modulo10($codigo);
+            return $this->campoLivre = $codigo . $modulo . '0';
+        }
+        // Geração do DAC - Anexo 4 do manual
+        if (!in_array($this->getCarteira(), ['126', '131', '146', '150', '168'])) {
+            // Define o DV da carteira para a view
+            $this->carteiraDv = $dvAgContaCarteira = Util::modulo10($agencia . $conta . $carteira . $numero);
+        } else {
+            // Define o DV da carteira para a view
+            $this->carteiraDv = $dvAgContaCarteira = Util::modulo10($carteira . $numero);
+        }
+        // Módulo 10 Agência/Conta
+        $dvAgConta = Util::modulo10($agencia . $conta);
+        return $this->campoLivre = $carteira . $numero . $dvAgContaCarteira . $agencia . $conta . $dvAgConta . '000';
+    }
 }

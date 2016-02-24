@@ -1,15 +1,34 @@
 <?php
+/**
+ *   Copyright (c) 2016 Eduardo Gusmão
+ *
+ *   Permission is hereby granted, free of charge, to any person obtaining a
+ *   copy of this software and associated documentation files (the "Software"),
+ *   to deal in the Software without restriction, including without limitation
+ *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *   and/or sell copies of the Software, and to permit persons to whom the
+ *   Software is furnished to do so, subject to the following conditions:
+ *
+ *   The above copyright notice and this permission notice shall be included in all
+ *   copies or substantial portions of the Software.
+ *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ *   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *   PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ *   COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ *   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ *   IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Banco;
 
-use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractCnab;
-use Eduardokum\LaravelBoleto\Cnab\Contracts\Remessa;
-use Eduardokum\LaravelBoleto\Cnab\Remessa\Detalhe;
+use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
 
-class Santander extends AbstractCnab implements Remessa
+class Santander extends AbstractRemessa implements RemessaContract
 {
-
-
     const ESPECIE_DUPLICATA = '01';
     const ESPECIE_NOTA_PROMISSORIA = '02';
     const ESPECIE_NOTA_SEGURO = '03';
@@ -35,25 +54,64 @@ class Santander extends AbstractCnab implements Remessa
     const INSTRUCAO_NAO_PROTESTAR = '07';
     const INSTRUCAO_NAO_COBRAR_MORA = '08';
 
-    public $agencia;
-    public $conta;
-    public $codigoTransmissao;
-    public $cedenteDocumento;
-    public $cedenteNome;
+    /**
+     * Código do banco
+     * @var string
+     */
+    protected $codigoBanco = self::COD_BANCO_SANTANDER;
 
-    protected $total = 0;
+    /**
+     * Define as carteiras disponíveis para cada banco
+     * @var array
+     */
+    protected $carteiras = [101,201];
 
-    protected $variaveisRequeridas = [
-        'conta',
-        'agencia',
-        'codigoTransmissao',
-        'cedenteDocumento',
-        'cedenteNome',
-    ];
+    /**
+     * Caracter de fim de linha
+     *
+     * @var string
+     */
+    protected $fimLinha = "\r\n";
 
-    public function __construct() {
-        $this->fimLinha = chr(13).chr(10);
-        $this->fimArquivo = chr(13).chr(10);
+    /**
+     * Caracter de fim de arquivo
+     *
+     * @var null
+     */
+    protected $fimArquivo = "\r\n";
+
+    /**
+     * Codigo de transmissao da remessa ao banco.
+     *
+     * @var string
+     */
+    protected $codigoTransmissao;
+
+    /**
+     * Valor total dos titulos.
+     *
+     * @var float
+     */
+    private $total = 0;
+
+    /**
+     * @return mixed
+     */
+    public function getCodigoTransmissao()
+    {
+        return $this->codigoTransmissao;
+    }
+
+    /**
+     * @param mixed $codigoTransmissao
+     *
+     * @return Santander
+     */
+    public function setCodigoTransmissao($codigoTransmissao)
+    {
+        $this->codigoTransmissao = $codigoTransmissao;
+
+        return $this;
     }
 
     protected function header()
@@ -66,8 +124,8 @@ class Santander extends AbstractCnab implements Remessa
         $this->add(10, 11, '01');
         $this->add(12, 26, Util::formatCnab('X', 'COBRANCA', 15));
         $this->add(27, 46, Util::formatCnab('9', $this->getCodigoTransmissao(), 20));
-        $this->add(47, 76, Util::formatCnab('X', $this->getCedenteNome(), 30));
-        $this->add(77, 79, self::COD_BANCO_SANTANDER);
+        $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
+        $this->add(77, 79, $this->getCodigoBanco());
         $this->add(80, 94, Util::formatCnab('X', 'SANTANDER', 15));
         $this->add(95, 100, date('dmy'));
         $this->add(101, 116, Util::formatCnab('9','0',16));
@@ -78,63 +136,69 @@ class Santander extends AbstractCnab implements Remessa
         return $this;
     }
 
-    public function addDetalhe(Detalhe $detalhe)
+    public function addBoleto(BoletoContract $boleto)
     {
         $this->iniciaDetalhe();
 
-        $this->total += $detalhe->getValor();
-
-        if(in_array('06', $detalhe->getInstrucoes()))
-        {
-            $detalhe->diasProtesto = '00';
-        }
+        $this->total += $boleto->getValor();
 
         $this->add(1, 1, '1');
-        $this->add(2, 3, '02');
-        $this->add(4, 17, Util::formatCnab('9L', $this->getCedenteDocumento(), 14));
+        $this->add(2, 3, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? '02' : '01');
+        $this->add(4, 17, Util::formatCnab('9L', $this->getBeneficiario()->getDocumento(), 14));
         $this->add(18, 37, Util::formatCnab('9', $this->getCodigoTransmissao(), 20));
-        $this->add(38, 62, Util::formatCnab('X', $detalhe->getNumeroControleString(), 25));
-        $this->add(63, 69, Util::formatCnab('9', $detalhe->getNumero(), 7));
-        $this->add(70, 70, Util::modulo11($detalhe->getNumero()));
-        $this->add(71, 76, Util::formatCnab('D', $detalhe->getDataLimiteDesconto(), 6));
+        $this->add(38, 62, Util::formatCnab('X', '', 25)); // numero de controle
+        $this->add(63, 70, $boleto->getNumeroDocumento() . Util::modulo11($boleto->getNumeroDocumento()));
+        $this->add(71, 76, '000000');
         $this->add(77, 77, '');
-        $this->add(78, 78, ($detalhe->getTaxaMulta() ? '4' : '0'));
-        $this->add(79, 82, Util::formatCnab('9', $detalhe->getTaxaMulta(), 4, 2));
+        $this->add(78, 78, ($boleto->getMulta() !== false ? '4' : '0'));
+        $this->add(79, 82, Util::formatCnab('9', $boleto->getMulta(), 4, 2));
         $this->add(83, 84, '00');
         $this->add(85, 97, Util::formatCnab('9', 0, 13, 2));
-        $this->add(98, 101, '');
-        $this->add(102, 107, Util::formatCnab('9', $detalhe->getDataMulta(), 6));
-        $this->add(108, 108, $this->getCarteira('1'));
+        $this->add(98, 101, Util::formatCnab('X', '', 4));
+        $this->add(102, 107, $boleto->getDataVencimento()->copy()->addDays($boleto->getJurosApos(0))->format('dmy'));
+        $this->add(108, 108, $this->getCarteiraNumero() > 200 ? '1' : '5');
         $this->add(109, 110, '01');
-        $this->add(111, 120, Util::formatCnab('X', $detalhe->getNumeroDocumento(), 10));
-        $this->add(121, 126, Util::formatCnab('D', $detalhe->getDataVencimento(), 6));
-        $this->add(127, 139, Util::formatCnab('9', $detalhe->getValor(), 13, 2));
-        $this->add(140, 142, self::COD_BANCO_SANTANDER);
+        $this->add(111, 120, Util::formatCnab('X', $boleto->getNumeroDocumento(), 10));
+        $this->add(121, 126, $boleto->getDataVencimento()->format('dmy'));
+        $this->add(127, 139, Util::formatCnab('9', $boleto->getValor(), 13, 2));
+        $this->add(140, 142, $this->getCodigoBanco());
         $this->add(143, 147, '00000');
-        $this->add(148, 149, $detalhe->getEspecie('01'));
-        $this->add(150, 150, $detalhe->getAceite('N'));
-        $this->add(151, 156, Util::formatCnab('D', $detalhe->getDataDocumento(), 6));
-        $this->add(157, 158, $detalhe->getInstrucao1('00'));
-        $this->add(159, 160, $detalhe->getInstrucao2('00'));
-        $this->add(161, 173, Util::formatCnab('9', $detalhe->getValorMora(), 13, 2));
-        $this->add(174, 179, Util::formatCnab('D', $detalhe->getDataLimiteDesconto(), 6));
-        $this->add(180, 192, Util::formatCnab('9', $detalhe->getValorDesconto(), 13, 2));
-        $this->add(193, 205, Util::formatCnab('9', $detalhe->getvalorIOF(), 13, 2));
-        $this->add(206, 218, Util::formatCnab('9', $detalhe->getValorAbatimento(), 13, 2));
-        $this->add(219, 220, Util::formatCnab('9L', $detalhe->getSacadoTipoDocumento(), 2));
-        $this->add(221, 234, Util::formatCnab('9L', $detalhe->getSacadoDocumento(), 14));
-        $this->add(235, 274, Util::formatCnab('X', $detalhe->getSacadoNome(), 40));
-        $this->add(275, 314, Util::formatCnab('X', $detalhe->getSacadoEndereco(), 40));
-        $this->add(315, 326, Util::formatCnab('X', $detalhe->getSacadoBairro(), 12));
-        $this->add(327, 334, Util::formatCnab('9L', $detalhe->getSacadoCEP(), 8));
-        $this->add(335, 349, Util::formatCnab('X', $detalhe->getSacadoCidade(), 15));
-        $this->add(350, 351, Util::formatCnab('X', $detalhe->getSacadoEstado(), 2));
-        $this->add(352, 381, Util::formatCnab('X', $detalhe->getSacadorAvalista(), 30));
+        $this->add(148, 149, $boleto->getEspecieDocCodigo());
+        $this->add(150, 150, $boleto->getAceite());
+        $this->add(151, 156, $boleto->getDataDocumento()->format('dmy'));
+
+        $this->add(157, 158, '00');
+        $this->add(159, 160, '00');
+
+        if($boleto->getDiasProtesto() !== false)
+        {
+            $this->add(157, 158, '06');
+        }
+
+        $juros = 0;
+        if($boleto->getJuros() !== false)
+        {
+            $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
+        }
+        $this->add(161, 173, Util::formatCnab('9', $juros, 13, 2));
+        $this->add(174, 179, '000000');
+        $this->add(180, 192, Util::formatCnab('9', 0, 13, 2));
+        $this->add(193, 205, Util::formatCnab('9', 0, 13, 2));
+        $this->add(206, 218, Util::formatCnab('9', $boleto->getDescontosAbatimentos(), 13, 2));
+        $this->add(219, 220, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? '02' : '01');
+        $this->add(221, 234, Util::formatCnab('9L', $boleto->getPagador()->getDocumento(), 14));
+        $this->add(235, 274, Util::formatCnab('X', $boleto->getPagador()->getNome(), 40));
+        $this->add(275, 314, Util::formatCnab('X', $boleto->getPagador()->getEndereco(), 40));
+        $this->add(315, 326, Util::formatCnab('X', '', 12));
+        $this->add(327, 334, Util::formatCnab('9L', $boleto->getPagador()->getCep(), 8));
+        $this->add(335, 349, Util::formatCnab('X', $boleto->getPagador()->getCidade(), 15));
+        $this->add(350, 351, Util::formatCnab('X', $boleto->getPagador()->getUf(), 2));
+        $this->add(352, 381, Util::formatCnab('X', $boleto->getSacadorAvalista() ? $boleto->getSacadorAvalista()->getNome() : '', 30));
         $this->add(382, 382, '');
         $this->add(383, 383, 'I');
         $this->add(384, 385, substr($this->getConta(),-2));
-        $this->add(386, 391, '');
-        $this->add(392, 393, Util::formatCnab('9', $detalhe->getDiasProtesto(), 2));
+        $this->add(386, 391, Util::formatCnab('N', '', 6));
+        $this->add(392, 393, Util::formatCnab('9', $boleto->getDiasProtesto('0'), 2));
         $this->add(394, 394, '');
         $this->add(395, 400, Util::formatCnab('N', $this->iRegistros+1, 6));
 
@@ -147,11 +211,21 @@ class Santander extends AbstractCnab implements Remessa
 
         $this->add(1, 1, '9');
         $this->add(2, 7, Util::formatCnab('9', $this->getCount(), 6));
-        $this->add(8, 20, Util::formatCnab('9', $this->getTotal(), 13, 2));
+        $this->add(8, 20, Util::formatCnab('9', $this->total, 13, 2));
         $this->add(21, 394, Util::formatCnab('9', 0, 374));
         $this->add(395, 400, Util::formatCnab('9', $this->getCount(), 6));
 
         return $this;
+    }
+
+    public function isValid()
+    {
+        if(empty($this->getCodigoTransmissao()) || !parent::isValid())
+        {
+            return false;
+        }
+
+        return true;
     }
 
 }

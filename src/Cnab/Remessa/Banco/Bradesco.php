@@ -1,19 +1,34 @@
 <?php
+/**
+ *   Copyright (c) 2016 Eduardo Gusmão
+ *
+ *   Permission is hereby granted, free of charge, to any person obtaining a
+ *   copy of this software and associated documentation files (the "Software"),
+ *   to deal in the Software without restriction, including without limitation
+ *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *   and/or sell copies of the Software, and to permit persons to whom the
+ *   Software is furnished to do so, subject to the following conditions:
+ *
+ *   The above copyright notice and this permission notice shall be included in all
+ *   copies or substantial portions of the Software.
+ *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ *   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *   PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ *   COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ *   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ *   IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Banco;
 
-use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractCnab;
-use Eduardokum\LaravelBoleto\Cnab\Contracts\Remessa;
-use Eduardokum\LaravelBoleto\Cnab\Remessa\Detalhe;
+use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
 
-class Bradesco extends AbstractCnab implements Remessa
+class Bradesco extends AbstractRemessa implements RemessaContract
 {
-    public $agencia;
-    public $conta;
-    public $contaRazao;
-    public $cedenteCodigo;
-    public $cedenteNome;
-    public $debitoAutomatico = false;
 
     const ESPECIE_DUPLICATA = '01';
     const ESPECIE_NOTA_PROMISSORIA = '02';
@@ -53,17 +68,61 @@ class Bradesco extends AbstractCnab implements Remessa
     const INSTRUCAO_COBRAR_ENCAR_APOS_15 = '14';
     const INSTRUCAO_CENCEDER_DESC_APOS_VENC = '15';
 
-    protected $variaveisRequeridas = [
-        'agencia',
-        'conta',
-        'contaRazao',
-        'cedenteCodigo',
-        'cedenteNome'
-    ];
+    /**
+     * Código do banco
+     * @var string
+     */
+    protected $codigoBanco = self::COD_BANCO_BRADESCO;
 
-    public function __construct() {
-        $this->fimLinha = chr(13).chr(10);
-        $this->fimArquivo = chr(13).chr(10);
+    /**
+     * Define as carteiras disponíveis para cada banco
+     * @var array
+     */
+    protected $carteiras = [21, 22];
+
+    /**
+     * Caracter de fim de linha
+     *
+     * @var string
+     */
+    protected $fimLinha = "\r\n";
+
+    /**
+     * Caracter de fim de arquivo
+     *
+     * @var null
+     */
+    protected $fimArquivo = "\r\n";
+
+    /**
+     * Codigo do cliente junto ao banco.
+     *
+     * @var string
+     */
+    protected $codigoCliente;
+
+    /**
+     * Retorna o codigo do cliente.
+     *
+     * @return mixed
+     */
+    public function getCodigoCliente()
+    {
+        return $this->codigoCliente;
+    }
+
+    /**
+     * Seta o codigo do cliente.
+     *
+     * @param mixed $codigoCliente
+     *
+     * @return Bradesco
+     */
+    public function setCodigoCliente($codigoCliente)
+    {
+        $this->codigoCliente = $codigoCliente;
+
+        return $this;
     }
 
     protected function header()
@@ -75,117 +134,89 @@ class Bradesco extends AbstractCnab implements Remessa
         $this->add(3, 9, 'REMESSA');
         $this->add(10, 11, '01');
         $this->add(12, 26, Util::formatCnab('A', 'COBRANCA', 15));
-        $this->add(27, 46, Util::formatCnab('N', $this->getCedenteCodigo(),20));
-        $this->add(47, 76, Util::formatCnab('A', $this->getCedenteNome(), 30));
-        $this->add(77, 79, self::COD_BANCO_BRADESCO);
+        $this->add(27, 46, Util::formatCnab('N', $this->getCodigoCliente(),20));
+        $this->add(47, 76, Util::formatCnab('A', $this->getBeneficiario()->getNome(), 30));
+        $this->add(77, 79, $this->getCodigoBanco());
         $this->add(80, 94, Util::formatCnab('A', 'Bradesco', 15));
         $this->add(95, 100, date('dmy'));
         $this->add(101, 108, '');
         $this->add(109, 110, 'MX');
-        $this->add(111, 117, Util::formatCnab('N', $this->getID(), 7));
+        $this->add(111, 117, Util::formatCnab('N', $this->getIdremessa(), 7));
         $this->add(118, 394, '');
         $this->add(395, 400, Util::formatCnab('N', 1, 6));
 
         return $this;
     }
 
-    public function addDetalhe(Detalhe $detalhe)
+
+
+    public function addBoleto(BoletoContract $boleto)
     {
         $this->iniciaDetalhe();
 
-        $idempresa  = '0';
-        $idempresa  .= Util::formatCnab('N', $this->getCarteira('21'), 3);
-        $idempresa  .= Util::formatCnab('N', $this->getAcencia(), 5);
-        $idempresa  .= Util::formatCnab('N', $this->getConta(), 7);
-        $idempresa  .= Util::modulo11($this->getConta());
-
-        $dvNossoNumero = Util::modulo11(Util::formatCnab('N', $this->getCarteira('21'), 2) . Util::formatCnab('N', $detalhe->getNumero(), 11), 7, 0, 'P');
-        $dvNossoNumero = $detalhe->getNumero() > 0 ? $dvNossoNumero : 0;
+        $beneficiario_id = '0' .
+            Util::formatCnab('9', $this->getCarteiraNumero(), 3) .
+            Util::formatCnab('9', $this->getAgencia(), 5) .
+            Util::formatCnab('9', $this->getConta(), 7) .
+            Util::formatCnab('9', $this->getContaDv(), 1);
 
         $this->add(1, 1, '1');
-
-
-        if($this->debitoAutomatico) {
-            /**
-             *
-             * 002 a 020 - Identificação do Débito Automático em C/C
-             * Somente deverão ser preenchidos, caso o cliente Cedente esteja previamente cadastrado
-             * para operar com a modalidade de débito automático em Conta do cliente pagador (Sacado),
-             * cujos campos correspondentes a essas posições são:
-             * - posição 002 a 006 = no da Agência a ser debitada, ou seja, do Sacado
-             * - posição 007 a 007 = dígito da Agência a ser debitada
-             * - posição 008 a 012 = razão da Conta  - Ex. 07050
-             * - posição 013 a 019 = no da Conta Corrente do Sacado
-             * - posição 020 a 020 = dígito da Conta Corrente do Sacado
-             *
-             */
-            $this->add(2, 6, Util::formatCnab('N', $this->getAgencia(), 5));
-            $this->add(7, 7, Util::modulo11($this->getAgencia()));
-            $this->add(8, 12, Util::formatCnab('N', $this->getContaRazao(), 5));
-            $this->add(13, 19, Util::formatCnab('N', $this->getConta(), 7));
-            $this->add(20, 20, Util::modulo11($this->getConta()));
-        } else {
-            $this->add(2, 6, Util::formatCnab('A', '', 5));
-            $this->add(7, 7, '');
-            $this->add(8, 12, Util::formatCnab('A', '', 5));
-            $this->add(13, 19, Util::formatCnab('A', '', 7));
-            $this->add(20, 20, '');
-        }
-
-        if($detalhe->getTaxaMulta())
-        {
-            $tipoMulta = 2;
-            $multa = $detalhe->getTaxaMulta();
-        }
-        elseif($detalhe->getValorMulta())
-        {
-            $tipoMulta = 0;
-            $multa = $detalhe->getValorMulta();
-        }
-        else
-        {
-            $tipoMulta = ' ';
-            $multa = 0;
-        }
-
-        $this->add(21, 37, Util::formatCnab('A', $idempresa, 17));
-        $this->add(38, 62, Util::formatCnab('A', $detalhe->getNumeroControleString(), 25));
-        $this->add(63, 65, self::COD_BANCO_BRADESCO);
-        $this->add(66, 66, $tipoMulta);
-        $this->add(67, 70, Util::formatCnab('N', $multa, 4, 2));
-        $this->add(71, 81, Util::formatCnab('N', $detalhe->getNumero(), 11));
-        $this->add(82, 82, $dvNossoNumero);
-        $this->add(83, 92, Util::formatCnab('N', $detalhe->getValorDesconto(), 10, 2));
-        $this->add(93, 93, ($detalhe->getNumero()>0 ? '2' : '1'));
-        $this->add(94, 94, ($detalhe->getNumero()>0 ? 'N' : ' '));
-        $this->add(95, 104, '');
-        $this->add(105, 105, 'R');
-        $this->add(106, 106, '2');
-        $this->add(107, 108, '');
-        $this->add(109, 110, Util::formatCnab('N', $detalhe->getOcorrencia(), 2));
-        $this->add(111, 120, Util::formatCnab('A', $detalhe->getNumeroDocumento(), 10));
-        $this->add(121, 126, Util::formatCnab('D', $detalhe->getDataVencimento(), 6));
-        $this->add(127, 139, Util::formatCnab('N', $detalhe->getValor(), 13, 2));
+        $this->add(2, 6, Util::formatCnab('A', '', 5));
+        $this->add(7, 7, '');
+        $this->add(8, 12, Util::formatCnab('A', '', 5));
+        $this->add(13, 19, Util::formatCnab('A', '', 7));
+        $this->add(20, 20, '');
+        $this->add(21, 37, Util::formatCnab('A', $beneficiario_id, 17));
+        $this->add(38, 62, Util::formatCnab('A', '', 25)); // numero de controle
+        $this->add(63, 65, $this->getCodigoBanco());
+        $this->add(66, 66, $boleto->getMulta() === false ? '0' : '2');
+        $this->add(67, 70, Util::formatCnab('N', $boleto->getMulta() === false ? '0' : $boleto->getMulta(), 4, 2));
+        $this->add(71, 81, Util::formatCnab('N', $boleto->getNossoNumero(), 11));
+        $this->add(82, 82, Util::modulo11($boleto->getCarteira().$boleto->getNossoNumero(), 2, 7, 0, 'P'));
+        $this->add(83, 92, Util::formatCnab('N', 0, 10, 2));
+        $this->add(93, 93, '2'); // 1 = Banco emite e Processa o registro. 2 = Cliente emite e o Banco somente processa o registro
+        $this->add(94, 94, ''); // N= Não registra na cobrança. Diferente de N registra e emite Boleto.
+        $this->add(95, 104, Util::formatCnab('A', '', 10));
+        $this->add(105, 105, '');
+        $this->add(106, 106, '2'); // 1 = emite aviso, e assume o endereço do Pagador constante do Arquivo-Remessa; 2 = não emite aviso;
+        $this->add(107, 108, Util::formatCnab('A', '', 2));
+        $this->add(109, 110, '01');
+        $this->add(111, 120, Util::formatCnab('A', $boleto->getNumeroDocumento(), 10));
+        $this->add(121, 126, $boleto->getDataVencimento()->format('dmy'));
+        $this->add(127, 139, Util::formatCnab('N', $boleto->getValor(), 13, 2));
         $this->add(140, 142, Util::formatCnab('A','', 3));
-        $this->add(143, 147, Util::formatCnab('A','', 5));
-        $this->add(148, 149, $detalhe->getEspecie('01'));
-        $this->add(150, 150, $detalhe->getAceite('N'));
-        $this->add(151, 156, Util::formatCnab('D', $detalhe->getDataDocumento(), 6));
-        $this->add(157, 158, $detalhe->getInstrucao1('00'));
-        $this->add(159, 160, $detalhe->getInstrucao2('00'));
-        $this->add(161, 173, Util::formatCnab('N', $detalhe->getValorMora(), 13, 2));
-        $this->add(174, 179, Util::formatCnab('D', $detalhe->getDataLimiteDesconto(), 6));
-        $this->add(180, 192, Util::formatCnab('N', $detalhe->getValorDesconto(), 13, 2));
-        $this->add(193, 205, Util::formatCnab('N', $detalhe->getvalorIOF(), 13, 2));
-        $this->add(206, 218, Util::formatCnab('N', $detalhe->getValorAbatimento(), 13, 2));
-        $this->add(219, 220, Util::formatCnab('NL',$detalhe->getSacadoTipoDocumento(), 2));
-        $this->add(221, 234, Util::formatCnab('L', $detalhe->getSacadoDocumento(), 14));
-        $this->add(235, 274, Util::formatCnab('A', $detalhe->getSacadoNome(), 40));
-        $this->add(275, 314, Util::formatCnab('A', $detalhe->getSacadoEndereco(), 40));
-        $this->add(315, 326, '');
-        $this->add(327, 331, substr($detalhe->getSacadoCEP(), 0, 5));
-        $this->add(332, 334, substr($detalhe->getSacadoCEP(), -3));
-        $this->add(335, 394, Util::formatCnab('A', $detalhe->getSacadorAvalista(), 60));
+        $this->add(143, 147, '00000');
+        $this->add(148, 149, $boleto->getEspecieDocCodigo());
+        $this->add(150, 150, 'N');
+        $this->add(151, 156, $boleto->getDataDocumento()->format('dmy'));
+
+        $this->add(157, 158, '00');
+        $this->add(159, 160, '00');
+
+        if($boleto->getDiasProtesto() !== false)
+        {
+            $this->add(157, 158, '06');
+            $this->add(159, 160, Util::formatCnab('N', $boleto->getDiasProtesto(), 2));
+        }
+
+        $juros = 0;
+        if($boleto->getJuros() !== false)
+        {
+            $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
+        }
+        $this->add(161, 173, Util::formatCnab('9', $juros, 13, 2));
+        $this->add(174, 179, '000000');
+        $this->add(180, 192, Util::formatCnab('N', 0, 13, 2));
+        $this->add(193, 205, Util::formatCnab('N', 0, 13, 2));
+        $this->add(206, 218, Util::formatCnab('N', $boleto->getDescontosAbatimentos(), 13, 2));
+
+        $this->add(219, 220, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? '02' : '01');
+        $this->add(221, 234, Util::formatCnab('9L', $boleto->getPagador()->getDocumento(), 14));
+        $this->add(235, 274, Util::formatCnab('X', $boleto->getPagador()->getNome(), 40));
+        $this->add(275, 314, Util::formatCnab('X', $boleto->getPagador()->getEndereco(), 40));
+        $this->add(315, 326, Util::formatCnab('X', '', 12));
+        $this->add(327, 334, Util::formatCnab('9L', $boleto->getPagador()->getCep(), 8));
+        $this->add(335, 394, Util::formatCnab('X', $boleto->getSacadorAvalista() ? $boleto->getSacadorAvalista()->getNome() : '', 60));
         $this->add(395, 400, Util::formatCnab('N', $this->iRegistros+1, 6));
 
         return $this;
@@ -200,6 +231,16 @@ class Bradesco extends AbstractCnab implements Remessa
         $this->add(395, 400, Util::formatCnab('N', $this->getCount(), 6));
 
         return $this;
+    }
+
+    public function isValid()
+    {
+        if(empty($this->getCodigoCliente()) ||empty($this->getContaDv()) || !parent::isValid())
+        {
+            return false;
+        }
+
+        return true;
     }
 
 

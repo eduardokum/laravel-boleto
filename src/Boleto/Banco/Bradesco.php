@@ -1,84 +1,146 @@
 <?php
+/**
+ *   Copyright (c) 2016 Eduardo Gusmão
+ *
+ *   Permission is hereby granted, free of charge, to any person obtaining a
+ *   copy of this software and associated documentation files (the "Software"),
+ *   to deal in the Software without restriction, including without limitation
+ *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *   and/or sell copies of the Software, and to permit persons to whom the
+ *   Software is furnished to do so, subject to the following conditions:
+ *
+ *   The above copyright notice and this permission notice shall be included in all
+ *   copies or substantial portions of the Software.
+ *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ *   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *   PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ *   COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ *   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ *   IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
-use Eduardokum\LaravelBoleto\Boleto\Contracts\Banco\Bradesco as BradescoContract;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
 
-class Bradesco  extends AbstractBoleto implements BradescoContract
+class Bradesco  extends AbstractBoleto implements BoletoContract
 {
-
-    public function __construct()
+    /**
+     * Código do banco
+     * @var string
+     */
+    protected $codigoBanco = self::COD_BANCO_BRADESCO;
+    /**
+     * Define as carteiras disponíveis para este banco
+     * @var array
+     */
+//    protected $carteiras = ['02', '03', '04', '05', '06', '07', '09', '12', '16', '17', '19', '21', '22', '25', '26', '27', '30', '70'];
+    protected $carteiras = [21, 22];
+    /**
+     * Trata-se de código utilizado para identificar mensagens especificas ao cedente, sendo
+     * que o mesmo consta no cadastro do Banco, quando não houver código cadastrado preencher
+     * com zeros "000".
+     *
+     * @var int
+     */
+    protected $cip = '000';
+    /**
+     * Variaveis adicionais.
+     *
+     * @var array
+     */
+    public $variaveis_adicionais = [
+        'cip' => '000',
+        'mostra_cip' => true,
+    ];
+    /**
+     * Espécie do documento, coódigo para remessa
+     * @var string
+     */
+    protected $especiesCodigo = [
+        'DM' => '01',
+        'NP' => '02',
+        'NS' => '03',
+        'CS' => '04',
+        'REC' => '05',
+        'LC' => '10',
+        'ND' => '11',
+        'DS' => '12',
+    ];
+    /**
+     * Método que valida se o banco tem todos os campos obrigadotorios preenchidos
+     */
+    public function isValid()
     {
-        parent::__construct(self::COD_BANCO_BRADESCO);
-    }
-
-
-    public function preProcessamento()
-    {
-        if(!in_array($this->getCarteira(), ['06','09','16','19','21','22', '6','9']))
+        if(
+            empty($this->numero) ||
+            empty($this->agencia) ||
+            empty($this->conta) ||
+            empty($this->carteira)
+        )
         {
-            throw new \Exception('Carteira inválida, aceito somente {06,09,16,19,21,22}');
+            return false;
         }
-        $this->carteira = sprintf('%02s',$this->getCarteira());
-
-        $this->localPagamento = 'Pagável Preferencialmente em qualquer Agência Bradesco';
-        $this->agenciaConta = sprintf('%s-%s %s-%s', $this->getAgencia(), Util::modulo11($this->getAgencia()), $this->getConta(), Util::modulo11($this->getConta()));
+        return true;
     }
-
-
-    protected function gerarCodigoBarras()
+    /**
+     * Gera o Nosso Número.
+     *
+     * @return string
+     */
+    protected function gerarNossoNumero()
     {
-        $this->codigoBarras = $this->getBanco();
-        $this->codigoBarras .= $this->numeroMoeda;
-        $this->codigoBarras .= Util::fatorVencimento($this->getDataVencimento());
-        $this->codigoBarras .= Util::numberFormatValue($this->getValor(), 10, 0);
-        $this->codigoBarras .= Util::numberFormatGeral($this->getAgencia(),4,0);
-        $this->codigoBarras .= Util::numberFormatGeral($this->getCarteira(),2,0);
-        $this->codigoBarras .= $this->gerarNossoNumero();
-        $this->codigoBarras .= Util::numberFormatGeral($this->getConta(),7,0);
-        $this->codigoBarras .= '0';
-
-        $r = Util::modulo11($this->codigoBarras, 9, 1);
-        $dv = ($r == 0 || $r == 1 || $r == 10)?1:(11 - $r);
-        $this->codigoBarras = substr($this->codigoBarras, 0, 4) . $dv . substr($this->codigoBarras, 4);
-
-        return $this->codigoBarras;
+        return Util::numberFormatGeral($this->getNumero(), 11);
     }
-
-    protected function gerarLinha()
+    /**
+     * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
+     *
+     * @return string
+     */
+    public function getNossoNumeroBoleto()
     {
-        if(strlen($this->codigoBarras) == 44) {
-            $campo1 = substr($this->codigoBarras, 0, 4) . substr($this->codigoBarras, 19, 5);
-            $campo1 = $campo1 . Util::modulo10($campo1);
-            $campo1 = substr($campo1, 0, 5) . '.' . substr($campo1, 5, 5);
-
-            $campo2 = substr($this->codigoBarras, 24, 10);
-            $campo2 = $campo2 . Util::modulo10($campo2);
-            $campo2 = substr($campo2, 0, 5) . '.' . substr($campo2, 5, 6);
-
-            $campo3 = substr($this->codigoBarras, 34, 10);
-            $campo3 = $campo3 . Util::modulo10($campo3);
-            $campo3 = substr($campo3, 0, 5) . '.' . substr($campo3, 5, 6);
-
-            $campo4 = substr($this->codigoBarras, 4, 1);
-
-            $campo5 = substr($this->codigoBarras, 5, 4) . substr($this->codigoBarras, 9, 10);
-
-            $this->linha = "$campo1 $campo2 $campo3 $campo4 $campo5";
-
-            return $this->linha;
-        } else {
-            throw new \Exception('Código de barras não gerado ou inválido');
+        return Util::numberFormatGeral($this->getCarteira(), 2)
+        . ' / ' . $this->getNossoNumero()
+        . '-' . Util::modulo11($this->getCarteira().$this->getNossoNumero(), 2, 7, 0, 'P');
+    }
+    /**
+     * Método para gerar o código da posição de 20 a 44
+     *
+     * @return string
+     */
+    protected function getCampoLivre()
+    {
+        if ($this->campoLivre) {
+            return $this->campoLivre;
         }
+        return $this->campoLivre = Util::numberFormatGeral($this->getAgencia(), 4) .
+        Util::numberFormatGeral($this->getCarteira(), 2) .
+        Util::numberFormatGeral($this->getNossoNumero(), 11) .
+        Util::numberFormatGeral($this->getConta(), 7) .
+        '0';
     }
-
-    private function gerarNossoNumero() {
-        $nossoNumero = Util::numberFormatGeral($this->getNumero(), 11, 0);
-        $dv = Util::modulo11($nossoNumero, 7, 0, 'P');
-        $this->nossoNumero = $this->getCarteira() . '/' . $nossoNumero.'-'.$dv;
-
-        return $nossoNumero;
+    /**
+     * Define o campo CIP do boleto
+     *
+     * @param int $cip
+     * @return Bradesco
+     */
+    public function setCip($cip)
+    {
+        $this->cip = $cip;
+        $this->variaveis_adicionais['cip'] = $this->getCip();
+        return $this;
     }
-
+    /**
+     * Retorna o campo CIP do boleto
+     *
+     * @return int
+     */
+    public function getCip()
+    {
+        return Util::numberFormatGeral($this->cip, 3);
+    }
 }

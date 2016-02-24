@@ -1,156 +1,199 @@
 <?php
+/**
+ *   Copyright (c) 2016 Eduardo Gusmão
+ *
+ *   Permission is hereby granted, free of charge, to any person obtaining a
+ *   copy of this software and associated documentation files (the "Software"),
+ *   to deal in the Software without restriction, including without limitation
+ *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *   and/or sell copies of the Software, and to permit persons to whom the
+ *   Software is furnished to do so, subject to the following conditions:
+ *
+ *   The above copyright notice and this permission notice shall be included in all
+ *   copies or substantial portions of the Software.
+ *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ *   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *   PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ *   COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ *   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ *   IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
-use Eduardokum\LaravelBoleto\Boleto\Contracts\Banco\Bb as BbContract;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
 
-class Bb  extends AbstractBoleto implements BbContract
+class Bb extends AbstractBoleto implements BoletoContract
 {
-
-    public $nossoNumeroFormato;
-    public $convenio;
-    protected $convenioFormato;
-
-    public function __construct()
+    /**
+     * Código do banco
+     * @var string
+     */
+    protected $codigoBanco = self::COD_BANCO_BB;
+    /**
+     * Define as carteiras disponíveis para este banco
+     * @var array
+     */
+    protected $carteiras = array('11','12','15','16','17','18','31','51');
+    /**
+     * Espécie do documento, coódigo para remessa
+     * @var string
+     */
+    protected $especiesCodigo = [
+        'DM' => '01',
+        'NP' => '02',
+        'NS' => '03',
+        'REC' => '05',
+        'LC' => '08',
+        'W' => '09',
+        'CH' => '10',
+        'DS' => '12',
+        'ND' => '13',
+    ];
+    /**
+     * Define o número do convênio (4, 6 ou 7 caracteres)
+     * @var string
+     */
+    protected $convenio;
+    /**
+     * Defgine o numero da variação da carteira.
+     * @var string
+     */
+    protected $variacao_carteira;
+    /**
+     * Define o número do convênio. Sempre use string pois a quantidade de caracteres é validada.
+     *
+     * @param string $convenio
+     * @return BancoDoBrasil
+     */
+    public function setConvenio($convenio)
     {
-        parent::__construct(self::COD_BANCO_BB);
+        $this->convenio = $convenio;
+        return $this;
     }
-
-    public function preProcessamento()
+    /**
+     * Retorna o número do convênio
+     *
+     * @return string
+     */
+    public function getConvenio()
     {
-        if(!in_array($this->getCarteira(), ['11','12','16','18','17','31','51']))
+        return $this->convenio;
+    }
+    /**
+     * Define o número da variação da carteira, para saber quando utilizar o nosso numero de 17 posições.
+     *
+     * @param string $variacao_carteira
+     * @return BancoDoBrasil
+     */
+    public function setVariacaoCarteira($variacao_carteira)
+    {
+        $this->variacao_carteira = (int) $variacao_carteira;
+        return $this;
+    }
+    /**
+     * Retorna o número da variacao de carteira
+     *
+     * @return string
+     */
+    public function getVariacaoCarteira()
+    {
+        return $this->variacao_carteira;
+    }
+    /**
+     * Método que valida se o banco tem todos os campos obrigadotorios preenchidos
+     */
+    public function isValid()
+    {
+        if(
+            empty($this->numero) ||
+            empty($this->convenio) ||
+            empty($this->carteira)
+        )
         {
-            throw new \Exception('Carteira inválida, aceito somente {11,12,16,18,17,31,51}');
+            return false;
         }
-
-        if( (is_numeric($this->convenio)) && (strlen($this->convenio) > 1 && strlen($this->convenio) <= 6) ) {
-            $this->convenio = Util::numberFormatGeral($this->convenio, 6, 0);
-        }
-
-        if( !in_array(strlen($this->convenio), array('6','7','8',6,7,8)) ) {
-            throw new \Exception('Formato de convenio inválido, deve possuir {6|7|8} digitos');
-        }
-
-        $this->convenioFormato = strlen($this->convenio);
-
-        $this->agenciaConta = sprintf("%s-%s / %s-%s", $this->getAgencia(), Util::modulo11($this->getAgencia()), $this->getConta(), Util::modulo11($this->getConta()));
+        return true;
     }
-
-
-    protected function gerarCodigoBarras()
+    /**
+     * Gera o Nosso Número.
+     *
+     * @throws \Exception
+     * @return string
+     */
+    protected function gerarNossoNumero()
     {
-        $nossoNumero  = $this->gerarNossoNumero();
-
-        $this->codigoBarras = $this->getBanco();
-        $this->codigoBarras .= $this->numeroMoeda;
-        $this->codigoBarras .= Util::fatorVencimento($this->getDataVencimento());
-        $this->codigoBarras .= Util::numberFormatValue($this->getValor(), 10, 0);
-
-        if($this->convenioFormato == '8') {
-
-            $this->codigoBarras .= '000000';
-            $this->codigoBarras .= $this->convenio;
-            $this->codigoBarras .= $nossoNumero;
-            $this->codigoBarras .= $this->getCarteira();
-
-        } else if ($this->convenioFormato == "7") {
-
-            $this->codigoBarras .= '000000';
-            $this->codigoBarras .= $this->convenio;
-            $this->codigoBarras .= $nossoNumero;
-            $this->codigoBarras .= $this->getCarteira();
-
-        } else if ($this->convenioFormato == "6") {
-
-            $this->codigoBarras .= $this->convenio;
-            $this->codigoBarras .= $nossoNumero;
-
-            if($this->nossoNumeroFormato == 1) {
-
-                $this->codigoBarras .= Util::numberFormatGeral($this->getAgencia(), 4, 0);
-                $this->codigoBarras .= Util::numberFormatGeral($this->getConta(), 8, 0);
-                $this->codigoBarras .= $this->getCarteira();
-
-            } else if($this->nossoNumeroFormato == 2) {
-
-                $this->codigoBarras .= '21';
-
-            } else {
-                throw new \Exception('Campo nossoNumeroFormato inválido, deve possuir {1|2}');
-            }
-        } else {
-            throw new \Exception('Formato de convenio inválido, deve possuir {6|7|8} digitos');
+        $convenio = $this->getConvenio();
+        $numero_boleto = $this->getNumero();
+        $numero = null;
+        switch (strlen($convenio)) {
+            // Convênio de 4 dígitos, são 11 dígitos no nosso número
+            case 4:
+                $numero = Util::numberFormatGeral($convenio, 4) . Util::numberFormatGeral($numero_boleto, 7);
+                break;
+            // Convênio de 6 dígitos, são 11 dígitos no nosso número
+            case 6:
+                // Exceto no caso de ter a carteira sem registro (16 e 18) e a vartiação da carteira ser 17
+                if (in_array($this->getCarteira(),['16','18']) and $this->getVariacaoCarteira() == 17) {
+                    $numero = Util::numberFormatGeral($numero_boleto, 17);
+                } else {
+                    $numero = Util::numberFormatGeral($convenio, 6) . Util::numberFormatGeral($numero_boleto, 5);
+                }
+                break;
+            // Convênio de 7 dígitos, são 17 dígitos no nosso número
+            case 7:
+                $numero = Util::numberFormatGeral($convenio, 7) . Util::numberFormatGeral($numero_boleto, 10);
+                break;
+            // Não é com 4, 6 ou 7 dígitos? Não existe.
+            default:
+                throw new \Exception('O código do convênio precisa ter 4, 6 ou 7 dígitos!');
         }
-
-        $dv_modulo = 11 - Util::modulo11($this->codigoBarras, 9, 1);
-        $dv = ($dv_modulo == 0 ||$dv_modulo == 10 ||$dv_modulo == 11)?1:$dv_modulo;
-        $this->codigoBarras = substr($this->codigoBarras, 0, 4) . $dv . substr($this->codigoBarras, 4);
-
-        return $this->codigoBarras;
+        return $numero;
     }
-
-    protected function gerarLinha()
+    /**
+     * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
+     *
+     * @return string
+     */
+    public function getNossoNumeroBoleto()
     {
-        if(strlen($this->codigoBarras) == 44) {
-
-            $campo1 = substr($this->codigoBarras, 0, 4) . substr($this->codigoBarras, 19, 5);
-            $campo1 = $campo1 . Util::modulo10($campo1);
-            $campo1 = substr($campo1, 0, 5) . '.' . substr($campo1, 5, 5);
-
-            $campo2 = substr($this->codigoBarras, 24, 10);
-            $campo2 = $campo2 . Util::modulo10($campo2);
-            $campo2 = substr($campo2, 0, 5) . '.' . substr($campo2, 5, 6);
-
-            $campo3 = substr($this->codigoBarras, 34, 10);
-            $campo3 = $campo3 . Util::modulo10($campo3);
-            $campo3 = substr($campo3, 0, 5) . '.' . substr($campo3, 5, 6);
-
-            $campo4 = substr($this->codigoBarras, 4, 1);
-
-            $campo5 = substr($this->codigoBarras, 5, 14);
-
-            $this->linha = "$campo1 $campo2 $campo3 $campo4 $campo5";
-
-            return $this->linha;
-        } else {
-            throw new \Exception('Código de barras não gerado ou inválido');
-        }
+        $nn = $this->getNossoNumero();
+        return strlen($nn) < 17 ? $nn . '-' . Util::modulo11($nn) : $nn;
     }
-
-    protected function gerarNossoNumero() {
-
-        if($this->convenioFormato == '8') {
-
-            $nossoNumero        = Util::numberFormatGeral($this->getNumero(), 9, 0);
-            $this->nossoNumero  = $this->convenio . $nossoNumero . "-" . Util::modulo11($this-$this->convenio . $nossoNumero);
-
-        } else if ($this->convenioFormato == "7") {
-
-            $nossoNumero        = Util::numberFormatGeral($this->getNumero(), 10, 0);
-            $this->nossoNumero  = $this->convenio . $nossoNumero . "-" . Util::modulo11($this->convenio . $nossoNumero);
-            $this->nossoNumero  = $this->convenio . $nossoNumero;
-
-        } else if ($this->convenioFormato == "6") {
-
-            if($this->nossoNumeroFormato == 1) {
-
-                $nossoNumero        = Util::numberFormatGeral($this->getNumero(), 5, 0);
-                $this->nossoNumero  = $this->convenio . $nossoNumero . "-" . Util::modulo11($this->convenio . $nossoNumero);
-
-            } else if($this->nossoNumeroFormato == 2) {
-
-                $nossoNumero        = Util::numberFormatGeral($this->getNumero(), 17, 0);
-                $this->nossoNumero  = $nossoNumero;
-
+    /**
+     * Método para gerar o código da posição de 20 a 44
+     *
+     * @return string
+     * @throws \Exception
+     */
+    protected function getCampoLivre()
+    {
+        if ($this->campoLivre) {
+            return $this->campoLivre;
+        }
+        $length = strlen($this->getConvenio());
+        $nossoNumero = $this->gerarNossoNumero();
+        // Apenas para convênio com 6 dígitos, modalidade sem registro - carteira 16 e 18 (definida para 21)
+        if (strlen($this->getNumero()) > 10) {
+            if ($length == 6 and in_array($this->getCarteira(),['16','18']) and Util::numberFormatGeral($this->getVariacaoCarteira(), 3) == '017') {
+                // Convênio (6) + Nosso número (17) + Carteira (2)
+                return $this->campoLivre = Util::numberFormatGeral($this->getConvenio(), 6) . $nossoNumero . '21';
             } else {
-                throw new \Exception('Campo formatacaoNN inválido, deve possuir {1|2}');
+                throw new \Exception('Só é possível criar um boleto com mais de 10 dígitos no nosso número quando a carteira é 21 e o convênio possuir 6 dígitos.');
             }
-        } else {
-            throw new \Exception('Formato de convenio inválido, deve possuir {6|7|8} digitos');
         }
-
-        return $nossoNumero;
+        switch ($length) {
+            case 4:
+            case 6:
+                // Nosso número (11) + Agencia (4) + Conta (8) + Carteira (2)
+                return $this->campoLivre =  $nossoNumero . Util::numberFormatGeral($this->getAgencia(), 4) . Util::numberFormatGeral($this->getConta(), 8) . Util::numberFormatGeral($this->getCarteira(), 2);
+            case 7:
+                // Zeros (6) + Nosso número (17) + Carteira (2)
+                return $this->campoLivre =  '000000' . $nossoNumero . Util::numberFormatGeral($this->getCarteira(), 2);
+        }
+        throw new \Exception('O código do convênio precisa ter 4, 6 ou 7 dígitos!');
     }
-
 }

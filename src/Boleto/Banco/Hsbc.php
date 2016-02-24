@@ -1,138 +1,177 @@
 <?php
+/**
+ *   Copyright (c) 2016 Eduardo Gusmão
+ *
+ *   Permission is hereby granted, free of charge, to any person obtaining a
+ *   copy of this software and associated documentation files (the "Software"),
+ *   to deal in the Software without restriction, including without limitation
+ *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *   and/or sell copies of the Software, and to permit persons to whom the
+ *   Software is furnished to do so, subject to the following conditions:
+ *
+ *   The above copyright notice and this permission notice shall be included in all
+ *   copies or substantial portions of the Software.
+ *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ *   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *   PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ *   COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ *   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ *   IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
-use Eduardokum\LaravelBoleto\Boleto\Contracts\Banco\Hsbc as HsbcContract;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
 
-class Hsbc  extends AbstractBoleto implements HsbcContract
+class Hsbc  extends AbstractBoleto implements BoletoContract
 {
 
-    public $cedenteCodigo;
-    public $range;
-
-    public function __construct()
+    /**
+     * Código do banco
+     * @var string
+     */
+    protected $codigoBanco = self::COD_BANCO_HSBC;
+    /**
+     * Define as carteiras disponíveis para este banco
+     * @var array
+     */
+    protected $carteiras = ['cnr', 'csb', 'CNR', 'CSB'];
+    /**
+     * Espécie do documento, coódigo para remessa
+     * @var string
+     */
+    protected $especiesCodigo = [
+        'DM' => '01',
+        'NP' => '02',
+        'NS' => '03',
+        'REC' => '05',
+        'CE' => '09',
+        'NS' => '10',
+        'PD' => '98',
+    ];
+    /**
+     * Código de range de composição do nosso numero.
+     * @var string
+     */
+    protected $range;
+    /**
+     * Espécie do documento, geralmente DM (Duplicata Mercantil)
+     * @var string
+     */
+    protected $especieDoc = 'PD';
+    /**
+     * @return string
+     */
+    public function getRange()
     {
-        parent::__construct(self::COD_BANCO_HSBC);
+        return $this->range;
     }
-
-    protected function preProcessamento()
+    /**
+     * @param string $range
+     *
+     * @return Hsbc
+     */
+    public function setRange($range)
     {
-        $this->localPagamento = 'Pagar preferencialmente em agência do Hsbc';
+        $this->range = $range;
 
-        $this->carteira = Util::lower($this->getCarteira());
-
-        if(!in_array($this->getCarteira(), ['1', '3', 'cnr','csb']))
-        {
-            throw new \Exception('Carteira inválida, aceito somente {cnr,csb}');
-        }
-
-        if($this->getCarteira() == '1')
-        {
-            $this->carteira = 'csb';
-        }
-        if($this->getCarteira() == '3')
-        {
-            $this->carteira = 'cnr';
-        }
-
-        if($this->getCarteira() == 'csb') {
-            $this->especieDocumento = (!$this->especieDocumento)?'PD':$this->especieDocumento;
-        }
+        return $this;
     }
-
-    protected function gerarCodigoBarras()
+    /**
+     * Define o campo Espécie Doc, HSBC sempre PD
+     *
+     * @param string $especieDoc
+     * @return AbstractBoleto
+     */
+    public function setEspecieDoc($especieDoc)
     {
-        if($this->getCarteira() == 'cnr')
-        {
-            $this->agenciaConta = sprintf('%s %s', $this->getAgencia(), $this->cedenteCodigo);
-
-            $this->codigoBarras = $this->getBanco();
-            $this->codigoBarras .= $this->numeroMoeda;
-            $this->codigoBarras .= Util::fatorVencimento($this->getDataVencimento());
-            $this->codigoBarras .= Util::numberFormatValue($this->getValor(), 10, 0);
-            $this->codigoBarras .= Util::numberFormatGeral($this->cedenteCodigo, 7, 0);
-            $this->codigoBarras .= $this->geraNossoNumero();
-            $this->codigoBarras .= Util::dataJuliano($this->getDataVencimento());
-            $this->codigoBarras .= 2;
-        }
-
-        if($this->carteira == 'csb' )
-        {
-            $this->agenciaConta = sprintf('%s-%s', $this->getAgencia(), $this->getAgencia().$this->getConta());
-
-            $this->codigoBarras = $this->getBanco();
-            $this->codigoBarras .= $this->numeroMoeda;
-            $this->codigoBarras .= Util::fatorVencimento($this->getDataVencimento());
-            $this->codigoBarras .= Util::numberFormatValue($this->getValor(), 10, 0);
-            $this->codigoBarras .= $this->geraNossoNumero();
-            $this->codigoBarras .= Util::numberFormatGeral($this->getAgencia(), 4, 0) . Util::numberFormatGeral($this->getConta(), 7, 0);
-            $this->codigoBarras .= '00';
-            $this->codigoBarras .= '1';
-        }
-
-        $r = Util::modulo11($this->codigoBarras, 9, 1);
-        $dv = ($r == 0 || $r == 1 || $r == 10)?1:(11 - $r);
-        $this->codigoBarras = substr($this->codigoBarras, 0, 4) . $dv . substr($this->codigoBarras, 4);
-
-        return $this->codigoBarras;
+        $this->especieDoc = 'PD';
+        return $this;
     }
-
-    protected function gerarLinha()
+    /**
+     * Retorna o campo Agência/Beneficiário do boleto
+     *
+     * @return string
+     */
+    public function getAgenciaCodigoBeneficiario()
     {
-        if(strlen($this->codigoBarras) == 44) {
-            $campo1 = substr($this->codigoBarras, 0, 4) . substr($this->codigoBarras, 19, 5);
-            $campo1 = $campo1 . Util::modulo10($campo1);
-            $campo1 = substr($campo1, 0, 5) . '.' . substr($campo1, 5, 5);
+        $agencia = $this->getAgenciaDv() !== null ? $this->getAgencia() . '-' . $this->getAgenciaDv() : $this->getAgencia();
 
-            $campo2 = substr($this->codigoBarras, 24, 2) . substr($this->codigoBarras, 26, 8);
-            $campo2 = $campo2 . Util::modulo10($campo2);
-            $campo2 = substr($campo2, 0, 5) . '.' . substr($campo2, 5, 6);
-
-            $campo3 = substr($this->codigoBarras, 34, 5) . substr($this->codigoBarras, 39, 4) . substr($this->codigoBarras, 43, 1);
-            $campo3 = $campo3 . Util::modulo10($campo3);
-            $campo3 = substr($campo3, 0, 5) . '.' . substr($campo3, 5, 6);
-
-            $campo4 = substr($this->codigoBarras, 4, 1);
-
-            $campo5 = substr($this->codigoBarras, 5, 4) . substr($this->codigoBarras, 9, 10);
-
-            $this->linha = "$campo1 $campo2 $campo3 $campo4 $campo5";
-
-            return $this->linha;
-        } else {
-            throw new Exception('Código de barras não gerado ou inválido');
+        if($this->getContaDv() !== null && strlen($this->getContaDv()) == 1)
+        {
+              $conta = substr($this->getConta(), 0, -1) . '-' .substr($this->getConta(), -1).$this->getContaDv();
         }
+        elseif($this->getContaDv() !== null && strlen($this->getContaDv()) == 2)
+        {
+            $conta = substr($this->getConta(), 0, -1) . '-' .substr($this->getConta(), -1).$this->getContaDv();
+        }
+        else
+        {
+            $conta = $this->getConta();
+        }
+
+        return $agencia . ' / ' . $conta;
     }
-
-
-    private function geraNossoNumero() {
-
-        if($this->carteira == 'cnr') {
-            if( $this->getNumero() && $this->cedenteCodigo && $this->getDataVencimento() ) {
-
-                $nossonumero = Util::numberFormatGeral($this->getNumero(), 13, 0);
-                $nossonumero .= Util::modulo11Reverso( $nossonumero ) . '4';
-                $nossonumero .= Util::modulo11Reverso( ( $nossonumero + $this->cedenteCodigo + $this->getDataVencimento()->format('dmy') ) );
-                $this->nossoNumero = $nossonumero;
-                return Util::numberFormatGeral($this->numero, 13, 0);
-
-            } else {
-                throw new Exception('Todos os parâmetros devem ser informados {numero,contaCorrente,vencimento}');
-            }
+    /**
+     * Método que valida se o banco tem todos os campos obrigadotorios preenchidos
+     */
+    public function isValid()
+    {
+        if(
+            empty($this->numero) ||
+            empty($this->range) ||
+            empty($this->agencia) ||
+            empty($this->conta) ||
+            empty($this->contaDv) ||
+            empty($this->carteira)
+        )
+        {
+            return false;
         }
-        if($this->carteira == 'csb') {
-            if( $this->range && $this->getNumero() ) {
-
-                $nossonumero = Util::numberFormatGeral($this->range, 5, 0) . Util::numberFormatGeral($this->numero, 5, 0);
-                $nossonumero .= Util::modulo11($nossonumero,7);
-                $this->nossoNumero = $nossonumero;
-                return $nossonumero;
-
-            } else {
-                throw new Exception('Todos os parâmetros devem ser informados {numero,range}');
-            }
-        }
+        return true;
     }
+    /**
+     * Gera o Nosso Número.
+     *
+     * @return string
+     */
+    protected function gerarNossoNumero()
+    {
+        $range = Util::numberFormatGeral($this->getRange(), 5);
+        $numero = Util::numberFormatGeral($this->getNumero(), 5);
+        $dv = Util::modulo11($range.$numero, 2, 7);
+        return $range.$numero.$dv;
+    }
+    /**
+     * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
+     *
+     * @return string
+     */
+    public function getNossoNumeroBoleto()
+    {
+        return substr_replace($this->getNossoNumero(), '-', -1, 0);
+    }
+    /**
+     * Método para gerar o código da posição de 20 a 44
+     *
+     * @return string
+     */
+    protected function getCampoLivre()
+    {
+        if ($this->campoLivre) {
+            return $this->campoLivre;
+        }
 
+        $ag = Util::numberFormatGeral($this->getAgencia(), 4);
+        $cc = Util::numberFormatGeral($this->getConta(), 6);
+        $agCc = $ag.$cc . ($this->getContaDv() ? $this->getContaDv() : Util::modulo11($ag.$cc));
+
+        return $this->campoLivre = $this->getNossoNumero() .
+            $agCc.
+            '00' . // Codigo da carteira
+            '1'; // Codigo do aplicativo
+    }
 }

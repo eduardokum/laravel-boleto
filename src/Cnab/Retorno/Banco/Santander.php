@@ -1,19 +1,46 @@
 <?php
+/**
+ *   Copyright (c) 2016 Eduardo Gusmão
+ *
+ *   Permission is hereby granted, free of charge, to any person obtaining a
+ *   copy of this software and associated documentation files (the "Software"),
+ *   to deal in the Software without restriction, including without limitation
+ *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *   and/or sell copies of the Software, and to permit persons to whom the
+ *   Software is furnished to do so, subject to the following conditions:
+ *
+ *   The above copyright notice and this permission notice shall be included in all
+ *   copies or substantial portions of the Software.
+ *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ *   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *   PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ *   COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ *   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ *   IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Banco;
 
-use Carbon\Carbon;
-use Eduardokum\LaravelBoleto\Cnab\Contracts\Retorno;
-use Eduardokum\LaravelBoleto\Cnab\Retorno\AbstractCnab;
-use Eduardokum\LaravelBoleto\Cnab\Retorno\Detalhe;
+use Eduardokum\LaravelBoleto\Cnab\Retorno\AbstractRetorno;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno;
 use Eduardokum\LaravelBoleto\Util;
 
-class Santander extends AbstractCnab implements Retorno
+class Santander extends AbstractRetorno implements Retorno
 {
 
-    public $agencia;
-    public $conta;
+    /**
+     * Código do banco
+     * @var string
+     */
+    protected $codigoBanco = self::COD_BANCO_SANTANDER;
 
-    private $ocorrencias = array(
+    /**
+     * Array com as ocorrencias do banco;
+     *
+     * @var array
+     */
+    private $ocorrencias = [
         '01' => 'Título não existe',
         '02' => 'Entrada título confirmada',
         '03' => 'Entrada título rejeitada',
@@ -34,25 +61,14 @@ class Santander extends AbstractCnab implements Retorno
         '24' => 'Custas de Cartório',
         '25' => 'Protestar Título',
         '26' => 'Sustar Protesto',
-    );
-
-    private $especies = array(
-        '01' => 'Duplicata',
-        '02' => 'Nota promissória',
-        '03' => 'Apólice ou nota de seguro',
-        '05' => 'Recibo',
-        '06' => 'Duplicata de serviço',
-        '07' => 'Letra de câmbio',
-        'XX' => 'Desconhecida',
-    );
-
-    private $indicativosCredito = [
-        'D' => 'Débito',
-        'C' => 'Crédito',
-        'X' => 'Desconhecido',
     ];
 
-    private $rejeicoes = array(
+    /**
+     * Array com as possiveis rejeicoes do banco.
+     *
+     * @var array
+     */
+    private $rejeicoes = [
         '001' => 'NOSSO NUMERO NAO NUMERICO',
         '002' => 'VALOR DO ABATIMENTO NAO NUMERICO',
         '003' => 'DATA VENCIMENTO NAO NUMERICA',
@@ -106,9 +122,7 @@ class Santander extends AbstractCnab implements Retorno
         '062' => 'SACADO NAO PROTESTAVEL',
         '063' => 'CEP NAO ENCONTRADO NA TABELA DE PRACAS',
         '064' => 'TIPO DE COBRANCA NAO PERMITE PROTESTO',
-        '064' => 'TIPO DE COBRANCA NAO PERMITE PROTESTO',
         '065' => 'PEDIDO SUSTACAO JA SOLICITADO',
-        '066' => 'SUSTACAO PROTESTO FORA DE PRAZO',
         '066' => 'SUSTACAO PROTESTO FORA DE PRAZO',
         '067' => 'CLIENTE NAO TRANSMITE REG. DE OCORRENCIA',
         '068' => 'TIPO DE VENCIMENTO INVALIDO',
@@ -141,7 +155,6 @@ class Santander extends AbstractCnab implements Retorno
         '097' => 'ESPECIE DOCTO NAO PERMITE IOC ZERADO',
         '098' => 'DATA EMISSAO INVALIDA',
         '099' => 'REGISTRO DUPLICADO NO MOVIMENTO DIARIO',
-        '099' => 'REGISTRO DUPLICADO NO MOVIMENTO DIÁRIO',
         '100' => 'DATA EMISSAO MAIOR QUE A DATA VENCIMENTO',
         '101' => 'NOME DO SACADO NÃO INFORMADO ',
         '102' => 'ENDERECO DO SACADO NÃO INFORMADO',
@@ -156,7 +169,6 @@ class Santander extends AbstractCnab implements Retorno
         '111' => 'DATA  DESCONTO NAO NUMERICA',
         '112' => 'VALOR DESCONTO NAO INFORMADO',
         '113' => 'VALOR DESCONTO INVALIDO',
-        '114' => 'VALOR ABATIMENTO NAO INFORMADO',
         '114' => 'VALOR ABATIMENTO NAO INFORMADO',
         '115' => 'VALOR ABATIMENTO MAIOR VALOR TITULO',
         '116' => 'DATA MULTA NAO NUMERICA',
@@ -236,124 +248,117 @@ class Santander extends AbstractCnab implements Retorno
         '259' => 'CAD.TXPERM.SK.INV.P.COD.MORA=4(D3P)',
         '260' => 'VL.TIT(REAL).INV.P.COD.MORA = 1(DEP)',
         '261' => 'VL.OUTROS INV.P.COD.MORA = 1(D3P)',
-        '' => '',
-    );
+    ];
 
-    public function __construct($file)
+    /**
+     * Roda antes dos metodos de processar
+     */
+    protected function init()
     {
-        parent::__construct($file);
-
-        $this->banco = self::COD_BANCO_SANTANDER;
-        $this->agencia = (int)substr($this->file[0], 26, 4);
-        $this->conta = (int)substr($this->file[0], 30, 8);
+        $this->totais = [
+            'valor_recebido' => 0,
+            'liquidados' => 0,
+            'entradas' => 0,
+            'baixados' => 0,
+            'erros' => 0,
+            'alterados' => 0,
+        ];
     }
 
     protected function processarHeader(array $header)
     {
-        $this->header->operacaoCodigo = $this->rem(2, 2, $header);
-        $this->header->operacao = $this->rem(3, 9, $header);
-        $this->header->servicoCodigo = $this->rem(10, 11, $header);
-        $this->header->servico = $this->rem(12, 26, $header);
-        $this->header->agencia = $this->rem(27, 30, $header);
-        $this->header->conta = $this->rem(31, 38, $header);
-        $this->header->contaCobranca = $this->rem(39, 46, $header);
-        $this->header->cedenteNome = $this->rem(47, 76, $header);
-        $this->header->data = $this->rem(95, 100, $header);
-        $this->header->cedenteCodigo = $this->rem(111, 117, $header);
+        $this->getHeader()
+            ->setOperacaoCodigo($this->rem(2, 2, $header))
+            ->setOperacao($this->rem(3, 9, $header))
+            ->setServicoCodigo($this->rem(10, 11, $header))
+            ->setServico($this->rem(12, 26, $header))
+            ->setAgencia($this->rem(27, 30, $header))
+            ->setConta($this->rem(39, 46, $header))
+            ->setData($this->rem(95, 100, $header));
 
-        $this->header->data = trim($this->header->data, '0 ') == "" ? null : Carbon::createFromFormat('dmy', $this->header->data)->setTime(0, 0, 0);
+        return true;
     }
 
     protected function processarDetalhe(array $detalhe)
     {
-        $i = $this->i;
 
-        $this->detalhe[$i] = new Detalhe($detalhe);
-        $this->detalhe[$i]->numeroControle = Util::controle2array($this->rem(38, 62, $detalhe));
-        $this->detalhe[$i]->nossoNumero = $this->rem(63, 70, $detalhe);
-        $this->detalhe[$i]->numeroDocumento = $this->rem(117, 126, $detalhe);
-        $this->detalhe[$i]->numero = $this->rem(127, 134, $detalhe);
-        $this->detalhe[$i]->ocorrencia = $this->rem(109, 110, $detalhe);
-        $this->detalhe[$i]->dataOcorrencia = $this->rem(111, 116, $detalhe);
-        $this->detalhe[$i]->dataVencimento = $this->rem(147, 152, $detalhe);
-        $this->detalhe[$i]->dataCredito = $this->rem(296, 301, $detalhe);
-        $this->detalhe[$i]->rejeicao = $this->rem(135, 136, $detalhe);
-        $this->detalhe[$i]->erro1 = $this->rem(137, 139, $detalhe);
-        $this->detalhe[$i]->erro2 = $this->rem(140, 142, $detalhe);
-        $this->detalhe[$i]->erro3 = $this->rem(143, 145, $detalhe);
-        $this->detalhe[$i]->bancoCobrador = $this->rem(166, 168, $detalhe);
-        $this->detalhe[$i]->agenciaCobradora = $this->rem(169, 173, $detalhe);
-        $this->detalhe[$i]->especie = $this->rem(174, 175, $detalhe);
-        $this->detalhe[$i]->valor = Util::nFloat($this->rem(153, 165, $detalhe)/100);
-        $this->detalhe[$i]->valorTarifa = Util::nFloat($this->rem(176, 188, $detalhe)/100);
-        $this->detalhe[$i]->valorOutrosDebitos = Util::nFloat($this->rem(189, 201, $detalhe)/100);
-        $this->detalhe[$i]->valorJuros = Util::nFloat($this->rem(202, 214, $detalhe)/100);
-        $this->detalhe[$i]->valorIOF = Util::nFloat($this->rem(215, 227, $detalhe)/100);
-        $this->detalhe[$i]->valorAbatimento = Util::nFloat($this->rem(228, 240, $detalhe)/100);
-        $this->detalhe[$i]->valorDesconto = Util::nFloat($this->rem(241, 253, $detalhe)/100);
-        $this->detalhe[$i]->valorRecebido = Util::nFloat($this->rem(254, 266, $detalhe)/100);
-        $this->detalhe[$i]->valorMora = Util::nFloat($this->rem(267, 279, $detalhe)/100);
-        $this->detalhe[$i]->valorOutrosCreditos = Util::nFloat($this->rem(280, 292, $detalhe)/100);
-        $this->detalhe[$i]->valorOutraUnidade = Util::nFloat($this->rem(341, 353, $detalhe)/100);
-        $this->detalhe[$i]->valorOutraMoeda = Util::nFloat($this->rem(354, 366, $detalhe)/100);
-        $this->detalhe[$i]->valorDebitoCredito = Util::nFloat($this->rem(367, 379, $detalhe)/100);
-        $this->detalhe[$i]->aceite = $this->rem(294, 294, $detalhe);
-        $this->detalhe[$i]->sacadoNome = $this->rem(302, 337, $detalhe);
-        $this->detalhe[$i]->indicativoCredito = $this->rem(380, 380, $detalhe);
+        if($this->count() == 1)
+        {
+            if(trim($this->rem(384, 385, $detalhe), '') != '')
+            {
+                $this->getHeader()
+                    ->setConta(
+                        $this->getHeader()->getConta()
+                        . $this->rem(384, 384, $detalhe)
+                    )
+                    ->setContaDigito($this->rem(385, 385, $detalhe));
+            }
+        }
 
-        $this->totais['valor'] += $this->detalhe[$i]->valor;
+        $d = $this->detalheAtual();
+        $d->setNossoNumero($this->rem(63, 70, $detalhe))
+            ->setNumeroDocumento($this->rem(117, 126, $detalhe))
+            ->setOcorrencia($this->rem(109, 110, $detalhe))
+            ->setOcorrenciaDescricao(array_get($this->ocorrencias, $d->getOcorrencia(), 'Desconhecida'))
+            ->setDataOcorrencia($this->rem(111, 116, $detalhe))
+            ->setDataVencimento($this->rem(147, 152, $detalhe))
+            ->setDataCredito($this->rem(296, 301, $detalhe))
+            ->setValor(Util::nFloat($this->rem(153, 165, $detalhe)/100, 2, false))
+            ->setValorTarifa(Util::nFloat($this->rem(176, 188, $detalhe)/100, 2, false))
+            ->setValorIOF(Util::nFloat($this->rem(215, 227, $detalhe)/100, 2, false))
+            ->setValorAbatimento(Util::nFloat($this->rem(228, 240, $detalhe)/100, 2, false))
+            ->setValorDesconto(Util::nFloat($this->rem(241, 253, $detalhe)/100, 2, false))
+            ->setValorRecebido(Util::nFloat($this->rem(254, 266, $detalhe)/100, 2, false))
+            ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe)/100, 2, false))
+            ->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe)/100, 2, false));
 
-        $this->detalhe[$i]->especieNome = $this->especies[$this->detalhe[$i]->get('especie', 'XX', true)];
-        $this->detalhe[$i]->ocorrenciaNome = $this->ocorrencias[$this->detalhe[$i]->get('ocorrencia', 'XX', true)];
-        $this->detalhe[$i]->indicativoCreditoNome = $this->indicativosCredito[$this->detalhe[$i]->get('indicativoCredito', 'X', true)];
+        $this->totais['valor_recebido'] += $d->getValorRecebido();
 
-        $this->detalhe[$i]->dataOcorrencia = $this->detalhe[$i]->get('dataOcorrencia', false, true) ? Carbon::createFromFormat('dmy', $this->detalhe[$i]->get('dataOcorrencia'))->setTime(0, 0, 0) : null;
-        $this->detalhe[$i]->dataVencimento = $this->detalhe[$i]->get('dataVencimento', false, true) ? Carbon::createFromFormat('dmy', $this->detalhe[$i]->get('dataVencimento'))->setTime(0, 0, 0) : null;
-        $this->detalhe[$i]->dataCredito = $this->detalhe[$i]->get('dataCredito', false, true) ? Carbon::createFromFormat('dmy', $this->detalhe[$i]->get('dataCredito'))->setTime(0, 0, 0) : null;
-
-        if(in_array($this->detalhe[$i]->get('ocorrencia'), ['06','07','08','16','17']))
+        if($d->hasOcorrencia('06','07','08','16','17'))
         {
             $this->totais['liquidados']++;
-            $this->detalhe[$i]->setTipoOcorrencia(Detalhe::OCORRENCIA_LIQUIDADA);
+            $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
         }
-        elseif(in_array($this->detalhe[$i]->get('ocorrencia'), ['02']))
+        elseif($d->hasOcorrencia('02'))
         {
             $this->totais['entradas']++;
-            $this->detalhe[$i]->setTipoOcorrencia(Detalhe::OCORRENCIA_ENTRADA);
+            $d->setOcorrenciaTipo($d::OCORRENCIA_ENTRADA);
         }
-        elseif(in_array($this->detalhe[$i]->get('ocorrencia'), ['09','10']))
+        elseif($d->hasOcorrencia('09','10'))
         {
             $this->totais['baixados']++;
-            $this->detalhe[$i]->setTipoOcorrencia(Detalhe::OCORRENCIA_BAIXADA);
+            $d->setOcorrenciaTipo($d::OCORRENCIA_BAIXADA);
         }
-        elseif(in_array($this->detalhe[$i]->get('ocorrencia'), ['03']))
+        elseif($d->hasOcorrencia('03'))
         {
             $this->totais['erros']++;
+            $errorsRetorno = str_split($this->rem(137, 145, $detalhe), 3);
+            $error = array_get($this->rejeicoes, $errorsRetorno[0], '');
+            $error .= array_get($this->rejeicoes, $errorsRetorno[1], '');
+            $error .= array_get($this->rejeicoes, $errorsRetorno[2], '');
 
-            $erros[] = $this->rejeicoes[$this->detalhe[$i]->get('erro1')];
-            $erros[] = $this->rejeicoes[$this->detalhe[$i]->get('erro2')];
-            $erros[] = $this->rejeicoes[$this->detalhe[$i]->get('erro3')];
-
-            $this->detalhe[$i]->setErro(implode(', ', $erros));
+            $d->setError(implode(', ', $error));
         }
         else
         {
             $this->totais['alterados']++;
-            $this->detalhe[$i]->setTipoOcorrencia(Detalhe::OCORRENCIA_ALTERACAO);
+            $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
         }
 
-        $this->i++;
+        return true;
     }
 
     protected function processarTrailer(array $trailer)
     {
-        $this->trailer->quantidadeTitulos = (int)$this->i;
-        $this->trailer->valorTitulos = Util::nFloat($this->totais['valor']);
-        $this->trailer->avisos = (int)$this->rem(40, 47, $trailer) + (int)$this->rem(120, 137, $trailer) + (int)$this->rem(160, 167, $trailer);
-        $this->trailer->quantidadeErros = (int)$this->totais['erros'];
-        $this->trailer->quantidadeEntradas = (int)$this->totais['entradas'];
-        $this->trailer->quantidadeLiquidados = (int)$this->totais['liquidados'];
-        $this->trailer->quantidadeBaixados = (int)$this->totais['baixados'];
-        $this->trailer->quantidadeAlterados = (int)$this->totais['alterados'];
+        $this->getTrailer()
+            ->setQuantidadeTitulos((int) $this->count())
+            ->setValorTitulos((float) Util::nFloat($this->totais['valor_recebido'], 2, false))
+            ->setQuantidadeErros((int) $this->totais['erros'])
+            ->setQuantidadeEntradas((int) $this->totais['entradas'])
+            ->setQuantidadeLiquidados((int) $this->totais['liquidados'])
+            ->setQuantidadeBaixados((int) $this->totais['baixados'])
+            ->setQuantidadeAlterados((int) $this->totais['alterados']);
+
+        return true;
     }
 }

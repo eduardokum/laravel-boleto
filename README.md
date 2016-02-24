@@ -1,40 +1,76 @@
 # laravel-boleto
-Pacote para gerar boletos e remessas 
+Pacote para gerar boletos e remessas
+
+[![Latest Stable Version](https://poser.pugx.org/eduardokum/laravel-boleto/version)](https://packagist.org/packages/eduardokum/laravel-boleto) 
+[![Latest Unstable Version](https://poser.pugx.org/eduardokum/laravel-boleto/v/unstable)](//packagist.org/packages/eduardokum/laravel-boleto) 
+[![Total Downloads](https://poser.pugx.org/eduardokum/laravel-boleto/downloads)](https://packagist.org/packages/eduardokum/laravel-boleto)
+[![License](https://poser.pugx.org/eduardokum/laravel-boleto/license)](https://packagist.org/packages/eduardokum/laravel-boleto)
 
 ## Gerar boleto
 
 Gerando somente 1
 
+### Criando o beneficiário ou pagador
+
 ```php
-$boleto = new \Eduardokum\LaravelBoleto\Boleto\Banco\Bb();
-$boleto->agencia = '1234';
-$boleto->conta = '123456';
-$boleto->carteira = '12';
-$boleto->numero = '1';
-$boleto->convenio = '1234567';
-$boleto->contrato = '1234567';
-$boleto->identificacao = 'Boleto 1';
-$boleto->especieDocumento = 'DM';
-$boleto->aceite = 'N';
-$boleto->dataDocumento = '2015-10-21';
-$boleto->valor = '100';
-$boleto->dataVencimento = '2015-10-21';
-$boleto->nossoNumero = '123';
-$boleto->cedenteDocumento = '99.999.999-9999/99';
-$boleto->cedenteNome = 'Acme';
-$boleto->cedenteEndereco = 'Rua, 123';
-$boleto->cedenteCidadeUF = 'Cidade - UF';
-$boleto->sacadoDocumento = '999.999.999-99';
-$boleto->sacadoNome = 'Cliente';
-$boleto->sacadoEndereco = 'Rua, 123';
-$boleto->sacadoCidadeUF = 'Cidade - UF';
+$beneficiario = new \Eduardokum\LaravelBoleto\Boleto\Pessoa([
+    'nome' => 'ACME',
+    'endereco' => 'Rua um, 123',
+    'cep' => '99999-999',
+    'uf' => 'UF',
+    'cidade' => 'CIDADE',
+    'documento' => '99.999.999/9999-99',
+]);
 
-$boleto->processar();
-
-$boleto->render();
+$pagador = new \Eduardokum\LaravelBoleto\Boleto\Pessoa([
+    'nome' => 'Cliente',
+    'endereco' => 'Rua um, 123',
+    'cep' => '99999-999',
+    'uf' => 'UF',
+    'cidade' => 'CIDADE',
+    'documento' => '999.999.999-99',
+]);
 ```
 
-Gerando mais de 1, não chamar a função render() do boleto e usar:
+```php
+$boletoArray = [
+	'logo' => 'path/para/o/logo',
+	'dataVencimento' => \Carbon\Carbon('1790-01-01'),
+	'valor' => 100.00,
+	'multa' => 10.00, // porcento
+	'juros' => 2.00, // porcento ao mes
+	'juros_apos' =>  1, // juros e multa após
+	'diasProtesto' => false, // protestar após, se for necessário
+	'numero' => 1,
+	'numeroDocumento' => 1,
+	'pagador' => $pagador, // Objeto PessoaContract
+	'beneficiario' => $beneficiario, // Objeto PessoaContract
+	'agencia' => 9999,
+	'agenciaDv' => 9, // se possuir
+	'conta' => 99999,
+	'contaDv' => 9, // se possuir
+	'carteira' => 99,
+	'convenio' => 9999999, // se possuir
+	'variacaoCarteira' => 99, // se possuir
+	'range' => 99999, // se possuir
+	'codigoCliente' => 99999, // se possuir
+	'ios' => 0,
+	'descricaoDemonstrativo' => ['msg1', 'msg2', 'msg3'], // máximo de 5
+	'instrucoes' =>  ['inst1', 'inst2'], // máximo de 5
+	'aceite' => 1,
+	'especieDoc' => 'DM',
+];
+
+$boleto = new \Eduardokum\LaravelBoleto\Boleto\Banco\Bb($boletoArray);
+
+$boleto->renderPDF();
+// ou
+$boleto->renderHTML();
+
+```
+
+
+Gerando mais de 1, não chamar a função render() do boleto e usar: (SOMENTE PDF)
 
 ```php
 $pdf = new Eduardokum\LaravelBoleto\Boleto\Render\Pdf();
@@ -47,49 +83,23 @@ $pdf->gerarBoleto();
 ## Gerar remessa
 
 ```php
-$remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Banco\Bb();
-$remessa->idremessa = 1;
-$remessa->carteira = '5';
-$remessa->agencia = '1234';
-$remessa->conta = '12345678900';
-$remessa->carteiraVariacao = '12';
-$remessa->convenio = '123123';
-$remessa->cedenteNome = 'ACME';
-$remessa->cedenteDocumento = '99.999.999-9999/99';
+$remessaArray = [
+	'agencia' => 9999,
+	'agenciaDv' => 9, // se possuir
+	'conta' => 99999,
+	'contaDv' => 9, // se possuir
+	'carteira' => 99,
+	'convenio' => 9999999, // se possuir
+	'range' => 99999, // se possuir
+	'codigoCliente' => 99999, // se possuir
+	'variacaoCarteira' => 99, // se possuir
+	'codigoTransmissao' => 99999999999999999999, // se possuir
+	'beneficiario' => $beneficiario,
+];
 
-$detalhe = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Detalhe();
-$detalhe->numero = '1';
-$detalhe->numeroDocumento = '1';
-$detalhe->dataVencimento = '2015-10-21';
-$detalhe->dataDocumento = '2015-10-21';
-$detalhe->tipoCobrancaBB = \Eduardokum\LaravelBoleto\Cnab\Remessa\Banco\Bb::TIPO_COBRANCA_SIMPLES;
-$detalhe->especie = 'DM';
-$detalhe->aceite = 'N';
-$detalhe->instrucao1 = '00';
-$detalhe->instrucao2 = '00';
-$detalhe->dataLimiteDesconto = '2015-10-21';
-$detalhe->valorDesconto = '0';
-$detalhe->valorIOF = '0';
-$detalhe->valorMora = '0';
-$detalhe->valorAbatimento = '0';
-$detalhe->valor = '100';
-$detalhe->diasProtesto = '0';
-$detalhe->dataMulta = '2015-10-2';
-$detalhe->taxaMulta = '0';
-$detalhe->valorMulta = '0';
-$detalhe->xDiasMulta = '0';
-$detalhe->naoReceberDias = '0';
-$detalhe->sacadoDocumento = '999.999.999-99';
-$detalhe->sacadoNome = 'Cliente';
-$detalhe->sacadoEndereco = 'Rua, 123';
-$detalhe->sacadoBairro = 'Bairro';
-$detalhe->sacadoCEP = '99999-999';
-$detalhe->sacadoCidade = 'Cidade';
-$detalhe->sacadoEstado = 'UF';
-$detalhe->sacadorAvalista = '';
-$detalhe->setNumeroControle(['C'=>'123', 'P'=>'123']);
+$remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Banco\Bb($remessaArray);
 
-$remessa->addDetalhe($detalhe);
+$remessa->addBoleto($boleto); // Objeto de boleto gerado, BoletoContract
 
 echo $remessa->gerar();
 ```
