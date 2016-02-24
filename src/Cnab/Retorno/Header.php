@@ -169,7 +169,7 @@ class Header implements HeaderContract
      */
     public function setAgencia($agencia)
     {
-        $this->agencia = ltrim($agencia, '0 ');
+        $this->agencia = ltrim(trim($agencia, ' '), '0');
 
         return $this;
     }
@@ -209,7 +209,7 @@ class Header implements HeaderContract
      */
     public function setConta($conta)
     {
-        $this->conta = ltrim($conta, '0 ');
+        $this->conta = ltrim(trim($conta, ' '), '0');
 
         return $this;
     }
@@ -291,7 +291,7 @@ class Header implements HeaderContract
      */
     public function setCodigoCliente($codigoCliente)
     {
-        $this->codigoCliente = ltrim($codigoCliente, '0 ');
+        $this->codigoCliente = ltrim(trim($codigoCliente, ' '), '0');
 
         return $this;
     }

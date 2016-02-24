@@ -132,7 +132,7 @@ class Detalhe implements DetalheContract
      */
     public function setNumeroDocumento($numeroDocumento)
     {
-        $this->numeroDocumento = ltrim($numeroDocumento, '0 ');
+        $this->numeroDocumento = ltrim(trim($numeroDocumento, ' '), '0');
 
         return $this;
     }

@@ -137,7 +137,7 @@ class Caixa extends AbstractRetorno implements Retorno
     protected function processarDetalhe(array $detalhe)
     {
         $d = $this->detalheAtual();
-        $d->setNossoNumero($this->rem(63, 73, $detalhe))
+        $d->setNossoNumero($this->rem(57, 73, $detalhe))
             ->setNumeroDocumento($this->rem(117, 126, $detalhe))
             ->setOcorrencia($this->rem(109, 110, $detalhe))
             ->setOcorrenciaDescricao(array_get($this->ocorrencias, $d->getOcorrencia(), 'Desconhecida'))
