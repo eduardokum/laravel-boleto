@@ -1,10 +1,10 @@
+[![Packagist](https://img.shields.io/packagist/v/eduardokum/laravel-boleto.svg?style=flat-square)](https://github.com/eduardokum/laravel-boleto)
+[![Packagist](https://img.shields.io/packagist/dt/eduardokum/laravel-boleto.svg?style=flat-square)](https://github.com/eduardokum/laravel-boleto)
+[![Packagist](https://img.shields.io/packagist/l/eduardokum/laravel-boleto.svg?style=flat-square)](https://github.com/eduardokum/laravel-boleto)
+[![GitHub forks](https://img.shields.io/github/forks/eduardokum/laravel-boleto.svg?style=social&label=Fork)](https://github.com/eduardokum/laravel-boleto)
+
 # laravel-boleto
 Pacote para gerar boletos e remessas
-
-[![Latest Stable Version](https://poser.pugx.org/eduardokum/laravel-boleto/version)](https://packagist.org/packages/eduardokum/laravel-boleto) 
-[![Latest Unstable Version](https://poser.pugx.org/eduardokum/laravel-boleto/v/unstable)](//packagist.org/packages/eduardokum/laravel-boleto) 
-[![Total Downloads](https://poser.pugx.org/eduardokum/laravel-boleto/downloads)](https://packagist.org/packages/eduardokum/laravel-boleto)
-[![License](https://poser.pugx.org/eduardokum/laravel-boleto/license)](https://packagist.org/packages/eduardokum/laravel-boleto)
 
 ## Gerar boleto
 
