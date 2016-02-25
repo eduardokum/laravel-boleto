@@ -167,7 +167,7 @@ class Detalhe implements DetalheContract
      */
     public function getOcorrencia()
     {
-        return sprintf('%02s', $this->ocorrencia);
+        return $this->ocorrencia;
     }
 
     /**
@@ -177,7 +177,7 @@ class Detalhe implements DetalheContract
      */
     public function setOcorrencia($ocorrencia)
     {
-        $this->ocorrencia = (int) $ocorrencia;
+        $this->ocorrencia = sprintf('%02s', $ocorrencia);
 
         return $this;
     }
@@ -229,7 +229,9 @@ class Detalhe implements DetalheContract
      */
     public function getDataOcorrencia($format = 'd/m/Y')
     {
-        return $this->dataOcorrencia instanceof Carbon ? $this->dataOcorrencia->format($format) : null;
+        return $this->dataOcorrencia instanceof Carbon
+            ? $format === false ? $this->dataOcorrencia : $this->dataOcorrencia->format($format)
+            : null;
     }
 
     /**
@@ -251,7 +253,9 @@ class Detalhe implements DetalheContract
      */
     public function getDataVencimento($format = 'd/m/Y')
     {
-        return $this->dataVencimento instanceof Carbon ? $this->dataVencimento->format($format) : null;
+        return $this->dataVencimento instanceof Carbon
+            ? $format === false ? $this->dataVencimento : $this->dataVencimento->format($format)
+            : null;
     }
 
     /**
@@ -273,7 +277,9 @@ class Detalhe implements DetalheContract
      */
     public function getDataCredito($format = 'd/m/Y')
     {
-        return $this->dataCredito instanceof Carbon ? $this->dataCredito->format($format) : null;
+        return $this->dataCredito instanceof Carbon
+            ? $format === false ? $this->dataCredito : $this->dataCredito->format($format)
+            : null;
     }
 
     /**
@@ -508,5 +514,30 @@ class Detalhe implements DetalheContract
         {
             $this->$name = $value;
         }
+    }
+
+    /**
+     * Fast get method.
+     *
+     * @param $name
+     */
+    public function __get($name)
+    {
+        if(property_exists($this, $name))
+        {
+            $method = 'get' . ucwords($name);
+            return $this->{$method}();
+        }
+    }
+
+    /**
+     * Determine if an attribute exists on the detalhe.
+     *
+     * @param  string  $key
+     * @return bool
+     */
+    public function __isset($key)
+    {
+        return isset($this->$key);
     }
 }

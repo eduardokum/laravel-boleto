@@ -25,7 +25,7 @@ namespace Eduardokum\LaravelBoleto\Boleto;
 use Carbon\Carbon;
 use Eduardokum\LaravelBoleto\Boleto\Render\Html;
 use Eduardokum\LaravelBoleto\Boleto\Render\Pdf;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
 use Eduardokum\LaravelBoleto\Util;
 
@@ -34,7 +34,7 @@ use Eduardokum\LaravelBoleto\Util;
  *
  * @package Eduardokum\LaravelBoleto\Boleto
  */
-abstract class AbstractBoleto implements Boleto
+abstract class AbstractBoleto implements BoletoContract
 {
     /**
      * Código do banco

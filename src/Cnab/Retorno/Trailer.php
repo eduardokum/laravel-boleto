@@ -250,4 +250,29 @@ class Trailer implements TrailerContract
             $this->$name = $value;
         }
     }
+
+    /**
+     * Fast get method.
+     *
+     * @param $name
+     */
+    public function __get($name)
+    {
+        if(property_exists($this, $name))
+        {
+            $method = 'get' . ucwords($name);
+            return $this->{$method}();
+        }
+    }
+
+    /**
+     * Determine if an attribute exists on the detalhe.
+     *
+     * @param  string  $key
+     * @return bool
+     */
+    public function __isset($key)
+    {
+        return isset($this->$key);
+    }
 }

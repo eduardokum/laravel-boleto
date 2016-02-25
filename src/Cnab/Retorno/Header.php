@@ -241,7 +241,9 @@ class Header implements HeaderContract
      */
     public function getData($format = 'd/m/Y')
     {
-        return $this->data instanceof Carbon ? $this->data->format($format) : null;
+        return $this->data instanceof Carbon
+            ? $format === false ? $this->data : $this->data->format($format)
+            : null;
     }
 
     /**
@@ -325,5 +327,30 @@ class Header implements HeaderContract
         {
             $this->$name = $value;
         }
+    }
+
+    /**
+     * Fast get method.
+     *
+     * @param $name
+     */
+    public function __get($name)
+    {
+        if(property_exists($this, $name))
+        {
+            $method = 'get' . ucwords($name);
+            return $this->{$method}();
+        }
+    }
+
+    /**
+     * Determine if an attribute exists on the header.
+     *
+     * @param  string  $key
+     * @return bool
+     */
+    public function __isset($key)
+    {
+        return isset($this->$key);
     }
 }

@@ -26,6 +26,7 @@ use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Header as HeaderContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Detalhe as DetalheContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Trailer as TrailerContract;
+use Illuminate\Database\Eloquent\Collection;
 
 abstract class AbstractRetorno implements \Countable, \SeekableIterator
 {
@@ -145,14 +146,14 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
      * @return mixed
      */
     public function getBancoNome() {
-        return Util::$bancos[$this->banco];
+        return Util::$bancos[$this->codigoBanco];
     }
 
     /**
-     * @return Detalhe[]
+     * @return Collection
      */
     public function getDetalhes() {
-        return $this->detalhe;
+        return new Collection($this->detalhe);
     }
 
     /**
@@ -220,6 +221,8 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
 
     /**
      * Processa o arquivo
+     *
+     * @return $this
      */
     public function processar() {
 
@@ -244,7 +247,8 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
         if(method_exists($this, 'finalize')) {
             $this->finalize();
         }
-        unset($this->cnab);
+
+        return $this;
     }
 
     /**
@@ -257,10 +261,11 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
         $array = [
             'header' => $this->header->toArray(),
             'trailer' => $this->trailer->toArray(),
+            'detalhes' => new Collection()
         ];
         foreach($this->detalhe as $detalhe)
         {
-            $array['detalhe'][] = $detalhe->toArray();
+            $array['detalhes']->add($detalhe->toArray());
         }
         return $array;
     }

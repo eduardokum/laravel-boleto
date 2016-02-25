@@ -79,6 +79,6 @@ class Factory
                 throw new \Exception("Banco: $banco, inválido");
         }
 
-        return $instancia;
+        return $instancia->processar();
     }
 }

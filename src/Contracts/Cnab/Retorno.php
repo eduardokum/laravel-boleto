@@ -22,6 +22,8 @@
 
 namespace Eduardokum\LaravelBoleto\Contracts\Cnab;
 
+use Illuminate\Database\Eloquent\Collection;
+
 interface Retorno extends Cnab
 {
 
@@ -36,7 +38,7 @@ interface Retorno extends Cnab
     public function getBancoNome();
 
     /**
-     * @return Retorno\Detalhe[]
+     * @return Collection
      */
     public function getDetalhes();
 

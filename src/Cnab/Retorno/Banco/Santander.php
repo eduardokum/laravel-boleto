@@ -332,12 +332,12 @@ class Santander extends AbstractRetorno implements Retorno
         elseif($d->hasOcorrencia('03'))
         {
             $this->totais['erros']++;
-            $errorsRetorno = str_split($this->rem(137, 145, $detalhe), 3);
+            $errorsRetorno = str_split(sprintf('%09s', $this->rem(137, 145, $detalhe)), 3);
             $error = array_get($this->rejeicoes, $errorsRetorno[0], '');
             $error .= array_get($this->rejeicoes, $errorsRetorno[1], '');
             $error .= array_get($this->rejeicoes, $errorsRetorno[2], '');
 
-            $d->setError(implode(', ', $error));
+            $d->setError($error);
         }
         else
         {

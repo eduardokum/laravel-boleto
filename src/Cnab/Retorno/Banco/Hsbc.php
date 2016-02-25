@@ -33,7 +33,7 @@ class Hsbc extends AbstractRetorno implements Retorno
      * Código do banco
      * @var string
      */
-    protected $codigoBanco = self::COD_BANCO_SANTANDER;
+    protected $codigoBanco = self::COD_BANCO_HSBC;
 
     /**
      * Array com as ocorrencias do banco;
@@ -193,7 +193,7 @@ class Hsbc extends AbstractRetorno implements Retorno
             ->setServicoCodigo($this->rem(10, 11, $header))
             ->setServico($this->rem(12, 26, $header))
             ->setAgencia($this->rem(28, 31, $header))
-            ->setConta($this->rem(34, 43, $header))
+            ->setConta($this->rem(38, 43, $header))
             ->setContaDigito($this->rem(44, 44, $header))
             ->setData($this->rem(95, 100, $header));
 
