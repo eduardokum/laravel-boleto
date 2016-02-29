@@ -78,7 +78,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
      * Define as carteiras disponíveis para cada banco
      * @var array
      */
-    protected $carteiras = [21, 22];
+    protected $carteiras = ['09', '28'];
 
     /**
      * Caracter de fim de linha
@@ -134,7 +134,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
         $this->add(3, 9, 'REMESSA');
         $this->add(10, 11, '01');
         $this->add(12, 26, Util::formatCnab('A', 'COBRANCA', 15));
-        $this->add(27, 46, Util::formatCnab('N', $this->getCodigoCliente(),20));
+        $this->add(27, 46, Util::formatCnab('N', $this->getCodigoCliente(), 20));
         $this->add(47, 76, Util::formatCnab('A', $this->getBeneficiario()->getNome(), 30));
         $this->add(77, 79, $this->getCodigoBanco());
         $this->add(80, 94, Util::formatCnab('A', 'Bradesco', 15));

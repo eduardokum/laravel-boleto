@@ -94,7 +94,7 @@ class Hsbc extends AbstractRemessa implements RemessaContract
      * Define as carteiras disponíveis para cada banco
      * @var array
      */
-    protected $carteiras = ['CNR', 'CSB'];
+    protected $carteiras = ['CSB'];
 
     /**
      * Caracter de fim de linha

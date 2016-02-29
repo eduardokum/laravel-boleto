@@ -37,7 +37,7 @@ class Santander  extends AbstractBoleto implements BoletoContract
      * Define as carteiras disponíveis para este banco
      * @var array
      */
-    protected $carteiras = ['101', '102', '201'];
+    protected $carteiras = ['101', '201'];
     /**
      * Espécie do documento, coódigo para remessa
      * @var string

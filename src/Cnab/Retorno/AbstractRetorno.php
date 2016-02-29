@@ -230,14 +230,14 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
             $this->init();
         }
         foreach($this->file as $linha) {
-            $aLinha = str_split(rtrim($linha, chr(10).chr(13)."\n"."\r"), 1);
-            if( $aLinha[0] == '0' ) {
-                $this->processarHeader($aLinha);
-            } else if( $aLinha[0] == '9' ) {
-                $this->processarTrailer($aLinha);
+            $inicio = $this->rem(1, 1, $linha);
+            if( $inicio == '0' ) {
+                $this->processarHeader($linha);
+            } else if( $inicio == '9' ) {
+                $this->processarTrailer($linha);
             } else {
                 $this->incrementDetalhe();
-                if($this->processarDetalhe($aLinha) === false)
+                if($this->processarDetalhe($linha) === false)
                 {
                     unset($this->detalhe[$this->increment]);
                     $this->increment--;
@@ -280,21 +280,9 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
      * @return string
      * @throws \Exception
      */
-    protected function rem($i, $f, $array)
+    protected function rem($i, $f, &$array)
     {
-        $i--;
-
-        if ($i > 398 || $f > 400) {
-            throw new \Exception('$ini ou $fim ultrapassam o limite máximo de 400');
-        }
-
-        if ($f < $i) {
-            throw new \Exception('$ini é maior que o $fim');
-        }
-
-        $t = $f - $i;
-
-        return trim(implode('', array_splice($array, $i, $t)));
+        return Util::remove($i, $f, $array);
     }
 
     public function current() {

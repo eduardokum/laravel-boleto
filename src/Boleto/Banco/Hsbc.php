@@ -38,7 +38,7 @@ class Hsbc  extends AbstractBoleto implements BoletoContract
      * Define as carteiras disponíveis para este banco
      * @var array
      */
-    protected $carteiras = ['cnr', 'csb', 'CNR', 'CSB'];
+    protected $carteiras = ['CSB'];
     /**
      * Espécie do documento, coódigo para remessa
      * @var string

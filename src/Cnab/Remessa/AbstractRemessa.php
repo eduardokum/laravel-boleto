@@ -24,6 +24,7 @@ namespace Eduardokum\LaravelBoleto\Cnab\Remessa;
 
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
+use Eduardokum\LaravelBoleto\Util;
 
 abstract class AbstractRemessa
 {
@@ -362,26 +363,7 @@ abstract class AbstractRemessa
      */
     protected function add($i, $f, $value)
     {
-        $i--;
-
-        if ($i > 398 || $f > 400) {
-            throw new \Exception('$ini ou $fim ultrapassam o limite máximo de 400');
-        }
-
-        if ($f < $i) {
-            throw new \Exception('$ini é maior que o $fim');
-        }
-
-        $t = $f - $i;
-
-        if (strlen($value) > $t) {
-            throw new \Exception('String $valor maior que o tamanho definido em $ini e $fim: $valor= ' . strlen($value) . ' e tamanho é de: ' . $t);
-        }
-
-        $value = sprintf("%{$t}s", $value);
-        $value = str_split($value, 1);
-
-        return array_splice($this->atual, $i, $t, $value);
+        return Util::adiciona($this->atual, $i, $f, $value);
     }
 
     /**

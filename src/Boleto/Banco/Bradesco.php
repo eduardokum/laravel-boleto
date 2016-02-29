@@ -37,8 +37,7 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
      * Define as carteiras disponíveis para este banco
      * @var array
      */
-//    protected $carteiras = ['02', '03', '04', '05', '06', '07', '09', '12', '16', '17', '19', '21', '22', '25', '26', '27', '30', '70'];
-    protected $carteiras = [21, 22];
+    protected $carteiras = ['09', '28'];
     /**
      * Trata-se de código utilizado para identificar mensagens especificas ao cedente, sendo
      * que o mesmo consta no cadastro do Banco, quando não houver código cadastrado preencher

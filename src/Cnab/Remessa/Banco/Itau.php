@@ -139,7 +139,7 @@ class Itau extends AbstractRemessa implements RemessaContract
      * Define as carteiras disponíveis para cada banco
      * @var array
      */
-    protected $carteiras = [112,188,109,121,180,];
+    protected $carteiras = ['112','115','188','109','121','175'];
 
     /**
      * Caracter de fim de linha

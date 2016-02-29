@@ -808,4 +808,180 @@ final class Util
         return [$controle];
     }
 
+    /**
+     * Pela remessa cria um retorno fake para testes.
+     *
+     * @param        $file Remessa
+     * @param string $ocorrencia
+     *
+     * @return string
+     * @throws \Exception
+     */
+    public static function criarRetornoFake($file, $ocorrencia = '02')
+    {
+        $remessa = file($file);
+        $banco = self::remove(77, 79, $remessa[0]);
+        $retorno[0] = array_fill(0,400, '0');
+
+        // header
+        self::adiciona($retorno[0], 1, 9, '02RETORNO');
+        switch($banco)
+        {
+            case Contracts\Cnab\Cnab::COD_BANCO_BB:
+                self::adiciona($retorno[0], 27, 30, self::remove(25, 28, $remessa[0]));
+                self::adiciona($retorno[0], 31, 31, self::remove(31, 31, $remessa[0]));
+                self::adiciona($retorno[0], 32, 39, self::remove(32, 39, $remessa[0]));
+                self::adiciona($retorno[0], 40, 40, self::remove(40, 40, $remessa[0]));
+                self::adiciona($retorno[0], 150, 156, self::remove(150, 156, $remessa[0]));
+            break;
+            case Contracts\Cnab\Cnab::COD_BANCO_SANTANDER:
+                self::adiciona($retorno[0], 27, 30, self::remove(27, 30, $remessa[0]));
+                self::adiciona($retorno[0], 39, 46, self::remove(39, 46, $remessa[0]));
+                break;
+            case Contracts\Cnab\Cnab::COD_BANCO_CEF:
+                self::adiciona($retorno[0], 27, 30, self::remove(27, 30, $remessa[0]));
+                self::adiciona($retorno[0], 31, 36, self::remove(31, 36, $remessa[0]));
+                break;
+            case Contracts\Cnab\Cnab::COD_BANCO_BRADESCO:
+                self::adiciona($retorno[0], 27, 46, self::remove(27, 46, $remessa[0]));
+                break;
+            case Contracts\Cnab\Cnab::COD_BANCO_ITAU:
+                self::adiciona($retorno[0], 27, 30, self::remove(27, 30, $remessa[0]));
+                self::adiciona($retorno[0], 33, 37, self::remove(33, 37, $remessa[0]));
+                self::adiciona($retorno[0], 38, 38, self::remove(38, 38, $remessa[0]));
+                break;
+            case Contracts\Cnab\Cnab::COD_BANCO_HSBC:
+                self::adiciona($retorno[0], 28, 31, self::remove(28, 31, $remessa[0]));
+                self::adiciona($retorno[0], 38, 43, self::remove(38, 43, $remessa[0]));
+                self::adiciona($retorno[0], 44, 44, self::remove(44, 44, $remessa[0]));
+                break;
+            default:
+                throw new \Exception("Banco: $banco, inválido");
+        }
+        self::adiciona($retorno[0], 77, 79, $banco);
+        self::adiciona($retorno[0], 95, 100, date('dmy'));
+        self::adiciona($retorno[0], 395, 400, sprintf('%06s', count($retorno)));
+
+        $remessa_h = array_shift($remessa); // removo o header
+        $remessa_t = array_pop($remessa); // remove o trailer
+
+        foreach($remessa as $detalhe)
+        {
+            $i = count($retorno);
+            $retorno[$i] = array_fill(0,400, '0');
+            self::adiciona($retorno[$i], 1, 1, '1');
+            self::adiciona($retorno[$i], 109, 110, sprintf('%02s', $ocorrencia));
+            self::adiciona($retorno[$i], 111, 116, date('dmy'));
+            self::adiciona($retorno[$i], 153, 165, self::remove(127, 139, $detalhe));
+            self::adiciona($retorno[$i], 254, 266, self::remove(127, 139, $detalhe));
+            self::adiciona($retorno[$i], 147, 152, self::remove(121, 126, $detalhe));
+            switch($banco)
+            {
+                case Contracts\Cnab\Cnab::COD_BANCO_BB:
+                    self::adiciona($retorno[$i], 1, 1, '7');
+                    self::adiciona($retorno[$i], 64, 80, self::remove(63, 17, $detalhe));
+                    break;
+                case Contracts\Cnab\Cnab::COD_BANCO_SANTANDER:
+                    self::adiciona($retorno[$i], 63, 71, self::remove(63, 7, $detalhe));
+                    break;
+                case Contracts\Cnab\Cnab::COD_BANCO_CEF:
+                    self::adiciona($retorno[$i], 57, 73, self::remove(56, 16, $detalhe));
+                    break;
+                case Contracts\Cnab\Cnab::COD_BANCO_BRADESCO:
+                    self::adiciona($retorno[$i], 25, 29, self::remove(25, 29, $detalhe));
+                    self::adiciona($retorno[$i], 30, 36, self::remove(30, 36, $detalhe));
+                    self::adiciona($retorno[$i], 37, 37, self::remove(37, 37, $detalhe));
+                    self::adiciona($retorno[$i], 71, 82, self::remove(71, 82, $detalhe));
+                    break;
+                case Contracts\Cnab\Cnab::COD_BANCO_ITAU:
+                    self::adiciona($retorno[$i], 86, 94, self::remove(63, 70, $detalhe));
+                    break;
+                case Contracts\Cnab\Cnab::COD_BANCO_HSBC:
+                    self::adiciona($retorno[$i], 63, 73, self::remove(63, 73, $detalhe));
+                    break;
+                default:
+                    throw new \Exception("Banco: $banco, inválido");
+            }
+            self::adiciona($retorno[$i], 117, 126, self::remove(111, 120, $detalhe));
+            self::adiciona($retorno[$i], 395, 400, sprintf('%06s', count($retorno)));
+        }
+
+        $i = count($retorno);
+        $retorno[$i] = array_fill(0,400, '0');
+        self::adiciona($retorno[$i], 1, 1, '9');
+        self::adiciona($retorno[$i], 395, 400, sprintf('%06s', count($retorno)));
+
+        $retorno = array_map(function($a){
+            return implode('', $a);
+        }, $retorno);
+
+        return implode("\r\n", $retorno);
+    }
+
+    /**
+     * Remove trecho do array.
+     *
+     * @param $i
+     * @param $f
+     * @param $array
+     *
+     * @return string
+     * @throws \Exception
+     */
+    public static function remove($i, $f, &$array)
+    {
+        if(is_string($array))
+        {
+            $array = str_split(rtrim($array, chr(10).chr(13)."\n"."\r"), 1);
+        }
+
+        $i--;
+
+        if ($i > 398 || $f > 400) {
+            throw new \Exception('$ini ou $fim ultrapassam o limite máximo de 400');
+        }
+
+        if ($f < $i) {
+            throw new \Exception('$ini é maior que o $fim');
+        }
+
+        $t = $f - $i;
+
+        return trim(implode('', array_splice($array, $i, $t)));
+    }
+
+    /**
+     * Função para add valor a linha nas posições informadas.
+     *
+     * @param $line
+     * @param $i
+     * @param $f
+     * @param $value
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public static function adiciona(&$line, $i, $f, $value)
+    {
+        $i--;
+
+        if ($i > 398 || $f > 400) {
+            throw new \Exception('$ini ou $fim ultrapassam o limite máximo de 400');
+        }
+
+        if ($f < $i) {
+            throw new \Exception('$ini é maior que o $fim');
+        }
+
+        $t = $f - $i;
+
+        if (strlen($value) > $t) {
+            throw new \Exception('String $valor maior que o tamanho definido em $ini e $fim: $valor= ' . strlen($value) . ' e tamanho é de: ' . $t);
+        }
+
+        $value = sprintf("%{$t}s", $value);
+        $value = str_split($value, 1);
+
+        return array_splice($line, $i, $t, $value);
+    }
 }
