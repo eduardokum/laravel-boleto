@@ -158,7 +158,7 @@
     <tr>
         <td colspan="6" class="noleftborder">
             <div class="titulo">Sacador/Avalista
-                <div class="conteudo sacador">{{ $sacador_avalista }}</div>
+                <div class="conteudo sacador"></div>
             </div>
         </td>
         <td colspan="2" class="norightborder noleftborder">

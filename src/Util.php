@@ -828,11 +828,11 @@ final class Util
         switch($banco)
         {
             case Contracts\Cnab\Cnab::COD_BANCO_BB:
-                self::adiciona($retorno[0], 27, 30, self::remove(25, 28, $remessa[0]));
+                self::adiciona($retorno[0], 27, 30, self::remove(27, 30, $remessa[0]));
                 self::adiciona($retorno[0], 31, 31, self::remove(31, 31, $remessa[0]));
                 self::adiciona($retorno[0], 32, 39, self::remove(32, 39, $remessa[0]));
                 self::adiciona($retorno[0], 40, 40, self::remove(40, 40, $remessa[0]));
-                self::adiciona($retorno[0], 150, 156, self::remove(150, 156, $remessa[0]));
+                self::adiciona($retorno[0], 150, 156, self::remove(130, 136, $remessa[0]));
             break;
             case Contracts\Cnab\Cnab::COD_BANCO_SANTANDER:
                 self::adiciona($retorno[0], 27, 30, self::remove(27, 30, $remessa[0]));
@@ -875,11 +875,18 @@ final class Util
             self::adiciona($retorno[$i], 153, 165, self::remove(127, 139, $detalhe));
             self::adiciona($retorno[$i], 254, 266, self::remove(127, 139, $detalhe));
             self::adiciona($retorno[$i], 147, 152, self::remove(121, 126, $detalhe));
+            self::adiciona($retorno[$i], 117, 126, self::remove(111, 120, $detalhe));
+            self::adiciona($retorno[$i], 395, 400, sprintf('%06s', count($retorno)));
             switch($banco)
             {
                 case Contracts\Cnab\Cnab::COD_BANCO_BB:
+                    if(self::remove(1, 1, $detalhe) != 7)
+                    {
+                        unset($retorno[$i]);
+                        continue;
+                    }
                     self::adiciona($retorno[$i], 1, 1, '7');
-                    self::adiciona($retorno[$i], 64, 80, self::remove(63, 17, $detalhe));
+                    self::adiciona($retorno[$i], 64, 80, self::remove(64, 80, $detalhe));
                     break;
                 case Contracts\Cnab\Cnab::COD_BANCO_SANTANDER:
                     self::adiciona($retorno[$i], 63, 71, self::remove(63, 71, $detalhe));
@@ -903,8 +910,6 @@ final class Util
                 default:
                     throw new \Exception("Banco: $banco, inválido");
             }
-            self::adiciona($retorno[$i], 117, 126, self::remove(111, 120, $detalhe));
-            self::adiciona($retorno[$i], 395, 400, sprintf('%06s', count($retorno)));
         }
 
         $i = count($retorno);

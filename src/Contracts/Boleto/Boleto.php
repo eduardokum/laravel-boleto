@@ -107,11 +107,6 @@ interface Boleto
     public function getQuantidade();
 
     /**
-     * @return mixed
-     */
-    public function getContraApresentacao();
-
-    /**
      * @return \Carbon\Carbon
      */
     public function getDataVencimento();
@@ -125,11 +120,6 @@ interface Boleto
      * @return \Carbon\Carbon
      */
     public function getDataDocumento();
-
-    /**
-     * @return mixed
-     */
-    public function getPagamentoMinimo();
 
     /**
      * @return mixed

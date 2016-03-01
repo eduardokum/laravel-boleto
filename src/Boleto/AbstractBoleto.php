@@ -52,11 +52,6 @@ abstract class AbstractBoleto implements BoletoContract
      */
     protected $valor;
     /**
-     * Valor para pagamento mínimo em boletos de contra apresentação
-     * @var float
-     */
-    protected $pagamentoMinimo;
-    /**
      * Valor de descontos e abatimentos
      * @var float
      */
@@ -121,11 +116,6 @@ abstract class AbstractBoleto implements BoletoContract
      * @var \Carbon\Carbon
      */
     protected $dataVencimento;
-    /**
-     * Define se o boleto é para contra-apresentação
-     * @var bool
-     */
-    protected $contraApresentacao = false;
     /**
      * Campo de aceite
      * @var string
@@ -445,27 +435,6 @@ abstract class AbstractBoleto implements BoletoContract
     public function getDataVencimento()
     {
         return $this->dataVencimento;
-    }
-    /**
-     * Define se o boleto é Contra-apresentação, ou seja, a data de vencimento e o valor são deixados em branco
-     * É sugerido que se use o campo pagamento mínimo ($this->setPagamentoMinimo())
-     *
-     * @param boolean $contraApresentacao
-     * @return AbstractBoleto
-     */
-    public function setContraApresentacao($contraApresentacao)
-    {
-        $this->contraApresentacao = $contraApresentacao;
-        return $this;
-    }
-    /**
-     * Retorna se o boleto é Contra-apresentação, ou seja, a data de vencimento é indefinida
-     *
-     * @return boolean
-     */
-    public function getContraApresentacao()
-    {
-        return $this->contraApresentacao;
     }
     /**
      * Define a data do documento
@@ -804,7 +773,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getValor()
     {
-        return $this->getContraApresentacao() ? 0.00 : Util::nFloat($this->valor, 2, false);
+        return Util::nFloat($this->valor, 2, false);
     }
     /**
      * Define o campo Descontos / Abatimentos
@@ -1011,28 +980,6 @@ abstract class AbstractBoleto implements BoletoContract
     public function getValorUnitario()
     {
         return Util::nFloat($this->valorUnitario, 2, false);
-    }
-    /**
-     * Define valor para pagamento mínimo em boletos de contra apresentação.
-     * Quando definido, remove o valor normal do boleto.
-     *
-     * @param float $pagamentoMinimo
-     * @return AbstractBoleto
-     */
-    public function setPagamentoMinimo($pagamentoMinimo)
-    {
-        $this->pagamentoMinimo = $pagamentoMinimo;
-        $this->setContraApresentacao(true);
-        return $this;
-    }
-    /**
-     * Retorna o valor para pagamento mínimo em boletos de contra apresentação.
-     *
-     * @return float
-     */
-    public function getPagamentoMinimo()
-    {
-        return Util::nFloat($this->pagamentoMinimo, 2, false);
     }
     /**
      * Define a localização do logotipo
@@ -1285,10 +1232,9 @@ abstract class AbstractBoleto implements BoletoContract
             'codigo_banco_com_dv' => $this->getCodigoBancoComDv(),
             'especie' => 'R$',
             'quantidade' => $this->getQuantidade(),
-            'data_vencimento' => $this->getContraApresentacao() ? 'Contra Apresenta&ccedil;&atilde;o' : $this->getDataVencimento()->format('d/m/Y'),
+            'data_vencimento' => $this->getDataVencimento()->format('d/m/Y'),
             'data_processamento'  => $this->getDataProcessamento()->format('d/m/Y'),
             'data_documento' => $this->getDataDocumento()->format('d/m/Y'),
-            'pagamento_minimo' => Util::nReal($this->getPagamentoMinimo(), 2, false),
             'valor_documento' => Util::nReal($this->getValor(), 2, false),
             'desconto_abatimento' => Util::nReal($this->getDescontosAbatimentos(), 2, false),
             'outras_deducoes' => Util::nReal($this->getOutrasDeducoes(), 2, false),

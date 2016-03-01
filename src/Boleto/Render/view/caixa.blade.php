@@ -21,7 +21,6 @@
         </ul>
         <span class="header">Linha Digitável: {{ $linha_digitavel }}</span>
         {!! $valor_documento ? '<span class="header">Valor: R$ ' . $valor_documento . '</span>' : '' !!}
-        {!! $pagamento_minimo ? '<span class="header">Pagamento mínimo: R$ ' . $pagamento_minimo . '</span>' : '' !!}
         <br>
         <div class="linha-pontilhada" style="margin-bottom: 20px;">Recibo do sacado</div>
     </div>
