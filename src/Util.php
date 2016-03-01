@@ -836,7 +836,7 @@ final class Util
             break;
             case Contracts\Cnab\Cnab::COD_BANCO_SANTANDER:
                 self::adiciona($retorno[0], 27, 30, self::remove(27, 30, $remessa[0]));
-                self::adiciona($retorno[0], 39, 46, self::remove(39, 46, $remessa[0]));
+                self::adiciona($retorno[0], 39, 46, '0' . self::remove(40, 46, $remessa[0]));
                 break;
             case Contracts\Cnab\Cnab::COD_BANCO_CEF:
                 self::adiciona($retorno[0], 27, 30, self::remove(27, 30, $remessa[0]));
@@ -882,10 +882,11 @@ final class Util
                     self::adiciona($retorno[$i], 64, 80, self::remove(63, 17, $detalhe));
                     break;
                 case Contracts\Cnab\Cnab::COD_BANCO_SANTANDER:
-                    self::adiciona($retorno[$i], 63, 71, self::remove(63, 7, $detalhe));
+                    self::adiciona($retorno[$i], 63, 71, self::remove(63, 71, $detalhe));
+                    self::adiciona($retorno[$i], 384, 385, self::remove(384, 385, $detalhe));
                     break;
                 case Contracts\Cnab\Cnab::COD_BANCO_CEF:
-                    self::adiciona($retorno[$i], 57, 73, self::remove(56, 16, $detalhe));
+                    self::adiciona($retorno[$i], 57, 73, self::remove(57, 73, $detalhe));
                     break;
                 case Contracts\Cnab\Cnab::COD_BANCO_BRADESCO:
                     self::adiciona($retorno[$i], 25, 29, self::remove(25, 29, $detalhe));
@@ -947,7 +948,9 @@ final class Util
 
         $t = $f - $i;
 
-        return trim(implode('', array_splice($array, $i, $t)));
+        $toSplice = $array;
+
+        return trim(implode('', array_splice($toSplice, $i, $t)));
     }
 
     /**

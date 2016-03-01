@@ -289,9 +289,8 @@ class Santander extends AbstractRetorno implements Retorno
                 $this->getHeader()
                     ->setConta(
                         $this->getHeader()->getConta()
-                        . $this->rem(384, 384, $detalhe)
-                    )
-                    ->setContaDigito($this->rem(385, 385, $detalhe));
+                        . $this->rem(384, 385, $detalhe)
+                    );
             }
         }
 

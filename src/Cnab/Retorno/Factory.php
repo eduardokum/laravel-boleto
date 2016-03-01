@@ -54,8 +54,7 @@ class Factory
             throw new \Exception("Arquivo: $file, não é um arquivo de retorno");
         }
 
-        $banco = Util::remove(77, 79, $file_content[0]);
-
+        $banco = substr($file_content[0], 76, 3);
         switch($banco)
         {
             case Cnab::COD_BANCO_BB:

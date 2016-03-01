@@ -81,11 +81,47 @@ class Santander extends AbstractRemessa implements RemessaContract
     protected $fimArquivo = "\r\n";
 
     /**
-     * Codigo de transmissao da remessa ao banco.
+     * Codigo do cliente junto ao banco.
      *
      * @var string
      */
-    protected $codigoTransmissao;
+    protected $codigoCliente;
+
+    /**
+     * Retorna o codigo do cliente.
+     *
+     * @return mixed
+     */
+    public function getCodigoCliente()
+    {
+        return $this->codigoCliente;
+    }
+
+    /**
+     * Seta o codigo do cliente.
+     *
+     * @param mixed $codigoCliente
+     *
+     * @return Bradesco
+     */
+    public function setCodigoCliente($codigoCliente)
+    {
+        $this->codigoCliente = $codigoCliente;
+
+        return $this;
+    }
+
+    /**
+     * Retorna o codigo de transmissão.
+     *
+     * @return mixed
+     */
+    public function getCodigoTransmissao()
+    {
+        return Util::formatCnab('9', $this->getAgencia(), 4)
+            . Util::formatCnab('9', $this->getCodigoCliente(), 8)
+            . Util::formatCnab('9', $this->getConta(), 8);
+    }
 
     /**
      * Valor total dos titulos.
@@ -93,26 +129,6 @@ class Santander extends AbstractRemessa implements RemessaContract
      * @var float
      */
     private $total = 0;
-
-    /**
-     * @return mixed
-     */
-    public function getCodigoTransmissao()
-    {
-        return $this->codigoTransmissao;
-    }
-
-    /**
-     * @param mixed $codigoTransmissao
-     *
-     * @return Santander
-     */
-    public function setCodigoTransmissao($codigoTransmissao)
-    {
-        $this->codigoTransmissao = $codigoTransmissao;
-
-        return $this;
-    }
 
     protected function header()
     {
@@ -220,7 +236,7 @@ class Santander extends AbstractRemessa implements RemessaContract
 
     public function isValid()
     {
-        if(empty($this->getCodigoTransmissao()) || !parent::isValid())
+        if(empty($this->getCodigoCliente()) || !parent::isValid())
         {
             return false;
         }

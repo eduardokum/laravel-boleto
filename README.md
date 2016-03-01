@@ -93,7 +93,6 @@ $remessaArray = [
 	'range' => 99999, // se possuir
 	'codigoCliente' => 99999, // se possuir
 	'variacaoCarteira' => 99, // se possuir
-	'codigoTransmissao' => 99999999999999999999, // se possuir
 	'beneficiario' => $beneficiario,
 ];
 
