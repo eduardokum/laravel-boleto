@@ -56,6 +56,11 @@ class Pdf extends AbstractPdf implements PdfContract
         $this->SetLineWidth($this->small);
     }
 
+    /**
+     * @param $i
+     *
+     * @return $this
+     */
     protected function instrucoes($i){
 
         $this->SetFont($this->PadraoFont,'', 8);
@@ -90,6 +95,11 @@ class Pdf extends AbstractPdf implements PdfContract
         return $this;
     }
 
+    /**
+     * @param $i
+     *
+     * @return $this
+     */
     protected function logoEmpresa($i){
 
         $this->Ln(10);
@@ -112,6 +122,11 @@ class Pdf extends AbstractPdf implements PdfContract
         return $this;
     }
 
+    /**
+     * @param $i
+     *
+     * @return $this
+     */
     protected function Topo($i) {
 
         $this->Image( $this->boleto[$i]->getLogoBanco(), 20, ($this->GetY()-2), 28);
@@ -120,7 +135,6 @@ class Pdf extends AbstractPdf implements PdfContract
         $this->Cell(15, 6, $this->boleto[$i]->getCodigoBancoComDv(), 'LBR', 0, 'C');
         $this->SetFont('','B',10);
         $this->Cell(0, 6, $this->boleto[$i]->getLinhaDigitavel() ,'B',1,'R');
-        $this->risco();
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
         $this->Cell(75, $this->desc, $this->_('Beneficiário'), 'TLR');
@@ -192,6 +206,11 @@ class Pdf extends AbstractPdf implements PdfContract
 
     }
 
+    /**
+     * @param $i
+     *
+     * @return $this
+     */
     protected function Bottom($i){
 
         $this->Image($this->boleto[$i]->getLogoBanco(), 20, ($this->GetY()-2), 28);
@@ -200,7 +219,6 @@ class Pdf extends AbstractPdf implements PdfContract
         $this->Cell(15, 6, $this->boleto[$i]->getCodigoBancoComDv(), 'LBR', 0, 'C');
         $this->SetFont($this->PadraoFont, 'B', 10);
         $this->Cell(0, 6, $this->boleto[$i]->getLinhaDigitavel() ,'B',1,'R');
-        $this->risco();
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
         $this->Cell(120, $this->desc, $this->_('Local de pagamento'), 'TLR');
@@ -349,6 +367,11 @@ class Pdf extends AbstractPdf implements PdfContract
         return $this;
     }
 
+    /**
+     * @param      $texto
+     * @param null $ln
+     * @param null $ln2
+     */
     protected function traco($texto,$ln= null,$ln2 = null) {
         if($ln) $this->Ln ($ln);
         $this->SetFont($this->PadraoFont, '', $this->fdes);
@@ -359,19 +382,29 @@ class Pdf extends AbstractPdf implements PdfContract
         if($ln2) $this->Ln ($ln2);
     }
 
+    /**
+     *
+     */
     protected function risco(){
         $this->SetLineWidth($this->large);
         $this->Line(20.3, $this->GetY(), 189.7, $this->GetY());
         $this->SetLineWidth($this->small);
     }
 
+    /**
+     * @param $i
+     */
     protected function codigoBarras($i){
         $this->Ln(2);
         $this->Cell(0, 15, '', 0, 1, 'L');
-        $this->i25($this->GetX(),  $this->GetY()-15, $this->boleto[$i]->getCodigoBarras(),0.89,14);
-        $this->traco('Corte na linha pontilhada',2);
+        $this->i25($this->GetX(),  $this->GetY()-15, $this->boleto[$i]->getCodigoBarras(), 0.8, 15);
     }
 
+    /**
+     * Addiciona o boleto
+     *
+     * @param BoletoInterface $boleto
+     */
     public function addBoleto(BoletoInterface $boleto){
         $this->totalBoletos += 1;
         $this->boleto[] = $boleto;

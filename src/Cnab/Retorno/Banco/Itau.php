@@ -40,63 +40,63 @@ class Itau extends AbstractRetorno implements Retorno
      * @var array
      */
     private $ocorrencias = [
-        '02' => 'entrada confirmada',
-        '03' => 'entrada rejeitada (nota 20 - tabela 1)',
-        '04' => 'alteração de dados - nova entrada',
-        '05' => 'alteração de dados – baixa',
-        '06' => 'liquidação normal',
-        '07' => 'liquidação parcial – cobrança inteligente (b2b)',
-        '08' => 'liquidação em cartório',
-        '09' => 'baixa simples',
-        '10' => 'baixa por ter sido liquidado',
-        '11' => 'em ser (só no retorno mensal)',
-        '12' => 'abatimento concedido',
-        '13' => 'abatimento cancelado',
-        '14' => 'vencimento alterado',
-        '15' => 'baixas rejeitadas (nota 20 - tabela 4)',
-        '16' => 'instruções rejeitadas (nota 20 - tabela 3)',
-        '17' => 'alteração de dados rejeitados (nota 20 - tabela 2)',
-        '18' => 'cobrança contratual - instruções/alterações rejeitadas/pendentes (nota 20 - tabela 5)',
-        '19' => 'confirma recebimento de instrução de protesto',
-        '20' => 'confirma recebimento de instrução de sustação de protesto /tarifa',
-        '21' => 'confirma recebimento de instrução de não protestar',
-        '23' => 'título enviado a cartório/tarifa',
-        '30' => 'débito mensal de tarifas (para entradas e baixas)',
-        '32' => 'baixa por ter sido protestado',
-        '33' => 'custas de protesto',
-        '34' => 'custas de sustação',
-        '35' => 'custas de cartório distribuidor',
-        '36' => 'custas de edital',
-        '37' => 'tarifa de emissão de boleto/tarifa de envio de duplicata',
-        '38' => 'tarifa de instrução',
-        '39' => 'tarifa de ocorrências',
-        '40' => 'tarifa mensal de emissão de boleto/tarifa mensal de envio de duplicata',
-        '41' => 'débito mensal de tarifas – extrato de posição (b4ep/b4ox)',
-        '42' => 'débito mensal de tarifas – outras instruções',
-        '43' => 'débito mensal de tarifas – manutenção de títulos vencidos',
-        '44' => 'débito mensal de tarifas – outras ocorrências',
-        '45' => 'débito mensal de tarifas – protesto',
-        '46' => 'débito mensal de tarifas – sustação de protesto',
-        '47' => 'baixa com transferência para desconto',
-        '48' => 'custas de sustação judicial',
-        '51' => 'tarifa mensal ref a entradas bancos correspondentes na carteira',
-        '52' => 'tarifa mensal baixas na carteira',
-        '53' => 'tarifa mensal baixas em bancos correspondentes na carteira',
-        '54' => 'tarifa mensal de liquidações na carteira',
-        '55' => 'tarifa mensal de liquidações em bancos correspondentes na carteira',
-        '56' => 'custas de irregularidade',
-        '57' => 'instrução cancelada (nota 20 – tabela 8)',
-        '59' => 'baixa por crédito em c/c através do sispag',
-        '60' => 'entrada rejeitada carnê (nota 20 – tabela 1)',
-        '61' => 'tarifa emissão aviso de movimentação de títulos (2154)',
-        '62' => 'débito mensal de tarifa - aviso de movimentação de títulos (2154)',
-        '63' => 'título sustado judicialmente',
-        '64' => 'entrada confirmada com rateio de crédito',
-        '69' => 'cheque devolvido (nota 20 - tabela 9)',
-        '71' => 'entrada registrada, aguardando avaliação',
-        '72' => 'baixa por crédito em c/c através do sispag sem título correspondente',
-        '73' => 'confirmação de entrada na cobrança simples – entrada não aceita na cobrança contratual',
-        '76' => 'cheque compensado',
+        '02' => 'Entrada confirmada',
+        '03' => 'Entrada rejeitada (nota 20 - tabela 1)',
+        '04' => 'Alteração de dados - nova entrada',
+        '05' => 'Alteração de dados – baixa',
+        '06' => 'Liquidação normal',
+        '07' => 'Liquidação parcial – cobrança inteligente (b2b)',
+        '08' => 'Liquidação em cartório',
+        '09' => 'Baixa simples',
+        '10' => 'Baixa por ter sido liquidado',
+        '11' => 'Em ser (só no retorno mensal)',
+        '12' => 'Abatimento concedido',
+        '13' => 'Abatimento cancelado',
+        '14' => 'Vencimento alterado',
+        '15' => 'Baixas rejeitadas (nota 20 - tabela 4)',
+        '16' => 'Instruções rejeitadas (nota 20 - tabela 3)',
+        '17' => 'Alteração de dados rejeitados (nota 20 - tabela 2)',
+        '18' => 'Cobrança contratual - instruções/alterações rejeitadas/pendentes (nota 20 - tabela 5)',
+        '19' => 'Confirma recebimento de instrução de protesto',
+        '20' => 'Confirma recebimento de instrução de sustação de protesto /tarifa',
+        '21' => 'Confirma recebimento de instrução de não protestar',
+        '23' => 'Título enviado a cartório/tarifa',
+        '30' => 'Débito mensal de tarifas (para entradas e baixas)',
+        '32' => 'Baixa por ter sido protestado',
+        '33' => 'Custas de protesto',
+        '34' => 'Custas de sustação',
+        '35' => 'Custas de cartório distribuidor',
+        '36' => 'Custas de edital',
+        '37' => 'Tarifa de emissão de boleto/tarifa de envio de duplicata',
+        '38' => 'Tarifa de instrução',
+        '39' => 'Tarifa de ocorrências',
+        '40' => 'Tarifa mensal de emissão de boleto/tarifa mensal de envio de duplicata',
+        '41' => 'Débito mensal de tarifas – extrato de posição (b4ep/b4ox)',
+        '42' => 'Débito mensal de tarifas – outras instruções',
+        '43' => 'Débito mensal de tarifas – manutenção de títulos vencidos',
+        '44' => 'Débito mensal de tarifas – outras ocorrências',
+        '45' => 'Débito mensal de tarifas – protesto',
+        '46' => 'Débito mensal de tarifas – sustação de protesto',
+        '47' => 'Baixa com transferência para desconto',
+        '48' => 'Custas de sustação judicial',
+        '51' => 'Tarifa mensal ref a entradas bancos correspondentes na carteira',
+        '52' => 'Tarifa mensal baixas na carteira',
+        '53' => 'Tarifa mensal baixas em bancos correspondentes na carteira',
+        '54' => 'Tarifa mensal de liquidações na carteira',
+        '55' => 'Tarifa mensal de liquidações em bancos correspondentes na carteira',
+        '56' => 'Custas de irregularidade',
+        '57' => 'Instrução cancelada (nota 20 – tabela 8)',
+        '59' => 'Baixa por crédito em c/c através do sispag',
+        '60' => 'Entrada rejeitada carnê (nota 20 – tabela 1)',
+        '61' => 'Tarifa emissão aviso de movimentação de títulos (2154)',
+        '62' => 'Débito mensal de tarifa - aviso de movimentação de títulos (2154)',
+        '63' => 'Título sustado judicialmente',
+        '64' => 'Entrada confirmada com rateio de crédito',
+        '69' => 'Cheque devolvido (nota 20 - tabela 9)',
+        '71' => 'Entrada registrada, aguardando avaliação',
+        '72' => 'Baixa por crédito em c/c através do sispag sem título correspondente',
+        '73' => 'Confirmação de entrada na cobrança simples – entrada não aceita na cobrança contratual',
+        '76' => 'Cheque compensado',
     ];
 
     /**
@@ -108,6 +108,7 @@ class Itau extends AbstractRetorno implements Retorno
             'liquidados' => 0,
             'entradas' => 0,
             'baixados' => 0,
+            'protestados' => 0,
             'erros' => 0,
             'alterados' => 0,
         ];
@@ -149,7 +150,7 @@ class Itau extends AbstractRetorno implements Retorno
             ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe)/100, 2, false))
             ->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe)/100, 2, false));
 
-        if($d->hasOcorrencia('06','07','08','10'))
+        if($d->hasOcorrencia('06','07','08','10', '59'))
         {
             $this->totais['liquidados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
@@ -159,15 +160,20 @@ class Itau extends AbstractRetorno implements Retorno
             $this->totais['entradas']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_ENTRADA);
         }
-        elseif($d->hasOcorrencia('05','09','32','47','59','72'))
+        elseif($d->hasOcorrencia('05','09','47','72'))
         {
             $this->totais['baixados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_BAIXADA);
         }
+        elseif($d->hasOcorrencia('32'))
+        {
+            $this->totais['protestados']++;
+            $d->setOcorrenciaTipo($d::OCORRENCIA_PROTESTADA);
+        }
         elseif($d->hasOcorrencia('03','15','16','60','03'))
         {
             $this->totais['erros']++;
-            $d->setError('Desconhecido');
+            $d->setError('Consulte seu Internet Banking');
         }
         else
         {

@@ -180,6 +180,7 @@ class Hsbc extends AbstractRetorno implements Retorno
             'liquidados' => 0,
             'entradas' => 0,
             'baixados' => 0,
+            'protestados' => 0,
             'erros' => 0,
             'alterados' => 0,
         ];
@@ -229,15 +230,20 @@ class Hsbc extends AbstractRetorno implements Retorno
             $this->totais['entradas']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_ENTRADA);
         }
-        elseif($d->hasOcorrencia('09','10','16','37'))
+        elseif($d->hasOcorrencia('09','10','16'))
         {
             $this->totais['baixados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_BAIXADA);
         }
+        elseif($d->hasOcorrencia('37'))
+        {
+            $this->totais['protestados']++;
+            $d->setOcorrenciaTipo($d::OCORRENCIA_PROTESTADA);
+        }
         elseif($d->hasOcorrencia('03'))
         {
             $this->totais['erros']++;
-            $d->setError(array_get($this->rejeicoes, $this->rem(302, 303, $detalhe), 'Desconhecido'));
+            $d->setError(array_get($this->rejeicoes, $this->rem(302, 303, $detalhe), 'Consulte seu Internet Banking'));
         }
         else
         {

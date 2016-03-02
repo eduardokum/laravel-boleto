@@ -547,6 +547,17 @@ abstract class AbstractBoleto implements BoletoContract
     {
         return $this->numero;
     }
+
+    /**
+     * Retorna o número cip para o bradesco
+     *
+     * @return int
+     * @throws \Exception
+     */
+    public function getCip()
+    {
+        throw new \Exception('Precisa ser implementado no Bradesco');
+    }
     /**
      * Define o campo Uso do banco
      *
@@ -763,7 +774,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setValor($valor)
     {
-        $this->valor = $valor;
+        $this->valor = Util::nFloat($valor, 2, false);
         return $this;
     }
     /**
@@ -949,7 +960,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setValorCobrado($valorCobrado)
     {
-        $this->valorCobrado = $valorCobrado;
+        $this->valorCobrado = Util::nFloat($valorCobrado, 2, false);
         return $this;
     }
     /**
@@ -969,7 +980,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setValorUnitario($valorUnitario)
     {
-        $this->valorUnitario = $valorUnitario;
+        $this->valorUnitario = Util::nFloat($valorUnitario, 2, false);
         return $this;
     }
     /**

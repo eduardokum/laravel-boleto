@@ -45,7 +45,7 @@ class Bradesco extends AbstractRetorno implements Retorno
         "03" => "Entrada Rejeitada",
         "06" => "Liquidação normal (sem motivo)",
         "09" => "Baixado Automat. via Arquivo",
-        "10" => "Baixado conforme instruções da Agênci",
+        "10" => "Baixado conforme instruções da Agência",
         "11" => "Em Ser - Arquivo de Títulos pendentes (sem motivo)",
         "12" => "Abatimento Concedido (sem motivo)",
         "13" => "Abatimento Cancelado (sem motivo)",
@@ -82,6 +82,7 @@ class Bradesco extends AbstractRetorno implements Retorno
             'liquidados' => 0,
             'entradas' => 0,
             'baixados' => 0,
+            'protestados' => 0,
             'erros' => 0,
             'alterados' => 0,
         ];
@@ -144,10 +145,15 @@ class Bradesco extends AbstractRetorno implements Retorno
             $this->totais['baixados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_BAIXADA);
         }
+        elseif($d->hasOcorrencia('23'))
+        {
+            $this->totais['protestados']++;
+            $d->setOcorrenciaTipo($d::OCORRENCIA_PROTESTADA);
+        }
         elseif($d->hasOcorrencia('03','24','27','30','32'))
         {
             $this->totais['erros']++;
-            $d->setError('Desconhecido');
+            $d->setError('Consulte seu Internet Banking');
         }
         else
         {

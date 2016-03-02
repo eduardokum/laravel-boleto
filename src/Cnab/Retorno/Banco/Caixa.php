@@ -115,6 +115,7 @@ class Caixa extends AbstractRetorno implements Retorno
             'liquidados' => 0,
             'entradas' => 0,
             'baixados' => 0,
+            'protestados' => 0,
             'erros' => 0,
             'alterados' => 0,
         ];
@@ -170,10 +171,15 @@ class Caixa extends AbstractRetorno implements Retorno
             $this->totais['baixados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_BAIXADA);
         }
+        elseif($d->hasOcorrencia('56'))
+        {
+            $this->totais['protestados']++;
+            $d->setOcorrenciaTipo($d::OCORRENCIA_PROTESTADA);
+        }
         elseif($d->hasOcorrencia('99'))
         {
             $this->totais['erros']++;
-            $d->setError(array_get($this->rejeicoes, $this->rem(80, 82, $detalhe), 'Desconhecido'));
+            $d->setError(array_get($this->rejeicoes, $this->rem(80, 82, $detalhe), 'Consulte seu Internet Banking'));
         }
         else
         {

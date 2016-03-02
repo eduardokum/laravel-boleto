@@ -29,6 +29,7 @@ interface Detalhe
     const OCORRENCIA_BAIXADA = 2;
     const OCORRENCIA_ENTRADA = 3;
     const OCORRENCIA_ALTERACAO = 4;
+    const OCORRENCIA_PROTESTADA = 5;
     const OCORRENCIA_ERRO = 9;
 
     /**

@@ -172,7 +172,6 @@ class Bb extends AbstractRetorno implements Retorno
         '83' => 'Carteira/variação não localizada no cedente',
         '84' => 'Titulo não localizado na existência',
         '99' => 'Outros motivos',
-        'XX' => 'Desconhecido',
     );
 
     /**
@@ -184,6 +183,7 @@ class Bb extends AbstractRetorno implements Retorno
             'liquidados' => 0,
             'entradas' => 0,
             'baixados' => 0,
+            'protestados' => 0,
             'erros' => 0,
             'alterados' => 0,
         ];
@@ -219,7 +219,7 @@ class Bb extends AbstractRetorno implements Retorno
         $d->setNossoNumero($this->rem(64, 80, $detalhe))
             ->setNumeroDocumento($this->rem(117, 126, $detalhe))
             ->setOcorrencia($this->rem(109, 110, $detalhe))
-            ->setOcorrenciaDescricao(array_get($this->ocorrencias, $d->getOcorrencia(), 'Desconhecido'))
+            ->setOcorrenciaDescricao(array_get($this->ocorrencias, $d->getOcorrencia(), 'Desconhecida'))
             ->setDataOcorrencia($this->rem(111, 116, $detalhe))
             ->setDataVencimento($this->rem(147, 152, $detalhe))
             ->setDataCredito( $this->rem(176, 181, $detalhe))
@@ -242,15 +242,20 @@ class Bb extends AbstractRetorno implements Retorno
             $this->totais['entradas']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_ENTRADA);
         }
-        elseif($d->hasOcorrencia('09','10'))
+        elseif($d->hasOcorrencia('09'))
         {
             $this->totais['baixados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_BAIXADA);
         }
+        elseif($d->hasOcorrencia('61'))
+        {
+            $this->totais['protestados']++;
+            $d->setOcorrenciaTipo($d::OCORRENCIA_PROTESTADA);
+        }
         elseif($d->hasOcorrencia('03'))
         {
             $this->totais['erros']++;
-            $d->setError(array_get($this->rejeicoes, $d->getOcorrencia(), 'Desconhecido'));
+            $d->setError(array_get($this->rejeicoes, $d->getOcorrencia(), 'Consulte seu Internet Banking'));
         }
         else
         {
