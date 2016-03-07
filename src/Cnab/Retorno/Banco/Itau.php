@@ -170,6 +170,12 @@ class Itau extends AbstractRetorno implements Retorno
             $this->totais['protestados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_PROTESTADA);
         }
+        elseif($d->hasOcorrencia('14'))
+        {
+            $this->totais['alterados']++;
+            $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
+        }
+
         elseif($d->hasOcorrencia('03','15','16','60','03'))
         {
             $this->totais['erros']++;
@@ -177,8 +183,7 @@ class Itau extends AbstractRetorno implements Retorno
         }
         else
         {
-            $this->totais['alterados']++;
-            $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
+            $d->setOcorrenciaTipo($d::OCORRENCIA_OUTROS);
         }
 
         return true;
