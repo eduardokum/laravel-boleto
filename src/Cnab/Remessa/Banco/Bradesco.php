@@ -180,7 +180,15 @@ class Bradesco extends AbstractRemessa implements RemessaContract
         $this->add(105, 105, '');
         $this->add(106, 106, '2'); // 1 = emite aviso, e assume o endereço do Pagador constante do Arquivo-Remessa; 2 = não emite aviso;
         $this->add(107, 108, Util::formatCnab('A', '', 2));
-        $this->add(109, 110, '01');
+        $this->add(109, 110, '01'); // REGISTRO
+        if($boleto->getStatus() == $boleto::STATUS_BAIXA)
+        {
+            $this->add(109, 110, '02'); // BAIXA
+        }
+        if($boleto->getStatus() == $boleto::STATUS_ALTERACAO)
+        {
+            $this->add(109, 110, '06'); // ALTERAR VENCIMENTO
+        }
         $this->add(111, 120, Util::formatCnab('A', $boleto->getNumeroDocumento(), 10));
         $this->add(121, 126, $boleto->getDataVencimento()->format('dmy'));
         $this->add(127, 139, Util::formatCnab('N', $boleto->getValor(), 13, 2));

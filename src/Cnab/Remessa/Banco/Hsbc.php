@@ -170,7 +170,15 @@ class Hsbc extends AbstractRemessa implements RemessaContract
         $this->add(91, 96, '000000');
         $this->add(97, 107, Util::formatCnab('N', 0, 11, 2));
         $this->add(108, 108, $this->getCarteiraNumero());
-        $this->add(109, 110, '01');
+        $this->add(109, 110, '01'); // REGISTRO
+        if($boleto->getStatus() == $boleto::STATUS_BAIXA)
+        {
+            $this->add(109, 110, '02'); // BAIXA
+        }
+        if($boleto->getStatus() == $boleto::STATUS_ALTERACAO)
+        {
+            $this->add(109, 110, '48'); // ALTERAR VENCIMENTO
+        }
         $this->add(111, 120, Util::formatCnab('X', $boleto->getNumeroDocumento(), 10));
         $this->add(121, 126, $boleto->getDataVencimento()->format('dmy'));
         $this->add(127, 139, Util::formatCnab('N', $boleto->getValor(), 13, 2));

@@ -248,6 +248,13 @@ abstract class AbstractBoleto implements BoletoContract
      * @var string
      */
     protected $campoCodigoBarras;
+
+    /**
+     * Status do boleto, se vai criar alterar ou baixa no banco.
+     *
+     * @var int
+     */
+    protected $status = self::STATUS_REGISTRO;
     /**
      * Construtor
      *
@@ -1032,6 +1039,35 @@ abstract class AbstractBoleto implements BoletoContract
     public function getLogoBanco()
     {
         return realpath(__DIR__ . '/../../logos/' . $this->getCodigoBanco() . '.png');
+    }
+    /**
+     * @return int
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+    /**
+     * Marca o boleto para ser alterado no banco
+     *
+     * @return AbstractBoleto
+     */
+    public function alterarBoleto()
+    {
+        $this->status = self::STATUS_ALTERACAO;
+
+        return $this;
+    }
+    /**
+     * Marca o boleto para ser baixado no banco
+     *
+     * @return AbstractBoleto
+     */
+    public function baixarBoleto()
+    {
+        $this->status = self::STATUS_BAIXA;
+
+        return $this;
     }
     /**
      * Retorna o logotipo do banco em Base64, pronto para ser inserido na página

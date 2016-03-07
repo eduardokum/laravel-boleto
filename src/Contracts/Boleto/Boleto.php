@@ -33,6 +33,10 @@ interface Boleto
     const COD_BANCO_ITAU = '341';
     const COD_BANCO_HSBC = '399';
 
+    const STATUS_REGISTRO = 1;
+    const STATUS_ALTERACAO = 2;
+    const STATUS_BAIXA = 2;
+
     /**
      * Render PDF.
      *
@@ -259,5 +263,10 @@ interface Boleto
      * @return mixed
      */
     public function getUsoBanco();
+
+    /**
+     * @return mixed
+     */
+    public function getStatus();
 
 }
