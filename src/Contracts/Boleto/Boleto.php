@@ -35,7 +35,7 @@ interface Boleto
 
     const STATUS_REGISTRO = 1;
     const STATUS_ALTERACAO = 2;
-    const STATUS_BAIXA = 2;
+    const STATUS_BAIXA = 3;
 
     /**
      * Render PDF.
@@ -268,5 +268,15 @@ interface Boleto
      * @return mixed
      */
     public function getStatus();
+
+    /**
+     * @return mixed
+     */
+    public function alterarBoleto();
+
+    /**
+     * @return mixed
+     */
+    public function baixarBoleto();
 
 }

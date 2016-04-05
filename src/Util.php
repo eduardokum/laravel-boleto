@@ -544,16 +544,22 @@ final class Util
         $numbersOnly = self::numbersOnly($date);
         if (self::maskString($numbersOnly, '##/##/####') == $date)
         {
-            $date_time = \DateTime::createFromFormat('d/m/Y', $date);
-        } elseif (self::maskString($numbersOnly, '##/##/##') == $date)
+            $date_time = \Carbon\Carbon::createFromFormat('d/m/Y', $date);
+        }
+        elseif (self::maskString($numbersOnly, '##/##/##') == $date)
         {
-            $date_time = \DateTime::createFromFormat('d/m/y', $date);
-        } else
+            $date_time = \Carbon\Carbon::createFromFormat('d/m/y', $date);
+        }
+        elseif (self::maskString($numbersOnly, '####-##-##') == $date)
+        {
+            $date_time = \Carbon\Carbon::createFromFormat('Y-m-d', $date);;
+        }
+        else
         {
             return false;
         }
 
-        return $date_time->format('Y-m-d');
+        return $date_time;
     }
 
     /**
