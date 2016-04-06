@@ -841,7 +841,8 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setJuros($juros)
     {
-        $this->juros = (int) $juros > 0 ? $juros : false;
+        $juros = (float) $juros;
+        $this->juros = $juros > 0 ? $juros : false;
         return $this;
     }
     /**
@@ -861,7 +862,8 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setJurosApos($jurosApos)
     {
-        $this->jurosApos = (int) $jurosApos > 0 ? (int) $jurosApos : false;
+        $jurosApos = (int) $jurosApos;
+        $this->jurosApos =  $jurosApos > 0 ? $jurosApos : false;
         return $this;
     }
 
@@ -874,7 +876,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getJurosApos($default = false)
     {
-        return $default !== false && $this->jurosApos === false ? $default : (int) $this->jurosApos;
+        return $default !== false && $this->jurosApos === false ? $default : $this->jurosApos;
     }
     /**
      * Seta dias para protesto
@@ -884,7 +886,8 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setDiasProtesto($diasProtesto)
     {
-        $this->diasProtesto = (int) $diasProtesto > 0 ? (int) $diasProtesto : false;
+        $diasProtesto = (int) $diasProtesto;
+        $this->diasProtesto = $diasProtesto > 0 ? $diasProtesto : false;
         return $this;
     }
 
@@ -897,7 +900,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getDiasProtesto($default = false)
     {
-        return $default !== false && $this->diasProtesto === false ? $default : (int) $this->diasProtesto;
+        return $default !== false && $this->diasProtesto === false ? $default : $this->diasProtesto;
     }
     /**
      * Define o campo outras deduções do boleto
