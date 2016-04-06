@@ -329,7 +329,7 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(235, 271, Util::formatCnab('X', $boleto->getPagador()->getNome(), 37));
         $this->add(272, 274, Util::formatCnab('N', '', 3));
         $this->add(275, 314, Util::formatCnab('X', $boleto->getPagador()->getEndereco(), 40));
-        $this->add(315, 326, Util::formatCnab('X', '', 12));
+        $this->add(315, 326, Util::formatCnab('X', $boleto->getPagador()->getBairro(), 12));
         $this->add(327, 334, Util::formatCnab('9L', $boleto->getPagador()->getCep(), 8));
         $this->add(335, 349, Util::formatCnab('X', $boleto->getPagador()->getCidade(), 15));
         $this->add(350, 351, Util::formatCnab('X', $boleto->getPagador()->getUf(), 2));

@@ -440,10 +440,7 @@ abstract class AbstractRemessa
 
         $this->trailer();
         $stringRemessa .= $this->valida($this->aRegistros[self::TRAILER]);
-
-        if(!empty($this->fim_arquivo)) {
-            $stringRemessa .= $this->fimArquivo;
-        }
+        $stringRemessa .= $this->fimArquivo;
 
         return $stringRemessa;
     }
