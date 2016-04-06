@@ -841,7 +841,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setJuros($juros)
     {
-        $this->juros = $juros > 0 ? $juros : false;
+        $this->juros = (int) $juros > 0 ? $juros : false;
         return $this;
     }
     /**
@@ -861,7 +861,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setJurosApos($jurosApos)
     {
-        $this->jurosApos = $jurosApos > 0 ? (int) $jurosApos : false;
+        $this->jurosApos = (int) $jurosApos > 0 ? (int) $jurosApos : false;
         return $this;
     }
 
@@ -884,7 +884,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setDiasProtesto($diasProtesto)
     {
-        $this->diasProtesto = $diasProtesto > 0 ? (int) $diasProtesto : false;
+        $this->diasProtesto = (int) $diasProtesto > 0 ? (int) $diasProtesto : false;
         return $this;
     }
 
