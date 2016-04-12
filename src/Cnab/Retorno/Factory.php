@@ -41,6 +41,10 @@ class Factory
         {
             $file_content = file($file);
         }
+        elsEif(is_string($file))
+        {
+            $file_content = explode(PHP_EOL, $file);
+        }
         else
         {
             throw new \Exception("Arquivo: $file, não existe");
