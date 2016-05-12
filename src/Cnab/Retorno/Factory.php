@@ -24,7 +24,6 @@ namespace Eduardokum\LaravelBoleto\Cnab\Retorno;
 
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Cnab;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno;
-use Eduardokum\LaravelBoleto\Util;
 
 class Factory
 {
@@ -37,30 +36,24 @@ class Factory
      */
     public static function make($file)
     {
-        if(file_exists($file))
-        {
+        if (file_exists($file)) {
             $file_content = file($file);
-        }
-        elsEif(is_string($file))
-        {
+        } elseif (is_string($file)) {
             $file_content = explode(PHP_EOL, $file);
-        }
-        else
-        {
+        } else {
             throw new \Exception("Arquivo: $file, não existe");
         }
 
-        if( strlen(rtrim($file_content[0])) != '400' ) {
+        if (strlen(rtrim($file_content[0])) != '400') {
             throw new \Exception("Arquivo: $file, não é um arquivo CNAB 400 posições válido");
         }
 
-        if( substr( $file_content[0], 0, 9) != '02RETORNO' ) {
+        if (substr($file_content[0], 0, 9) != '02RETORNO') {
             throw new \Exception("Arquivo: $file, não é um arquivo de retorno");
         }
 
         $banco = substr($file_content[0], 76, 3);
-        switch($banco)
-        {
+        switch ($banco) {
             case Cnab::COD_BANCO_BB:
                 $instancia = new Banco\Bb($file_content);
                 break;

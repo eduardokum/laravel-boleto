@@ -144,18 +144,15 @@ class Detalhe implements DetalheContract
     {
         $ocorrencias = func_get_args();
 
-        if(count($ocorrencias) == 0 && empty($this->getOcorrencia()))
-        {
+        if (count($ocorrencias) == 0 && empty($this->getOcorrencia())) {
             return true;
         }
 
-        if(count($ocorrencias) == 1 && is_array(func_get_arg(0)))
-        {
+        if (count($ocorrencias) == 1 && is_array(func_get_arg(0))) {
             $ocorrencias = func_get_arg(0);
         }
 
-        if(in_array($this->getOcorrencia(), $ocorrencias))
-        {
+        if (in_array($this->getOcorrencia(), $ocorrencias)) {
             return true;
         }
 
@@ -230,8 +227,8 @@ class Detalhe implements DetalheContract
     public function getDataOcorrencia($format = 'd/m/Y')
     {
         return $this->dataOcorrencia instanceof Carbon
-            ? $format === false ? $this->dataOcorrencia : $this->dataOcorrencia->format($format)
-            : null;
+        ? $format === false ? $this->dataOcorrencia : $this->dataOcorrencia->format($format)
+        : null;
     }
 
     /**
@@ -254,8 +251,8 @@ class Detalhe implements DetalheContract
     public function getDataVencimento($format = 'd/m/Y')
     {
         return $this->dataVencimento instanceof Carbon
-            ? $format === false ? $this->dataVencimento : $this->dataVencimento->format($format)
-            : null;
+        ? $format === false ? $this->dataVencimento : $this->dataVencimento->format($format)
+        : null;
     }
 
     /**
@@ -278,8 +275,8 @@ class Detalhe implements DetalheContract
     public function getDataCredito($format = 'd/m/Y')
     {
         return $this->dataCredito instanceof Carbon
-            ? $format === false ? $this->dataCredito : $this->dataCredito->format($format)
-            : null;
+        ? $format === false ? $this->dataCredito : $this->dataCredito->format($format)
+        : null;
     }
 
     /**
@@ -492,12 +489,11 @@ class Detalhe implements DetalheContract
     {
         $vars = array_keys(get_class_vars(self::class));
         $aRet = [];
-        foreach($vars as $var)
-        {
+        foreach ($vars as $var) {
             $methodName = 'get' . ucfirst($var);
             $aRet[$var] = method_exists($this, $methodName)
-                ? $this->$methodName()
-                : $this->$var;
+            ? $this->$methodName()
+            : $this->$var;
         }
         return $aRet;
     }
@@ -510,8 +506,7 @@ class Detalhe implements DetalheContract
      */
     public function __set($name, $value)
     {
-        if(property_exists($this, $name))
-        {
+        if (property_exists($this, $name)) {
             $this->$name = $value;
         }
     }
@@ -523,8 +518,7 @@ class Detalhe implements DetalheContract
      */
     public function __get($name)
     {
-        if(property_exists($this, $name))
-        {
+        if (property_exists($this, $name)) {
             $method = 'get' . ucwords($name);
             return $this->{$method}();
         }

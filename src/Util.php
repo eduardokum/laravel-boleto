@@ -24,6 +24,15 @@ namespace Eduardokum\LaravelBoleto;
 
 use Carbon\Carbon;
 
+/**
+ * Class Util
+ *
+ * @TODO validar tamanho nosso numero
+ * @TODO validar processar
+ * @TODO validar float nos numeros
+ *
+ * @package Eduardokum\LaravelBoleto
+ */
 final class Util
 {
 
@@ -314,22 +323,23 @@ final class Util
      * @param string $string
      * @return string
      */
-    public static function normalizeChars($string) {
+    public static function normalizeChars($string)
+    {
 
         $normalizeChars = array(
-            'Á'=>'A', 'À'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Å'=>'A', 'Ä'=>'A', 'Æ'=>'AE', 'Ç'=>'C',
-            'É'=>'E', 'È'=>'E', 'Ê'=>'E', 'Ë'=>'E', 'Í'=>'I', 'Ì'=>'I', 'Î'=>'I', 'Ï'=>'I', 'Ð'=>'Eth',
-            'Ñ'=>'N', 'Ó'=>'O', 'Ò'=>'O', 'Ô'=>'O', 'Õ'=>'O', 'Ö'=>'O', 'Ø'=>'O',
-            'Ú'=>'U', 'Ù'=>'U', 'Û'=>'U', 'Ü'=>'U', 'Ý'=>'Y', 'Ŕ'=>'R',
+            'Á' => 'A', 'À' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Å' => 'A', 'Ä' => 'A', 'Æ' => 'AE', 'Ç' => 'C',
+            'É' => 'E', 'È' => 'E', 'Ê' => 'E', 'Ë' => 'E', 'Í' => 'I', 'Ì' => 'I', 'Î' => 'I', 'Ï' => 'I', 'Ð' => 'Eth',
+            'Ñ' => 'N', 'Ó' => 'O', 'Ò' => 'O', 'Ô' => 'O', 'Õ' => 'O', 'Ö' => 'O', 'Ø' => 'O',
+            'Ú' => 'U', 'Ù' => 'U', 'Û' => 'U', 'Ü' => 'U', 'Ý' => 'Y', 'Ŕ' => 'R',
 
-            'á'=>'a', 'à'=>'a', 'â'=>'a', 'ã'=>'a', 'å'=>'a', 'ä'=>'a', 'æ'=>'ae', 'ç'=>'c',
-            'é'=>'e', 'è'=>'e', 'ê'=>'e', 'ë'=>'e', 'í'=>'i', 'ì'=>'i', 'î'=>'i', 'ï'=>'i', 'ð'=>'eth',
-            'ñ'=>'n', 'ó'=>'o', 'ò'=>'o', 'ô'=>'o', 'õ'=>'o', 'ö'=>'o', 'ø'=>'o',
-            'ú'=>'u', 'ù'=>'u', 'û'=>'u', 'ü'=>'u', 'ý'=>'y', 'ŕ'=>'r', 'ÿ'=>'y',
+            'á' => 'a', 'à' => 'a', 'â' => 'a', 'ã' => 'a', 'å' => 'a', 'ä' => 'a', 'æ' => 'ae', 'ç' => 'c',
+            'é' => 'e', 'è' => 'e', 'ê' => 'e', 'ë' => 'e', 'í' => 'i', 'ì' => 'i', 'î' => 'i', 'ï' => 'i', 'ð' => 'eth',
+            'ñ' => 'n', 'ó' => 'o', 'ò' => 'o', 'ô' => 'o', 'õ' => 'o', 'ö' => 'o', 'ø' => 'o',
+            'ú' => 'u', 'ù' => 'u', 'û' => 'u', 'ü' => 'u', 'ý' => 'y', 'ŕ' => 'r', 'ÿ' => 'y',
 
-            'ß'=>'sz', 'þ'=>'thorn'
+            'ß' => 'sz', 'þ' => 'thorn',
         );
-        return strtr($string,$normalizeChars);
+        return strtr($string, $normalizeChars);
     }
 
     /**
@@ -341,22 +351,20 @@ final class Util
      */
     public static function nFloat($number, $decimals = 2, $showThousands = false)
     {
-        if(is_null($number) || empty(self::onlyNumbers($number))) {return '';}
+        if (is_null($number) || empty(self::onlyNumbers($number))) {return '';}
         $pontuacao = preg_replace('/[0-9]/', '', $number);
-        $locale = (substr($pontuacao, -1, 1) == ',')?"pt-BR":"en-US";
+        $locale = (substr($pontuacao, -1, 1) == ',') ? "pt-BR" : "en-US";
         $formater = new \NumberFormatter($locale, \NumberFormatter::DECIMAL);
 
-        if( $decimals === false )
-        {
+        if ($decimals === false) {
             $decimals = 2;
             preg_match_all('/[0-9][^0-9]([0-9]+)/', $number, $matches);
-            if( !empty($matches[1]) )
-            {
+            if (!empty($matches[1])) {
                 $decimals = strlen(rtrim($matches[1][0], 0));
             }
         }
 
-        return number_format($formater->parse( $number, \NumberFormatter::TYPE_DOUBLE), $decimals, '.', ($showThousands)?',':'');
+        return number_format($formater->parse($number, \NumberFormatter::TYPE_DOUBLE), $decimals, '.', ($showThousands) ? ',' : '');
     }
 
     /**
@@ -369,20 +377,18 @@ final class Util
      */
     public static function nReal($number, $decimals = 2, $symbol = true, $fixed = true)
     {
-        if(is_null($number) || empty(self::onlyNumbers($number))) {return '';}
+        if (is_null($number) || empty(self::onlyNumbers($number))) {return '';}
         $formater = new \NumberFormatter("pt-BR", \NumberFormatter::CURRENCY);
-        $formater->setAttribute(\NumberFormatter::MIN_FRACTION_DIGITS, ($fixed?$decimals:1));
-        if( $decimals === false )
-        {
+        $formater->setAttribute(\NumberFormatter::MIN_FRACTION_DIGITS, ($fixed ? $decimals : 1));
+        if ($decimals === false) {
             $decimals = 2;
             preg_match_all('/[0-9][^0-9]([0-9]+)/', $number, $matches);
-            if( !empty($matches[1]) )
-            {
+            if (!empty($matches[1])) {
                 $decimals = strlen(rtrim($matches[1][0], 0));
             }
         }
         $formater->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, $decimals);
-        if(!$symbol) {
+        if (!$symbol) {
             $pattern = preg_replace("/[¤]/", '', $formater->getPattern());
             $formater->setPattern($pattern);
         } else {
@@ -418,9 +424,11 @@ final class Util
         $value = number_format($value, 2, ".", ".");
         $integer = explode(".", $value);
         $cont = count($integer);
-        for ($i = 0; $i < $cont; $i++)
-            for ($ii = strlen($integer[$i]); $ii < 3; $ii++)
+        for ($i = 0; $i < $cont; $i++) {
+            for ($ii = strlen($integer[$i]); $ii < 3; $ii++) {
                 $integer[$i] = "0" . $integer[$i];
+            }
+        }
 
         $fim = $cont - ($integer[$cont - 1] > 0 ? 1 : 2);
         $rt = '';
@@ -431,19 +439,25 @@ final class Util
             $ru = ($value > 0) ? (($value[1] == 1) ? $d10[$value[2]] : $u[$value[2]]) : "";
 
             $r = $rc . (($rc && ($rd || $ru)) ? " e " : "") . $rd . (($rd &&
-                    $ru) ? " e " : "") . $ru;
+                $ru) ? " e " : "") . $ru;
             $t = $cont - 1 - $i;
             $r .= $r ? " " . ($value > 1 ? $plural[$t] : $singular[$t]) : "";
             if ($value == "000"
-            )
+            ) {
                 $z++;
-            elseif ($z > 0)
+            } elseif ($z > 0) {
                 $z--;
-            if (($t == 1) && ($z > 0) && ($integer[0] > 0))
-                $r .= ( ($z > 1) ? " de " : "") . $plural[$t];
-            if ($r)
+            }
+
+            if (($t == 1) && ($z > 0) && ($integer[0] > 0)) {
+                $r .= (($z > 1) ? " de " : "") . $plural[$t];
+            }
+
+            if ($r) {
                 $rt = $rt . ((($i > 0) && ($i <= $fim) &&
-                        ($integer[0] > 0) && ($z < 1)) ? ( ($i < $fim) ? ", " : " e ") : " ") . $r;
+                    ($integer[0] > 0) && ($z < 1)) ? (($i < $fim) ? ", " : " e ") : " ") . $r;
+            }
+
         }
 
         if (!$uppercase) {
@@ -466,7 +480,7 @@ final class Util
      */
     public static function percentOf($big, $small, $defaultOnZero = 0)
     {
-        $result = $big > 0.01 ? (($small*100)/$big) : $defaultOnZero;
+        $result = $big > 0.01 ? (($small * 100) / $big) : $defaultOnZero;
         return self::nFloat($result);
     }
 
@@ -480,14 +494,11 @@ final class Util
      */
     public static function percent($big, $percent)
     {
-        if( $percent < 0.01 )
-        {
+        if ($percent < 0.01) {
             return 0;
         }
         return self::nFloat($big * ($percent / 100));
     }
-
-
 
     /**
      * Função para mascarar uma string, mascara tipo ##-##-##
@@ -499,28 +510,21 @@ final class Util
      */
     public static function maskString($val, $mask)
     {
-        if(empty($val))
-        {
+        if (empty($val)) {
             return $val;
         }
         $maskared = '';
         $k = 0;
-        if (is_numeric($val))
-        {
+        if (is_numeric($val)) {
             $val = sprintf('%0' . strlen(preg_replace('/[^#]/', '', $mask)) . 's', $val);
         }
-        for ($i = 0; $i <= strlen($mask) - 1; $i ++)
-        {
-            if ($mask[$i] == '#')
-            {
-                if (isset($val[$k]))
-                {
-                    $maskared .= $val[$k ++];
+        for ($i = 0; $i <= strlen($mask) - 1; $i++) {
+            if ($mask[$i] == '#') {
+                if (isset($val[$k])) {
+                    $maskared .= $val[$k++];
                 }
-            } else
-            {
-                if (isset($mask[$i]))
-                {
+            } else {
+                if (isset($mask[$i])) {
                     $maskared .= $mask[$i];
                 }
             }
@@ -537,25 +541,17 @@ final class Util
      */
     public static function dateBrToUs($date)
     {
-        if (empty($date))
-        {
+        if (empty($date)) {
             return false;
         }
         $numbersOnly = self::numbersOnly($date);
-        if (self::maskString($numbersOnly, '##/##/####') == $date)
-        {
+        if (self::maskString($numbersOnly, '##/##/####') == $date) {
             $date_time = \Carbon\Carbon::createFromFormat('d/m/Y', $date);
-        }
-        elseif (self::maskString($numbersOnly, '##/##/##') == $date)
-        {
+        } elseif (self::maskString($numbersOnly, '##/##/##') == $date) {
             $date_time = \Carbon\Carbon::createFromFormat('d/m/y', $date);
-        }
-        elseif (self::maskString($numbersOnly, '####-##-##') == $date)
-        {
-            $date_time = \Carbon\Carbon::createFromFormat('Y-m-d', $date);;
-        }
-        else
-        {
+        } elseif (self::maskString($numbersOnly, '####-##-##') == $date) {
+            $date_time = \Carbon\Carbon::createFromFormat('Y-m-d', $date);
+        } else {
             return false;
         }
 
@@ -569,7 +565,8 @@ final class Util
      *
      * @return string
      */
-    public static function numberFormatGeral($n, $loop, $insert = 0) {
+    public static function numberFormatGeral($n, $loop, $insert = 0)
+    {
         // Removo os caracteras a mais do que o pad solicitado caso a string seja maior
         $n = substr(self::onlyNumbers($n), 0, $loop);
         return str_pad($n, $loop, $insert, STR_PAD_LEFT);
@@ -582,8 +579,9 @@ final class Util
      *
      * @return string
      */
-    public static function numberFormatValue($n, $loop, $insert) {
-        return str_pad(self::onlyNumbers(number_format((float)$n, '2', ',', '.')), $loop, $insert, STR_PAD_LEFT);
+    public static function numberFormatValue($n, $loop, $insert)
+    {
+        return str_pad(self::onlyNumbers(number_format((float) $n, '2', ',', '.')), $loop, $insert, STR_PAD_LEFT);
     }
 
     /**
@@ -593,7 +591,8 @@ final class Util
      *
      * @return string
      */
-    public static function numberFormatConvenio($n, $loop, $insert) {
+    public static function numberFormatConvenio($n, $loop, $insert)
+    {
         return str_pad(self::onlyNumbers($n), $loop, $insert, STR_PAD_RIGHT);
     }
 
@@ -649,8 +648,9 @@ final class Util
      *
      * @return float
      */
-    public static function fatorVencimento($date, $format = 'Y-m-d') {
-        $date = ($date instanceof Carbon) ? $date :  Carbon::createFromFormat($format, $date)->setTime(0,0,0);
+    public static function fatorVencimento($date, $format = 'Y-m-d')
+    {
+        $date = ($date instanceof Carbon) ? $date : Carbon::createFromFormat($format, $date)->setTime(0, 0, 0);
         return (new Carbon('1997-10-07'))->diffInDays($date);
     }
 
@@ -660,11 +660,11 @@ final class Util
      *
      * @return bool|string
      */
-    public static function fatorVencimentoBack($factor, $format = 'Y-m-d') {
+    public static function fatorVencimentoBack($factor, $format = 'Y-m-d')
+    {
         $date = Carbon::create(1997, 10, 7, 0, 0, 0)->addDay($factor);
         return $format ? $date->format($format) : $date;
     }
-
 
     /**
      * @param        $date
@@ -679,7 +679,6 @@ final class Util
         return $dateDiff . substr($date->year, -1);
     }
 
-
     /**
      * @param     $n
      * @param int $factor
@@ -689,7 +688,8 @@ final class Util
      *
      * @return int
      */
-    public static function modulo11($n, $factor=2, $base=9, $rest=0, $whenTen=0) {
+    public static function modulo11($n, $factor = 2, $base = 9, $rest = 0, $whenTen = 0)
+    {
         $sum = 0;
         for ($i = strlen($n); $i > 0; $i--) {
             $ns[$i] = substr($n, $i - 1, 1);
@@ -719,18 +719,20 @@ final class Util
      *
      * @return int
      */
-    public static function modulo11Reverso($n, $earlyFactor = 2, $lastFactor = 9) {
+    public static function modulo11Reverso($n, $earlyFactor = 2, $lastFactor = 9)
+    {
         $factor = $lastFactor;
         $sum = 0;
         for ($i = strlen($n); $i > 0; $i--) {
             $sum += substr($n, $i - 1, 1) * $factor;
-            if (--$factor < $earlyFactor)
+            if (--$factor < $earlyFactor) {
                 $factor = $lastFactor;
+            }
+
         }
 
         $module = $sum % 11;
-        if ($module > 9)
-        {
+        if ($module > 9) {
             return 0;
         }
 
@@ -742,11 +744,12 @@ final class Util
      *
      * @return int
      */
-    public static function modulo10($n) {
+    public static function modulo10($n)
+    {
         $chars = array_reverse(str_split($n, 1));
         $odd = array_intersect_key($chars, array_fill_keys(range(1, count($chars), 2), null));
         $even = array_intersect_key($chars, array_fill_keys(range(0, count($chars), 2), null));
-        $even = array_map(function($n) { return ($n >= 5)?2 * $n - 9:2 * $n; }, $even);
+        $even = array_map(function ($n) {return ($n >= 5) ? 2 * $n - 9 : 2 * $n;}, $even);
         $total = array_sum($odd) + array_sum($even);
         return ((floor($total / 10) + 1) * 10 - $total) % 10;
     }
@@ -756,12 +759,12 @@ final class Util
      *
      * @return int
      */
-    public static function dvSatander($n) {
+    public static function dvSatander($n)
+    {
         $chars = array_reverse(str_split($n, 1));
         $sums = array_reverse(str_split('97310097131973', 1));
         $sum = 0;
-        foreach($chars as $i => $char)
-        {
+        foreach ($chars as $i => $char) {
             $sum += substr($char * $sums[$i], -1);
         }
         $unidade = substr($sum, -1);
@@ -776,19 +779,16 @@ final class Util
      */
     public static function array2Controle(array $a)
     {
-        if(preg_match('/[0-9]/', array_keys($a)))
-        {
+        if (preg_match('/[0-9]/', array_keys($a))) {
             throw new \Exception('Somente chave alfanumérica no array, para separar o controle pela chave');
         }
 
         $controle = '';
-        foreach($a as $key => $value)
-        {
+        foreach ($a as $key => $value) {
             $controle .= sprintf('%s%s', $key, $value);
         }
 
-        if(strlen($controle) > 25)
-        {
+        if (strlen($controle) > 25) {
             throw new \Exception('Controle muito grande, máximo permitido de 25 caracteres');
         }
 
@@ -827,19 +827,18 @@ final class Util
     {
         $remessa = file($file);
         $banco = self::remove(77, 79, $remessa[0]);
-        $retorno[0] = array_fill(0,400, '0');
+        $retorno[0] = array_fill(0, 400, '0');
 
         // header
         self::adiciona($retorno[0], 1, 9, '02RETORNO');
-        switch($banco)
-        {
+        switch ($banco) {
             case Contracts\Cnab\Cnab::COD_BANCO_BB:
                 self::adiciona($retorno[0], 27, 30, self::remove(27, 30, $remessa[0]));
                 self::adiciona($retorno[0], 31, 31, self::remove(31, 31, $remessa[0]));
                 self::adiciona($retorno[0], 32, 39, self::remove(32, 39, $remessa[0]));
                 self::adiciona($retorno[0], 40, 40, self::remove(40, 40, $remessa[0]));
                 self::adiciona($retorno[0], 150, 156, self::remove(130, 136, $remessa[0]));
-            break;
+                break;
             case Contracts\Cnab\Cnab::COD_BANCO_SANTANDER:
                 self::adiciona($retorno[0], 27, 30, self::remove(27, 30, $remessa[0]));
                 self::adiciona($retorno[0], 39, 46, '0' . self::remove(40, 46, $remessa[0]));
@@ -871,10 +870,9 @@ final class Util
         $remessa_h = array_shift($remessa); // removo o header
         $remessa_t = array_pop($remessa); // remove o trailer
 
-        foreach($remessa as $detalhe)
-        {
+        foreach ($remessa as $detalhe) {
             $i = count($retorno);
-            $retorno[$i] = array_fill(0,400, '0');
+            $retorno[$i] = array_fill(0, 400, '0');
             self::adiciona($retorno[$i], 1, 1, '1');
             self::adiciona($retorno[$i], 109, 110, sprintf('%02s', $ocorrencia));
             self::adiciona($retorno[$i], 111, 116, date('dmy'));
@@ -883,11 +881,9 @@ final class Util
             self::adiciona($retorno[$i], 147, 152, self::remove(121, 126, $detalhe));
             self::adiciona($retorno[$i], 117, 126, self::remove(111, 120, $detalhe));
             self::adiciona($retorno[$i], 395, 400, sprintf('%06s', count($retorno)));
-            switch($banco)
-            {
+            switch ($banco) {
                 case Contracts\Cnab\Cnab::COD_BANCO_BB:
-                    if(self::remove(1, 1, $detalhe) != 7)
-                    {
+                    if (self::remove(1, 1, $detalhe) != 7) {
                         unset($retorno[$i]);
                         continue;
                     }
@@ -919,11 +915,11 @@ final class Util
         }
 
         $i = count($retorno);
-        $retorno[$i] = array_fill(0,400, '0');
+        $retorno[$i] = array_fill(0, 400, '0');
         self::adiciona($retorno[$i], 1, 1, '9');
         self::adiciona($retorno[$i], 395, 400, sprintf('%06s', count($retorno)));
 
-        $retorno = array_map(function($a){
+        $retorno = array_map(function ($a) {
             return implode('', $a);
         }, $retorno);
 
@@ -942,9 +938,8 @@ final class Util
      */
     public static function remove($i, $f, &$array)
     {
-        if(is_string($array))
-        {
-            $array = str_split(rtrim($array, chr(10).chr(13)."\n"."\r"), 1);
+        if (is_string($array)) {
+            $array = str_split(rtrim($array, chr(10) . chr(13) . "\n" . "\r"), 1);
         }
 
         $i--;
