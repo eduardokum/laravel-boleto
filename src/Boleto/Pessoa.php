@@ -46,6 +46,10 @@ class Pessoa implements PessoaContract
     /**
      * @var string
      */
+    protected $bairro;
+    /**
+     * @var string
+     */
     protected $cep;
     /**
      * @var string
@@ -72,11 +76,12 @@ class Pessoa implements PessoaContract
      *
      * @return Pessoa
      */
-    public static function create($nome, $documento, $endereco = null, $cep = null, $cidade = null, $uf = null)
+    public static function create($nome, $documento, $endereco = null, $bairro = null, $cep = null, $cidade = null, $uf = null)
     {
         return new static([
             'nome' => $nome,
             'endereco' => $endereco,
+            'bairro' => $bairro,
             'cep' => $cep,
             'uf' => $uf,
             'cidade' => $cidade,
@@ -179,10 +184,29 @@ class Pessoa implements PessoaContract
         return $this->endereco;
     }
     /**
+     * Define o bairro
+     *
+     * @param string $bairro
+     */
+    public function setBairro($bairro)
+    {
+        $this->bairro = $bairro;
+    }
+    /**
+     * Retorna o bairro
+     *
+     * @return string
+     */
+    public function getBairro()
+    {
+        return $this->bairro;
+    }
+    /**
      * Define o nome
      *
      * @param string $nome
      */
+
     public function setNome($nome)
     {
         $this->nome = $nome;

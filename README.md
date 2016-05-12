@@ -25,6 +25,7 @@ $beneficiario = new \Eduardokum\LaravelBoleto\Boleto\Pessoa([
 $pagador = new \Eduardokum\LaravelBoleto\Boleto\Pessoa([
     'nome' => 'Cliente',
     'endereco' => 'Rua um, 123',
+    'bairro' => 'Bairro',
     'cep' => '99999-999',
     'uf' => 'UF',
     'cidade' => 'CIDADE',
