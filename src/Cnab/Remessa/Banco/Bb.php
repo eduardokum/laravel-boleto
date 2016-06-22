@@ -217,7 +217,7 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(41, 46, '000000');
         $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(77, 79, $this->getCodigoBanco());
-        $this->add(79, 94, Util::formatCnab('X', 'BANCODOBRASIL', 15));
+        $this->add(80, 94, Util::formatCnab('X', 'BANCODOBRASIL', 15));
         $this->add(80, 100, date('dmy'));
         $this->add(101, 107, Util::formatCnab('9', $this->getIdremessa(), 7));
         $this->add(108, 129, '');
