@@ -6,6 +6,15 @@
 # laravel-boleto
 Pacote para gerar boletos e remessas
 
+## Instalação
+Via composer:
+
+composer require eduardokum/laravel-boleto
+
+Ou adicione manualmente ao seu composer.json:
+
+"eduardokum/laravel-boleto": "dev-master"
+
 ## Gerar boleto
 
 Gerando somente 1
@@ -36,7 +45,7 @@ $pagador = new \Eduardokum\LaravelBoleto\Boleto\Pessoa([
 ```php
 $boletoArray = [
 	'logo' => 'path/para/o/logo', // Logo da empresa
-	'dataVencimento' => \Carbon\Carbon('1790-01-01'),
+	'dataVencimento' => new \Carbon\Carbon('1790-01-01'),
 	'valor' => 100.00,
 	'multa' => 10.00, // porcento
 	'juros' => 2.00, // porcento ao mes
