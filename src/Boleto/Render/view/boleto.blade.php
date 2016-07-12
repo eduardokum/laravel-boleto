@@ -20,7 +20,7 @@
             <li>Caso tenha problemas ao imprimir, copie a sequencia numérica abaixo e pague no caixa eletrônico ou no internet banking:</li>
         </ul>
         <span class="header">Linha Digitável: {{ $linha_digitavel }}</span>
-        {{ $valor_documento ? '<span class="header">Valor: R$' . $valor_documento . '</span>' : '' }}
+        {!! $valor_documento ? '<span class="header">Valor: R$' . $valor_documento . '</span>' : '' !!}
         <br>
         <div class="linha-pontilhada" style="margin-bottom: 20px;">Recibo do pagador</div>
     </div>
