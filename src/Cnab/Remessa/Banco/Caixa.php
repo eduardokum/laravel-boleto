@@ -63,7 +63,7 @@ class Caixa  extends AbstractRemessa implements RemessaContract
      * Define as carteiras disponíveis para cada banco
      * @var array
      */
-    protected $carteiras = ['RG'];
+    protected $carteiras = ['RG', 'SR'];
 
     /**
      * Caracter de fim de linha
