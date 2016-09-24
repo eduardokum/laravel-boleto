@@ -20,13 +20,14 @@
  *   IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Banco;
+namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco;
 
-use Eduardokum\LaravelBoleto\Cnab\Retorno\AbstractRetorno;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno;
+use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\AbstractRetorno;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
 use Eduardokum\LaravelBoleto\Util;
+use Illuminate\Database\Eloquent\Collection;
 
-class Bradesco extends AbstractRetorno implements Retorno
+class Bradesco extends AbstractRetorno implements RetornoCnab400
 {
 
     /**
@@ -105,8 +106,7 @@ class Bradesco extends AbstractRetorno implements Retorno
     protected function processarDetalhe(array $detalhe)
     {
 
-        if($this->count() == 1)
-        {
+        if ($this->count() == 1) {
             $this->getHeader()
                 ->setAgencia($this->rem(25, 29, $detalhe))
                 ->setConta($this->rem(30, 36, $detalhe))
@@ -121,47 +121,34 @@ class Bradesco extends AbstractRetorno implements Retorno
             ->setDataOcorrencia($this->rem(111, 116, $detalhe))
             ->setDataVencimento($this->rem(147, 152, $detalhe))
             ->setDataCredito($this->rem(296, 301, $detalhe))
-            ->setValor(Util::nFloat($this->rem(153, 165, $detalhe)/100, 2, false))
-            ->setValorTarifa(Util::nFloat($this->rem(176, 188, $detalhe)/100, 2, false))
-            ->setValorIOF(Util::nFloat($this->rem(215, 227, $detalhe)/100, 2, false))
-            ->setValorAbatimento(Util::nFloat($this->rem(228, 240, $detalhe)/100, 2, false))
-            ->setValorDesconto(Util::nFloat($this->rem(241, 253, $detalhe)/100, 2, false))
-            ->setValorRecebido(Util::nFloat($this->rem(254, 266, $detalhe)/100, 2, false))
-            ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe)/100, 2, false))
-            ->setValorMulta( Util::nFloat($this->rem(280, 292, $detalhe)/100, 2, false));
+            ->setValor(Util::nFloat($this->rem(153, 165, $detalhe) / 100, 2, false))
+            ->setValorTarifa(Util::nFloat($this->rem(176, 188, $detalhe) / 100, 2, false))
+            ->setValorIOF(Util::nFloat($this->rem(215, 227, $detalhe) / 100, 2, false))
+            ->setValorAbatimento(Util::nFloat($this->rem(228, 240, $detalhe) / 100, 2, false))
+            ->setValorDesconto(Util::nFloat($this->rem(241, 253, $detalhe) / 100, 2, false))
+            ->setValorRecebido(Util::nFloat($this->rem(254, 266, $detalhe) / 100, 2, false))
+            ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe) / 100, 2, false))
+            ->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe) / 100, 2, false));
 
-        if($d->hasOcorrencia('06','15','17'))
-        {
+        if ($d->hasOcorrencia('06', '15', '17')) {
             $this->totais['liquidados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
-        }
-        elseif($d->hasOcorrencia('02'))
-        {
+        } elseif ($d->hasOcorrencia('02')) {
             $this->totais['entradas']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_ENTRADA);
-        }
-        elseif($d->hasOcorrencia('09','10'))
-        {
+        } elseif ($d->hasOcorrencia('09', '10')) {
             $this->totais['baixados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_BAIXADA);
-        }
-        elseif($d->hasOcorrencia('23'))
-        {
+        } elseif ($d->hasOcorrencia('23')) {
             $this->totais['protestados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_PROTESTADA);
-        }
-        elseif($d->hasOcorrencia('14'))
-        {
+        } elseif ($d->hasOcorrencia('14')) {
             $this->totais['alterados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
-        }
-        elseif($d->hasOcorrencia('03','24','27','30','32'))
-        {
+        } elseif ($d->hasOcorrencia('03', '24', '27', '30', '32')) {
             $this->totais['erros']++;
             $d->setError('Consulte seu Internet Banking');
-        }
-        else
-        {
+        } else {
             $d->setOcorrenciaTipo($d::OCORRENCIA_OUTROS);
         }
 
@@ -173,12 +160,12 @@ class Bradesco extends AbstractRetorno implements Retorno
 
         $this->getTrailer()
             ->setQuantidadeTitulos($this->rem(18, 25, $trailer))
-            ->setValorTitulos(Util::nFloat($this->rem(26, 39, $trailer)/100, 2, false))
-            ->setQuantidadeErros((int) $this->totais['erros'])
-            ->setQuantidadeEntradas((int) $this->totais['entradas'])
-            ->setQuantidadeLiquidados((int) $this->totais['liquidados'])
-            ->setQuantidadeBaixados((int) $this->totais['baixados'])
-            ->setQuantidadeAlterados((int) $this->totais['alterados']);
+            ->setValorTitulos(Util::nFloat($this->rem(26, 39, $trailer) / 100, 2, false))
+            ->setQuantidadeErros((int)$this->totais['erros'])
+            ->setQuantidadeEntradas((int)$this->totais['entradas'])
+            ->setQuantidadeLiquidados((int)$this->totais['liquidados'])
+            ->setQuantidadeBaixados((int)$this->totais['baixados'])
+            ->setQuantidadeAlterados((int)$this->totais['alterados']);
 
         return true;
     }

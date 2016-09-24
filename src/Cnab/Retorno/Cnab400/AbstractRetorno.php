@@ -20,12 +20,12 @@
  *   IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace Eduardokum\LaravelBoleto\Cnab\Retorno;
+namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400;
 
 use Eduardokum\LaravelBoleto\Util;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Header as HeaderContract;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Detalhe as DetalheContract;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Trailer as TrailerContract;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Header as HeaderContract;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Detalhe as DetalheContract;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Trailer as TrailerContract;
 use Illuminate\Database\Eloquent\Collection;
 
 abstract class AbstractRetorno implements \Countable, \SeekableIterator

@@ -20,14 +20,14 @@
  *   IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Banco;
+namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco;
 
-use Eduardokum\LaravelBoleto\Cnab\Retorno\AbstractRetorno;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno;
+use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\AbstractRetorno;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
 use Eduardokum\LaravelBoleto\Util;
 
 
-class Bb extends AbstractRetorno implements Retorno
+class Bb extends AbstractRetorno implements RetornoCnab400
 {
     /**
      * Código do banco

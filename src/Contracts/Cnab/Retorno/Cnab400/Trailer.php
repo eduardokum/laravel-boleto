@@ -20,7 +20,7 @@
  *   IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno;
+namespace Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400;
 
 interface Trailer
 {

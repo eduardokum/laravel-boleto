@@ -2,9 +2,7 @@
 
 namespace Cnab400\Tests;
 
-use Eduardokum\LaravelBoleto\Cnab\Retorno;
-
-class Cnab400Test extends \PHPUnit_Framework_TestCase
+class RetornoCnab400Test extends \PHPUnit_Framework_TestCase
 {
     public function testRetornoBradescoCnab400()
     {
