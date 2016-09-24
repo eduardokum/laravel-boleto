@@ -23,7 +23,7 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno;
 
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Cnab;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400;
 
 class Factory
 {
