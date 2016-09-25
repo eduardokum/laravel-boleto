@@ -23,7 +23,6 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno;
 
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Cnab;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400;
 
 class Factory
 {
@@ -55,22 +54,22 @@ class Factory
         $banco = substr($file_content[0], 76, 3);
         switch ($banco) {
             case Cnab::COD_BANCO_BB:
-                $instancia = new Banco\Bb($file_content);
+                $instancia = new Cnab400\Banco\Bb($file_content);
                 break;
             case Cnab::COD_BANCO_SANTANDER:
-                $instancia = new Banco\Santander($file_content);
+                $instancia = new Cnab400\Banco\Santander($file_content);
                 break;
             case Cnab::COD_BANCO_CEF:
-                $instancia = new Banco\Caixa($file_content);
+                $instancia = new Cnab400\Banco\Caixa($file_content);
                 break;
             case Cnab::COD_BANCO_BRADESCO:
-                $instancia = new Banco\Bradesco($file_content);
+                $instancia = new Cnab400\Banco\Bradesco($file_content);
                 break;
             case Cnab::COD_BANCO_ITAU:
-                $instancia = new Banco\Itau($file_content);
+                $instancia = new Cnab400\Banco\Itau($file_content);
                 break;
             case Cnab::COD_BANCO_HSBC:
-                $instancia = new Banco\Hsbc($file_content);
+                $instancia = new Cnab400\Banco\Hsbc($file_content);
                 break;
             default:
                 throw new \Exception("Banco: $banco, inválido");

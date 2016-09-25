@@ -30,7 +30,6 @@ use Illuminate\Database\Eloquent\Collection;
 
 abstract class AbstractRetorno implements \Countable, \SeekableIterator
 {
-
     /**
      * Código do banco
      * @var string
