@@ -16,6 +16,8 @@ class RetornoCnab400Test extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Banco Bradesco S.A.', $retorno->getBancoNome());
         $this->assertEquals('237', $retorno->getCodigoBanco());
 
+        $this->assertEquals('0', $retorno->getTrailer()->avisos);
+        $this->assertEquals('6', $retorno->getTrailer()->quantidadeLiquidados);
     }
 
     public function testRetornoBancoBrasilCnab400()
@@ -29,6 +31,9 @@ class RetornoCnab400Test extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('Banco do Brasil S.A.', $retorno->getBancoNome());
         $this->assertEquals('001', $retorno->getCodigoBanco());
+
+        $this->assertEquals('0', $retorno->getTrailer()->avisos);
+        $this->assertEquals('1', $retorno->getTrailer()->quantidadeLiquidados);
     }
 
     public function testRetornoItauCnab400()
@@ -42,6 +47,9 @@ class RetornoCnab400Test extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('Itaú Unibanco S.A.', $retorno->getBancoNome());
         $this->assertEquals('341', $retorno->getCodigoBanco());
+
+        $this->assertEquals('0', $retorno->getTrailer()->avisos);
+        $this->assertEquals('3', $retorno->getTrailer()->quantidadeLiquidados);
 
     }
 

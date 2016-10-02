@@ -24,23 +24,6 @@ namespace Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240;
 
 interface Header
 {
-
-
-    /**
-     * @return string
-     */
-    public function getOperacao();
-
-    /**
-     * @return string
-     */
-    public function getServicoCodigo();
-
-    /**
-     * @return string
-     */
-    public function getServico();
-
     /**
      * @return string
      */
@@ -119,11 +102,6 @@ interface Header
     public function getConvenio();
 
     /**
-     * @return string
-     */
-    public function getCodigoCliente();
-
-    /**
      * @return int
      */
     public function getCodBanco();
@@ -132,16 +110,6 @@ interface Header
      * @return int
      */
     public function getCodigoRemessaRetorno();
-
-    /**
-     * @return string
-     */
-    public function getContaCorrente();
-
-    /**
-     * @return int
-     */
-    public function getContaCorrenteDigito();
 
     /**
      * @return string

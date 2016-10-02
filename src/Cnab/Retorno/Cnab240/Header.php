@@ -15,37 +15,12 @@ class Header implements HeaderContract
     /**
      * @var string
      */
-    protected $contaCorrente;
-
-    /**
-     * @var integer
-     */
-    protected $contaCorrenteDigito;
-
-    /**
-     * @var string
-     */
     protected $nomeBanco;
 
     /**
      * @var integer
      */
     protected $codigoRemessaRetorno;
-
-    /**
-     * @var string
-     */
-    protected $operacao;
-
-    /**
-     * @var string
-     */
-    protected $servicoCodigo;
-
-    /**
-     * @var string
-     */
-    protected $servico;
 
     /**
      * @var string
@@ -105,71 +80,6 @@ class Header implements HeaderContract
      * @var string
      */
     protected $codigoCedente;
-
-    /**
-     * @var string
-     */
-    protected $codigoCliente;
-
-    /**
-     * @return string
-     */
-    public function getOperacao()
-    {
-        return $this->operacao;
-    }
-
-    /**
-     * @param string $operacao
-     *
-     * @return Header
-     */
-    public function setOperacao($operacao)
-    {
-        $this->operacao = $operacao;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getServicoCodigo()
-    {
-        return $this->servicoCodigo;
-    }
-
-    /**
-     * @param string $servicoCodigo
-     *
-     * @return Header
-     */
-    public function setServicoCodigo($servicoCodigo)
-    {
-        $this->servicoCodigo = $servicoCodigo;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getServico()
-    {
-        return $this->servico;
-    }
-
-    /**
-     * @param string $servico
-     *
-     * @return Header
-     */
-    public function setServico($servico)
-    {
-        $this->servico = $servico;
-
-        return $this;
-    }
 
     /**
      * @return string
@@ -474,22 +384,6 @@ class Header implements HeaderContract
     }
 
     /**
-     * @return string
-     */
-    public function getCodigoCliente()
-    {
-        return $this->codigoCliente;
-    }
-
-    /**
-     * @param string $codigoCliente
-     */
-    public function setCodigoCliente($codigoCliente)
-    {
-        $this->codigoCliente = $codigoCliente;
-    }
-
-    /**
      * @return int
      */
     public function getCodBanco()
@@ -521,42 +415,6 @@ class Header implements HeaderContract
     public function setCodigoRemessaRetorno($codigoRemessaRetorno)
     {
         $this->codigoRemessaRetorno = $codigoRemessaRetorno;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getContaCorrente()
-    {
-        return $this->contaCorrente;
-    }
-
-    /**
-     * @param string $contaCorrente
-     */
-    public function setContaCorrente($contaCorrente)
-    {
-        $this->contaCorrente = $contaCorrente;
-
-        return $this;
-    }
-
-    /**
-     * @return int
-     */
-    public function getContaCorrenteDigito()
-    {
-        return $this->contaCorrenteDigito;
-    }
-
-    /**
-     * @param int $contaCorrenteDigito
-     */
-    public function setContaCorrenteDigito($contaCorrenteDigito)
-    {
-        $this->contaCorrenteDigito = $contaCorrenteDigito;
 
         return $this;
     }

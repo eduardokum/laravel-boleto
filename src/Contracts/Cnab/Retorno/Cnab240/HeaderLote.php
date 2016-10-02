@@ -7,11 +7,6 @@ interface HeaderLote
     /**
      * @return mixed
      */
-    public function getLoteServico();
-
-    /**
-     * @return mixed
-     */
     public function getTipoRegistro();
 
     /**

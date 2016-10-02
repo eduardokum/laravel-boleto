@@ -7,13 +7,10 @@ use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\DetalheSegmentoU as 
 class DetalheSegmentoU implements SegmentoU
 {
     private $codigoBancoCompensacao;
-    private $numeroLoteRetorno;
     private $tipoRegistro;
     private $numeroSequencialRegistroLote;
     private $codigoSegmentoRegistroDetalhe;
     private $loteServico;
-    private $numeroAgenciaCobradoraRecebedora;
-    private $identificador;
     private $jurosMultaEncargos;
     private $valorDescontoConcedido;
     private $valorAbatimentoConcedidoCancelado;
@@ -24,14 +21,11 @@ class DetalheSegmentoU implements SegmentoU
     private $valorOutrosCreditos;
     private $dataOcorrencia;
     private $dataCredito;
-    private $descontoConcedido;
     private $codigoOcorrenciaSacado;
     private $dataOcorrenciaSacado;
     private $valorOcorrenciaSacado;
     private $complementoOcorrenciaSacado;
     private $codigoBancoCorrespondenteCompensacao;
-    private $valorDesconto;
-    private $valorAbatimento;
 
     /**
      * @return mixed
@@ -47,24 +41,6 @@ class DetalheSegmentoU implements SegmentoU
     public function setCodigoBancoCompensacao($codigoBancoCompensacao)
     {
         $this->codigoBancoCompensacao = $codigoBancoCompensacao;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getNumeroLoteRetorno()
-    {
-        return $this->numeroLoteRetorno;
-    }
-
-    /**
-     * @param mixed $numeroLoteRetorno
-     */
-    public function setNumeroLoteRetorno($numeroLoteRetorno)
-    {
-        $this->numeroLoteRetorno = $numeroLoteRetorno;
 
         return $this;
     }
@@ -137,42 +113,6 @@ class DetalheSegmentoU implements SegmentoU
     public function setLoteServico($loteServico)
     {
         $this->loteServico = $loteServico;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getNumeroAgenciaCobradoraRecebedora()
-    {
-        return $this->numeroAgenciaCobradoraRecebedora;
-    }
-
-    /**
-     * @param mixed $numeroAgenciaCobradoraRecebedora
-     */
-    public function setNumeroAgenciaCobradoraRecebedora($numeroAgenciaCobradoraRecebedora)
-    {
-        $this->numeroAgenciaCobradoraRecebedora = $numeroAgenciaCobradoraRecebedora;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getIdentificador()
-    {
-        return $this->identificador;
-    }
-
-    /**
-     * @param mixed $identificador
-     */
-    public function setIdentificador($identificador)
-    {
-        $this->identificador = $identificador;
 
         return $this;
     }
@@ -432,24 +372,6 @@ class DetalheSegmentoU implements SegmentoU
     /**
      * @return mixed
      */
-    public function getDescontoConcedido()
-    {
-        return $this->descontoConcedido;
-    }
-
-    /**
-     * @param mixed $descontoConcedido
-     */
-    public function setDescontoConcedido($descontoConcedido)
-    {
-        $this->descontoConcedido = $descontoConcedido;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
     public function getCodigoBancoCorrespondenteCompensacao()
     {
         return $this->codigoBancoCorrespondenteCompensacao;
@@ -463,14 +385,6 @@ class DetalheSegmentoU implements SegmentoU
         $this->codigoBancoCorrespondenteCompensacao = $codigoBancoCorrespondenteCompensacao;
 
         return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getValorDesconto()
-    {
-        return $this->valorDesconto;
     }
 
     /**

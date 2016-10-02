@@ -19,7 +19,7 @@ interface DetalheSegmentoU
     /**
      * @return mixed
      */
-    public function getDescontoConcedido();
+    public function getValorDescontoConcedido();
 
     /**
      * @return mixed
@@ -60,5 +60,10 @@ interface DetalheSegmentoU
      * @return mixed
      */
     public function getComplementoOcorrenciaSacado();
+
+    /**
+     * @return mixed
+     */
+    public function getValorAbatimentoConcedidoCancelado();
 
 }

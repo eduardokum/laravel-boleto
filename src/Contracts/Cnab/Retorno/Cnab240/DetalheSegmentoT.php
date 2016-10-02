@@ -34,21 +34,18 @@ interface DetalheSegmentoT
     /**
      * @return mixed
      */
-    public function getCodCarteira();
-
-    /**
-     * @return mixed
-     */
     public function getCodigoSegmentoRegistroDetalhe();
 
     /**
      * @return mixed
      */
     public function getAgenciaCedente();
+
     /**
      * @return mixed
      */
     public function getAgenciaCedenteDigito();
+
     /**
      * @return mixed
      */
@@ -67,6 +64,11 @@ interface DetalheSegmentoT
      * @return mixed
      */
     public function getCodigoCarteira();
+
+    /**
+     * @return mixed
+     */
+    public function getIdentificador();
 
     /**
      * @return mixed
@@ -92,11 +94,6 @@ interface DetalheSegmentoT
      * @return mixed
      */
     public function getAgenciaCobradoraRecebedora();
-
-    /**
-     * @return mixed
-     */
-    public function getIdentificacaoTituloEmpresa();
 
     /**
      * @return mixed

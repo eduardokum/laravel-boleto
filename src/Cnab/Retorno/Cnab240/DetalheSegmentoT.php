@@ -90,11 +90,6 @@ class DetalheSegmentoT implements SegmentoT
     /**
      * @var string
      */
-    private $identificacaoTituloEmpresa;
-
-    /**
-     * @var string
-     */
     private $codigoMoeda;
 
     /**
@@ -241,24 +236,6 @@ class DetalheSegmentoT implements SegmentoT
     public function setDigitoAgenciaCedente($digitoAgenciaCedente)
     {
         $this->digitoAgenciaCedente = $digitoAgenciaCedente;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCodCarteira()
-    {
-        return $this->codCarteira;
-    }
-
-    /**
-     * @param mixed $codCarteira
-     */
-    public function setCodCarteira($codCarteira)
-    {
-        $this->codCarteira = $codCarteira;
 
         return $this;
     }
@@ -459,24 +436,6 @@ class DetalheSegmentoT implements SegmentoT
     public function setAgenciaCobradoraRecebedora($agenciaCobradoraRecebedora)
     {
         $this->agenciaCobradoraRecebedora = $agenciaCobradoraRecebedora;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getIdentificacaoTituloEmpresa()
-    {
-        return $this->identificacaoTituloEmpresa;
-    }
-
-    /**
-     * @param mixed $identificacaoTituloEmpresa
-     */
-    public function setIdentificacaoTituloEmpresa($identificacaoTituloEmpresa)
-    {
-        $this->identificacaoTituloEmpresa = $identificacaoTituloEmpresa;
 
         return $this;
     }

@@ -211,11 +211,11 @@ class Santander extends AbstractRetorno implements RetornoCnab240
                     ->setNumeroSequencialRegistroLote($this->rem(9, 13, $detalhe))
                     ->setCodigoSegmentoRegistroDetalhe($this->rem(14, 14, $detalhe))
                     ->setAgenciaCedente($this->rem(18, 21, $detalhe))
-                    ->setDigitoAgenciaCedente($this->rem(22, 22, $detalhe))
+                    ->setAgenciaCedenteDigito($this->rem(22, 22, $detalhe))
                     ->setContaCorrente($this->rem(23, 31, $detalhe))
                     ->setContaDigito($this->rem(32, 32, $detalhe))
                     ->setNossoNumero($this->rem(41, 53, $detalhe))
-                    ->setCodCarteira($this->rem(54, 54, $detalhe))
+                    ->setCodigoCarteira($this->rem(54, 54, $detalhe))
                     ->setSeuNumero($this->rem(55, 69, $detalhe))
                     ->setDataVencimento($this->convertDate($this->rem(70, 77, $detalhe)))
                     ->setValorTitulo(Util::nFloat($this->rem(78, 92, $detalhe)) / 100, 2, false)
@@ -252,10 +252,10 @@ class Santander extends AbstractRetorno implements RetornoCnab240
                 } elseif ($d->hasOcorrencia('27', '30')) {
                     $this->totais['alterados']++;
                     $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
-                } /*elseif ($d->hasOcorrencia('03')) {
+                } elseif ($d->hasOcorrencia('03', '26', '30')) {
 
                     $this->totais['erros']++;
-                    $errorsRetorno = str_split(sprintf('%09s', $this->rem(137, 145, $detalhe)), 3);
+                    $errorsRetorno = str_split(sprintf('%09s', $this->rem(209, 218, $detalhe)), 3);
                     $error = array_get($this->rejeicoes, $errorsRetorno[0], '');
                     $error .= array_get($this->rejeicoes, $errorsRetorno[1], '');
                     $error .= array_get($this->rejeicoes, $errorsRetorno[2], '');
@@ -264,7 +264,7 @@ class Santander extends AbstractRetorno implements RetornoCnab240
 
                 } else {
                     $d->setOcorrenciaTipo($d::OCORRENCIA_OUTROS);
-                }*/
+                }
 
             } elseif ($this->getSegmentType($detalhe) == 'U') {
 
@@ -276,8 +276,8 @@ class Santander extends AbstractRetorno implements RetornoCnab240
                     ->setNumeroSequencialRegistroLote($this->rem(9, 13, $detalhe))
                     ->setCodigoSegmentoRegistroDetalhe($this->rem(14, 14, $detalhe))
                     ->setJurosMultaEncargos(Util::nFloat($this->rem(18, 32, $detalhe)) / 100, 2, false)
-                    ->setValorDesconto(Util::nFloat($this->rem(33, 47, $detalhe)) / 100, 2, false)
-                    ->setValorAbatimento(Util::nFloat($this->rem(48, 62, $detalhe)) / 100, 2, false)
+                    ->setValorDescontoConcedido(Util::nFloat($this->rem(33, 47, $detalhe)) / 100, 2, false)
+                    ->setValorAbatimentoConcedidoCancelado(Util::nFloat($this->rem(48, 62, $detalhe)) / 100, 2, false)
                     ->setValorIOF(Util::nFloat($this->rem(63, 77, $detalhe)) / 100, 2, false)
                     ->setValorPagoSacado(Util::nFloat($this->rem(78, 92, $detalhe)) / 100, 2, false)
                     ->setValorLiquidoCreditado(Util::nFloat($this->rem(93, 107, $detalhe)) / 100, 2, false)

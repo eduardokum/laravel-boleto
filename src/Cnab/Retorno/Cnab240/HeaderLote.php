@@ -17,12 +17,6 @@ class HeaderLote implements HeaderLoteContract
      */
     protected $numeroLoteRetorno;
 
-
-    /**
-     * @var string
-     */
-    protected $loteServico;
-
     /**
      * @var string
      */
@@ -112,27 +106,6 @@ class HeaderLote implements HeaderLoteContract
 
         return $this;
     }
-
-    /**
-     * @return string
-     */
-    public function getLoteServico()
-    {
-        return $this->loteServico;
-    }
-
-    /**
-     * @param string $loteServico
-     *
-     * @return Header
-     */
-    public function setLoteServico($loteServico)
-    {
-        $this->loteServico = $loteServico;
-
-        return $this;
-    }
-
 
     /**
      * @return string
