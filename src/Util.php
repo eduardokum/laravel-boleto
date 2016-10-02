@@ -351,7 +351,9 @@ final class Util
      */
     public static function nFloat($number, $decimals = 2, $showThousands = false)
     {
-        if (is_null($number) || empty(self::onlyNumbers($number))) {return '';}
+        if (is_null($number) || empty(self::onlyNumbers($number))) {
+            return '';
+        }
         $pontuacao = preg_replace('/[0-9]/', '', $number);
         $locale = (substr($pontuacao, -1, 1) == ',') ? "pt-BR" : "en-US";
         $formater = new \NumberFormatter($locale, \NumberFormatter::DECIMAL);
@@ -377,7 +379,9 @@ final class Util
      */
     public static function nReal($number, $decimals = 2, $symbol = true, $fixed = true)
     {
-        if (is_null($number) || empty(self::onlyNumbers($number))) {return '';}
+        if (is_null($number) || empty(self::onlyNumbers($number))) {
+            return '';
+        }
         $formater = new \NumberFormatter("pt-BR", \NumberFormatter::CURRENCY);
         $formater->setAttribute(\NumberFormatter::MIN_FRACTION_DIGITS, ($fixed ? $decimals : 1));
         if ($decimals === false) {
@@ -439,7 +443,7 @@ final class Util
             $ru = ($value > 0) ? (($value[1] == 1) ? $d10[$value[2]] : $u[$value[2]]) : "";
 
             $r = $rc . (($rc && ($rd || $ru)) ? " e " : "") . $rd . (($rd &&
-                $ru) ? " e " : "") . $ru;
+                    $ru) ? " e " : "") . $ru;
             $t = $cont - 1 - $i;
             $r .= $r ? " " . ($value > 1 ? $plural[$t] : $singular[$t]) : "";
             if ($value == "000"
@@ -455,7 +459,7 @@ final class Util
 
             if ($r) {
                 $rt = $rt . ((($i > 0) && ($i <= $fim) &&
-                    ($integer[0] > 0) && ($z < 1)) ? (($i < $fim) ? ", " : " e ") : " ") . $r;
+                        ($integer[0] > 0) && ($z < 1)) ? (($i < $fim) ? ", " : " e ") : " ") . $r;
             }
 
         }
@@ -581,7 +585,7 @@ final class Util
      */
     public static function numberFormatValue($n, $loop, $insert)
     {
-        return str_pad(self::onlyNumbers(number_format((float) $n, '2', ',', '.')), $loop, $insert, STR_PAD_LEFT);
+        return str_pad(self::onlyNumbers(number_format((float)$n, '2', ',', '.')), $loop, $insert, STR_PAD_LEFT);
     }
 
     /**
@@ -600,7 +604,7 @@ final class Util
      * @param        $tipo
      * @param        $valor
      * @param        $tamanho
-     * @param int    $dec
+     * @param int $dec
      * @param string $sFill
      *
      * @return string
@@ -664,6 +668,17 @@ final class Util
     {
         $date = Carbon::create(1997, 10, 7, 0, 0, 0)->addDay($factor);
         return $format ? $date->format($format) : $date;
+    }
+
+    /**
+     * Conversão para as datas no formato ddmmyyyy para ddmmyy
+     * @param $data
+     */
+    public static function convertDateToSingleYear($data){
+        $day =  substr($data, 0, 2);
+        $month = substr($data, 2, 2);
+        $year = substr($data, 6, 2);
+        return $day . $month . $year;
     }
 
     /**
@@ -749,7 +764,9 @@ final class Util
         $chars = array_reverse(str_split($n, 1));
         $odd = array_intersect_key($chars, array_fill_keys(range(1, count($chars), 2), null));
         $even = array_intersect_key($chars, array_fill_keys(range(0, count($chars), 2), null));
-        $even = array_map(function ($n) {return ($n >= 5) ? 2 * $n - 9 : 2 * $n;}, $even);
+        $even = array_map(function ($n) {
+            return ($n >= 5) ? 2 * $n - 9 : 2 * $n;
+        }, $even);
         $total = array_sum($odd) + array_sum($even);
         return ((floor($total / 10) + 1) * 10 - $total) % 10;
     }
@@ -992,5 +1009,25 @@ final class Util
         $value = str_split($value, 1);
 
         return array_splice($line, $i, $t, $value);
+    }
+
+    /**
+     * Validação para o tipo de cnab 240
+     * @param $content
+     * @return bool
+     */
+    public static function isCnab240($content)
+    {
+        return strlen(rtrim($content[0], "\r\n")) == 240 ? true : false;
+    }
+
+    /**
+     * Validação para o tipo de cnab 400
+     * @param $content
+     * @return bool
+     */
+    public static function isCnab400($content)
+    {
+        return strlen(rtrim($content[0], "\r\n")) == 400 ? true : false;
     }
 }
