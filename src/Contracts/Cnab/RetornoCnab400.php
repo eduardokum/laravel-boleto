@@ -24,7 +24,7 @@ namespace Eduardokum\LaravelBoleto\Contracts\Cnab;
 
 use Illuminate\Database\Eloquent\Collection;
 
-interface Retorno extends Cnab
+interface RetornoCnab400 extends Cnab
 {
 
     /**
@@ -43,17 +43,17 @@ interface Retorno extends Cnab
     public function getDetalhes();
 
     /**
-     * @return Retorno\Detalhe
+     * @return Retorno\Cnab400\Detalhe
      */
     public function getDetalhe($i);
 
     /**
-     * @return Retorno\Header
+     * @return Retorno\Cnab400\Header
      */
     public function getHeader();
 
     /**
-     *  @return Retorno\Trailer
+     *  @return Retorno\Cnab400\Trailer
      */
     public function getTrailer();
 
