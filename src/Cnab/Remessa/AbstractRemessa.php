@@ -444,6 +444,31 @@ abstract class AbstractRemessa
 
         return $stringRemessa;
     }
+
+    /**
+     * Salva o arquivo no path informado
+     *
+     * @param $path
+     *
+     * @return mixed
+     * @throws \Exception
+     */
+    public function save($path)
+    {
+        $folder = dirname($path);
+        if(!is_dir($folder)) {
+            mkdir($folder, 0777, true);
+        }
+
+        if(!is_writable(dirname($path))) {
+            throw new \Exception('Path ' . $folder . ' não possui permissao de escrita');
+        }
+
+        $string = $this->gerar();
+        file_put_contents($path, $string);
+
+        return $path;
+    }
 //
 //    public function __call($name, $arguments)
 //    {
