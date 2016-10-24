@@ -6,7 +6,7 @@ class RetornoCnab400Test extends \PHPUnit_Framework_TestCase
 {
     public function testRetornoBradescoCnab400()
     {
-        $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make('files/cnab400/bradesco.ret');
+        $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make(__DIR__ . '/files/cnab400/bradesco.ret');
         $retorno->processar();
 
         $this->assertNotNull($retorno->getHeader());
@@ -22,7 +22,7 @@ class RetornoCnab400Test extends \PHPUnit_Framework_TestCase
 
     public function testRetornoBancoBrasilCnab400()
     {
-        $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make('files/cnab400/banco_brasil.ret');
+        $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make(__DIR__ . '/files/cnab400/banco_brasil.ret');
         $retorno->processar();
 
         $this->assertNotNull($retorno->getHeader());
@@ -38,7 +38,7 @@ class RetornoCnab400Test extends \PHPUnit_Framework_TestCase
 
     public function testRetornoItauCnab400()
     {
-        $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make('files/cnab400/itau.ret');
+        $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make(__DIR__ . '/files/cnab400/itau.ret');
         $retorno->processar();
 
         $this->assertNotNull($retorno->getHeader());
