@@ -20,30 +20,32 @@ class Santander extends AbstractRetorno implements RetornoCnab240
      * @var array
      */
     private $ocorrencias = [
-        '02' => 'Título não existe',
+        '02' => 'Entrada confirmada',
         '03' => 'Entrada rejeitada',
         '04' => 'transferência de carteira/entrada',
         '05' => 'transferência de carteira/baixa',
         '06' => 'Liquidação',
         '09' => 'Baixa',
-        '11' => 'títulos em carteira',
+        '11' => 'títulos em carteira (em ser)',
         '12' => 'confirmação recebimento instrução de abatimento',
         '13' => 'confirmação recebimento instrução de cancelamento abatimento',
         '14' => 'confirmação recebimento instrução alteração de vencimento',
         '17' => 'liquidação após baixa ou liquidação título não registrado',
         '19' => 'confirmação recebimento instrução de protesto',
         '20' => 'confirmação recebimento instrução de sustação/Não Protestar',
-        '23' => 'remessa a cartorio ( aponte em cartorio)',
+        '23' => 'remessa a cartorio (aponte em cartorio)',
         '24' => 'retirada de cartorio e manutenção em carteira',
-        '25' => 'protestado e baixado ( baixa por ter sido protestado)',
+        '25' => 'protestado e baixado (baixa por ter sido protestado)',
         '26' => 'instrução rejeitada',
         '27' => 'confirmação do pedido de alteração de outros dado',
         '28' => 'debito de tarifas/custas',
-        '29' => 'ocorrências do sacado',
+        '29' => 'ocorrências do Pagador',
         '30' => 'alteração de dados rejeitada',
-        '51' => 'Título DDA reconhecido pelo sacado',
-        '52' => 'Título DDA não reconhecido pelo sacado',
+        '32' => 'Código de IOF inválido',
+        '51' => 'Título DDA reconhecido pelo Pagador',
+        '52' => 'Título DDA não reconhecido pelo Pagador',
         '53' => 'Título DDA recusado pela CIP',
+        'A4' => 'Pagador DDA',
     ];
 
     /**
@@ -57,7 +59,7 @@ class Santander extends AbstractRetorno implements RetornoCnab240
         '03' => 'código do segmento invalido',
         '04' => 'código do movimento não permitido para carteira',
         '05' => 'código de movimento invalido',
-        '06' => 'tipo/numero de inscrição do cedente inválidos',
+        '06' => 'tipo/numero de inscrição do Beneficiário inválidos',
         '07' => 'agencia/conta/DV invalido',
         '08' => 'nosso numero invalido',
         '09' => 'nosso numero duplicado',
@@ -96,9 +98,9 @@ class Santander extends AbstractRetorno implements RetornoCnab240
         '42' => 'Código para baixa/devolução inválido',
         '43' => 'Prazo para baixa/devolução inválido',
         '44' => 'Código de moeda inválido',
-        '45' => 'Nome do sacados não informado',
-        '46' => 'Tipo /Número de inscrição do sacado inválidos',
-        '47' => 'Endereço do sacado não informado',
+        '45' => 'Nome do Pagador não informado',
+        '46' => 'Tipo /Número de inscrição do Pagador inválidos',
+        '47' => 'Endereço do Pagador não informado',
         '48' => 'CEP inválido',
         '49' => 'CEP sem praça de cobrança (não localizado)',
         '50' => 'CEP referente a um Banco Correspondente',
@@ -115,7 +117,8 @@ class Santander extends AbstractRetorno implements RetornoCnab240
         '61' => 'Alteração de agência cobradora/dv inválida',
         '62' => 'Tipo de impressão inválido',
         '63' => 'Entrada para título já cadastrado',
-        '64' => 'Número da linha inválido'
+        '64' => 'Número da linha inválido',
+        '90' => 'Identificador/Quantidade de Parcelas de carnê invalido',
     ];
 
     /**
