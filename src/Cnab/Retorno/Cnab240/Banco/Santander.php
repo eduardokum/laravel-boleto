@@ -203,8 +203,11 @@ class Santander extends AbstractRetorno implements RetornoCnab240
 
             if ($this->getSegmentType($detalhe) == 'T') {
 
+                $ocorrencia = $this->rem(16, 17, $detalhe);
+
                 $d = $this->detalheAtual()
-                    ->setOcorrencia($this->rem(16, 17, $detalhe));
+                    ->setOcorrencia($ocorrencia)
+                    ->setOcorrenciaDescricao($this->ocorrencias[$ocorrencia]);
 
                 $d = $this->detalheAtual()
                     ->getSegmentoT()
