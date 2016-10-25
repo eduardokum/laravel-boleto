@@ -199,7 +199,7 @@ class Santander extends AbstractRetorno implements RetornoCnab240
      */
     protected function processarDetalhe(array $detalhe)
     {
-        if ($this->count() <= 2 && $this->getServiceType($detalhe) == '3') {
+        if ($this->getServiceType($detalhe) == '3') {
 
             if ($this->getSegmentType($detalhe) == 'T') {
 
