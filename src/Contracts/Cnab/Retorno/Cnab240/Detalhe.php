@@ -58,6 +58,11 @@ interface Detalhe
     public function getError();
 
     /**
+     * @return string
+     */
+    public function getErrorCode();
+
+    /**
      * @return boolean
      */
     public function hasError();

@@ -3,6 +3,7 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\DetalheSegmentoU as SegmentoU;
+use Eduardokum\LaravelBoleto\Util;
 
 class DetalheSegmentoU implements SegmentoU
 {
@@ -266,7 +267,7 @@ class DetalheSegmentoU implements SegmentoU
      */
     public function getDataOcorrencia()
     {
-        return $this->dataOcorrencia;
+        return Util::convertSingleStringDate($this->dataOcorrencia);
     }
 
     /**
@@ -284,7 +285,7 @@ class DetalheSegmentoU implements SegmentoU
      */
     public function getDataCredito()
     {
-        return $this->dataCredito;
+        return Util::convertSingleStringDate($this->dataCredito);
     }
 
     /**
@@ -320,7 +321,7 @@ class DetalheSegmentoU implements SegmentoU
      */
     public function getDataOcorrenciaSacado()
     {
-        return $this->dataOcorrenciaSacado;
+        return Util::convertSingleStringDate($this->dataOcorrenciaSacado);
     }
 
     /**

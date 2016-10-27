@@ -278,7 +278,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
             $this->init();
         }
 
-        foreach ($this->file as $key => $linha) {
+        foreach ($this->file as $linha) {
 
             $recordType = $this->rem(8, 8, $linha);
 
@@ -326,12 +326,24 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
             'trailerArquivo' => $this->trailerArquivo->toArray(),
             'detalhes' => new Collection()
         ];
+
         foreach ($this->detalhe as $detalhe) {
+
             $arr = [
+                'ocorrenciaTipo' => $detalhe->getOcorrenciaTipo(),
+                'ocorrenciaDescricao' => $detalhe->getOcorrenciaDescricao(),
                 'segmentoT' => $detalhe->getSegmentoT()->toArray(),
                 'segmentoU' => $detalhe->getSegmentoU()->toArray(),
                 'segmentoY' => $detalhe->getSegmentoY()->toArray(),
             ];
+
+            if ($detalhe->getOcorrenciaTipo() == 9) {
+                $arr['error'] = [
+                    'message' => $detalhe->getError(),
+                    'code' => $detalhe->getErrorCode(),
+                ];
+            }
+
             $array['detalhes']->add($arr);
         }
         return $array;

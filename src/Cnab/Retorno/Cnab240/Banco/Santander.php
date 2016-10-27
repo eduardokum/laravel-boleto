@@ -201,7 +201,8 @@ class Santander extends AbstractRetorno implements RetornoCnab240
             if ($this->getSegmentType($detalhe) == 'T') {
 
                 $d = $this->detalheAtual()
-                    ->setOcorrencia($this->rem(16, 17, $detalhe));
+                    ->setOcorrencia($this->rem(16, 17, $detalhe))
+                    ->setOcorrenciaDescricao(array_get($this->ocorrencias, $this->detalheAtual()->getOcorrencia(), 'Desconhecida'));
 
                 $d = $this->detalheAtual()
                     ->getSegmentoT()
@@ -232,7 +233,7 @@ class Santander extends AbstractRetorno implements RetornoCnab240
                     ->setIdentificacaoRejeicao($this->rem(209, 218, $detalhe))
                     ->setNumeroDocumento($this->rem(55, 69, $detalhe));
 
-                //ocorrencias
+                /** ocorrencias  */
 
                 $d = $this->detalheAtual();
                 $this->totais['valor_recebido'] += $d->getValorPagoSacado();
@@ -255,11 +256,14 @@ class Santander extends AbstractRetorno implements RetornoCnab240
                 } elseif ($d->hasOcorrencia('03', '26', '30')) {
 
                     $this->totais['erros']++;
-                    $errorsRetorno = str_split(sprintf('%09s', $this->rem(209, 218, $detalhe)), 3);
+                    $errorsRetorno = str_split(sprintf('%09s', $this->rem(209, 218, $detalhe)), 2);
+                    $d->setErrorCode($errorsRetorno);
+
                     $error = array_get($this->rejeicoes, $errorsRetorno[0], '');
                     $error .= array_get($this->rejeicoes, $errorsRetorno[1], '');
                     $error .= array_get($this->rejeicoes, $errorsRetorno[2], '');
-
+                    $error .= array_get($this->rejeicoes, $errorsRetorno[3], '');
+                    $error .= array_get($this->rejeicoes, $errorsRetorno[4], '');
                     $d->setError($error);
 
                 } else {
@@ -343,7 +347,6 @@ class Santander extends AbstractRetorno implements RetornoCnab240
             ->setNumeroAvisoLancamento($this->rem(116, 123, $trailer));
 
         return true;
-
     }
 
     /**
