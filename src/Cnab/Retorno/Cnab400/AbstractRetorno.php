@@ -26,7 +26,7 @@ use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Header as HeaderContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Detalhe as DetalheContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Trailer as TrailerContract;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 
 abstract class AbstractRetorno implements \Countable, \SeekableIterator
 {

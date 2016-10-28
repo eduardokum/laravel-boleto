@@ -25,7 +25,7 @@ namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\AbstractRetorno;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
 use Eduardokum\LaravelBoleto\Util;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 
 class Bradesco extends AbstractRetorno implements RetornoCnab400
 {
