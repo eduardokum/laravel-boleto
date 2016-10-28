@@ -321,11 +321,30 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
     {
         $array = [
             'header' => $this->header->toArray(),
-            'trailer' => $this->trailer->toArray(),
+            'headerLote' => $this->headerLote->toArray(),
+            'trailerLote' => $this->trailerLote->toArray(),
+            'trailerArquivo' => $this->trailerArquivo->toArray(),
             'detalhes' => new Collection()
         ];
+
         foreach ($this->detalhe as $detalhe) {
-            $array['detalhes']->add($detalhe->toArray());
+
+            $arr = [
+                'ocorrenciaTipo' => $detalhe->getOcorrenciaTipo(),
+                'ocorrenciaDescricao' => $detalhe->getOcorrenciaDescricao(),
+                'segmentoT' => $detalhe->getSegmentoT()->toArray(),
+                'segmentoU' => $detalhe->getSegmentoU()->toArray(),
+                'segmentoY' => $detalhe->getSegmentoY()->toArray(),
+            ];
+
+            if ($detalhe->getOcorrenciaTipo() == 9) {
+                $arr['error'] = [
+                    'message' => $detalhe->getError(),
+                    'code' => $detalhe->getErrorCode(),
+                ];
+            }
+
+            $array['detalhes']->add($arr);
         }
         return $array;
     }

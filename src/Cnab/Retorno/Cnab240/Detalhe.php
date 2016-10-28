@@ -47,6 +47,16 @@ class Detalhe implements DetalheContract
     private $codigoOcorrencia;
 
     /**
+     * @var string
+     */
+    private $error;
+
+    /**
+     * @var string
+     */
+    private $errorCode;
+
+    /**
      * @return DetalheSegmentoT
      */
     public function getSegmentoT()
@@ -248,6 +258,22 @@ class Detalhe implements DetalheContract
         $this->error = $error;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getErrorCode()
+    {
+        return $this->errorCode;
+    }
+
+    /**
+     * @param string $errorCode
+     */
+    public function setErrorCode($errorCode)
+    {
+        $this->errorCode = $errorCode;
     }
 
     /**

@@ -674,11 +674,30 @@ final class Util
      * Conversão para as datas no formato ddmmyyyy para ddmmyy
      * @param $data
      */
-    public static function convertDateToSingleYear($data){
-        $day =  substr($data, 0, 2);
-        $month = substr($data, 2, 2);
-        $year = substr($data, 6, 2);
+    public static function convertDateToSingleYear($date)
+    {
+        $day = substr($date, 0, 2);
+        $month = substr($date, 2, 2);
+        $year = substr($date, 6, 2);
         return $day . $month . $year;
+    }
+
+    /**
+     * Conversão da data no formato 'XXXXXX' para Carbon
+     * @param $date
+     * @return Carbon
+     */
+    public static function convertSingleStringDate($date)
+    {
+        if ($date == '000000') {
+            return $date;
+        }
+
+        $day = substr($date, 0, 2);
+        $month = substr($date, 2, 2);
+        $year = '20' . substr($date, 4, 2);
+
+        return Carbon::createFromDate($year, $month, $day)->format('d/m/Y');
     }
 
     /**
