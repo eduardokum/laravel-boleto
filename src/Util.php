@@ -717,7 +717,7 @@ final class Util
      * @param     $n
      * @param int $factor
      * @param int $base
-     * @param int $rest
+     * @param int|bool $rest
      * @param int $whenTen
      *
      * @return int

@@ -29,6 +29,7 @@ abstract class AbstractPdf extends FPDF
     // INCLUDE JS
     protected $javascript;
     protected $n_js;
+    protected $angle=0;
 
     protected function IncludeJS($script)
     {
@@ -51,7 +52,7 @@ abstract class AbstractPdf extends FPDF
         $this->_out('endobj');
     }
 
-    public  function _putresources()
+    public function _putresources()
     {
         parent::_putresources();
         if (!empty($this->javascript)) {
@@ -59,7 +60,7 @@ abstract class AbstractPdf extends FPDF
         }
     }
 
-    public  function _putcatalog()
+    public function _putcatalog()
     {
         parent::_putcatalog();
         if (!empty($this->javascript)) {
@@ -73,24 +74,24 @@ abstract class AbstractPdf extends FPDF
     protected $CurrPageGroup;  // variable containing the alias of the current page group
 
     // create a new page group; call this before calling AddPage()
-    function StartPageGroup()
+    public function StartPageGroup()
     {
         $this->NewPageGroup=true;
     }
 
     // current page in the group
-    function GroupPageNo()
+    public function GroupPageNo()
     {
         return $this->PageGroups[$this->CurrPageGroup];
     }
 
     // alias of the current page group -- will be replaced by the total number of pages in this group
-    function PageGroupAlias()
+    public function PageGroupAlias()
     {
         return $this->CurrPageGroup;
     }
 
-    function _beginpage($orientation, $size)
+    public function _beginpage($orientation, $size)
     {
         parent::_beginpage($orientation, $size);
         if($this->NewPageGroup)
@@ -106,7 +107,7 @@ abstract class AbstractPdf extends FPDF
             $this->PageGroups[$this->CurrPageGroup]++;
     }
 
-    function _putpages()
+    public function _putpages()
     {
         $nb = $this->page;
         if (!empty($this->PageGroups))
@@ -230,12 +231,13 @@ abstract class AbstractPdf extends FPDF
      * @param int $basewidth
      * @param int $height
      */
-    function i25($xpos, $ypos, $code, $basewidth = 1, $height = 10)
+    public function i25($xpos, $ypos, $code, $basewidth = 1, $height = 10)
     {
 
         $wide = $basewidth;
         $narrow = $basewidth / 3;
 
+        $barChar = array();
         // wide/narrow codes for the digits
         $barChar['0'] = 'nnwwn';
         $barChar['1'] = 'wnnnw';
@@ -256,7 +258,6 @@ abstract class AbstractPdf extends FPDF
         }
 
         $this->SetFont('Arial', '', 10);
-//        $this->Text($xpos, $ypos + $height + 4, $code);
         $this->SetFillColor(0);
 
         // add start and stop codes
@@ -295,7 +296,7 @@ abstract class AbstractPdf extends FPDF
     }
 
 
-    function __construct($orientation = 'P', $unit = 'mm', $size = array(210,297))
+    public function __construct($orientation = 'P', $unit = 'mm', $size = 'A4')
     {
         parent::__construct($orientation, $unit, $size);
         $this->SetCreator($this->_('Intrasis Desenvolvimento de Sistemas'));
@@ -315,12 +316,11 @@ abstract class AbstractPdf extends FPDF
      * @param bool $print 1 imprime 0 nao imprime
      * @return string|void
      */
-    function Output($name = '', $dest = 'I', $print = false)
+    public function Output($name = '', $dest = 'I', $print = false)
     {
         if ($print) {
             $this->IncludeJS("print('true');");
         }
         return parent::Output($name, $dest);
-        die;
     }
 }

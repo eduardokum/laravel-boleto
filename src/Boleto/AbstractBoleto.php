@@ -73,9 +73,9 @@ abstract class AbstractBoleto implements BoletoContract
     protected $juros = false;
     /**
      * Dias apos vencimento do juros
-     * @var float
+     * @var int
      */
-    protected $jurosApos = 0;
+    protected $jurosApos = false;
     /**
      * Dias para protesto
      * @var float
@@ -821,7 +821,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setMulta($multa)
     {
-        $this->multa = $multa > 0 ? $multa : 0;
+        $this->multa = (float) $multa > 0 ? $multa : 0;
         return $this;
     }
     /**
@@ -1289,7 +1289,9 @@ abstract class AbstractBoleto implements BoletoContract
             'desconto_abatimento' => Util::nReal($this->getDescontosAbatimentos(), 2, false),
             'outras_deducoes' => Util::nReal($this->getOutrasDeducoes(), 2, false),
             'multa' => Util::nReal($this->getMulta(), 2, false),
-            'juros' => Util::nReal($this->getMulta(), 2, false),
+            'juros' => Util::nReal($this->getJuros(), 2, false),
+            'juros_apos' => $this->getJurosApos(),
+            'dias_protesto' => $this->getDiasProtesto(),
             'outros_acrescimos' => Util::nReal($this->getOutrosAcrescimos(), 2, false),
             'valor_cobrado' => Util::nReal($this->getValorCobrado(), 2, false),
             'valor_unitario' => Util::nReal($this->getValorUnitario(), 2, false),
@@ -1311,6 +1313,7 @@ abstract class AbstractBoleto implements BoletoContract
             'aceite' => $this->getAceite(),
             'carteira' => $this->getCarteiraNome(),
             'uso_banco' => $this->getUsoBanco(),
+            'status' => $this->getStatus(),
         ], $this->variaveis_adicionais);
     }
 
