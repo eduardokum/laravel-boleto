@@ -20,30 +20,32 @@ class Santander extends AbstractRetorno implements RetornoCnab240
      * @var array
      */
     private $ocorrencias = [
-        '02' => 'Título não existe',
+        '02' => 'Entrada confirmada',
         '03' => 'Entrada rejeitada',
         '04' => 'transferência de carteira/entrada',
         '05' => 'transferência de carteira/baixa',
         '06' => 'Liquidação',
         '09' => 'Baixa',
-        '11' => 'títulos em carteira',
+        '11' => 'títulos em carteira (em ser)',
         '12' => 'confirmação recebimento instrução de abatimento',
         '13' => 'confirmação recebimento instrução de cancelamento abatimento',
         '14' => 'confirmação recebimento instrução alteração de vencimento',
         '17' => 'liquidação após baixa ou liquidação título não registrado',
         '19' => 'confirmação recebimento instrução de protesto',
         '20' => 'confirmação recebimento instrução de sustação/Não Protestar',
-        '23' => 'remessa a cartorio ( aponte em cartorio)',
+        '23' => 'remessa a cartorio (aponte em cartorio)',
         '24' => 'retirada de cartorio e manutenção em carteira',
-        '25' => 'protestado e baixado ( baixa por ter sido protestado)',
+        '25' => 'protestado e baixado (baixa por ter sido protestado)',
         '26' => 'instrução rejeitada',
         '27' => 'confirmação do pedido de alteração de outros dado',
         '28' => 'debito de tarifas/custas',
-        '29' => 'ocorrências do sacado',
+        '29' => 'ocorrências do Pagador',
         '30' => 'alteração de dados rejeitada',
-        '51' => 'Título DDA reconhecido pelo sacado',
-        '52' => 'Título DDA não reconhecido pelo sacado',
+        '32' => 'Código de IOF inválido',
+        '51' => 'Título DDA reconhecido pelo Pagador',
+        '52' => 'Título DDA não reconhecido pelo Pagador',
         '53' => 'Título DDA recusado pela CIP',
+        'A4' => 'Pagador DDA',
     ];
 
     /**
@@ -57,7 +59,7 @@ class Santander extends AbstractRetorno implements RetornoCnab240
         '03' => 'código do segmento invalido',
         '04' => 'código do movimento não permitido para carteira',
         '05' => 'código de movimento invalido',
-        '06' => 'tipo/numero de inscrição do cedente inválidos',
+        '06' => 'tipo/numero de inscrição do Beneficiário inválidos',
         '07' => 'agencia/conta/DV invalido',
         '08' => 'nosso numero invalido',
         '09' => 'nosso numero duplicado',
@@ -96,9 +98,9 @@ class Santander extends AbstractRetorno implements RetornoCnab240
         '42' => 'Código para baixa/devolução inválido',
         '43' => 'Prazo para baixa/devolução inválido',
         '44' => 'Código de moeda inválido',
-        '45' => 'Nome do sacados não informado',
-        '46' => 'Tipo /Número de inscrição do sacado inválidos',
-        '47' => 'Endereço do sacado não informado',
+        '45' => 'Nome do Pagador não informado',
+        '46' => 'Tipo /Número de inscrição do Pagador inválidos',
+        '47' => 'Endereço do Pagador não informado',
         '48' => 'CEP inválido',
         '49' => 'CEP sem praça de cobrança (não localizado)',
         '50' => 'CEP referente a um Banco Correspondente',
@@ -115,7 +117,8 @@ class Santander extends AbstractRetorno implements RetornoCnab240
         '61' => 'Alteração de agência cobradora/dv inválida',
         '62' => 'Tipo de impressão inválido',
         '63' => 'Entrada para título já cadastrado',
-        '64' => 'Número da linha inválido'
+        '64' => 'Número da linha inválido',
+        '90' => 'Identificador/Quantidade de Parcelas de carnê invalido',
     ];
 
     /**
@@ -219,7 +222,7 @@ class Santander extends AbstractRetorno implements RetornoCnab240
                     ->setCodigoCarteira($this->rem(54, 54, $detalhe))
                     ->setSeuNumero($this->rem(55, 69, $detalhe))
                     ->setDataVencimento($this->convertDate($this->rem(70, 77, $detalhe)))
-                    ->setValorTitulo(Util::nFloat($this->rem(78, 92, $detalhe)) / 100, 2, false)
+                    ->setValorTitulo(Util::nFloat($this->rem(78, 92, $detalhe) / 100, 2, false))
                     ->setNumeroBancoCobradorRecebedor($this->rem(93, 95, $detalhe))
                     ->setAgenciaCobradoraRecebedora($this->rem(96, 99, $detalhe))
                     ->setDigitoAgenciaCedente($this->rem(100, 100, $detalhe))
@@ -229,7 +232,7 @@ class Santander extends AbstractRetorno implements RetornoCnab240
                     ->setNumeroInscricaoSacado($this->rem(129, 143, $detalhe))
                     ->setNomeSacado($this->rem(144, 183, $detalhe))
                     ->setContaCobranca($this->rem(184, 193, $detalhe))
-                    ->setValorTarifa(Util::nFloat($this->rem(194, 208, $detalhe)) / 100, 2, false)
+                    ->setValorTarifa(Util::nFloat($this->rem(194, 208, $detalhe) / 100, 2, false))
                     ->setIdentificacaoRejeicao($this->rem(209, 218, $detalhe))
                     ->setNumeroDocumento($this->rem(55, 69, $detalhe));
 
@@ -279,19 +282,19 @@ class Santander extends AbstractRetorno implements RetornoCnab240
                     ->setTipoRegistro($this->rem(8, 8, $detalhe))
                     ->setNumeroSequencialRegistroLote($this->rem(9, 13, $detalhe))
                     ->setCodigoSegmentoRegistroDetalhe($this->rem(14, 14, $detalhe))
-                    ->setJurosMultaEncargos(Util::nFloat($this->rem(18, 32, $detalhe)) / 100, 2, false)
-                    ->setValorDescontoConcedido(Util::nFloat($this->rem(33, 47, $detalhe)) / 100, 2, false)
-                    ->setValorAbatimentoConcedidoCancelado(Util::nFloat($this->rem(48, 62, $detalhe)) / 100, 2, false)
-                    ->setValorIOF(Util::nFloat($this->rem(63, 77, $detalhe)) / 100, 2, false)
-                    ->setValorPagoSacado(Util::nFloat($this->rem(78, 92, $detalhe)) / 100, 2, false)
-                    ->setValorLiquidoCreditado(Util::nFloat($this->rem(93, 107, $detalhe)) / 100, 2, false)
-                    ->setValorOutrasDespesas(Util::nFloat($this->rem(108, 122, $detalhe)) / 100, 2, false)
-                    ->setValorOutrosCreditos(Util::nFloat($this->rem(123, 137, $detalhe)) / 100, 2, false)
+                    ->setJurosMultaEncargos(Util::nFloat($this->rem(18, 32, $detalhe) / 100, 2, false))
+                    ->setValorDescontoConcedido(Util::nFloat($this->rem(33, 47, $detalhe) / 100, 2, false))
+                    ->setValorAbatimentoConcedidoCancelado(Util::nFloat($this->rem(48, 62, $detalhe) / 100, 2, false))
+                    ->setValorIOF(Util::nFloat($this->rem(63, 77, $detalhe) / 100, 2, false))
+                    ->setValorPagoSacado(Util::nFloat($this->rem(78, 92, $detalhe) / 100, 2, false))
+                    ->setValorLiquidoCreditado(Util::nFloat($this->rem(93, 107, $detalhe) / 100, 2, false))
+                    ->setValorOutrasDespesas(Util::nFloat($this->rem(108, 122, $detalhe) / 100, 2, false))
+                    ->setValorOutrosCreditos(Util::nFloat($this->rem(123, 137, $detalhe) / 100, 2, false))
                     ->setDataOcorrencia($this->convertDate($this->rem(138, 145, $detalhe)))
                     ->setDataCredito($this->convertDate($this->rem(146, 153, $detalhe)))
                     ->setCodigoOcorrenciaSacado($this->rem(154, 157, $detalhe))
                     ->setDataOcorrenciaSacado($this->convertDate($this->rem(158, 165, $detalhe)))
-                    ->setValorOcorrenciaSacado(Util::nFloat($this->rem(166, 180, $detalhe)) / 100, 2, false)
+                    ->setValorOcorrenciaSacado(Util::nFloat($this->rem(166, 180, $detalhe) / 100, 2, false))
                     ->setComplementoOcorrenciaSacado($this->rem(181, 210, $detalhe))
                     ->setCodigoBancoCorrespondenteCompensacao($this->rem(211, 213, $detalhe));
 
@@ -337,13 +340,13 @@ class Santander extends AbstractRetorno implements RetornoCnab240
             ->setTipoRegistro($this->rem(8, 8, $trailer))
             ->setQtdRegistroLote((int)$this->rem(18, 23, $trailer))
             ->setQtdTitulosCobrancaSimples((int)$this->rem(24, 29, $trailer))
-            ->setValorTotalTitulosCobrancaSimples(Util::nFloat($this->rem(30, 46, $trailer)) / 100, 2, false)
+            ->setValorTotalTitulosCobrancaSimples(Util::nFloat($this->rem(30, 46, $trailer) / 100, 2, false))
             ->setQtdTitulosCobrancaVinculada((int)$this->rem(47, 52, $trailer))
-            ->setValorTotalTitulosCobrancaVinculada(Util::nFloat($this->rem(53, 69, $trailer)) / 100, 2, false)
+            ->setValorTotalTitulosCobrancaVinculada(Util::nFloat($this->rem(53, 69, $trailer) / 100, 2, false))
             ->setQtdTitulosCobrancaCaucionada((int)$this->rem(70, 75, $trailer))
-            ->setValorTotalTitulosCobrancaCaucionada(Util::nFloat($this->rem(76, 92, $trailer)) / 100, 2, false)
+            ->setValorTotalTitulosCobrancaCaucionada(Util::nFloat($this->rem(76, 92, $trailer) / 100, 2, false))
             ->setQtdTitulosCobrancaDescontada((int)$this->rem(93, 98, $trailer))
-            ->setValorTotalTitulosCobrancaDescontada(Util::nFloat($this->rem(99, 115, $trailer)) / 100, 2, false)
+            ->setValorTotalTitulosCobrancaDescontada(Util::nFloat($this->rem(99, 115, $trailer) / 100, 2, false))
             ->setNumeroAvisoLancamento($this->rem(116, 123, $trailer));
 
         return true;

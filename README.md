@@ -119,7 +119,7 @@ echo $remessa->gerar();
 $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make('full_path_arquivo_retorno');
 $retorno->processar();
 
-echo $retorn->getBancoNome();
+echo $retorno->getBancoNome();
 foreach($retorno as $registro)
 {
 	dd($registro->getDados());
