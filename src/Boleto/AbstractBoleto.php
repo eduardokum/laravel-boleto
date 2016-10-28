@@ -149,27 +149,27 @@ abstract class AbstractBoleto implements BoletoContract
     protected $usoBanco;
     /**
      * Agência
-     * @var int
+     * @var string
      */
     protected $agencia;
     /**
      * Dígito da agência
-     * @var string|int
+     * @var string
      */
     protected $agenciaDv;
     /**
      * Conta
-     * @var int
+     * @var string
      */
     protected $conta;
     /**
      * Dígito da conta
-     * @var int
+     * @var string
      */
     protected $contaDv;
     /**
      * Modalidade de cobrança do cliente, geralmente Cobrança Simples ou Registrada
-     * @var int
+     * @var string
      */
     protected $carteira;
     /**
@@ -284,7 +284,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define a agência
      *
-     * @param int $agencia
+     * @param string $agencia
      * @return AbstractBoleto
      */
     public function setAgencia($agencia)
@@ -295,7 +295,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Retorna a agência
      *
-     * @return int
+     * @return string
      */
     public function getAgencia()
     {
@@ -304,7 +304,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o dígito da agência
      *
-     * @param string|int $agenciaDv
+     * @param string $agenciaDv
      * @return AbstractBoleto
      */
     public function setAgenciaDv($agenciaDv)
@@ -315,7 +315,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Retorna o dígito da agência
      *
-     * @return string|int
+     * @return string
      */
     public function getAgenciaDv()
     {
@@ -386,7 +386,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o número da conta
      *
-     * @param int $conta
+     * @param string $conta
      * @return AbstractBoleto
      */
     public function setConta($conta)
@@ -397,7 +397,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Retorna o número da conta
      *
-     * @return int
+     * @return string
      */
     public function getConta()
     {
@@ -406,7 +406,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o dígito verificador da conta
      *
-     * @param int $contaDv
+     * @param string $contaDv
      * @return AbstractBoleto
      */
     public function setContaDv($contaDv)
@@ -417,7 +417,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Retorna o dígito verificador da conta
      *
-     * @return int
+     * @return string
      */
     public function getContaDv()
     {
@@ -776,7 +776,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o valor total do boleto (incluindo taxas)
      *
-     * @param float $valor
+     * @param string $valor
      * @return AbstractBoleto
      */
     public function setValor($valor)
@@ -787,7 +787,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Retorna o valor total do boleto (incluindo taxas)
      *
-     * @return float
+     * @return string
      */
     public function getValor()
     {
@@ -821,7 +821,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setMulta($multa)
     {
-        $this->multa = $multa > 0 ? $multa : false;
+        $this->multa = $multa > 0 ? $multa : 0;
         return $this;
     }
     /**
@@ -857,13 +857,13 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Seta a quantidade de dias apos o vencimento que cobra o juros
      *
-     * @param float $jurosApos
+     * @param int $jurosApos
      * @return AbstractBoleto
      */
     public function setJurosApos($jurosApos)
     {
         $jurosApos = (int) $jurosApos;
-        $this->jurosApos =  $jurosApos > 0 ? $jurosApos : false;
+        $this->jurosApos =  $jurosApos > 0 ? $jurosApos : 0;
         return $this;
     }
 
@@ -872,7 +872,7 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @param bool $default
      *
-     * @return float
+     * @return int
      */
     public function getJurosApos($default = false)
     {
@@ -881,13 +881,13 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Seta dias para protesto
      *
-     * @param float $diasProtesto
+     * @param int $diasProtesto
      * @return AbstractBoleto
      */
     public function setDiasProtesto($diasProtesto)
     {
         $diasProtesto = (int) $diasProtesto;
-        $this->diasProtesto = $diasProtesto > 0 ? $diasProtesto : false;
+        $this->diasProtesto = $diasProtesto > 0 ? $diasProtesto : 0;
         return $this;
     }
 
@@ -896,7 +896,7 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @param bool $default
      *
-     * @return float
+     * @return int
      */
     public function getDiasProtesto($default = false)
     {
@@ -976,7 +976,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Retorna o campo valor cobrado do boleto
      *
-     * @return float
+     * @return string
      */
     public function getValorCobrado()
     {
@@ -996,7 +996,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Retorna o campo "valor" do boleto
      *
-     * @return float
+     * @return string
      */
     public function getValorUnitario()
     {
