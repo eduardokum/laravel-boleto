@@ -821,7 +821,8 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setMulta($multa)
     {
-        $this->multa = (float) $multa > 0 ? $multa : 0;
+        $multa = (float) $multa;
+        $this->multa = $multa > 0 ? $multa : false;
         return $this;
     }
     /**
