@@ -65,22 +65,22 @@ abstract class AbstractBoleto implements BoletoContract
      * Valor para multa
      * @var float
      */
-    protected $multa = false;
+    protected $multa = NULL;
     /**
      * Valor para mora juros
      * @var float
      */
-    protected $juros = false;
+    protected $juros = NULL;
     /**
      * Dias apos vencimento do juros
      * @var int
      */
-    protected $jurosApos = false;
+    protected $jurosApos = 0;
     /**
      * Dias para protesto
      * @var float
      */
-    protected $diasProtesto = false;
+    protected $diasProtesto = 0;
     /**
      * Valor para outros acréscimos
      * @var float
@@ -822,7 +822,7 @@ abstract class AbstractBoleto implements BoletoContract
     public function setMulta($multa)
     {
         $multa = (float) $multa;
-        $this->multa = $multa > 0 ? $multa : false;
+        $this->multa = $multa > 0 ? $multa : NULL;
         return $this;
     }
     /**
@@ -843,7 +843,7 @@ abstract class AbstractBoleto implements BoletoContract
     public function setJuros($juros)
     {
         $juros = (float) $juros;
-        $this->juros = $juros > 0 ? $juros : false;
+        $this->juros = $juros > 0 ? $juros : NULL;
         return $this;
     }
     /**
@@ -877,7 +877,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getJurosApos($default = false)
     {
-        return $default !== false && $this->jurosApos === false ? $default : $this->jurosApos;
+        return $default !== false && $this->jurosApos === NULL ? $default : $this->jurosApos;
     }
     /**
      * Seta dias para protesto
@@ -901,7 +901,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getDiasProtesto($default = false)
     {
-        return $default !== false && $this->diasProtesto === false ? $default : $this->diasProtesto;
+        return $default !== false && $this->diasProtesto === NULL ? $default : $this->diasProtesto;
     }
     /**
      * Define o campo outras deduções do boleto
