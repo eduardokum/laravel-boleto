@@ -20,7 +20,7 @@
  *   IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Banco;
+namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
 use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
@@ -191,17 +191,17 @@ class Hsbc extends AbstractRemessa implements RemessaContract
         $this->add(157, 158, '00');
         $this->add(159, 160, '57');
 
-        if($boleto->getDiasProtesto() !== false)
+        if($boleto->getDiasProtesto() > 0)
         {
             $this->add(157, 158, '84');
         }
 
-        if($boleto->getMulta() !== false)
+        if($boleto->getMulta() > 0)
         {
             $this->add(159, 160, '74');
             $this->add(206, 211, Util::formatCnab('X','', 6));
             $this->add(206, 215, Util::formatCnab('9', $boleto->getMulta(), 2, 2));
-            $this->add(206, 218, Util::formatCnab('9', $boleto->getJurosApos(0), 3));
+            $this->add(206, 218, Util::formatCnab('9', $boleto->getJurosApos(), 3));
         }
         else
         {
@@ -209,7 +209,7 @@ class Hsbc extends AbstractRemessa implements RemessaContract
         }
 
         $juros = 0;
-        if($boleto->getJuros() !== false)
+        if($boleto->getJuros() > 0)
         {
             $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
         }

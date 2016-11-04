@@ -20,7 +20,7 @@
  *   IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Banco;
+namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
 use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
@@ -169,7 +169,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
         $this->add(21, 37, Util::formatCnab('A', $beneficiario_id, 17));
         $this->add(38, 62, Util::formatCnab('A', '', 25)); // numero de controle
         $this->add(63, 65, $this->getCodigoBanco());
-        $this->add(66, 66, $boleto->getMulta() === NULL ? '0' : '2');
+        $this->add(66, 66, $boleto->getMulta() > 0 ? '2' : '0');
         $this->add(67, 70, Util::formatCnab('N', $boleto->getMulta() === NULL ? '0' : $boleto->getMulta(), 4, 2));
         $this->add(71, 81, Util::formatCnab('N', $boleto->getNossoNumero(), 11));
         $this->add(82, 82, Util::modulo11($boleto->getCarteira().$boleto->getNossoNumero(), 2, 7, 0, 'P'));
@@ -201,14 +201,14 @@ class Bradesco extends AbstractRemessa implements RemessaContract
         $this->add(157, 158, '00');
         $this->add(159, 160, '00');
 
-        if($boleto->getDiasProtesto() !== false)
+        if($boleto->getDiasProtesto() > 0)
         {
             $this->add(157, 158, '06');
             $this->add(159, 160, Util::formatCnab('N', $boleto->getDiasProtesto(), 2));
         }
 
         $juros = 0;
-        if($boleto->getJuros() !== false)
+        if($boleto->getJuros() > 0)
         {
             $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
         }

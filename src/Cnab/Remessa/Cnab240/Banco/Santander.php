@@ -6,7 +6,7 @@
  * Time: 14:02
  */
 
-namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Banco\Cnab240;
+namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco\Cnab240;
 
 use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
@@ -133,10 +133,15 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(107, 108, Util::formatCnab(9, self::DS_DUPLICATA_DE_SERVICO, 2)); //Espécie do título
         $this->add(109, 109, Util::formatCnab('9', 'N', 1)); //Identif. de título Aceito/Não Aceito
         $this->add(110, 117, date('dmY')); //Data da emissão do título
-        //
+
+        $juros = 0;
+        if($boleto->getJuros() > 0)
+        {
+            $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
+        }
         $this->add(118, 118, Util::formatCnab(9, $boleto->getCodJurosMora(), 1)); //Código do juros de mora
         $this->add(119, 126, Util::formatCnab(9, $boleto->getDataVencimento()->format('dmY'), 8)); //Data do juros de mora / data de vencimento do titulo
-        $this->add(127, 141, Util::formatCnab(9, $boleto->getJuros(), 15, 2)); //Valor da mora/dia ou Taxa mensal
+        $this->add(127, 141, Util::formatCnab(9, $juros, 15, 2)); //Valor da mora/dia ou Taxa mensal
         $this->add(142, 142, Util::formatCnab(9, $boleto->getCodDesconto(), 1)); //Código do desconto 1
         $this->add(143, 150, Util::formatCnab(9, $boleto->getDataDesconto()->format('dmY'), 8)); //Data de desconto 1
         $this->add(151, 165, Util::formatCnab(9, $boleto->getValorOuPercentualDesconto(), 15, 2)); //Valor ou Percentual do desconto concedido //TODO

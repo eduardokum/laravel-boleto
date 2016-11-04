@@ -65,12 +65,12 @@ abstract class AbstractBoleto implements BoletoContract
      * Valor para multa
      * @var float
      */
-    protected $multa = NULL;
+    protected $multa = 0;
     /**
      * Valor para mora juros
      * @var float
      */
-    protected $juros = NULL;
+    protected $juros = 0;
     /**
      * Dias apos vencimento do juros
      * @var int
@@ -822,7 +822,7 @@ abstract class AbstractBoleto implements BoletoContract
     public function setMulta($multa)
     {
         $multa = (float) $multa;
-        $this->multa = $multa > 0 ? $multa : NULL;
+        $this->multa = $multa > 0 ? $multa : 0;
         return $this;
     }
     /**
@@ -843,7 +843,7 @@ abstract class AbstractBoleto implements BoletoContract
     public function setJuros($juros)
     {
         $juros = (float) $juros;
-        $this->juros = $juros > 0 ? $juros : NULL;
+        $this->juros = $juros > 0 ? $juros : 0;
         return $this;
     }
     /**
@@ -871,13 +871,11 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Retorna a quantidade de dias apos o vencimento que cobrar a juros
      *
-     * @param bool $default
-     *
      * @return int
      */
-    public function getJurosApos($default = false)
+    public function getJurosApos()
     {
-        return $default !== false && $this->jurosApos === NULL ? $default : $this->jurosApos;
+        return $this->jurosApos;
     }
     /**
      * Seta dias para protesto
@@ -895,13 +893,11 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Retorna os diasProtesto
      *
-     * @param bool $default
-     *
      * @return int
      */
-    public function getDiasProtesto($default = false)
+    public function getDiasProtesto()
     {
-        return $default !== false && $this->diasProtesto === NULL ? $default : $this->diasProtesto;
+        return $this->diasProtesto;
     }
     /**
      * Define o campo outras deduções do boleto

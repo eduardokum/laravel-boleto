@@ -39,7 +39,7 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Caixa([
     'especieDoc' => 'DM',
 ]);
 
-$remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Banco\Caixa([
+$remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Caixa([
     'agencia' => 1111,
     'conta' => 123456,
     'carteira' => 'RG',

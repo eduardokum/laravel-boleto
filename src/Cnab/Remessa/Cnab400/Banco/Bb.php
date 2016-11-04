@@ -20,7 +20,7 @@
  *   IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Banco;
+namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
 use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
@@ -274,7 +274,7 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(157, 158, '00');
         $this->add(159, 160, '00');
 
-        switch($boleto->getDiasProtesto())
+        switch(sprintf('%02s', $boleto->getDiasProtesto()))
         {
             case '03':
                 //- 03 - Protestar no 3º dia útil após vencido
@@ -315,7 +315,7 @@ class Bb extends AbstractRemessa implements RemessaContract
         }
 
         $juros = 0;
-        if($boleto->getJuros() !== false)
+        if($boleto->getJuros() > 0)
         {
             $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
         }
@@ -338,14 +338,14 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(394, 394, '');
         $this->add(395, 400, Util::formatCnab('N', $this->iRegistros+1, 6));
 
-        if($boleto->getMulta() !== false)
+        if($boleto->getMulta() > 0)
         {
             $this->iniciaDetalhe();
 
             $this->add(1, 1, 5);
             $this->add(2, 3, 99);
             $this->add(4, 4, 2);
-            $this->add(5, 10, $boleto->getDataVencimento()->copy()->addDays($boleto->getJurosApos(0))->format('dmy'));
+            $this->add(5, 10, $boleto->getDataVencimento()->copy()->addDays($boleto->getJurosApos())->format('dmy'));
             $this->add(11, 22, Util::formatCnab('9', $boleto->getMulta(), 7, 2));
             $this->add(23, 394, '');
             $this->add(23, 394, '');

@@ -110,7 +110,7 @@ $remessaArray = [
 	'beneficiario' => $beneficiario,
 ];
 
-$remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Banco\Bb($remessaArray);
+$remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Bb($remessaArray);
 
 $remessa->addBoleto($boleto); // Objeto de boleto gerado, BoletoContract
 

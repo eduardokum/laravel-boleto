@@ -40,7 +40,7 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Hsbc([
     'especieDoc' => 'DM',
 ]);
 
-$remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Banco\Hsbc([
+$remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Hsbc([
     'agencia' => 1111,
     'conta' => 999999,
     'contaDv' => 9,

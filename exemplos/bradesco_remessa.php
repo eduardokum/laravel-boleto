@@ -38,7 +38,7 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Bradesco([
     'especieDoc' => 'DM',
 ]);
 
-$remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Banco\Bradesco([
+$remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Bradesco([
     'agencia' => 1111,
     'conta' => 99999999,
     'contaDv' => 9,

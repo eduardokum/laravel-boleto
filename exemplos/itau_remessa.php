@@ -38,7 +38,7 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Itau([
     'especieDoc' => 'DM',
 ]);
 
-$remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Banco\Itau([
+$remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Itau([
     'agencia' => 1111,
     'conta' => 99999,
     'contaDv' => 9,
