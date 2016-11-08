@@ -346,7 +346,7 @@ class Bb extends AbstractRemessa implements RemessaContract
 
     public function isValid()
     {
-        if(empty($this->getConvenio()) || empty($this->getConvenioLider()) || !parent::isValid())
+        if( $this->getConvenio() == '' || $this->getConvenioLider() == '' || !parent::isValid())
         {
             return false;
         }

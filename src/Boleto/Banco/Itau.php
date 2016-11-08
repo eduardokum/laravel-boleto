@@ -78,11 +78,11 @@ class Itau extends AbstractBoleto implements BoletoContract
     public function isValid()
     {
         if(
-            empty($this->numero) ||
-            empty($this->agencia) ||
-            empty($this->conta) ||
-            empty($this->carteira) ||
-            (in_array($this->getCarteira(), ['107', '122', '142', '143', '196', '198']) && empty($this->codigoCliente))
+            $this->numero == '' ||
+            $this->agencia == '' ||
+            $this->conta == '' ||
+            $this->carteira == '' ||
+            (in_array($this->getCarteira(), ['107', '122', '142', '143', '196', '198']) && $this->codigoCliente == '')
         )
         {
             return false;

@@ -290,7 +290,7 @@ abstract class AbstractRemessa
      * @return boolean
      */
     public function isValid(){
-        if(empty($this->agencia) || empty($this->conta))
+        if($this->agencia == '' || $this->conta == '')
         {
             return false;
         }

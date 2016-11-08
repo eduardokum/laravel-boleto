@@ -6,7 +6,7 @@
  * Time: 14:02
  */
 
-namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco\Cnab240;
+namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco;
 
 use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;

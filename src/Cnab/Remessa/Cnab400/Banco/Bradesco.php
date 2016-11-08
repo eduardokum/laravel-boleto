@@ -222,7 +222,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
 
     public function isValid()
     {
-        if(empty($this->getCodigoCliente()) ||empty($this->getContaDv()) || !parent::isValid())
+        if($this->getCodigoCliente() == '' || $this->getContaDv() == '' || !parent::isValid())
         {
             return false;
         }

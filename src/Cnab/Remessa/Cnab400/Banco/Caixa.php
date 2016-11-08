@@ -214,7 +214,7 @@ class Caixa  extends AbstractRemessa implements RemessaContract
 
     public function isValid()
     {
-        if(empty($this->getCodigoCliente()) || !parent::isValid())
+        if( $this->getCodigoCliente() == '' || !parent::isValid())
         {
             return false;
         }

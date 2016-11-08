@@ -88,9 +88,9 @@ class Bb extends AbstractBoleto implements BoletoContract
     public function isValid()
     {
         if(
-            empty($this->numero) ||
-            empty($this->convenio) ||
-            empty($this->carteira)
+            $this->numero == '' ||
+            $this->convenio == '' ||
+            $this->carteir == ''
         )
         {
             return false;

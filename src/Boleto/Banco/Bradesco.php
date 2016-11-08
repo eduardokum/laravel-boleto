@@ -55,10 +55,10 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
     public function isValid()
     {
         if(
-            empty($this->numero) ||
-            empty($this->agencia) ||
-            empty($this->conta) ||
-            empty($this->carteira)
+            $this->numero == '' ||
+            $this->agencia == '' ||
+            $this->conta == '' ||
+            $this->carteira == ''
         )
         {
             return false;

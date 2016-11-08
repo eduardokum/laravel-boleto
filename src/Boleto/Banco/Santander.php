@@ -92,9 +92,9 @@ class Santander  extends AbstractBoleto implements BoletoContract
     public function isValid()
     {
         if(
-            empty($this->numero) ||
-            empty($this->conta) ||
-            empty($this->carteira)
+            $this->numero == '' ||
+            $this->conta == '' ||
+            $this->carteira == ''
         )
         {
             return false;

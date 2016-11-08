@@ -100,12 +100,12 @@ class Hsbc  extends AbstractBoleto implements BoletoContract
     public function isValid()
     {
         if(
-            empty($this->numero) ||
-            empty($this->range) ||
-            empty($this->agencia) ||
-            empty($this->conta) ||
-            empty($this->contaDv) ||
-            empty($this->carteira)
+            $this->numero == '' ||
+            $this->range == '' ||
+            $this->agencia == '' ||
+            $this->conta == '' ||
+            $this->contaDv == '' ||
+            $this->carteira == ''
         )
         {
             return false;

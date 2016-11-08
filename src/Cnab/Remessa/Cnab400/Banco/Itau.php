@@ -245,7 +245,7 @@ class Itau extends AbstractRemessa implements RemessaContract
 
     public function isValid()
     {
-        if(empty($this->getContaDv()) || !parent::isValid())
+        if( $this->getContaDv() == '' || !parent::isValid())
         {
             return false;
         }
