@@ -1,7 +1,7 @@
 <?php
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno;
 
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Cnab;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno;
 use Eduardokum\LaravelBoleto\Util;
 
@@ -40,25 +40,25 @@ class Factory
             $banco = substr($file_content[0], 76, 3);
 
             switch ($banco) {
-                case Cnab::COD_BANCO_BB:
+                case BoletoContract::COD_BANCO_BB:
                     $instancia = new Cnab400\Banco\Bb($file_content);
                     break;
-                case Cnab::COD_BANCO_SANTANDER:
+                case BoletoContract::COD_BANCO_SANTANDER:
                     $instancia = new Cnab400\Banco\Santander($file_content);
                     break;
-                case Cnab::COD_BANCO_CEF:
+                case BoletoContract::COD_BANCO_CEF:
                     $instancia = new Cnab400\Banco\Caixa($file_content);
                     break;
-                case Cnab::COD_BANCO_BRADESCO:
+                case BoletoContract::COD_BANCO_BRADESCO:
                     $instancia = new Cnab400\Banco\Bradesco($file_content);
                     break;
-                case Cnab::COD_BANCO_ITAU:
+                case BoletoContract::COD_BANCO_ITAU:
                     $instancia = new Cnab400\Banco\Itau($file_content);
                     break;
-                case Cnab::COD_BANCO_HSBC:
+                case BoletoContract::COD_BANCO_HSBC:
                     $instancia = new Cnab400\Banco\Hsbc($file_content);
                     break;
-                case Cnab::COD_BANCO_SICREDI:
+                case BoletoContract::COD_BANCO_SICREDI:
                     $instancia = new Cnab400\Banco\Sicredi($file_content);
                     break;
                 default:
@@ -76,20 +76,20 @@ class Factory
             $banco = substr($file_content[0], 0, 3);
 
             switch ($banco) {
-                case Cnab::COD_BANCO_BB:
+                case BoletoContract::COD_BANCO_BB:
                     break;
-                case Cnab::COD_BANCO_SANTANDER:
+                case BoletoContract::COD_BANCO_SANTANDER:
                     $instancia = new Cnab240\Banco\Santander($file_content);
                     break;
-                case Cnab::COD_BANCO_CEF:
+                case BoletoContract::COD_BANCO_CEF:
                     break;
-                case Cnab::COD_BANCO_BRADESCO:
+                case BoletoContract::COD_BANCO_BRADESCO:
                     break;
-                case Cnab::COD_BANCO_ITAU:
+                case BoletoContract::COD_BANCO_ITAU:
                     break;
-                case Cnab::COD_BANCO_HSBC:
+                case BoletoContract::COD_BANCO_HSBC:
                     break;
-                case Cnab::COD_BANCO_SICREDI:
+                case BoletoContract::COD_BANCO_SICREDI:
                     break;
                 default:
                     throw new \Exception("Banco: $banco, inválido");

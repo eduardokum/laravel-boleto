@@ -53,4 +53,56 @@ class RetornoCnab400Test extends \PHPUnit_Framework_TestCase
 
     }
 
+    public function testRetornoCefCnab400()
+    {
+        $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make(__DIR__ . '/files/cnab400/cef.ret');
+        $retorno->processar();
+
+        $this->assertNotNull($retorno->getHeader());
+        $this->assertNotNull($retorno->getDetalhes());
+        $this->assertNotNull($retorno->getTrailer());
+
+        $this->assertEquals('Caixa Econômica Federal', $retorno->getBancoNome());
+        $this->assertEquals('104', $retorno->getCodigoBanco());
+    }
+
+    public function testRetornoHsbcCnab400()
+    {
+        $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make(__DIR__ . '/files/cnab400/hsbc.ret');
+        $retorno->processar();
+
+        $this->assertNotNull($retorno->getHeader());
+        $this->assertNotNull($retorno->getDetalhes());
+        $this->assertNotNull($retorno->getTrailer());
+
+        $this->assertEquals('HSBC Bank Brasil S.A.', $retorno->getBancoNome());
+        $this->assertEquals('399', $retorno->getCodigoBanco());
+    }
+
+    public function testRetornoSantanderCnab400()
+    {
+        $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make(__DIR__ . '/files/cnab400/santander.ret');
+        $retorno->processar();
+
+        $this->assertNotNull($retorno->getHeader());
+        $this->assertNotNull($retorno->getDetalhes());
+        $this->assertNotNull($retorno->getTrailer());
+
+        $this->assertEquals('Banco Santander (Brasil) S.A.', $retorno->getBancoNome());
+        $this->assertEquals('033', $retorno->getCodigoBanco());
+    }
+
+    public function testRetornoSicrediCnab400()
+    {
+        $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make(__DIR__ . '/files/cnab400/sicredi.ret');
+        $retorno->processar();
+
+        $this->assertNotNull($retorno->getHeader());
+        $this->assertNotNull($retorno->getDetalhes());
+        $this->assertNotNull($retorno->getTrailer());
+
+        $this->assertEquals('Banco Cooperativo Sicredi S.A.', $retorno->getBancoNome());
+        $this->assertEquals('748', $retorno->getCodigoBanco());
+    }
+
 }

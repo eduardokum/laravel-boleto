@@ -2,6 +2,7 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco;
 
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\AbstractRetorno;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Detalhe as DetalheContract;
 use Eduardokum\LaravelBoleto\Util;
@@ -13,7 +14,7 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
      * Código do banco
      * @var string
      */
-    protected $codigoBanco = self::COD_BANCO_SICREDI;
+    protected $codigoBanco = BoletoContract::COD_BANCO_SICREDI;
 
     /**
      * Array com as ocorrencias do banco;
@@ -275,8 +276,9 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
             $d->setOcorrenciaTipo($d::OCORRENCIA_OUTROS);
         }
 
-        $errorsRetorno = str_split(sprintf('%010s', $this->rem(319, 328, $detalhe)), 2);
-        if(trim($errorsRetorno, '0') != '')
+        $stringErrors = sprintf('%010s', $this->rem(319, 328, $detalhe));
+        $errorsRetorno = str_split($stringErrors, 2);
+        if(trim($stringErrors, '0') != '')
         {
             $error = [];
             $error[] = array_get($this->rejeicoes, $errorsRetorno[0], '');

@@ -3,7 +3,6 @@ namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
 use Carbon\Carbon;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Cnab;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
@@ -45,7 +44,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
      * Código do banco
      * @var string
      */
-    protected $codigoBanco =  Cnab::COD_BANCO_SICREDI;
+    protected $codigoBanco =  BoletoContract::COD_BANCO_SICREDI;
 
     /**
      * Define as carteiras disponíveis para cada banco

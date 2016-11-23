@@ -98,7 +98,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
             throw new \Exception(sprintf("Arquivo de retorno inválido"));
         }
 
-        $r = new \ReflectionClass('\Eduardokum\LaravelBoleto\Contracts\Cnab\Cnab');
+        $r = new \ReflectionClass('\Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto');
         $constantNames = $r->getConstants();
 
         $bancosDisponiveis = [];
