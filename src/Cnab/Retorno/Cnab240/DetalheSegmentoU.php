@@ -4,6 +4,7 @@ namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\DetalheSegmentoU as SegmentoU;
 use Eduardokum\LaravelBoleto\Util;
+use Carbon\Carbon;
 
 class DetalheSegmentoU implements SegmentoU
 {

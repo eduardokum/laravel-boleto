@@ -1,6 +1,6 @@
 <?php
 
-namespace Cnab400\Tests;
+namespace Cnab240\Tests;
 
 class RetornoCnab240Test extends \PHPUnit_Framework_TestCase
 {
