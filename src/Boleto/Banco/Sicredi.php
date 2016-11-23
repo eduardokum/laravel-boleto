@@ -3,6 +3,7 @@ namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Cnab;
 use Eduardokum\LaravelBoleto\Util;
 
 class Sicredi extends AbstractBoleto implements BoletoContract
@@ -17,7 +18,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
      * Código do banco
      * @var string
      */
-    protected $codigoBanco = self::COD_BANCO_SICREDI;
+    protected $codigoBanco = Cnab::COD_BANCO_SICREDI;
     /**
      * Define as carteiras disponíveis para este banco
      * @var array

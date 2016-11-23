@@ -3,6 +3,7 @@ namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Cnab;
 use Eduardokum\LaravelBoleto\Util;
 
 class Hsbc  extends AbstractBoleto implements BoletoContract
@@ -12,7 +13,7 @@ class Hsbc  extends AbstractBoleto implements BoletoContract
      * Código do banco
      * @var string
      */
-    protected $codigoBanco = self::COD_BANCO_HSBC;
+    protected $codigoBanco = Cnab::COD_BANCO_HSBC;
     /**
      * Define as carteiras disponíveis para este banco
      * @var array
