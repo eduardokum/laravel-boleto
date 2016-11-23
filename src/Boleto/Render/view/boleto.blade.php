@@ -150,5 +150,10 @@
     <!-- Ficha de compensação -->
     @include('BoletoHtmlRender::partials/ficha-compensacao')
 </div>
+@if(isset($imprimir_carregamento) && $imprimir_carregamento === true)
+    <script type="text/javascript">
+        window.onload = function() { window.print(); }
+    </script>
+@endif
 </body>
 </html>

@@ -94,9 +94,17 @@ class Html implements HtmlContract
         '</div>';
     }
 
-    public function gerarBoleto()
+    /**
+     * função para gerar o boleto
+     *
+     * @param bool $print
+     *
+     * @return string
+     */
+    public function gerarBoleto($print = false)
     {
         $view = view();
+        $this->dados['imprimir_carregamento'] = (bool) $print;
         $view->addNamespace('BoletoHtmlRender', realpath(__DIR__ . '/view/'));
         return $view->make('BoletoHtmlRender::boleto', $this->dados)->render();
     }
