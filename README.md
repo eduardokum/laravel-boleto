@@ -1,4 +1,4 @@
-    [![Packagist](https://img.shields.io/packagist/v/eduardokum/laravel-boleto.svg?style=flat-square)](https://github.com/eduardokum/laravel-boleto)
+[![Packagist](https://img.shields.io/packagist/v/eduardokum/laravel-boleto.svg?style=flat-square)](https://github.com/eduardokum/laravel-boleto)
 [![Packagist](https://img.shields.io/packagist/dt/eduardokum/laravel-boleto.svg?style=flat-square)](https://github.com/eduardokum/laravel-boleto)
 [![Packagist](https://img.shields.io/packagist/l/eduardokum/laravel-boleto.svg?style=flat-square)](https://github.com/eduardokum/laravel-boleto)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/eduardokum/laravel-boleto/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/eduardokum/laravel-boleto/?branch=master)
@@ -119,6 +119,8 @@ Gerando mais de 1, não chamar a função render() do boleto e usar: (SOMENTE PD
 $pdf = new Eduardokum\LaravelBoleto\Boleto\Render\Pdf();
 
 $pdf->addBoleto($boleto);
+Ou para adicionar um array de boletos
+$pdf->addBoletos($boletos);
 
 $pdf->gerarBoleto();
 ```
@@ -142,6 +144,8 @@ $remessaArray = [
 $remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Bb($remessaArray);
 
 $remessa->addBoleto($boleto); // Objeto de boleto gerado, BoletoContract
+Ou para adicionar um array de boletos
+$remessa->addBoletos($boletos);
 
 echo $remessa->gerar();
 ```
