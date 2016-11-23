@@ -2,6 +2,7 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
 use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Cnab;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
@@ -68,7 +69,7 @@ class Hsbc extends AbstractRemessa implements RemessaContract
     * Código do banco
     * @var string
     */
-    protected $codigoBanco = self::COD_BANCO_HSBC;
+    protected $codigoBanco = Cnab::COD_BANCO_HSBC;
 
     /**
      * Define as carteiras disponíveis para cada banco
