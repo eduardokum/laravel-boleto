@@ -31,12 +31,13 @@ class Hsbc extends AbstractRemessa implements RemessaContract
     const OCORRENCIA_CONCEDER_DESC_PAGTO_ATE = '13';
     const OCORRENCIA_CANC_CONDICAO_DESC = '14';
     const OCORRENCIA_CANC_DESC_DIARIO = '15';
-    const OCORRENCIA_VENC_ALT_PARA = '48';
+    const OCORRENCIA_ALT_VENCIMENTO = '48';
     const OCORRENCIA_ALT_DIAS_CARTORIO = '49';
     const OCORRENCIA_INC_SACADO_ELETRONICO = '50';
     const OCORRENCIA_EXC_SACADO_ELETRONICO = '51';
     const OCORRENCIA_PROTESTO_FALIMENTARES = '57';
 
+    const INSTRUCAO_SEM = '00';
     const INSTRUCAO_MULTA_PERC_XX_APOS_XX = '15';
     const INSTRUCAO_MULTA_PERC_XX_APOS_MAXIMO = '16';
     const INSTRUCAO_MULTA_VALOR_APOS_VENC = '19';
@@ -149,14 +150,14 @@ class Hsbc extends AbstractRemessa implements RemessaContract
         $this->add(91, 96, '000000');
         $this->add(97, 107, Util::formatCnab('N', 0, 11, 2));
         $this->add(108, 108, $this->getCarteiraNumero());
-        $this->add(109, 110, '01'); // REGISTRO
+        $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
         if($boleto->getStatus() == $boleto::STATUS_BAIXA)
         {
-            $this->add(109, 110, '02'); // BAIXA
+            $this->add(109, 110, self::OCORRENCIA_PEDIDO_BAIXA); // BAIXA
         }
         if($boleto->getStatus() == $boleto::STATUS_ALTERACAO)
         {
-            $this->add(109, 110, '48'); // ALTERAR VENCIMENTO
+            $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO); // ALTERAR VENCIMENTO
         }
         $this->add(111, 120, Util::formatCnab('X', $boleto->getNumeroDocumento(), 10));
         $this->add(121, 126, $boleto->getDataVencimento()->format('dmy'));
@@ -166,18 +167,15 @@ class Hsbc extends AbstractRemessa implements RemessaContract
         $this->add(148, 149, $boleto->getEspecieDocCodigo());
         $this->add(150, 150, $boleto->getAceite());
         $this->add(151, 156, $boleto->getDataDocumento()->format('dmy'));
-
-        $this->add(157, 158, '00');
-        $this->add(159, 160, '57');
-
+        $this->add(157, 158, self::INSTRUCAO_SEM);
+        $this->add(159, 160, self::INSTRUCAO_SEM);
         if($boleto->getDiasProtesto() > 0)
         {
-            $this->add(157, 158, '84');
+            $this->add(157, 158, self::INSTRUCAO_PROTESTAR_XX_VENC_UTEIS);
         }
-
         if($boleto->getMulta() > 0)
         {
-            $this->add(159, 160, '74');
+            $this->add(159, 160, self::INSTRUCAO_MULTA_PERC_XX_APOS_VENC_UTEIS);
             $this->add(206, 211, Util::formatCnab('X','', 6));
             $this->add(206, 215, Util::formatCnab('9', $boleto->getMulta(), 2, 2));
             $this->add(206, 218, Util::formatCnab('9', $boleto->getJurosApos(), 3));
@@ -186,7 +184,6 @@ class Hsbc extends AbstractRemessa implements RemessaContract
         {
             $this->add(206, 218, Util::formatCnab('9', $boleto->getDescontosAbatimentos(), 13, 2));
         }
-
         $juros = 0;
         if($boleto->getJuros() > 0)
         {
@@ -196,7 +193,6 @@ class Hsbc extends AbstractRemessa implements RemessaContract
         $this->add(174, 179, '000000');
         $this->add(180, 192, Util::formatCnab('9', 0, 13, 2));
         $this->add(193, 205, Util::formatCnab('9', 0, 13, 2));
-
         $this->add(219, 220, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? '02' : '01');
         $this->add(221, 234, Util::formatCnab('NL', $boleto->getPagador()->getDocumento(), 14));
         $this->add(235, 274, Util::formatCnab('X', $boleto->getPagador()->getNome(), 40));

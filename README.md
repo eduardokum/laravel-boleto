@@ -1,4 +1,4 @@
-[![Packagist](https://img.shields.io/packagist/v/eduardokum/laravel-boleto.svg?style=flat-square)](https://github.com/eduardokum/laravel-boleto)
+    [![Packagist](https://img.shields.io/packagist/v/eduardokum/laravel-boleto.svg?style=flat-square)](https://github.com/eduardokum/laravel-boleto)
 [![Packagist](https://img.shields.io/packagist/dt/eduardokum/laravel-boleto.svg?style=flat-square)](https://github.com/eduardokum/laravel-boleto)
 [![Packagist](https://img.shields.io/packagist/l/eduardokum/laravel-boleto.svg?style=flat-square)](https://github.com/eduardokum/laravel-boleto)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/eduardokum/laravel-boleto/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/eduardokum/laravel-boleto/?branch=master)
@@ -9,6 +9,35 @@ laravel-boleto)
 
 # laravel-boleto
 Pacote para gerar boletos e remessas
+
+## Bancos suportados
+
+**Boleto**
+- Banco do Brasil
+- Bradesco
+- Caixa
+- Hsbc
+- Itau
+- Santander
+- Sicredi
+
+**Remessa**
+- Banco do Brasil [400]
+- Bradesco [400]
+- Caixa [400]
+- Hsbc [400]
+- Itau [400]
+- Santander [400
+- Sicredi [400]
+
+**Retorno**
+- Banco do Brasil  [400]
+- Bradesco [400]
+- Caixa [400]
+- Hsbc [400]
+- Itau [400]
+- Santander [400, 240]
+- Sicredi [400]
 
 ## Instalação
 Via composer:
@@ -130,7 +159,7 @@ foreach($retorno as $registro)
 }
 ```
 
-Métodos disponíveis:
+**Métodos disponíveis:**
 
 ```php
 $retorno->getDetalhes();

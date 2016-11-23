@@ -215,9 +215,9 @@ class Detalhe implements DetalheContract
      *
      * @return Detalhe
      */
-    public function setDataOcorrencia($dataOcorrencia)
+    public function setDataOcorrencia($dataOcorrencia, $format = 'dmy')
     {
-        $this->dataOcorrencia = trim($dataOcorrencia, '0 ') ? Carbon::createFromFormat('dmy', $dataOcorrencia) : null;
+        $this->dataOcorrencia = trim($dataOcorrencia, '0 ') ? Carbon::createFromFormat($format, $dataOcorrencia) : null;
 
         return $this;
     }
@@ -239,9 +239,9 @@ class Detalhe implements DetalheContract
      *
      * @return Detalhe
      */
-    public function setDataVencimento($dataVencimento)
+    public function setDataVencimento($dataVencimento, $format = 'dmy')
     {
-        $this->dataVencimento = trim($dataVencimento, '0 ') ? Carbon::createFromFormat('dmy', $dataVencimento) : null;
+        $this->dataVencimento = trim($dataVencimento, '0 ') ? Carbon::createFromFormat($format, $dataVencimento) : null;
 
         return $this;
     }
@@ -263,9 +263,9 @@ class Detalhe implements DetalheContract
      *
      * @return Detalhe
      */
-    public function setDataCredito($dataCredito)
+    public function setDataCredito($dataCredito, $format = 'dmy')
     {
-        $this->dataCredito = trim($dataCredito, '0 ') ? Carbon::createFromFormat('dmy', $dataCredito) : null;
+        $this->dataCredito = trim($dataCredito, '0 ') ? Carbon::createFromFormat($format, $dataCredito) : null;
 
         return $this;
     }

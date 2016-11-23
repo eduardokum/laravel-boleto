@@ -331,6 +331,21 @@ abstract class AbstractRemessa
     }
 
     /**
+     * Função para adicionar multiplos boletos.
+     *
+     * @param array $boletos
+     *
+     * @return $this
+     */
+    public function addBoletos(array $boletos) {
+        foreach ($boletos as $boleto) {
+            $this->addBoleto($boleto);
+        }
+
+        return $this;
+    }
+
+    /**
      * Função para add valor a linha nas posições informadas.
      *
      * @param $i
@@ -374,6 +389,30 @@ abstract class AbstractRemessa
     }
 
     /**
+     * Retorna o header do arquivo.
+     * @return mixed
+     */
+    protected function getHeader() {
+        return $this->aRegistros[self::HEADER];
+    }
+
+    /**
+     * Retorna os detalhes do arquivo
+     * @return \Illuminate\Support\Collection
+     */
+    protected function getDetalhes() {
+        return collect($this->aRegistros[self::DETALHE]);
+    }
+
+    /**
+     * Retorna o trailer do arquivo.
+     * @return mixed
+     */
+    protected function getTrailer() {
+        return $this->aRegistros[self::TRAILER];
+    }
+
+    /**
      * Valida se a linha esta correta.
      *
      * @param array $a
@@ -410,15 +449,15 @@ abstract class AbstractRemessa
         }
 
         $this->header();
-        $stringRemessa .= $this->valida($this->aRegistros[self::HEADER]) . $this->fimLinha;
+        $stringRemessa .= $this->valida($this->getHeader()) . $this->fimLinha;
 
-        foreach($this->aRegistros[self::DETALHE] as $i => $detalhe)
+        foreach($this->getDetalhes() as $i => $detalhe)
         {
             $stringRemessa .= $this->valida($detalhe) . $this->fimLinha;
         }
 
         $this->trailer();
-        $stringRemessa .= $this->valida($this->aRegistros[self::TRAILER]);
+        $stringRemessa .= $this->valida($this->getTrailer());
         $stringRemessa .= $this->fimArquivo;
 
         return $stringRemessa;

@@ -16,7 +16,7 @@ class Santander extends AbstractRemessa implements RemessaContract
     const ESPECIE_LETRA_CAMBIO = '07';
 
     const OCORRENCIA_REMESSA = '01';
-    const OCORRENCIA_BAIXA_TITULO = '02';
+    const OCORRENCIA_PEDIDO_BAIXA = '02';
     const OCORRENCIA_CONCESSAO_ABATIMENTO = '04';
     const OCORRENCIA_CANC_ABATIMENTO = '05';
     const OCORRENCIA_ALT_VENCIMENTO = '06';
@@ -28,7 +28,7 @@ class Santander extends AbstractRemessa implements RemessaContract
     const INSTRUCAO_SEM = '00';
     const INSTRUCAO_BAIXAR_APOS_VENC_15 = '02';
     const INSTRUCAO_BAIXAR_APOS_VENC_30 = '03';
-    const INSTRUCAO_NAP_AIXAR = '04';
+    const INSTRUCAO_NAO_BAIXAR = '04';
     const INSTRUCAO_PROTESTAR = '06';
     const INSTRUCAO_NAO_PROTESTAR = '07';
     const INSTRUCAO_NAO_COBRAR_MORA = '08';
@@ -152,14 +152,14 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(98, 101, Util::formatCnab('X', '', 4));
         $this->add(102, 107, $boleto->getDataVencimento()->copy()->addDays($boleto->getJurosApos())->format('dmy'));
         $this->add(108, 108, $this->getCarteiraNumero() > 200 ? '1' : '5');
-        $this->add(109, 110, '01'); // REGISTRO
+        $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
         if($boleto->getStatus() == $boleto::STATUS_BAIXA)
         {
-            $this->add(109, 110, '02'); // BAIXA
+            $this->add(109, 110, self::OCORRENCIA_PEDIDO_BAIXA); // BAIXA
         }
         if($boleto->getStatus() == $boleto::STATUS_ALTERACAO)
         {
-            $this->add(109, 110, '06'); // ALTERAR VENCIMENTO
+            $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO); // ALTERAR VENCIMENTO
         }
         $this->add(111, 120, Util::formatCnab('X', $boleto->getNumeroDocumento(), 10));
         $this->add(121, 126, $boleto->getDataVencimento()->format('dmy'));
@@ -169,13 +169,11 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(148, 149, $boleto->getEspecieDocCodigo());
         $this->add(150, 150, $boleto->getAceite());
         $this->add(151, 156, $boleto->getDataDocumento()->format('dmy'));
-
-        $this->add(157, 158, '00');
-        $this->add(159, 160, '00');
-
+        $this->add(157, 158, self::INSTRUCAO_SEM);
+        $this->add(159, 160, self::INSTRUCAO_SEM);
         if($boleto->getDiasProtesto() > 0)
         {
-            $this->add(157, 158, '06');
+            $this->add(157, 158, self::INSTRUCAO_PROTESTAR);
         }
 
         $juros = 0;

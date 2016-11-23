@@ -58,6 +58,9 @@ class Factory
                 case Cnab::COD_BANCO_HSBC:
                     $instancia = new Cnab400\Banco\Hsbc($file_content);
                     break;
+                case Cnab::COD_BANCO_SICREDI:
+                    $instancia = new Cnab400\Banco\Sicredi($file_content);
+                    break;
                 default:
                     throw new \Exception("Banco: $banco, inválido");
             }
@@ -73,8 +76,20 @@ class Factory
             $banco = substr($file_content[0], 0, 3);
 
             switch ($banco) {
+                case Cnab::COD_BANCO_BB:
+                    break;
                 case Cnab::COD_BANCO_SANTANDER:
                     $instancia = new Cnab240\Banco\Santander($file_content);
+                    break;
+                case Cnab::COD_BANCO_CEF:
+                    break;
+                case Cnab::COD_BANCO_BRADESCO:
+                    break;
+                case Cnab::COD_BANCO_ITAU:
+                    break;
+                case Cnab::COD_BANCO_HSBC:
+                    break;
+                case Cnab::COD_BANCO_SICREDI:
                     break;
                 default:
                     throw new \Exception("Banco: $banco, inválido");

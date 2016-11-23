@@ -875,6 +875,11 @@ final class Util
                 self::adiciona($retorno[0], 38, 43, self::remove(38, 43, $remessa[0]));
                 self::adiciona($retorno[0], 44, 44, self::remove(44, 44, $remessa[0]));
                 break;
+            case Contracts\Cnab\Cnab::COD_BANCO_SICREDI:
+                self::adiciona($retorno[0], 27, 31, self::remove(27, 31, $remessa[0]));
+                self::adiciona($retorno[0], 32, 45, self::remove(32, 45, $remessa[0]));
+                self::adiciona($retorno[0], 111, 117, self::remove(111, 117, $remessa[0]));
+                break;
             default:
                 throw new \Exception("Banco: $banco, inválido");
         }
@@ -923,6 +928,9 @@ final class Util
                     break;
                 case Contracts\Cnab\Cnab::COD_BANCO_HSBC:
                     self::adiciona($retorno[$i], 63, 73, self::remove(63, 73, $detalhe));
+                    break;
+                case Contracts\Cnab\Cnab::COD_BANCO_SICREDI:
+                    self::adiciona($retorno[$i], 48, 62, '00000' . self::remove(48, 56, $detalhe));
                     break;
                 default:
                     throw new \Exception("Banco: $banco, inválido");

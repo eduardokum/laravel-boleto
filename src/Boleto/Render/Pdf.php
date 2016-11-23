@@ -380,6 +380,19 @@ class Pdf extends AbstractPdf implements PdfContract
     }
 
     /**
+     * Addiciona o boletos
+     *
+     * @param array $boleto
+     */
+    public function addBoletos(array $boletos){
+        foreach ($boletos as $boleto) {
+            $this->addBoleto($boleto);
+        }
+
+        return $this;
+    }
+
+    /**
      * Addiciona o boleto
      *
      * @param BoletoInterface $boleto
@@ -387,6 +400,7 @@ class Pdf extends AbstractPdf implements PdfContract
     public function addBoleto(BoletoInterface $boleto){
         $this->totalBoletos += 1;
         $this->boleto[] = $boleto;
+        return $this;
     }
 
     /**

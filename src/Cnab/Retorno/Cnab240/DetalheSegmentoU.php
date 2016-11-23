@@ -7,25 +7,106 @@ use Eduardokum\LaravelBoleto\Util;
 
 class DetalheSegmentoU implements SegmentoU
 {
+
+
+    /**
+     * @var string
+     */
     private $codigoBancoCompensacao;
+
+    /**
+     * @var string
+     */
     private $tipoRegistro;
+
+    /**
+     * @var string
+     */
     private $numeroSequencialRegistroLote;
+
+    /**
+     * @var string
+     */
     private $codigoSegmentoRegistroDetalhe;
+
+    /**
+     * @var string
+     */
     private $loteServico;
+
+    /**
+     * @var string
+     */
     private $jurosMultaEncargos;
+
+    /**
+     * @var string
+     */
     private $valorDescontoConcedido;
+
+    /**
+     * @var string
+     */
     private $valorAbatimentoConcedidoCancelado;
+
+    /**
+     * @var string
+     */
     private $valorIOF;
+
+    /**
+     * @var string
+     */
     private $valorPagoSacado;
+
+    /**
+     * @var string
+     */
     private $valorLiquidoCreditado;
+
+    /**
+     * @var string
+     */
     private $valorOutrasDespesas;
+
+    /**
+     * @var string
+     */
     private $valorOutrosCreditos;
+
+    /**
+     * @var string
+     */
     private $dataOcorrencia;
+
+    /**
+     * @var string
+     */
     private $dataCredito;
+
+    /**
+     * @var string
+     */
     private $codigoOcorrenciaSacado;
+
+    /**
+     * @var string
+     */
     private $dataOcorrenciaSacado;
+
+    /**
+     * @var string
+     */
     private $valorOcorrenciaSacado;
+
+    /**
+     * @var string
+     */
     private $complementoOcorrenciaSacado;
+
+    /**
+     * @var string
+     */
     private $codigoBancoCorrespondenteCompensacao;
 
     /**
@@ -265,17 +346,19 @@ class DetalheSegmentoU implements SegmentoU
     /**
      * @return mixed
      */
-    public function getDataOcorrencia()
+    public function getDataOcorrencia($format = 'd/m/Y')
     {
-        return Util::convertSingleStringDate($this->dataOcorrencia);
+        return $this->dataOcorrencia instanceof Carbon
+            ? $format === false ? $this->dataOcorrencia : $this->dataOcorrencia->format($format)
+            : null;
     }
 
     /**
      * @param mixed $dataOcorrencia
      */
-    public function setDataOcorrencia($dataOcorrencia)
+    public function setDataOcorrencia($dataOcorrencia, $format = 'dmy')
     {
-        $this->dataOcorrencia = $dataOcorrencia;
+        $this->dataOcorrencia = trim($dataOcorrencia, '0 ') ? Carbon::createFromFormat($format, $dataOcorrencia) : null;
 
         return $this;
     }
@@ -285,15 +368,17 @@ class DetalheSegmentoU implements SegmentoU
      */
     public function getDataCredito()
     {
-        return Util::convertSingleStringDate($this->dataCredito);
+        return $this->dataCredito instanceof Carbon
+            ? $format === false ? $this->dataOcorrencia : $this->dataOcorrencia->format($format)
+            : null;
     }
 
     /**
      * @param mixed $dataCredito
      */
-    public function setDataCredito($dataCredito)
+    public function setDataCredito($dataCredito, $format = 'dmy')
     {
-        $this->dataCredito = $dataCredito;
+        $this->dataCredito = trim($dataCredito, '0 ') ? Carbon::createFromFormat($format, $dataCredito) : null;
 
         return $this;
     }
@@ -321,15 +406,17 @@ class DetalheSegmentoU implements SegmentoU
      */
     public function getDataOcorrenciaSacado()
     {
-        return Util::convertSingleStringDate($this->dataOcorrenciaSacado);
+        return $this->dataOcorrenciaSacado instanceof Carbon
+            ? $format === false ? $this->dataOcorrenciaSacado : $this->dataOcorrenciaSacado->format($format)
+            : null;
     }
 
     /**
      * @param mixed $dataOcorrenciaSacado
      */
-    public function setDataOcorrenciaSacado($dataOcorrenciaSacado)
+    public function setDataOcorrenciaSacado($dataOcorrenciaSacado, $format = 'dmy')
     {
-        $this->dataOcorrenciaSacado = $dataOcorrenciaSacado;
+        $this->dataOcorrenciaSacado = trim($dataOcorrenciaSacado, '0 ') ? Carbon::createFromFormat($format, $dataOcorrenciaSacado) : null;
 
         return $this;
     }

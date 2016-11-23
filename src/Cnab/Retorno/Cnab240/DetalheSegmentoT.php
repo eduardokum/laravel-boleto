@@ -379,9 +379,9 @@ class DetalheSegmentoT implements SegmentoT
     /**
      * @param mixed $dataVencimento
      */
-    public function setDataVencimento($dataVencimento)
+    public function setDataVencimento($dataVencimento, $format = 'dmy')
     {
-        $this->dataVencimento = trim($dataVencimento, '0 ') ? Carbon::createFromFormat('dmy', $dataVencimento) : null;
+        $this->dataVencimento = trim($dataVencimento, '0 ') ? Carbon::createFromFormat($format, $dataVencimento) : null;
 
         return $this;
     }
@@ -599,7 +599,7 @@ class DetalheSegmentoT implements SegmentoT
      */
     public function setNumeroDocumento($numeroDocumento)
     {
-        $this->numeroDocumento = ltrim(trim($numeroDocumento, ' '), '0');
+        $this->numeroDocumento = (int) $numeroDocumento;
 
         return $this;
     }

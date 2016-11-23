@@ -11,7 +11,7 @@ class Itau extends AbstractBoleto implements BoletoContract
      * Código do banco
      * @var string
      */
-    protected $codigoBanco = '341';
+    protected $codigoBanco = self::COD_BANCO_ITAU;
     /**
      * Variáveis adicionais.
      * @var array

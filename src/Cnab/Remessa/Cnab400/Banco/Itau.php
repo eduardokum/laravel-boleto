@@ -25,7 +25,7 @@ class Itau extends AbstractRemessa implements RemessaContract
     const ESPECIE_DIVERSOS = '99';
 
     const OCORRENCIA_REMESSA = '01';
-    const OCORRENCIA_BAIXA = '02';
+    const OCORRENCIA_PEDIDO_BAIXA = '02';
     const OCORRENCIA_CONCESSAO_ABATIMENTO = '04';
     const OCORRENCIA_CANC_ABATIMENTO = '05';
     const OCORRENCIA_ALT_VENCIMENTO = '06';
@@ -43,6 +43,7 @@ class Itau extends AbstractRemessa implements RemessaContract
     const OCORRENCIA_NAO_CONCORDA_SACADO = '38';
     const OCORRENCIA_DISPENSA_JUROS = '47';
 
+    const INSTRUCAO_SEM = '00';
     const INSTRUCAO_DEVOL_VENC_5 = '02';
     const INSTRUCAO_DEVOL_VENC_30 = '03';
     const INSTRUCAO_RECEBER_CONFORME_TITULO = '05';
@@ -177,14 +178,14 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(84, 86, Util::formatCnab('9', $this->getCarteiraNumero(), 3));
         $this->add(87, 107, Util::formatCnab('X', '', 21));
         $this->add(108, 108, 'I');
-        $this->add(109, 110, '01'); // REGISTRO
+        $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
         if($boleto->getStatus() == $boleto::STATUS_BAIXA)
         {
-            $this->add(109, 110, '02'); // BAIXA
+            $this->add(109, 110, self::OCORRENCIA_PEDIDO_BAIXA); // BAIXA
         }
         if($boleto->getStatus() == $boleto::STATUS_ALTERACAO)
         {
-            $this->add(109, 110, '06'); // ALTERAR VENCIMENTO
+            $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO); // ALTERAR VENCIMENTO
         }
         $this->add(111, 120, Util::formatCnab('X', $boleto->getNumeroDocumento(), 10));
         $this->add(121, 126, $boleto->getDataVencimento()->format('dmy'));
@@ -194,23 +195,20 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(148, 149, $boleto->getEspecieDocCodigo());
         $this->add(150, 150, $boleto->getAceite());
         $this->add(151, 156, $boleto->getDataDocumento()->format('dmy'));
-
-        $this->add(157, 158, '00');
-        $this->add(159, 160, '57');
-
+        $this->add(157, 158, self::INSTRUCAO_SEM);
+        $this->add(159, 160, self::INSTRUCAO_VALOR_SOMA_MORA);
         if($boleto->getDiasProtesto() > 0)
         {
-            $this->add(157, 158, '34');
+            $this->add(157, 158, self::INSTRUCAO_PROTESTAR_VENC_XX);
         }
-
         $juros = 0;
         if($boleto->getJuros() > 0)
         {
             $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
         }
         $this->add(161, 173, Util::formatCnab('9', $juros, 13, 2));
-        $this->add(174, 179, '000000');
-        $this->add(180, 192, Util::formatCnab('9', 0, 13, 2));
+        $this->add(174, 179, $boleto->getDataVencimento()->format('dmy'));
+        $this->add(180, 192, Util::formatCnab('9', $boleto->getDescontosAbatimentos(), 13, 2));
         $this->add(193, 205, Util::formatCnab('9', 0, 13, 2));
         $this->add(206, 218, Util::formatCnab('9', $boleto->getDescontosAbatimentos(), 13, 2));
         $this->add(219, 220, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? '02' : '01');

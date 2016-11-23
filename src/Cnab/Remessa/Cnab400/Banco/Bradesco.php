@@ -38,6 +38,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     const OCORRENCIA_CANC_RATEIO_CREDITO = '69';
 
     const INSTRUCAO_SEM = '00';
+    const INSTRUCAO_PROTESTAR_XX = '06';
     const INSTRUCAO_NAO_COBRAR_JUROS = '08';
     const INSTRUCAO_NAO_RECEBER_APOS_VENC = '09';
     const INSTRUCAO_MULTA_10_APOS_VENC_4 = '10';
@@ -159,14 +160,14 @@ class Bradesco extends AbstractRemessa implements RemessaContract
         $this->add(105, 105, '');
         $this->add(106, 106, '2'); // 1 = emite aviso, e assume o endereço do Pagador constante do Arquivo-Remessa; 2 = não emite aviso;
         $this->add(107, 108, Util::formatCnab('A', '', 2));
-        $this->add(109, 110, '01'); // REGISTRO
+        $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
         if($boleto->getStatus() == $boleto::STATUS_BAIXA)
         {
-            $this->add(109, 110, '02'); // BAIXA
+            $this->add(109, 110, self::OCORRENCIA_PEDIDO_BAIXA); // BAIXA
         }
         if($boleto->getStatus() == $boleto::STATUS_ALTERACAO)
         {
-            $this->add(109, 110, '06'); // ALTERAR VENCIMENTO
+            $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO); // ALTERAR VENCIMENTO
         }
         $this->add(111, 120, Util::formatCnab('A', $boleto->getNumeroDocumento(), 10));
         $this->add(121, 126, $boleto->getDataVencimento()->format('dmy'));
@@ -176,16 +177,13 @@ class Bradesco extends AbstractRemessa implements RemessaContract
         $this->add(148, 149, $boleto->getEspecieDocCodigo());
         $this->add(150, 150, 'N');
         $this->add(151, 156, $boleto->getDataDocumento()->format('dmy'));
-
-        $this->add(157, 158, '00');
-        $this->add(159, 160, '00');
-
+        $this->add(157, 158, self::INSTRUCAO_SEM);
+        $this->add(159, 160, self::INSTRUCAO_SEM);
         if($boleto->getDiasProtesto() > 0)
         {
-            $this->add(157, 158, '06');
+            $this->add(157, 158, self::INSTRUCAO_PROTESTAR_XX);
             $this->add(159, 160, Util::formatCnab('N', $boleto->getDiasProtesto(), 2));
         }
-
         $juros = 0;
         if($boleto->getJuros() > 0)
         {
@@ -196,7 +194,6 @@ class Bradesco extends AbstractRemessa implements RemessaContract
         $this->add(180, 192, Util::formatCnab('N', 0, 13, 2));
         $this->add(193, 205, Util::formatCnab('N', 0, 13, 2));
         $this->add(206, 218, Util::formatCnab('N', $boleto->getDescontosAbatimentos(), 13, 2));
-
         $this->add(219, 220, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? '02' : '01');
         $this->add(221, 234, Util::formatCnab('9L', $boleto->getPagador()->getDocumento(), 14));
         $this->add(235, 274, Util::formatCnab('X', $boleto->getPagador()->getNome(), 40));
@@ -222,7 +219,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
 
     public function isValid()
     {
-        if($this->getCodigoCliente() == '' || $this->getContaDv() == '' || !parent::isValid())
+        if($this->getCodigoCliente() == '' || $this->getContaDv() == '' || $this->getIdremessa() == '' || !parent::isValid())
         {
             return false;
         }

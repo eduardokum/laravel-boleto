@@ -230,9 +230,9 @@ class Header implements HeaderContract
      *
      * @return Header
      */
-    public function setData($data)
+    public function setData($data, $format = 'dmy')
     {
-        $this->data = trim($data, '0 ') ? Carbon::createFromFormat('dmy', $data) : null;
+        $this->data = trim($data, '0 ') ? Carbon::createFromFormat($format, $data) : null;
 
         return $this;
     }

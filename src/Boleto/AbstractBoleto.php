@@ -487,11 +487,11 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @return string
      */
-    public function getEspecieDocCodigo()
+    public function getEspecieDocCodigo($default = 99)
     {
         return key_exists(strtoupper($this->especieDoc), $this->especiesCodigo)
             ? $this->especiesCodigo[strtoupper($this->getEspecieDoc())]
-            : 99;
+            : $default;
     }
     /**
      * Define o campo Número do documento
@@ -625,7 +625,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getInstrucoes()
     {
-        return $this->instrucoes;
+        return array_slice((array) $this->instrucoes + [null, null, null, null, null, null, null, null], 0, 8);
     }
 
     /**
@@ -670,7 +670,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getDescricaoDemonstrativo()
     {
-        return $this->descricaoDemonstrativo;
+        return array_slice((array) $this->descricaoDemonstrativo + [null, null, null, null, null], 0, 5);
     }
     /**
      * Define o local de pagamento do boleto
@@ -1277,8 +1277,8 @@ abstract class AbstractBoleto implements BoletoContract
             'pagador_documento' => $this->getPagador()->getDocumento(),
             'pagador_endereco1' => $this->getPagador()->getEndereco(),
             'pagador_endereco2' => $this->getPagador()->getCepCidadeUf(),
-            'demonstrativo' => array_slice((array) $this->getDescricaoDemonstrativo() + [null, null, null, null, null], 0, 5), // Max: 5 linhas
-            'instrucoes' => array_slice((array) $this->getInstrucoes() + [null, null, null, null, null, null, null, null], 0, 8), // Max: 8 linhas
+            'demonstrativo' => $this->getDescricaoDemonstrativo(),
+            'instrucoes' => $this->getInstrucoes(),
             'local_pagamento' => $this->getLocalPagamento(),
             'numero_documento' => $this->getNumeroDocumento(),
             'agencia_codigo_beneficiario'=> $this->getAgenciaCodigoBeneficiario(),

@@ -231,14 +231,14 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(96, 101, '000000');
         $this->add(102, 106, Util::formatCnab('X', '', 5));
         $this->add(107, 108, $this->getCarteiraNumero());
-        $this->add(109, 110, '01'); // REGISTRO
+        $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
         if($boleto->getStatus() == $boleto::STATUS_BAIXA)
         {
-            $this->add(109, 110, '02'); // BAIXA
+            $this->add(109, 110, self::OCORRENCIA_PEDIDO_BAIXA); // BAIXA
         }
         if($boleto->getStatus() == $boleto::STATUS_ALTERACAO)
         {
-            $this->add(109, 110, '06'); // ALTERAR VENCIMENTO
+            $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO); // ALTERAR VENCIMENTO
         }
         $this->add(111, 120, Util::formatCnab('X', $boleto->getNumeroDocumento(), 10));
         $this->add(121, 126, $boleto->getDataVencimento()->format('dmy'));
@@ -249,50 +249,48 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(148, 149, $boleto->getEspecieDocCodigo());
         $this->add(150, 150, $boleto->getAceite());
         $this->add(151, 156, $boleto->getDataDocumento()->format('dmy'));
-
-        $this->add(157, 158, '00');
-        $this->add(159, 160, '00');
-
+        $this->add(157, 158, self::INSTRUCAO_SEM);
+        $this->add(159, 160, self::INSTRUCAO_SEM);
+        $diasProtesto = '00';
         switch(sprintf('%02s', $boleto->getDiasProtesto()))
         {
             case '03':
                 //- 03 - Protestar no 3º dia útil após vencido
-                $this->add(157, 158, '03');
+                $this->add(157, 158, self::INSTRUCAO_PROTESTAR_VENC_03);
                 break;
             case '04':
                 //- 04 - Protestar no 4º dia útil após vencido
-                $this->add(157, 158, '04');
+                $this->add(157, 158, self::INSTRUCAO_PROTESTAR_VENC_04);
                 break;
             case '05':
                 //- 05 - Protestar no 5º dia útil após vencido
-                $this->add(157, 158, '05');
-                break;
-            case '10':
-                //- 10 - Protestar no 10º dia corrido após vencido
-                $this->add(157, 158, '10');
+                $this->add(157, 158, self::INSTRUCAO_PROTESTAR_VENC_05);
                 break;
             case '15':
                 //- 15 - Protestar no 15º dia corrido após vencido
-                $this->add(157, 158, '15');
+                $this->add(157, 158, self::INSTRUCAO_PROTESTAR_VENC_15);
                 break;
             case '20':
                 //- 20 - Protestar no 20º dia corrido após vencido
-                $this->add(157, 158, '20');
+                $this->add(157, 158, self::INSTRUCAO_PROTESTAR_VENC_20);
                 break;
             case '25':
                 //- 25 - Protestar no 25º dia corrido após vencido
-                $this->add(157, 158, '25');
+                $this->add(157, 158, self::INSTRUCAO_PROTESTAR_VENC_25);
                 break;
             case '30':
                 //- 30 - Protestar no 30º dia corrido após vencido
-                $this->add(157, 158, '30');
+                $this->add(157, 158, self::INSTRUCAO_PROTESTAR_VENC_30);
                 break;
             case '45':
                 //- 45 - Protestar no 45º dia corrido após vencido
-                $this->add(157, 158, '45');
+                $this->add(157, 158, self::INSTRUCAO_PROTESTAR_VENC_45);
+                break;
+            default:
+                $this->add(157, 158, self::INSTRUCAO_PROTESTAR_VENC_XX);
+                $diasProtesto = Util::formatCnab('9', $boleto->getDiasProtesto(), 2, 0);
                 break;
         }
-
         $juros = 0;
         if($boleto->getJuros() > 0)
         {
@@ -313,7 +311,7 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(335, 349, Util::formatCnab('X', $boleto->getPagador()->getCidade(), 15));
         $this->add(350, 351, Util::formatCnab('X', $boleto->getPagador()->getUf(), 2));
         $this->add(352, 391, Util::formatCnab('X', $boleto->getSacadorAvalista() ? $boleto->getSacadorAvalista()->getNome() : '', 40));
-        $this->add(392, 393, '00');
+        $this->add(392, 393, $diasProtesto);
         $this->add(394, 394, '');
         $this->add(395, 400, Util::formatCnab('N', $this->iRegistros+1, 6));
 
