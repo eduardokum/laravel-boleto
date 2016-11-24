@@ -3,7 +3,6 @@ namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Cnab;
 use Eduardokum\LaravelBoleto\Util;
 
 class Bb extends AbstractBoleto implements BoletoContract
@@ -12,7 +11,7 @@ class Bb extends AbstractBoleto implements BoletoContract
      * Código do banco
      * @var string
      */
-    protected $codigoBanco = Cnab::COD_BANCO_BB;
+    protected $codigoBanco = self::COD_BANCO_BB;
     /**
      * Define as carteiras disponíveis para este banco
      * @var array
@@ -91,7 +90,7 @@ class Bb extends AbstractBoleto implements BoletoContract
         if(
             $this->numero == '' ||
             $this->convenio == '' ||
-            $this->carteir == ''
+            $this->carteira == ''
         )
         {
             return false;

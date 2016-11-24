@@ -3,7 +3,7 @@ namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Cnab;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto;
 use Eduardokum\LaravelBoleto\Util;
 
 class Bradesco  extends AbstractBoleto implements BoletoContract
@@ -12,7 +12,7 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
      * Código do banco
      * @var string
      */
-    protected $codigoBanco = Cnab::COD_BANCO_BRADESCO;
+    protected $codigoBanco = Boleto::COD_BANCO_BRADESCO;
    /**
      * Define as carteiras disponíveis para este banco
      * '09' => Com registro | '06' => Sem Registro | '21' => Com Registro - Pagável somente no Bradesco | '22' => Sem Registro - Pagável somente no Bradesco | '25' => Sem Registro - Emissão na Internet | '26' => Com Registro - Emissão na Internet

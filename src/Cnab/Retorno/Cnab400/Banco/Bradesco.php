@@ -2,6 +2,7 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco;
 
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\AbstractRetorno;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
 use Eduardokum\LaravelBoleto\Util;
 use Illuminate\Support\Collection;
@@ -13,7 +14,7 @@ class Bradesco extends AbstractRetorno implements RetornoCnab400
      * Código do banco
      * @var string
      */
-    protected $codigoBanco = self::COD_BANCO_BRADESCO;
+    protected $codigoBanco = BoletoContract::COD_BANCO_BRADESCO;
 
     /**
      * Array com as ocorrencias do banco;

@@ -19,7 +19,8 @@ Pacote para gerar boletos e remessas
 - Hsbc
 - Itau
 - Santander
-- Sicredi
+- Sicredi ** em processo de homologação **
+- Banrisul ** necessita homologação **
 
 **Remessa**
 - Banco do Brasil [400]
@@ -28,7 +29,8 @@ Pacote para gerar boletos e remessas
 - Hsbc [400]
 - Itau [400]
 - Santander [400
-- Sicredi [400]
+- Sicredi [400]  ** em processo de homologação **
+- Banrisul [400] ** necessita homologação e complemento **
 
 **Retorno**
 - Banco do Brasil  [400]
@@ -37,7 +39,7 @@ Pacote para gerar boletos e remessas
 - Hsbc [400]
 - Itau [400]
 - Santander [400, 240]
-- Sicredi [400]
+- Sicredi [400] ** em testes **
 
 ## Instalação
 Via composer:
