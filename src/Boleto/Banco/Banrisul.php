@@ -41,58 +41,12 @@ class Banrisul extends AbstractBoleto implements BoletoContract
     protected $carteiras = ['1','2','3','4','5','6','7','8','C','D','E','F','H','I','K','M','N','R','S','X'];
 
     /**
-     * Espécie do documento, coódigo para remessa
-     * CD => Cobranca Direta
-     * CE => Cobranca Escritural
-     * CCB => Cobranca Credenciada Banrisul
-     * TT => Titulos de Terceiros
-     * @var string
-     */
-    protected $especiesCodigo = [
-        'DM' => '01',
-        'NP' => '02',
-        'NS' => '03',
-        'CD' => '04',
-        'CE' => '06',
-        'CCB' => '08',
-        'TT' => '09',
-    ];
-
-    /**
-     * Método que valida se o banco tem todos os campos obrigadotorios preenchidos
-     */
-    public function isValid()
-    {
-
-
-        if(
-            $this->numero == '' ||
-            $this->agencia == '' ||
-            $this->conta == '' ||
-            $this->carteira == ''
-        )
-        {
-            return false;
-        }
-        return true;
-    }
-
-    /**
      * Extrai a conta a partir do código do cedente
      * @param $cedente
      * @return string
      */
     public static function extractContaFromCodigo($cedente){
-        return substr(substr(Util::numberFormatGeral($cedente, 15), 6), 0, 7);
-    }
-
-    /**
-     * Extrai o DV da conta a partir do código do cedente
-     * @param $cedente
-     * @return string
-     */
-    public static function extractContaDvFromCodigo($cedente){
-        return substr(substr(Util::numberFormatGeral($cedente, 15), 6), -2);
+        return substr(Util::numberFormatGeral($cedente, 15), 6, 7);
     }
 
     /**
@@ -119,7 +73,7 @@ class Banrisul extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        $nossoNumero = Util::numberFormatGeral($this->getNumero(),8).'-'.$this->duploDigitoBanrisul(Util::numberFormatGeral($this->getNumero(),8));
+        $nossoNumero = Util::numberFormatGeral($this->getNumeroDocumento(),8).'-'.$this->duploDigitoBanrisul(Util::numberFormatGeral($this->getNumeroDocumento(),8));
         return $nossoNumero;
     }
 
@@ -148,7 +102,7 @@ class Banrisul extends AbstractBoleto implements BoletoContract
         $this->campoLivre .= $this->getConta();
 
         // Nosso numero => 33 a 40 | Valor: dinâmico(00000000) ´8´
-        $this->campoLivre .= Util::numberFormatGeral($this->getNumero(),8);
+        $this->campoLivre .= Util::numberFormatGeral($this->getNumeroDocumento(), 8);
 
         // Constante    => 41 - 42 | Valor: 40(Constante)
         $this->campoLivre .= '40';

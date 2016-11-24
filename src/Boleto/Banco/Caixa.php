@@ -29,22 +29,6 @@ class Caixa  extends AbstractBoleto implements BoletoContract
         'LC' => '06',
     ];
     /**
-     * Método que valida se o banco tem todos os campos obrigadotorios preenchidos
-     */
-    public function isValid()
-    {
-        if(
-            $this->numero == '' ||
-            $this->agencia == '' ||
-            $this->conta == '' ||
-            $this->carteira == ''
-        )
-        {
-            return false;
-        }
-        return true;
-    }
-    /**
      * Gera o Nosso Número.
      *
      * @throws Exception
@@ -52,7 +36,7 @@ class Caixa  extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        $numero = $this->getNumero();
+        $numero = $this->getNumeroDocumento();
         $composicao = '1';
         if ($this->getCarteira() == 'SR'){
             $composicao = '2';

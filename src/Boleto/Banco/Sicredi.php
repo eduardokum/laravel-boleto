@@ -58,7 +58,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
     /**
      * Define se possui ou não registro
      *
-     * @param int $posto
+     * @param bool $registro
      * @return $this
      */
     public function setComRegistro(bool $registro)
@@ -69,8 +69,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
     /**
      * Retorna se é com registro.
      *
-     * @param int $posto
-     * @return $this
+     * @return bool
      */
     public function isComRegistro()
     {
@@ -125,14 +124,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
      */
     public function isValid()
     {
-        if(
-            $this->numero == '' ||
-            $this->agencia == '' ||
-            $this->conta == '' ||
-            $this->carteira == '' ||
-            $this->byte == '' ||
-            $this->posto == ''
-        )
+        if($this->byte == '' || $this->posto == '' || !parent::isValid())
         {
             return false;
         }
@@ -159,7 +151,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
         $conta = Util::numberFormatGeral($this->getConta(), 5);
         $ano = $this->getDataDocumento()->format('y');
         $byte = $this->getByte();
-        $numero = Util::numberFormatGeral($this->getNumero(), 5);
+        $numero = Util::numberFormatGeral($this->getNumeroDocumento(), 5);
         $dv = $agencia . $posto . $conta . $ano . $byte . $numero;
         $nossoNumero = $ano . $byte . $numero . Util::modulo11($dv);
         return $nossoNumero;

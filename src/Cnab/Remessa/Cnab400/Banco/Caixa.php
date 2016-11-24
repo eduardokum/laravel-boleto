@@ -114,12 +114,12 @@ class Caixa  extends AbstractRemessa implements RemessaContract
         $this->add(12, 26, Util::formatCnab('X', 'COBRANCA', 15));
         $this->add(27, 30, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(31, 36, Util::formatCnab('9', $this->getCodigoCliente(), 6));
-        $this->add(37, 46, Util::formatCnab('X', '', 10));
+        $this->add(37, 46, '');
         $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(77, 79, $this->getCodigoBanco());
         $this->add(80, 94, Util::formatCnab('X', 'C ECON FEDERAL', 15));
         $this->add(95, 100, date('dmy'));
-        $this->add(101, 389, Util::formatCnab('X', '', 289));
+        $this->add(101, 389, '');
         $this->add(390, 394, Util::formatCnab('9', $this->getIdremessa(), 5));
         $this->add(395, 400, Util::formatCnab('9', 1, 6));
 
@@ -138,10 +138,10 @@ class Caixa  extends AbstractRemessa implements RemessaContract
         $this->add(28, 28, '2'); // ‘1’ = Banco Emite ‘2’ = Cliente Emite
         $this->add(29, 29, '0'); // ‘0’ = Postagem pelo Beneficiário ‘1’ = Pagador via Correio ‘2’ = Beneficiário via Agência CAIXA ‘3’ = Pagador via e-mail
         $this->add(30, 31, '00');
-        $this->add(32, 56, Util::formatCnab('X', '', 25)); // numero de controle
+        $this->add(32, 56, Util::formatCnab('X', $boleto->getNumero(), 25)); // numero de controle
         $this->add(57, 73, Util::formatCnab('9', $boleto->getNossoNumero(), 17));
-        $this->add(74, 76, Util::formatCnab('X', '', 3));
-        $this->add(77, 106, Util::formatCnab('X', '', 30));
+        $this->add(74, 76, '');
+        $this->add(77, 106, '');
         $this->add(107, 108, Util::formatCnab('9', $this->getCarteiraNumero(), 2));
         $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
         if($boleto->getStatus() == $boleto::STATUS_BAIXA)
@@ -180,7 +180,7 @@ class Caixa  extends AbstractRemessa implements RemessaContract
         $this->add(221, 234, Util::formatCnab('9L', $boleto->getPagador()->getDocumento(), 14));
         $this->add(235, 274, Util::formatCnab('X', $boleto->getPagador()->getNome(), 40));
         $this->add(275, 314, Util::formatCnab('X', $boleto->getPagador()->getEndereco(), 40));
-        $this->add(315, 326, Util::formatCnab('X', '', 12));
+        $this->add(315, 326, '');
         $this->add(327, 334, Util::formatCnab('9L', $boleto->getPagador()->getCep(), 8));
         $this->add(335, 349, Util::formatCnab('X', $boleto->getPagador()->getCidade(), 15));
         $this->add(350, 351, Util::formatCnab('X', $boleto->getPagador()->getUf(), 2));

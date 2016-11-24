@@ -1114,7 +1114,20 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @return boolean
      */
-    public abstract function isValid();
+    public function isValid()
+    {
+        if(
+            $this->numeroDocumento == '' ||
+            $this->agencia == '' ||
+            $this->conta == '' ||
+            $this->carteira == ''
+        )
+        {
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Retorna o campo Agência/Beneficiário do boleto
      *

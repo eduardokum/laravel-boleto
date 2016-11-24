@@ -92,7 +92,7 @@ class Santander  extends AbstractBoleto implements BoletoContract
     public function isValid()
     {
         if(
-            $this->numero == '' ||
+            $this->numeroDocumento == '' ||
             $this->conta == '' ||
             $this->carteira == ''
         )
@@ -108,8 +108,8 @@ class Santander  extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        $nossoNumero = Util::numberFormatGeral($this->getNumero(), 12);
-        $nossoNumero .= Util::modulo11($this->getNumero());
+        $nossoNumero = Util::numberFormatGeral($this->getNumeroDocumento(), 12);
+        $nossoNumero .= Util::modulo11($this->getNumeroDocumento());
         return $nossoNumero;
     }
     /**

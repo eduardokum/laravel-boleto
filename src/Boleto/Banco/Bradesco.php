@@ -51,29 +51,13 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
         'DS' => '12',
     ];
     /**
-     * Método que valida se o banco tem todos os campos obrigadotorios preenchidos
-     */
-    public function isValid()
-    {
-        if(
-            $this->numero == '' ||
-            $this->agencia == '' ||
-            $this->conta == '' ||
-            $this->carteira == ''
-        )
-        {
-            return false;
-        }
-        return true;
-    }
-    /**
      * Gera o Nosso Número.
      *
      * @return string
      */
     protected function gerarNossoNumero()
     {
-        return Util::numberFormatGeral($this->getNumero(), 11);
+        return Util::numberFormatGeral($this->getNumeroDocumento(), 11);
     }
     /**
      * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.

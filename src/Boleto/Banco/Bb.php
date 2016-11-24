@@ -88,7 +88,7 @@ class Bb extends AbstractBoleto implements BoletoContract
     public function isValid()
     {
         if(
-            $this->numero == '' ||
+            $this->numeroDocumento == '' ||
             $this->convenio == '' ||
             $this->carteira == ''
         )
@@ -106,7 +106,7 @@ class Bb extends AbstractBoleto implements BoletoContract
     protected function gerarNossoNumero()
     {
         $convenio = $this->getConvenio();
-        $numero_boleto = $this->getNumero();
+        $numero_boleto = $this->getNumeroDocumento();
         $numero = null;
         switch (strlen($convenio)) {
             // Convênio de 4 dígitos, são 11 dígitos no nosso número

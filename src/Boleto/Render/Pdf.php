@@ -225,7 +225,7 @@ class Pdf extends AbstractPdf implements PdfContract
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
         $this->Cell(30, $this->cell, $this->_( $this->boleto[$i]->getDataDocumento()->format('d/m/Y') ), 'LR');
-        $this->Cell(40, $this->cell, $this->_( $this->boleto[$i]->getNumero() ), 'R');
+        $this->Cell(40, $this->cell, $this->_( $this->boleto[$i]->getNumeroDocumento() ), 'R');
         $this->Cell(15, $this->cell, $this->_( $this->boleto[$i]->getEspecieDoc() ), 'R');
         $this->Cell(10, $this->cell, $this->_( $this->boleto[$i]->getAceite() ), 'R');
         $this->Cell(25, $this->cell, $this->_( $this->boleto[$i]->getDataProcessamento()->format('d/m/Y') ), 'R');

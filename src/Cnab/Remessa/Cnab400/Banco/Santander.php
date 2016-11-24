@@ -141,7 +141,7 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(2, 3, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? '02' : '01');
         $this->add(4, 17, Util::formatCnab('9L', $this->getBeneficiario()->getDocumento(), 14));
         $this->add(18, 37, Util::formatCnab('9', $this->getCodigoTransmissao(), 20));
-        $this->add(38, 62, Util::formatCnab('X', '', 25)); // numero de controle
+        $this->add(38, 62, Util::formatCnab('X', $boleto->getNumero(), 25)); // numero de controle
         $this->add(63, 70, Util::numberFormatGeral($boleto->getNumeroDocumento(), 7) . Util::modulo11($boleto->getNumeroDocumento()));
         $this->add(71, 76, '000000');
         $this->add(77, 77, '');
@@ -149,7 +149,7 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(79, 82, Util::formatCnab('9', $boleto->getMulta(), 4, 2));
         $this->add(83, 84, '00');
         $this->add(85, 97, Util::formatCnab('9', 0, 13, 2));
-        $this->add(98, 101, Util::formatCnab('X', '', 4));
+        $this->add(98, 101, '');
         $this->add(102, 107, $boleto->getDataVencimento()->copy()->addDays($boleto->getJurosApos())->format('dmy'));
         $this->add(108, 108, $this->getCarteiraNumero() > 200 ? '1' : '5');
         $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
@@ -198,10 +198,10 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(382, 382, '');
         $this->add(383, 383, 'I');
         $this->add(384, 385, substr($this->getConta(),-2));
-        $this->add(386, 391, Util::formatCnab('N', '', 6));
+        $this->add(386, 391, '');
         $this->add(392, 393, Util::formatCnab('9', $boleto->getDiasProtesto('0'), 2));
         $this->add(394, 394, '');
-        $this->add(395, 400, Util::formatCnab('N', $this->iRegistros+1, 6));
+        $this->add(395, 400, Util::formatCnab('9', $this->iRegistros+1, 6));
 
         return $this;
     }
