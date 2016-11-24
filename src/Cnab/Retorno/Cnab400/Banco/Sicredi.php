@@ -4,7 +4,6 @@ namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\AbstractRetorno;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Detalhe as DetalheContract;
 use Eduardokum\LaravelBoleto\Util;
 
 class Sicredi extends AbstractRetorno implements RetornoCnab400

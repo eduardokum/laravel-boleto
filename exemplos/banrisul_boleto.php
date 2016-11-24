@@ -29,9 +29,9 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Banrisul([
     'numeroDocumento' => 1,
     'pagador' => $pagador,
     'beneficiario' => $beneficiario,
-    'carteira' => 11,
+    'carteira' => 1,
     'agencia' => 1111,
-    'conta' => \Eduardokum\LaravelBoleto\Boleto\Banco\Banrisul::extractContaFromCodigo('111122222222222'), // Gera o número da conta a partir do numero do CEDENTE(dev 11 à 15 dígitos) informado pelo banco
+    'conta' => 22222,
     'descricaoDemonstrativo' => ['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'],
     'instrucoes' =>  ['instrucao 1', 'instrucao 2', 'instrucao 3'],
     'aceite' => 'S',
@@ -40,4 +40,4 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Banrisul([
 
 $pdf = new Eduardokum\LaravelBoleto\Boleto\Render\Pdf();
 $pdf->addBoleto($boleto);
-$pdf->gerarBoleto($pdf::OUTPUT_SAVE, __DIR__ . DIRECTORY_SEPARATOR . 'arquivos' . DIRECTORY_SEPARATOR . 'bb.pdf');
+$pdf->gerarBoleto($pdf::OUTPUT_SAVE, __DIR__ . DIRECTORY_SEPARATOR . 'arquivos' . DIRECTORY_SEPARATOR . 'banrisul.pdf');

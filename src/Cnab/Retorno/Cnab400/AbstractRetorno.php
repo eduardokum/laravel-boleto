@@ -9,6 +9,14 @@ use Illuminate\Support\Collection;
 
 abstract class AbstractRetorno implements \Countable, \SeekableIterator
 {
+
+    /**
+     * Se Cnab ja foi processado
+     *
+     * @var bool
+     */
+    protected $processado = false;
+
     /**
      * Código do banco
      * @var string
@@ -64,6 +72,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
     public function __construct($file) {
 
         $this->_position = 0;
+
         if(is_array($file) && is_string($file[0]) && strlen(rtrim($file[0], "\r\n")) == 400)
         {
             $this->file = $file;
@@ -209,9 +218,15 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
      */
     public function processar() {
 
+        if($this->isProcessado())
+        {
+            return $this;
+        }
+
         if(method_exists($this, 'init')) {
             $this->init();
         }
+
         foreach($this->file as $linha) {
             $inicio = $this->rem(1, 1, $linha);
             if( $inicio == '0' ) {
@@ -231,7 +246,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
             $this->finalize();
         }
 
-        return $this;
+        return $this->setProcessado();
     }
 
     /**
@@ -251,6 +266,26 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
             $array['detalhes']->add($detalhe->toArray());
         }
         return $array;
+    }
+
+    /**
+     * Se esta processado
+     *
+     * @return bool
+     */
+    private function isProcessado()
+    {
+        return $this->processado;
+    }
+    /**
+     * Seta cnab como processado
+     *
+     * @return $this
+     */
+    private function setProcessado()
+    {
+        $this->processado = true;
+        return $this;
     }
 
     /**

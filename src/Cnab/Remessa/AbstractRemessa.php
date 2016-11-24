@@ -290,7 +290,7 @@ abstract class AbstractRemessa
      * @return boolean
      */
     public function isValid(){
-        if($this->agencia == '' || $this->conta == '')
+        if($this->agencia == '' || $this->conta == '' || ! $this->beneficiario instanceof PessoaContract)
         {
             return false;
         }

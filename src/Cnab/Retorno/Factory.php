@@ -61,6 +61,9 @@ class Factory
                 case BoletoContract::COD_BANCO_SICREDI:
                     $instancia = new Cnab400\Banco\Sicredi($file_content);
                     break;
+                case BoletoContract::COD_BANCO_BANRISUL:
+                    $instancia = new Cnab400\Banco\Banrisul($file_content);
+                    break;
                 default:
                     throw new \Exception("Banco: $banco, inválido");
             }
@@ -90,6 +93,8 @@ class Factory
                 case BoletoContract::COD_BANCO_HSBC:
                     break;
                 case BoletoContract::COD_BANCO_SICREDI:
+                    break;
+                case BoletoContract::COD_BANCO_BANRISUL:
                     break;
                 default:
                     throw new \Exception("Banco: $banco, inválido");

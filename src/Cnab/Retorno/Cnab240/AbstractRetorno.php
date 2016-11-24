@@ -13,6 +13,13 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
 {
 
     /**
+     * Se Cnab ja foi processado
+     *
+     * @var bool
+     */
+    protected $processado = false;
+
+    /**
      * Código do banco
      * @var string
      */
@@ -259,6 +266,11 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
 
         foreach ($this->file as $linha) {
 
+            if($this->isProcessado())
+            {
+                return $this;
+            }
+
             $recordType = $this->rem(8, 8, $linha);
 
             if ($recordType == '0') {
@@ -288,7 +300,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
             $this->finalize();
         }
 
-        return $this;
+        return $this->setProcessado();
     }
 
     /**
@@ -326,6 +338,26 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
             $array['detalhes']->add($arr);
         }
         return $array;
+    }
+
+    /**
+     * Se esta processado
+     *
+     * @return bool
+     */
+    private function isProcessado()
+    {
+        return $this->processado;
+    }
+    /**
+     * Seta cnab como processado
+     *
+     * @return $this
+     */
+    private function setProcessado()
+    {
+        $this->processado = true;
+        return $this;
     }
 
     /**

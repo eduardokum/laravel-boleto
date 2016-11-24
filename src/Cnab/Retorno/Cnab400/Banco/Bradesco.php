@@ -5,7 +5,6 @@ use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\AbstractRetorno;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
 use Eduardokum\LaravelBoleto\Util;
-use Illuminate\Support\Collection;
 
 class Bradesco extends AbstractRetorno implements RetornoCnab400
 {

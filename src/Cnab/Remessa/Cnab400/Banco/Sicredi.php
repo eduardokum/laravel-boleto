@@ -9,13 +9,6 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Sicredi extends AbstractRemessa implements RemessaContract
 {
-
-    /**
-     * CNPJ do beneficiário
-     * @var string
-     */
-    private $cnpjBeneficiario;
-
     const ESPECIE_DUPLICATA = 'A';
     const ESPECIE_DUPLICATA_RURAL = 'B';
     const ESPECIE_NOTA_PROMISSORIA = 'C';
@@ -76,7 +69,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(10, 11, '01');
         $this->add(12, 26, Util::formatCnab('X', 'COBRANCA', 15));
         $this->add(27, 31, Util::formatCnab('9', $this->getConta(), 5));
-        $this->add(32, 45, Util::formatCnab('9L', $this->cnpjBeneficiario, 14, 0, 0));
+        $this->add(32, 45, Util::formatCnab('9L', $this->getBeneficiario()->getDocumento(), 14, 0, 0));
         $this->add(46, 76, '');
         $this->add(77, 79, $this->getCodigoBanco());
         $this->add(80, 94, Util::formatCnab('X', 'Sicredi', 15));
@@ -97,11 +90,6 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         }
 
         $this->iniciaDetalhe();
-
-        if($this->iRegistros == 1)
-        {
-            $this->cnpjBeneficiario = Util::formatCnab('9L', $boleto->getBeneficiario()->getDocumento(), 14);
-        }
 
         $this->add(1, 1, '1');
         $this->add(2, 2, 'A');

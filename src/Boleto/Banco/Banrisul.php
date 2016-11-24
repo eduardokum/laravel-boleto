@@ -41,15 +41,6 @@ class Banrisul extends AbstractBoleto implements BoletoContract
     protected $carteiras = ['1','2','3','4','5','6','7','8','C','D','E','F','H','I','K','M','N','R','S','X'];
 
     /**
-     * Extrai a conta a partir do código do cedente
-     * @param $cedente
-     * @return string
-     */
-    public static function extractContaFromCodigo($cedente){
-        return substr(Util::numberFormatGeral($cedente, 15), 6, 7);
-    }
-
-    /**
      * Gera o Duplo digito do nosso npumero
      * @param $nossoNumero
      * @return int

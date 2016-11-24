@@ -880,6 +880,10 @@ final class Util
                 self::adiciona($retorno[0], 32, 45, self::remove(32, 45, $remessa[0]));
                 self::adiciona($retorno[0], 111, 117, self::remove(111, 117, $remessa[0]));
                 break;
+            case Contracts\Boleto\Boleto::COD_BANCO_BANRISUL:
+                self::adiciona($retorno[0], 27, 39, self::remove(18, 30, $remessa[0]));
+                self::adiciona($retorno[0], 47, 76, self::remove(47, 76, $remessa[0]));
+                break;
             default:
                 throw new \Exception("Banco: $banco, inválido");
         }
@@ -931,6 +935,11 @@ final class Util
                     break;
                 case Contracts\Boleto\Boleto::COD_BANCO_SICREDI:
                     self::adiciona($retorno[$i], 48, 62, '00000' . self::remove(48, 56, $detalhe));
+                    break;
+                case Contracts\Boleto\Boleto::COD_BANCO_BANRISUL:
+                    self::adiciona($retorno[$i], 38, 62, self::remove(38, 62, $detalhe));
+                    self::adiciona($retorno[$i], 63, 72, self::remove(111,120, $detalhe));
+                    self::adiciona($retorno[$i], 18, 30, self::remove(18, 30, $detalhe));
                     break;
                 default:
                     throw new \Exception("Banco: $banco, inválido");

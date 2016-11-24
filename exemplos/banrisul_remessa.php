@@ -19,8 +19,8 @@ $pagador = new \Eduardokum\LaravelBoleto\Boleto\Pessoa([
     'documento' => '999.999.999-99',
 ]);
 
-$boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Sicredi([
-    'logo' => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '748.png',
+$boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Banrisul([
+    'logo' => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '041.png',
     'dataVencimento' => new \Carbon\Carbon(),
     'valor' => 100,
     'multa' => false,
@@ -29,23 +29,21 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Sicredi([
     'numeroDocumento' => 1,
     'pagador' => $pagador,
     'beneficiario' => $beneficiario,
-    'carteira' => '1',
-    'byte' => 2,
-    'agencia' => 2606,
-    'posto' => 03,
-    'conta' => 12510,
+    'carteira' => 1,
+    'agencia' => 1111,
+    'conta' => 22222,
     'descricaoDemonstrativo' => ['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'],
     'instrucoes' =>  ['instrucao 1', 'instrucao 2', 'instrucao 3'],
     'aceite' => 'S',
     'especieDoc' => 'DM',
 ]);
 
-$remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Sicredi([
-    'agencia' => 2606,
-    'conta' => 12510,
-    'idremessa' => 1,
+$remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Banrisul([
+    'agencia' => 1111,
+    'conta' => 22222,
+    'codigoCliente' => 11112222222,
     'beneficiario' => $beneficiario,
 ]);
 $remessa->addBoleto($boleto);
 
-echo $remessa->save(__DIR__ . DIRECTORY_SEPARATOR . 'arquivos' . DIRECTORY_SEPARATOR . 'sicredi.txt');
+echo $remessa->save(__DIR__ . DIRECTORY_SEPARATOR . 'arquivos' . DIRECTORY_SEPARATOR . 'banrisul.txt');
