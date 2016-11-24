@@ -1,6 +1,6 @@
 <?php
 
-namespace PhalconBoleto\Boleto\Banco;
+namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
@@ -78,12 +78,48 @@ class Banrisul extends AbstractBoleto implements BoletoContract
     }
 
     /**
+     * Extrai a conta a partir do código do cedente
+     * @param $cedente
+     * @return string
+     */
+    public static function extractContaFromCodigo($cedente){
+        return substr(substr(Util::numberFormatGeral($cedente, 15), 6), 0, 7);
+    }
+
+    /**
+     * Extrai o DV da conta a partir do código do cedente
+     * @param $cedente
+     * @return string
+     */
+    public static function extractContaDvFromCodigo($cedente){
+        return substr(substr(Util::numberFormatGeral($cedente, 15), 6), -2);
+    }
+
+    /**
+     * Gera o Duplo digito do nosso npumero
+     * @param $nossoNumero
+     * @return int
+     */
+    private function duploDigitoBanrisul($nossoNumero){
+        $dv1 = Util::modulo10($nossoNumero);
+        $dv2 = Util::modulo11($nossoNumero.$dv1, 2, 7, 0, 10);
+        if($dv2==10){
+            $dv1++;
+            $dv2 = Util::modulo11($nossoNumero.$dv1, 2, 7, 0, 10);
+            if($dv1 > 9){
+                $dv1 = 0;
+            }
+        }
+        return $dv1.$dv2;
+    }
+
+    /**
      * Gerar nosso número
      * @return string
      */
     protected function gerarNossoNumero()
     {
-        $nossoNumero = Util::numberFormatGeral($this->getNumero(),8).'-'.Util::duploDigitoBanrisul(Util::numberFormatGeral($this->getNumero(),8));
+        $nossoNumero = Util::numberFormatGeral($this->getNumero(),8).'-'.$this->duploDigitoBanrisul(Util::numberFormatGeral($this->getNumero(),8));
         return $nossoNumero;
     }
 
@@ -118,7 +154,7 @@ class Banrisul extends AbstractBoleto implements BoletoContract
         $this->campoLivre .= '40';
 
         // Duplo digito => 43 - 44 | Valor: calculado(00) ´2´
-        $this->campoLivre .= Util::duploDigitoBanrisul(Util::onlyNumbers($this->campoLivre));
+        $this->campoLivre .= $this->duploDigitoBanrisul(Util::onlyNumbers($this->campoLivre));
         return $this->campoLivre;
     }
 }

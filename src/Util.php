@@ -787,43 +787,6 @@ final class Util
     }
 
     /**
-     * @param $nossoNumero
-     *
-     * @return int
-     */
-    public static function duploDigitoBanrisul($nossoNumero){
-        $dv1 = self::modulo10($nossoNumero);
-        $dv2 = self::modulo11($nossoNumero.$dv1, 2, 7, 0, 10);
-        if($dv2==10){
-            $dv1++;
-            $dv2 = self::modulo11($nossoNumero.$dv1, 2, 7, 0, 10);
-            if($dv1 > 9){
-                $dv1 = 0;
-            }
-        }
-        return $dv1.$dv2;
-    }
-
-    /**
-     * Gera o numero da conta banrisl
-     */
-    public static function contaBanrisul($cedente, $type='conta'){
-
-        $string = Util::numberFormatGeral($cedente, 15);
-        $string = substr($string, 6);
-
-        switch ($type){
-            case 'conta':
-                $string = substr($string, 0, 7);
-                break;
-            case 'contaDv':
-                $string = substr($string, -2);
-                break;
-        }
-        return $string;
-    }
-
-    /**
      * @param array $a
      *
      * @return string
