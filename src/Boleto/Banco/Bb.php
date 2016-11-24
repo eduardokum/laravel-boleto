@@ -90,7 +90,7 @@ class Bb extends AbstractBoleto implements BoletoContract
         if(
             $this->numero == '' ||
             $this->convenio == '' ||
-            $this->carteir == ''
+            $this->carteira == ''
         )
         {
             return false;
