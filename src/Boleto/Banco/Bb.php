@@ -16,7 +16,7 @@ class Bb extends AbstractBoleto implements BoletoContract
      * Define as carteiras disponíveis para este banco
      * @var array
      */
-    protected $carteiras = array('11','12','15','16','17','18','31','51');
+    protected $carteiras = array('11', '12', '15', '16', '17', '18', '31', '51');
     /**
      * Espécie do documento, coódigo para remessa
      * @var string
@@ -87,7 +87,7 @@ class Bb extends AbstractBoleto implements BoletoContract
      */
     public function isValid()
     {
-        if(
+        if (
             $this->numeroDocumento == '' ||
             $this->convenio == '' ||
             $this->carteira == ''
@@ -112,7 +112,7 @@ class Bb extends AbstractBoleto implements BoletoContract
                 $numero = Util::numberFormatGeral($convenio, 4) . Util::numberFormatGeral($numero_boleto, 7);
                 break;
             case 6:
-                if (in_array($this->getCarteira(),['16','18']) && $this->getVariacaoCarteira() == 17) {
+                if (in_array($this->getCarteira(), ['16', '18']) && $this->getVariacaoCarteira() == 17) {
                     $numero = Util::numberFormatGeral($numero_boleto, 17);
                 } else {
                     $numero = Util::numberFormatGeral($convenio, 6) . Util::numberFormatGeral($numero_boleto, 5);
@@ -150,7 +150,7 @@ class Bb extends AbstractBoleto implements BoletoContract
         $length = strlen($this->getConvenio());
         $nossoNumero = $this->gerarNossoNumero();
         if (strlen($this->getNumero()) > 10) {
-            if ($length == 6 && in_array($this->getCarteira(),['16','18']) && Util::numberFormatGeral($this->getVariacaoCarteira(), 3) == '017') {
+            if ($length == 6 && in_array($this->getCarteira(), ['16', '18']) && Util::numberFormatGeral($this->getVariacaoCarteira(), 3) == '017') {
                 return $this->campoLivre = Util::numberFormatGeral($this->getConvenio(), 6) . $nossoNumero . '21';
             } else {
                 throw new \Exception('Só é possível criar um boleto com mais de 10 dígitos no nosso número quando a carteira é 21 e o convênio possuir 6 dígitos.');
@@ -159,9 +159,9 @@ class Bb extends AbstractBoleto implements BoletoContract
         switch ($length) {
             case 4:
             case 6:
-                return $this->campoLivre =  $nossoNumero . Util::numberFormatGeral($this->getAgencia(), 4) . Util::numberFormatGeral($this->getConta(), 8) . Util::numberFormatGeral($this->getCarteira(), 2);
+                return $this->campoLivre = $nossoNumero . Util::numberFormatGeral($this->getAgencia(), 4) . Util::numberFormatGeral($this->getConta(), 8) . Util::numberFormatGeral($this->getCarteira(), 2);
             case 7:
-                return $this->campoLivre =  '000000' . $nossoNumero . Util::numberFormatGeral($this->getCarteira(), 2);
+                return $this->campoLivre = '000000' . $nossoNumero . Util::numberFormatGeral($this->getCarteira(), 2);
         }
         throw new \Exception('O código do convênio precisa ter 4, 6 ou 7 dígitos!');
     }

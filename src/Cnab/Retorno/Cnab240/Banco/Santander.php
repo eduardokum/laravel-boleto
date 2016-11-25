@@ -232,7 +232,7 @@ class Santander extends AbstractRetorno implements RetornoCnab240
                     ->setNumeroInscricaoSacado($this->rem(129, 143, $detalhe))
                     ->setNomeSacado($this->rem(144, 183, $detalhe))
                     ->setContaCobranca($this->rem(184, 193, $detalhe))
-                    ->setValorTarifa(Util::nFloat($this->rem(194, 208, $detalhe) / 100, 2, false))
+                    ->setValorTarifa(Util::nFloat($this->rem(194, 208, $detalhe)/100, 2, false))
                     ->setIdentificacaoRejeicao($this->rem(209, 218, $detalhe))
                     ->setNumeroDocumento($this->rem(55, 69, $detalhe));
 
@@ -318,7 +318,7 @@ class Santander extends AbstractRetorno implements RetornoCnab240
     }
 
     /**
-     * @param array $trailerLote
+     * @param array $trailer
      *
      * @return boolean
      */
@@ -327,15 +327,15 @@ class Santander extends AbstractRetorno implements RetornoCnab240
         $this->getTrailerLote()
             ->setLoteServico($this->rem(4, 7, $trailer))
             ->setTipoRegistro($this->rem(8, 8, $trailer))
-            ->setQtdRegistroLote((int)$this->rem(18, 23, $trailer))
-            ->setQtdTitulosCobrancaSimples((int)$this->rem(24, 29, $trailer))
-            ->setValorTotalTitulosCobrancaSimples(Util::nFloat($this->rem(30, 46, $trailer) / 100, 2, false))
-            ->setQtdTitulosCobrancaVinculada((int)$this->rem(47, 52, $trailer))
-            ->setValorTotalTitulosCobrancaVinculada(Util::nFloat($this->rem(53, 69, $trailer) / 100, 2, false))
-            ->setQtdTitulosCobrancaCaucionada((int)$this->rem(70, 75, $trailer))
-            ->setValorTotalTitulosCobrancaCaucionada(Util::nFloat($this->rem(76, 92, $trailer) / 100, 2, false))
-            ->setQtdTitulosCobrancaDescontada((int)$this->rem(93, 98, $trailer))
-            ->setValorTotalTitulosCobrancaDescontada(Util::nFloat($this->rem(99, 115, $trailer) / 100, 2, false))
+            ->setQtdRegistroLote((int) $this->rem(18, 23, $trailer))
+            ->setQtdTitulosCobrancaSimples((int) $this->rem(24, 29, $trailer))
+            ->setValorTotalTitulosCobrancaSimples(Util::nFloat($this->rem(30, 46, $trailer)/100, 2, false))
+            ->setQtdTitulosCobrancaVinculada((int) $this->rem(47, 52, $trailer))
+            ->setValorTotalTitulosCobrancaVinculada(Util::nFloat($this->rem(53, 69, $trailer)/100, 2, false))
+            ->setQtdTitulosCobrancaCaucionada((int) $this->rem(70, 75, $trailer))
+            ->setValorTotalTitulosCobrancaCaucionada(Util::nFloat($this->rem(76, 92, $trailer)/100, 2, false))
+            ->setQtdTitulosCobrancaDescontada((int) $this->rem(93, 98, $trailer))
+            ->setValorTotalTitulosCobrancaDescontada(Util::nFloat($this->rem(99, 115, $trailer)/100, 2, false))
             ->setNumeroAvisoLancamento($this->rem(116, 123, $trailer));
 
         return true;
@@ -351,8 +351,8 @@ class Santander extends AbstractRetorno implements RetornoCnab240
         $this->getTrailer()
             ->setNumeroLoteRemessa($this->rem(4, 7, $trailer))
             ->setTipoRegistro($this->rem(8, 8, $trailer))
-            ->setQtdLotesArquivo((int)$this->rem(18, 23, $trailer))
-            ->setQtdRegistroArquivo((int)$this->rem(24, 29, $trailer));
+            ->setQtdLotesArquivo((int) $this->rem(18, 23, $trailer))
+            ->setQtdRegistroArquivo((int) $this->rem(24, 29, $trailer));
 
         return true;
     }

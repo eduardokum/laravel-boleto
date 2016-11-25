@@ -81,7 +81,7 @@ class Hsbc  extends AbstractBoleto implements BoletoContract
 
         if($this->getContaDv() !== null && strlen($this->getContaDv()) == 1)
         {
-              $conta = substr($this->getConta(), 0, -1) . '-' .substr($this->getConta(), -1).$this->getContaDv();
+                $conta = substr($this->getConta(), 0, -1) . '-' .substr($this->getConta(), -1).$this->getContaDv();
         }
         elseif($this->getContaDv() !== null && strlen($this->getContaDv()) == 2)
         {
@@ -99,7 +99,7 @@ class Hsbc  extends AbstractBoleto implements BoletoContract
      */
     public function isValid()
     {
-        if($this->range == '' || $this->contaDv == '' || !parent::isValid())
+        if ($this->range == '' || $this->contaDv == '' || !parent::isValid())
         {
             return false;
         }
@@ -114,8 +114,8 @@ class Hsbc  extends AbstractBoleto implements BoletoContract
     {
         $range = Util::numberFormatGeral($this->getRange(), 5);
         $numero = Util::numberFormatGeral($this->getNumeroDocumento(), 5);
-        $dv = Util::modulo11($range.$numero, 2, 7);
-        return $range.$numero.$dv;
+        $dv = Util::modulo11($range . $numero, 2, 7);
+        return $range . $numero . $dv;
     }
     /**
      * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
@@ -139,10 +139,10 @@ class Hsbc  extends AbstractBoleto implements BoletoContract
 
         $ag = Util::numberFormatGeral($this->getAgencia(), 4);
         $cc = Util::numberFormatGeral($this->getConta(), 6);
-        $agCc = $ag.$cc . ($this->getContaDv() ? $this->getContaDv() : Util::modulo11($ag.$cc));
+        $agCc = $ag . $cc . ($this->getContaDv() ? $this->getContaDv() : Util::modulo11($ag . $cc));
 
         return $this->campoLivre = $this->getNossoNumero() .
-            $agCc.
+            $agCc .
             '00' . // Codigo da carteira
             '1'; // Codigo do aplicativo
     }

@@ -68,7 +68,7 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
     {
         return Util::numberFormatGeral($this->getCarteira(), 2)
         . ' / ' . $this->getNossoNumero()
-        . '-' . Util::modulo11($this->getCarteira().$this->getNossoNumero(), 2, 7, 0, 'P');
+        . '-' . Util::modulo11($this->getCarteira() . $this->getNossoNumero(), 2, 7, 0, 'P');
     }
     /**
      * Método para gerar o código da posição de 20 a 44

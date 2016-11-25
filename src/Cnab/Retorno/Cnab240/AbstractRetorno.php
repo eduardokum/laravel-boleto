@@ -1,13 +1,9 @@
 <?php
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
-use Eduardokum\LaravelBoleto\Util;
 use \Eduardokum\LaravelBoleto\Cnab\Retorno\AbstractRetorno as AbstractRetornoGeneric;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Header as HeaderContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\HeaderLote as HeaderLoteContract;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Detalhe as DetalheContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\TrailerLote as TrailerLoteContract;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Trailer as TrailerContract;
 use Illuminate\Support\Collection;
 
 /**
@@ -115,7 +111,7 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
      */
     public function processar()
     {
-        if($this->isProcessado())
+        if ($this->isProcessado())
         {
             return $this;
         }

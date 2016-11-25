@@ -64,7 +64,7 @@ class Factory
             BoletoContract::COD_BANCO_BANRISUL => 'Banco\\Banrisul',
         ];
 
-        if(array_key_exists($banco, $aBancos)) {
+        if (array_key_exists($banco, $aBancos)) {
             $bancoClass = $namespace . $aBancos[$banco];
             return new $bancoClass($file_content);
         }

@@ -206,7 +206,7 @@ class Trailer implements TrailerContract
     {
         $vars = array_keys(get_class_vars(self::class));
         $aRet = [];
-        foreach($vars as $var)
+        foreach ($vars as $var)
         {
             $methodName = 'get' . ucfirst($var);
             $aRet[$var] = method_exists($this, $methodName)
@@ -224,7 +224,7 @@ class Trailer implements TrailerContract
      */
     public function __set($name, $value)
     {
-        if(property_exists($this, $name))
+        if (property_exists($this, $name))
         {
             $this->$name = $value;
         }
@@ -237,7 +237,7 @@ class Trailer implements TrailerContract
      */
     public function __get($name)
     {
-        if(property_exists($this, $name))
+        if (property_exists($this, $name))
         {
             $method = 'get' . ucwords($name);
             return $this->{$method}();

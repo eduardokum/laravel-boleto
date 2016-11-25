@@ -57,7 +57,7 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
      */
     protected function incrementDetalhe()
     {
-        $this->increment ++;
+        $this->increment++;
         $this->detalhe[$this->increment] = new Detalhe();
     }
 
@@ -113,7 +113,7 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
             'trailer' => $this->trailer->toArray(),
             'detalhes' => new Collection()
         ];
-        foreach($this->detalhe as $detalhe)
+        foreach ($this->detalhe as $detalhe)
         {
             $array['detalhes']->add($detalhe->toArray());
         }

@@ -9,10 +9,9 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco;
 
 use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 use Eduardokum\LaravelBoleto\Util;
-use phpDocumentor\Reflection\Types\Integer;
 
 class Santander extends AbstractRemessa implements RemessaContract
 {
@@ -97,6 +96,9 @@ class Santander extends AbstractRemessa implements RemessaContract
         return $this;
     }
 
+    /**
+     * @param integer $nSequencialLote
+     */
     protected function segmentoP($nSequencialLote, BoletoContract $boleto)
     {
         $this->iniciaDetalhe();
@@ -135,7 +137,7 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(110, 117, date('dmY')); //Data da emissão do título
 
         $juros = 0;
-        if($boleto->getJuros() > 0)
+        if ($boleto->getJuros() > 0)
         {
             $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
         }
@@ -159,6 +161,9 @@ class Santander extends AbstractRemessa implements RemessaContract
         return $this;
     }
 
+    /**
+     * @param integer $nSequencialLote
+     */
     public function segmentoQ($nSequencialLote, BoletoContract $boleto)
     {
         $this->qtyRegistrosLote = $nSequencialLote;
@@ -203,7 +208,7 @@ class Santander extends AbstractRemessa implements RemessaContract
 
     /**
      * Retorna o codigo do cliente.
-     * @return mixed
+     * @return string
      */
     public function getCodigoCliente()
     {
@@ -213,7 +218,7 @@ class Santander extends AbstractRemessa implements RemessaContract
     /**
      * Seta o codigo do cliente.
      * @param mixed $codigoCliente
-     * @return Bradesco
+     * @return Santander
      */
     public function setCodigoCliente($codigoCliente)
     {
@@ -253,7 +258,7 @@ class Santander extends AbstractRemessa implements RemessaContract
 
     /**
      * Retorna o codigo de transmissão.
-     * @return mixed
+     * @return string
      */
     public function getCodigoTransmissao()
     {

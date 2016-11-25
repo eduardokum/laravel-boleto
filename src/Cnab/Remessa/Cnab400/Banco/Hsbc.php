@@ -2,8 +2,8 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
 use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 use Eduardokum\LaravelBoleto\Util;
 
 class Hsbc extends AbstractRemessa implements RemessaContract
@@ -112,7 +112,7 @@ class Hsbc extends AbstractRemessa implements RemessaContract
         $this->add(28, 31, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(32, 33, 55);
         $this->add(34, 37, Util::formatCnab('9', $this->getConta(), 4));
-        $this->add(38, 43, Util::formatCnab('9',$this->getConta(), 6));
+        $this->add(38, 43, Util::formatCnab('9', $this->getConta(), 6));
         $this->add(44, 44, Util::formatCnab('9', $this->getContaDv(), 1));
         $this->add(45, 46, '');
         $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
@@ -151,11 +151,11 @@ class Hsbc extends AbstractRemessa implements RemessaContract
         $this->add(97, 107, Util::formatCnab('9', 0, 11, 2));
         $this->add(108, 108, $this->getCarteiraNumero());
         $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
-        if($boleto->getStatus() == $boleto::STATUS_BAIXA)
+        if ($boleto->getStatus() == $boleto::STATUS_BAIXA)
         {
             $this->add(109, 110, self::OCORRENCIA_PEDIDO_BAIXA); // BAIXA
         }
-        if($boleto->getStatus() == $boleto::STATUS_ALTERACAO)
+        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO)
         {
             $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO); // ALTERAR VENCIMENTO
         }
@@ -169,11 +169,11 @@ class Hsbc extends AbstractRemessa implements RemessaContract
         $this->add(151, 156, $boleto->getDataDocumento()->format('dmy'));
         $this->add(157, 158, self::INSTRUCAO_SEM);
         $this->add(159, 160, self::INSTRUCAO_SEM);
-        if($boleto->getDiasProtesto() > 0)
+        if ($boleto->getDiasProtesto() > 0)
         {
             $this->add(157, 158, self::INSTRUCAO_PROTESTAR_XX_VENC_UTEIS);
         }
-        if($boleto->getMulta() > 0)
+        if ($boleto->getMulta() > 0)
         {
             $this->add(159, 160, self::INSTRUCAO_MULTA_PERC_XX_APOS_VENC_UTEIS);
             $this->add(206, 211, '');
@@ -185,7 +185,7 @@ class Hsbc extends AbstractRemessa implements RemessaContract
             $this->add(206, 218, Util::formatCnab('9', $boleto->getDescontosAbatimentos(), 13, 2));
         }
         $juros = 0;
-        if($boleto->getJuros() > 0)
+        if ($boleto->getJuros() > 0)
         {
             $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
         }
@@ -206,14 +206,14 @@ class Hsbc extends AbstractRemessa implements RemessaContract
         $this->add(391, 391, '');
         $this->add(392, 393, Util::formatCnab('9', $boleto->getDiasProtesto('  '), 2));
         $this->add(394, 394, $boleto->getMoeda());
-        $this->add(395, 400, Util::formatCnab('9', $this->iRegistros+1, 6));
+        $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
     }
 
     protected function trailer()
     {
         $this->iniciaTrailer();
 
-        $this->add(1, 1, '9' );
+        $this->add(1, 1, '9');
         $this->add(2, 394, '');
         $this->add(395, 400, Util::formatCnab('9', $this->getCount(), 6));
 
@@ -222,7 +222,7 @@ class Hsbc extends AbstractRemessa implements RemessaContract
 
     public function isValid()
     {
-        if( $this->getContaDv() == '' || !parent::isValid())
+        if ($this->getContaDv() == '' || !parent::isValid())
         {
             return false;
         }

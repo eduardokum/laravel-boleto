@@ -82,7 +82,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
      *
      * @var array
      */
-    protected $carteiras = ['1','2','3','4','5','6','7','8','C','D','E','F','H','I','K','M','9','R','S','X'];
+    protected $carteiras = ['1', '2', '3', '4', '5', '6', '7', '8', 'C', 'D', 'E', 'F', 'H', 'I', 'K', 'M', '9', 'R', 'S', 'X'];
 
     /**
      * Caracter de fim de linha
@@ -196,7 +196,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $cod_servico = '';
         $tipo_processamento = '';
         $cod_cliente = '';
-        if($this->isCarteiraRSX())
+        if ($this->isCarteiraRSX())
         {
             $cod_servico = $this->isTeste() ? '8808' : '0808';
             $tipo_processamento = $this->isTeste() ? 'X' : 'P';
@@ -212,7 +212,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(77, 79, $this->getCodigoBanco());
         $this->add(80, 87, Util::formatCnab('X', 'BANRISUL', 8));
-        $this->add(88, 94,'');
+        $this->add(88, 94, '');
         $this->add(95, 100, date('dmy'));
         $this->add(101, 109, '');
         $this->add(110, 113, Util::formatCnab('9', $cod_servico, 4));
@@ -245,11 +245,11 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(105, 107, '');
         $this->add(108, 108, Util::formatCnab('X', $boleto->getCarteira(), 1));
         $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
-        if($boleto->getStatus() == $boleto::STATUS_BAIXA)
+        if ($boleto->getStatus() == $boleto::STATUS_BAIXA)
         {
             $this->add(109, 110, self::OCORRENCIA_PEDIDO_BAIXA); // BAIXA
         }
-        if($boleto->getStatus() == $boleto::STATUS_ALTERACAO)
+        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO)
         {
             $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO); // ALTERAR VENCIMENTO
         }
@@ -263,16 +263,16 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(151, 156, $boleto->getDataDocumento()->format('dmy'));
         $this->add(157, 158, self::INSTRUCAO_SEM);
         $this->add(159, 160, self::INSTRUCAO_SEM);
-        if($boleto->getDiasProtesto() > 0)
+        if ($boleto->getDiasProtesto() > 0)
         {
             $this->add(157, 158, self::INSTRUCAO_PROTESTAR_XX);
         }
-        if($boleto->getMulta() > 0)
+        if ($boleto->getMulta() > 0)
         {
             $this->add(159, 160, self::INSTRUCAO_MULTA_XX);
         }
         $juros = 0;
-        if($boleto->getJuros() > 0)
+        if ($boleto->getJuros() > 0)
         {
             $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
         }
@@ -298,7 +298,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(358, 369, '00');
         $this->add(370, 371, Util::formatCnab('9', $boleto->getDiasProtesto(), 2));
         $this->add(372, 394, '');
-        $this->add(395, 400, Util::formatCnab('9', $this->iRegistros+1, 6));
+        $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
 
         $this->valorTotal += $boleto->getValor();
 
@@ -326,7 +326,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
      */
     public function isValid()
     {
-        if($this->getCodigoCliente() == ''
+        if ($this->getCodigoCliente() == ''
             || ($this->isCarteiraRSX() && $this->getCodigoCliente() == '')
             || !parent::isValid())
         {

@@ -38,24 +38,24 @@ class Banrisul extends AbstractBoleto implements BoletoContract
      *
      * @var array
      */
-    protected $carteiras = ['1','2','3','4','5','6','7','8','C','D','E','F','H','I','K','M','N','R','S','X'];
+    protected $carteiras = ['1', '2', '3', '4', '5', '6', '7', '8', 'C', 'D', 'E', 'F', 'H', 'I', 'K', 'M', 'N', 'R', 'S', 'X'];
 
     /**
      * Gera o Duplo digito do nosso npumero
      * @param $nossoNumero
      * @return int
      */
-    private function duploDigitoBanrisul($nossoNumero){
+    private function duploDigitoBanrisul($nossoNumero) {
         $dv1 = Util::modulo10($nossoNumero);
-        $dv2 = Util::modulo11($nossoNumero.$dv1, 2, 7, 0, 10);
-        if($dv2==10){
+        $dv2 = Util::modulo11($nossoNumero . $dv1, 2, 7, 0, 10);
+        if ($dv2 == 10) {
             $dv1++;
-            $dv2 = Util::modulo11($nossoNumero.$dv1, 2, 7, 0, 10);
-            if($dv1 > 9){
+            $dv2 = Util::modulo11($nossoNumero . $dv1, 2, 7, 0, 10);
+            if ($dv1 > 9) {
                 $dv1 = 0;
             }
         }
-        return $dv1.$dv2;
+        return $dv1 . $dv2;
     }
 
     /**
@@ -64,7 +64,7 @@ class Banrisul extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        $nossoNumero = Util::numberFormatGeral($this->getNumeroDocumento(),8).'-'.$this->duploDigitoBanrisul(Util::numberFormatGeral($this->getNumeroDocumento(),8));
+        $nossoNumero = Util::numberFormatGeral($this->getNumeroDocumento(), 8) . '-' . $this->duploDigitoBanrisul(Util::numberFormatGeral($this->getNumeroDocumento(), 8));
         return $nossoNumero;
     }
 

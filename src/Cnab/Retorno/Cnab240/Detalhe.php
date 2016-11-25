@@ -114,7 +114,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getValorPagoSacado()
     {
@@ -194,7 +194,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getCodigoOcorrencia()
     {
@@ -213,7 +213,7 @@ class Detalhe implements DetalheContract
 
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getOcorrencia()
     {
@@ -221,7 +221,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @param mixed $ocorrencia
+     * @param string $ocorrencia
      *
      * @return Detalhe
      */

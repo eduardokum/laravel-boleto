@@ -2,8 +2,8 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
 use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 use Eduardokum\LaravelBoleto\Util;
 
 class Itau extends AbstractRemessa implements RemessaContract
@@ -119,7 +119,7 @@ class Itau extends AbstractRemessa implements RemessaContract
      * Define as carteiras disponíveis para cada banco
      * @var array
      */
-    protected $carteiras = ['112','115','188','109','121','175'];
+    protected $carteiras = ['112', '115', '188', '109', '121', '175'];
 
     /**
      * Caracter de fim de linha
@@ -146,7 +146,7 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(12, 26, Util::formatCnab('X', 'COBRANCA', 15));
         $this->add(27, 30, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(31, 32, '00');
-        $this->add(33, 37, Util::formatCnab('9', $this->getConta(),5));
+        $this->add(33, 37, Util::formatCnab('9', $this->getConta(), 5));
         $this->add(38, 38, $this->getContaDv());
         $this->add(39, 46, '');
         $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
@@ -225,7 +225,7 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(386, 391, $boleto->getDataVencimento()->copy()->addDays($boleto->getJurosApos())->format('dmy'));
         $this->add(392, 393, Util::formatCnab('9', $boleto->getDiasProtesto('0'), 2));
         $this->add(394, 394, '');
-        $this->add(395, 400, Util::formatCnab('9', $this->iRegistros+1, 6));
+        $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
 
         return $this;
     }
@@ -243,7 +243,7 @@ class Itau extends AbstractRemessa implements RemessaContract
 
     public function isValid()
     {
-        if( $this->getContaDv() == '' || !parent::isValid())
+        if ($this->getContaDv() == '' || !parent::isValid())
         {
             return false;
         }
