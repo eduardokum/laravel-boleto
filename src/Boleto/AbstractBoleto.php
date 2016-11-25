@@ -1176,7 +1176,6 @@ abstract class AbstractBoleto implements BoletoContract
             . Util::numberFormatValue($this->getValor(), 10, 0)
             . $this->getCampoLivre();
 
-
         $resto = Util::modulo11($codigo, 2, 9, false);
         $dv = (in_array($resto, [0,10,11])) ? 1 : $resto;
 

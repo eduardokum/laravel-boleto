@@ -101,7 +101,7 @@ class DetalheSegmentoY implements DetalheSegmentoYContract
     }
 
     /**
-     * @return array
+     * @return string
      */
     public function getIdentificacaoCheque()
     {
@@ -109,7 +109,7 @@ class DetalheSegmentoY implements DetalheSegmentoYContract
     }
 
     /**
-     * @param array $identificacaoCheque
+     * @param string $identificacaoCheque
      */
     public function setIdentificacaoCheque($identificacaoCheque)
     {

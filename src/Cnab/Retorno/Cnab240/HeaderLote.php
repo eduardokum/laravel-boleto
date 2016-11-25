@@ -68,7 +68,7 @@ class HeaderLote implements HeaderLoteContract
     protected $numeroRetorno;
 
     /**
-     * @var string
+     * @var Carbon
      */
     protected $dataGravacao;
 

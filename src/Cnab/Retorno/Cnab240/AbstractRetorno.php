@@ -121,7 +121,7 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
         }
 
         if (method_exists($this, 'init')) {
-            $this->init();
+            call_user_func([$this, 'init']);
         }
 
         foreach ($this->file as $linha) {
@@ -152,7 +152,7 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
         }
 
         if (method_exists($this, 'finalize')) {
-            $this->finalize();
+            call_user_func([$this, 'finalize']);
         }
 
         return $this->setProcessado();

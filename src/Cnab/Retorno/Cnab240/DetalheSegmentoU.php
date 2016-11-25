@@ -76,12 +76,12 @@ class DetalheSegmentoU implements DetalheSegmentoUContract
     private $valorOutrosCreditos;
 
     /**
-     * @var string
+     * @var Carbon
      */
     private $dataOcorrencia;
 
     /**
-     * @var string
+     * @var Carbon
      */
     private $dataCredito;
 
@@ -91,7 +91,7 @@ class DetalheSegmentoU implements DetalheSegmentoUContract
     private $codigoOcorrenciaSacado;
 
     /**
-     * @var string
+     * @var Carbon
      */
     private $dataOcorrenciaSacado;
 

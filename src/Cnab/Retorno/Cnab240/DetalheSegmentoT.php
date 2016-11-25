@@ -68,7 +68,7 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     private $seuNumero;
 
     /**
-     * @var string
+     * @var Carbon
      */
     private $dataVencimento;
 

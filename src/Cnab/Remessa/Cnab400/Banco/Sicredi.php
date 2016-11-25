@@ -110,7 +110,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(75, 76, '');
         $this->add(77, 78, '');
         $this->add(79, 82, '');
-        $this->add(83, 92, '');
+        $this->add(83, 92, Util::formatCnab('9', 0, 10, 2));
         $this->add(93, 96, Util::formatCnab('9', $boleto->getMulta(), 4, 2));
         $this->add(97, 108, '');
         $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO

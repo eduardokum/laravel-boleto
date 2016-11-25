@@ -45,6 +45,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
      * @var array
      */
     protected $file;
+
     /**
      * @var Header240Contract|Header400Contract
      */

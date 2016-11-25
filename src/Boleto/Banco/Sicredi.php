@@ -180,11 +180,14 @@ class Sicredi extends AbstractBoleto implements BoletoContract
         $tipo_cobranca = $this->isComRegistro() ? '1' : '3';
         $carteira = Util::numberFormatGeral($this->getCarteira(), 1);
         $nosso_numero = $this->getNossoNumero();
-        $agencia = Util::numberFormatGeral($this->getCarteira(), 4);
+        $agencia = Util::numberFormatGeral($this->getAgencia(), 4);
         $posto = Util::numberFormatGeral($this->getPosto(), 2);
         $conta = Util::numberFormatGeral($this->getConta(), 5);
         $possui_valor = $this->getValor() > 0 ? '1' : '0';
 
-        return $this->campoLivre = $tipo_cobranca . $carteira . $nosso_numero . $agencia . $posto . $conta . $possui_valor . '0';
+        $campo_livre = $tipo_cobranca . $carteira . $nosso_numero . $agencia . $posto . $conta . $possui_valor . '0';
+        $resto = Util::modulo11($campo_livre, 2, 9);
+        $dv = (in_array($resto, [1,10,11])) ? 0 : $resto;
+        return $this->campoLivre = $campo_livre . Util::modulo11($campo_livre);
     }
 }

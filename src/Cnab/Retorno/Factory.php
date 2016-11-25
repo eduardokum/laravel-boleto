@@ -29,21 +29,23 @@ class Factory
             throw new \Exception("Arquivo: $file, não é um arquivo de retorno");
         }
 
-        if (!Util::isCnab400($file_content) && !Util::isCnab240($file_content)) {
-            throw new \Exception("Formato do arquivo não identificado.");
-        } elseif (Util::isCnab400($file_content)) {
+        if (Util::isCnab400($file_content)) {
             /**  Cnab 400 */
             $banco = substr($file_content[0], 76, 3);
             $bancoClass = __NAMESPACE__ . '\\Cnab400\\'.self::getBancoClass($banco);
             $instancia = new $bancoClass($file_content);
-        } else if (Util::isCnab240($file_content)) {
+            return $instancia->processar();
+        }
+
+        if (Util::isCnab240($file_content)) {
             /** Cnab 240 */
             $banco = substr($file_content[0], 0, 3);
             $bancoClass = __NAMESPACE__ . '\\Cnab240\\'.self::getBancoClass($banco);
             $instancia = new $bancoClass($file_content);
+            return $instancia->processar();
         }
 
-        return $instancia->processar();
+        throw new \Exception("Formato do arquivo não identificado.");
     }
 
     /**

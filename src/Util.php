@@ -705,9 +705,7 @@ final class Util
     {
         $sum = 0;
         for ($i = strlen($n); $i > 0; $i--) {
-            $ns[$i] = substr($n, $i - 1, 1);
-            $partial[$i] = $ns[$i] * $factor;
-            $sum += $partial[$i];
+            $sum +=  substr($n, $i - 1, 1) * $factor;
             if ($factor == $base) {
                 $factor = 1;
             }
@@ -717,7 +715,7 @@ final class Util
         if ($rest == 0) {
             $sum *= 10;
             $digito = $sum % 11;
-            if ($digito == 10) {
+            if ($digito >= 10) {
                 $digito = $whenTen;
             }
             return $digito;
@@ -891,8 +889,8 @@ final class Util
         self::adiciona($retorno[0], 95, 100, date('dmy'));
         self::adiciona($retorno[0], 395, 400, sprintf('%06s', count($retorno)));
 
-        $remessa_h = array_shift($remessa); // removo o header
-        $remessa_t = array_pop($remessa); // remove o trailer
+        array_shift($remessa); // removo o header
+        array_pop($remessa); // remove o trailer
 
         foreach ($remessa as $detalhe) {
             $i = count($retorno);

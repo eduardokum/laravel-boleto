@@ -33,6 +33,11 @@ class Header implements HeaderContract
     protected $tipoRegistro;
 
     /**
+     * @var Carbon
+     */
+    protected $data;
+
+    /**
      * @var string
      */
     protected $tipoInscricao;
