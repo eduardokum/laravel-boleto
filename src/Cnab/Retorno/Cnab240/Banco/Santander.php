@@ -206,9 +206,9 @@ class Santander extends AbstractRetorno implements RetornoCnab240
 
                 $d = $this->detalheAtual()
                     ->setOcorrencia($this->rem(16, 17, $detalhe))
-                    ->setOcorrenciaDescricao(array_get($this->ocorrencias, $this->detalheAtual()->getOcorrencia(), 'Desconhecida'))
-                    ->detalheAtual()
-                    ->getSegmentoT()
+                    ->setOcorrenciaDescricao(array_get($this->ocorrencias, $this->detalheAtual()->getOcorrencia(), 'Desconhecida'));
+
+                $d->getSegmentoT()
                     ->setCodigoBancoCompensacao($this->rem(1, 3, $detalhe))
                     ->setNumeroLoteRetorno($this->rem(4, 7, $detalhe))
                     ->setTipoRegistro($this->rem(8, 8, $detalhe))
