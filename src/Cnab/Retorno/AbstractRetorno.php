@@ -8,6 +8,12 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno;
 
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Detalhe as Detalhe240Contract;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Header as Header240Contract;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Trailer as Trailer240Contract;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Detalhe as Detalhe400Contract;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Trailer as Trailer400Contract;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Header as Header400Contract;
 use Illuminate\Support\Collection;
 use Eduardokum\LaravelBoleto\Util;
 
@@ -39,19 +45,18 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
      * @var array
      */
     protected $file;
-
     /**
-     * @var HeaderContract
+     * @var Header240Contract|Header400Contract
      */
     protected $header;
 
     /**
-     * @var TrailerContract
+     * @var Trailer240Contract|Trailer400Contract
      */
     protected $trailer;
 
     /**
-     * @var DetalheContract[]
+     * @var Detalhe240Contract[]|Detalhe400Contract[]
      */
     protected $detalhe = [];
 
@@ -154,7 +159,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
     /**
      * @param $i
      *
-     * @return Detalhe
+     * @return Detalhe240Contract[]|Detalhe400Contract[]
      */
     public function getDetalhe($i)
     {
@@ -162,7 +167,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
     }
 
     /**
-     * @return Header
+     * @return Header240Contract|Header400Contract
      */
     public function getHeader()
     {
@@ -170,7 +175,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
     }
 
     /**
-     * @return Trailer
+     * @return Trailer240Contract|Trailer400Contract
      */
     public function getTrailer()
     {
@@ -179,8 +184,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
 
     /**
      * Retorna o detalhe atual.
-     *
-     * @return Detalhe
+     * @return Detalhe240Contract|Detalhe400Contract
      */
     protected function detalheAtual()
     {

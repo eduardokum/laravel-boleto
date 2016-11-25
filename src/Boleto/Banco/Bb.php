@@ -70,7 +70,7 @@ class Bb extends AbstractBoleto implements BoletoContract
      */
     public function setVariacaoCarteira($variacao_carteira)
     {
-        $this->variacao_carteira = (int) $variacao_carteira;
+        $this->variacao_carteira = $variacao_carteira;
         return $this;
     }
     /**
@@ -107,26 +107,20 @@ class Bb extends AbstractBoleto implements BoletoContract
     {
         $convenio = $this->getConvenio();
         $numero_boleto = $this->getNumeroDocumento();
-        $numero = null;
         switch (strlen($convenio)) {
-            // Convênio de 4 dígitos, são 11 dígitos no nosso número
             case 4:
                 $numero = Util::numberFormatGeral($convenio, 4) . Util::numberFormatGeral($numero_boleto, 7);
                 break;
-            // Convênio de 6 dígitos, são 11 dígitos no nosso número
             case 6:
-                // Exceto no caso de ter a carteira sem registro (16 e 18) e a vartiação da carteira ser 17
-                if (in_array($this->getCarteira(),['16','18']) and $this->getVariacaoCarteira() == 17) {
+                if (in_array($this->getCarteira(),['16','18']) && $this->getVariacaoCarteira() == 17) {
                     $numero = Util::numberFormatGeral($numero_boleto, 17);
                 } else {
                     $numero = Util::numberFormatGeral($convenio, 6) . Util::numberFormatGeral($numero_boleto, 5);
                 }
                 break;
-            // Convênio de 7 dígitos, são 17 dígitos no nosso número
             case 7:
                 $numero = Util::numberFormatGeral($convenio, 7) . Util::numberFormatGeral($numero_boleto, 10);
                 break;
-            // Não é com 4, 6 ou 7 dígitos? Não existe.
             default:
                 throw new \Exception('O código do convênio precisa ter 4, 6 ou 7 dígitos!');
         }
@@ -155,10 +149,8 @@ class Bb extends AbstractBoleto implements BoletoContract
         }
         $length = strlen($this->getConvenio());
         $nossoNumero = $this->gerarNossoNumero();
-        // Apenas para convênio com 6 dígitos, modalidade sem registro - carteira 16 e 18 (definida para 21)
         if (strlen($this->getNumero()) > 10) {
-            if ($length == 6 and in_array($this->getCarteira(),['16','18']) and Util::numberFormatGeral($this->getVariacaoCarteira(), 3) == '017') {
-                // Convênio (6) + Nosso número (17) + Carteira (2)
+            if ($length == 6 && in_array($this->getCarteira(),['16','18']) && Util::numberFormatGeral($this->getVariacaoCarteira(), 3) == '017') {
                 return $this->campoLivre = Util::numberFormatGeral($this->getConvenio(), 6) . $nossoNumero . '21';
             } else {
                 throw new \Exception('Só é possível criar um boleto com mais de 10 dígitos no nosso número quando a carteira é 21 e o convênio possuir 6 dígitos.');
@@ -167,10 +159,8 @@ class Bb extends AbstractBoleto implements BoletoContract
         switch ($length) {
             case 4:
             case 6:
-                // Nosso número (11) + Agencia (4) + Conta (8) + Carteira (2)
                 return $this->campoLivre =  $nossoNumero . Util::numberFormatGeral($this->getAgencia(), 4) . Util::numberFormatGeral($this->getConta(), 8) . Util::numberFormatGeral($this->getCarteira(), 2);
             case 7:
-                // Zeros (6) + Nosso número (17) + Carteira (2)
                 return $this->campoLivre =  '000000' . $nossoNumero . Util::numberFormatGeral($this->getCarteira(), 2);
         }
         throw new \Exception('O código do convênio precisa ter 4, 6 ou 7 dígitos!');

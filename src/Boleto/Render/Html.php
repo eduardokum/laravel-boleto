@@ -43,7 +43,6 @@ class Html implements HtmlContract
      */
     public function getImagemCodigoDeBarras($codigo_barras)
     {
-        $codigo = $codigo_barras;
         $barcodes = ['00110', '10001', '01001', '11000', '00101', '10100', '01100', '00011', '10010', '01010'];
         for($f1=9;$f1>=0;$f1--){
             for($f2=9;$f2>=0;$f2--){

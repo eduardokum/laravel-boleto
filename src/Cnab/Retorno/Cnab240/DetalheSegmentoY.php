@@ -2,9 +2,9 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\DetalheSegmentoY as SegmentoY;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\DetalheSegmentoY as DetalheSegmentoYContract;
 
-class DetalheSegmentoY implements SegmentoY
+class DetalheSegmentoY implements DetalheSegmentoYContract
 {
     /**
      * @var string

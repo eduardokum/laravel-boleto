@@ -134,7 +134,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         if($boleto->getDiasProtesto() > 0)
         {
             $this->add(157, 158, self::INSTRUCAO_PROTESTO);
-            $this->add(159, 160, Util::formatCnab('9', $boleto->getDiasProtesto()), 0);
+            $this->add(159, 160, Util::formatCnab('9', $boleto->getDiasProtesto(), 2));
         }
         $this->add(161, 173, Util::formatCnab('9', $boleto->getJuros(), 13, 2));
         $this->add(174, 179, $boleto->getDataVencimento()->format('dmy'));

@@ -206,9 +206,8 @@ class Santander extends AbstractRetorno implements RetornoCnab240
 
                 $d = $this->detalheAtual()
                     ->setOcorrencia($this->rem(16, 17, $detalhe))
-                    ->setOcorrenciaDescricao(array_get($this->ocorrencias, $this->detalheAtual()->getOcorrencia(), 'Desconhecida'));
-
-                $d = $this->detalheAtual()
+                    ->setOcorrenciaDescricao(array_get($this->ocorrencias, $this->detalheAtual()->getOcorrencia(), 'Desconhecida'))
+                    ->detalheAtual()
                     ->getSegmentoT()
                     ->setCodigoBancoCompensacao($this->rem(1, 3, $detalhe))
                     ->setNumeroLoteRetorno($this->rem(4, 7, $detalhe))
@@ -238,10 +237,6 @@ class Santander extends AbstractRetorno implements RetornoCnab240
                     ->setNumeroDocumento($this->rem(55, 69, $detalhe));
 
                 /** ocorrencias  */
-
-                $d = $this->detalheAtual();
-                $this->totais['valor_recebido'] += $d->getValorPagoSacado();
-
                 if ($d->hasOcorrencia('06', '09', '17')) {
                     $this->totais['liquidados']++;
                     $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
@@ -258,25 +253,22 @@ class Santander extends AbstractRetorno implements RetornoCnab240
                     $this->totais['alterados']++;
                     $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
                 } elseif ($d->hasOcorrencia('03', '26', '30')) {
-
                     $this->totais['erros']++;
                     $errorsRetorno = str_split(sprintf('%09s', $this->rem(209, 218, $detalhe)), 2);
                     $d->setErrorCode($errorsRetorno);
-
                     $error = array_get($this->rejeicoes, $errorsRetorno[0], '');
                     $error .= array_get($this->rejeicoes, $errorsRetorno[1], '');
                     $error .= array_get($this->rejeicoes, $errorsRetorno[2], '');
                     $error .= array_get($this->rejeicoes, $errorsRetorno[3], '');
                     $error .= array_get($this->rejeicoes, $errorsRetorno[4], '');
                     $d->setError($error);
-
                 } else {
                     $d->setOcorrenciaTipo($d::OCORRENCIA_OUTROS);
                 }
 
             } elseif ($this->getSegmentType($detalhe) == 'U') {
 
-                $d = $this->detalheAtual()
+                $this->detalheAtual()
                     ->getSegmentoU()
                     ->setCodigoBancoCompensacao($this->rem(1, 3, $detalhe))
                     ->setLoteServico($this->rem(4, 7, $detalhe))
@@ -301,7 +293,7 @@ class Santander extends AbstractRetorno implements RetornoCnab240
 
             } elseif ($this->getSegmentType($detalhe) == 'Y') {
 
-                $d = $this->detalheAtual()
+                $this->detalheAtual()
                     ->getSegmentoY()
                     ->setCodigoBancoCompensacao($this->rem(1, 3, $detalhe))
                     ->setLoteServico($this->rem(4, 7, $detalhe))
@@ -320,13 +312,9 @@ class Santander extends AbstractRetorno implements RetornoCnab240
                     ));
 
             }
-
             return true;
-
         }
-
         return false;
-
     }
 
     /**

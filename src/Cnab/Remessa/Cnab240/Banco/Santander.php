@@ -124,7 +124,7 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(61, 61, ''); // Reservado (Uso Banco)
         $this->add(62, 62, ''); // Reservado (Uso Banco)
         //
-        $this->add(63, 77, Util::formatCnab(9, $boleto->getSeuNumero(), 15)); // Seu Número
+        $this->add(63, 77, Util::formatCnab(9, $boleto->getNumero(), 15)); // Seu Número
         $this->add(78, 85, $boleto->getDataVencimento()->format('dmY')); // Data de vencimento do título
         $this->add(86, 100, Util::formatCnab(9, $boleto->getValor(), 15, 2)); // Valor nominal do título
         $this->add(101, 104, Util::formatCnab(9, 0, 4)); //Agência encarregada da cobrança
@@ -139,12 +139,12 @@ class Santander extends AbstractRemessa implements RemessaContract
         {
             $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
         }
-        $this->add(118, 118, Util::formatCnab(9, $boleto->getCodJurosMora(), 1)); //Código do juros de mora
+        $this->add(118, 118, Util::formatCnab(9, '', 1)); //Código do juros de mora
         $this->add(119, 126, Util::formatCnab(9, $boleto->getDataVencimento()->format('dmY'), 8)); //Data do juros de mora / data de vencimento do titulo
         $this->add(127, 141, Util::formatCnab(9, $juros, 15, 2)); //Valor da mora/dia ou Taxa mensal
-        $this->add(142, 142, Util::formatCnab(9, $boleto->getCodDesconto(), 1)); //Código do desconto 1
-        $this->add(143, 150, Util::formatCnab(9, $boleto->getDataDesconto()->format('dmY'), 8)); //Data de desconto 1
-        $this->add(151, 165, Util::formatCnab(9, $boleto->getValorOuPercentualDesconto(), 15, 2)); //Valor ou Percentual do desconto concedido //TODO
+        $this->add(142, 142, Util::formatCnab(9, '', 1)); //Código do desconto 1
+        $this->add(143, 150, Util::formatCnab(9, $boleto->getDataVencimento()->format('dmY'), 8)); //Data de desconto 1
+        $this->add(151, 165, Util::formatCnab(9, 0, 15, 2)); //Valor ou Percentual do desconto concedido //TODO
         $this->add(166, 180, Util::formatCnab(9, 0, 15, 2)); //Valor do IOF a ser recolhido
         $this->add(181, 195, Util::formatCnab(9, $boleto->getDescontosAbatimentos(), 15, 2)); //Valor do abatimento
         $this->add(196, 220, ''); //Identificação do título na empresa
@@ -233,8 +233,8 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(4, 7, '0000'); // Lote de Serviço
         $this->add(8, 8, '0'); // Tipo de Registro
         $this->add(9, 16, ''); // Reservados (Uso Banco)
-        $this->add(17, 17, $this->getTipoInscricaoEmpresa()); // Tipo de inscrição da empresa
-        $this->add(18, 32, $this->getNumeroInscricaoEmpresa()); // Numero de inscrição da empresa
+        $this->add(17, 17, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? '2' : '1'); // Tipo de inscrição da empresa
+        $this->add(18, 32, Util::formatCnab('9L', $this->getBeneficiario()->getDocumento(), 14)); // Numero de inscrição da empresa
         $this->add(33, 47, Util::formatCnab(9, $this->getCodigoTransmissao(), 15)); // Codigo de Transmissão
         $this->add(48, 72, ''); // Reservados (Uso Banco)
         $this->add(73, 102, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30)); // Nome da empresa
@@ -243,7 +243,8 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(143, 143, '1'); // Codigo remessa
         $this->add(144, 151, date('dmY')); // Data de Geracao do arquivo
         $this->add(152, 157, ''); // Reservado (Uso Banco)
-        $this->add(158, 163, Util::formatCnab(9, $this->getNumeroSequencialArquivo(), 6)); // Numero Sequencial do arquivo
+        $this->add(158, 163, Util::formatCnab(9, 0, 6)); // Numero Sequencial do arquivo
+        $this->add(164, 166, Util::formatCnab('9', '040', 3)); // Versão do layout
         $this->add(164, 166, Util::formatCnab('9', '040', 3)); // Versão do layout
         $this->add(167, 240, ''); // Reservado (Uso Banco)
 
@@ -276,15 +277,15 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(12, 13, ''); // Reservados (Uso Banco)
         $this->add(14, 16, Util::formatCnab('9', '030', 3)); // Versão do layout
         $this->add(17, 17, ''); // Reservados (Uso Banco)
-        $this->add(18, 18, $this->getTipoInscricaoEmpresa()); // Tipo de inscrição da empresa
-        $this->add(19, 33, $this->getNumeroInscricaoEmpresa()); // Numero de inscrição da empresa
+        $this->add(18, 18, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? '2' : '1'); // Tipo de inscrição da empresa
+        $this->add(19, 33, Util::formatCnab('9L', $this->getBeneficiario()->getDocumento(), 14)); // Numero de inscrição da empresa
         $this->add(34, 53, ''); // Reservados (Uso Banco)
         $this->add(54, 68, Util::formatCnab(9, $this->getCodigoTransmissao(), 15)); // Codigo de Transmissão
         $this->add(69, 73, ''); // Reservados (Uso Banco)
         $this->add(74, 103, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30)); // Nome do cedente
         $this->add(104, 143, ''); // Mensagem 1
         $this->add(144, 183, ''); // Mensagem 2
-        $this->add(184, 191, Util::formatCnab(9, $this->getNumeroSequencialArquivo(), 8)); // Número Remessa/retorno
+        $this->add(184, 191, Util::formatCnab(9, 0, 8)); // Número Remessa/retorno
         $this->add(192, 199, date('dmY')); // Data de Gravação do arquivo
         $this->add(200, 240, ''); // Reservado (Uso Banco)
 

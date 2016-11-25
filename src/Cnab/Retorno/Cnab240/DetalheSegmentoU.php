@@ -2,11 +2,11 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\DetalheSegmentoU as SegmentoU;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\DetalheSegmentoU as DetalheSegmentoUContract;
 use Eduardokum\LaravelBoleto\Util;
 use Carbon\Carbon;
 
-class DetalheSegmentoU implements SegmentoU
+class DetalheSegmentoU implements DetalheSegmentoUContract
 {
 
 
@@ -367,7 +367,7 @@ class DetalheSegmentoU implements SegmentoU
     /**
      * @return mixed
      */
-    public function getDataCredito()
+    public function getDataCredito($format = 'd/m/Y')
     {
         return $this->dataCredito instanceof Carbon
             ? $format === false ? $this->dataOcorrencia : $this->dataOcorrencia->format($format)
@@ -405,7 +405,7 @@ class DetalheSegmentoU implements SegmentoU
     /**
      * @return mixed
      */
-    public function getDataOcorrenciaSacado()
+    public function getDataOcorrenciaSacado($format = 'd/m/Y')
     {
         return $this->dataOcorrenciaSacado instanceof Carbon
             ? $format === false ? $this->dataOcorrenciaSacado : $this->dataOcorrenciaSacado->format($format)
@@ -472,37 +472,6 @@ class DetalheSegmentoU implements SegmentoU
     public function setCodigoBancoCorrespondenteCompensacao($codigoBancoCorrespondenteCompensacao)
     {
         $this->codigoBancoCorrespondenteCompensacao = $codigoBancoCorrespondenteCompensacao;
-
-        return $this;
-    }
-
-    /**
-     * @param mixed $valorDesconto
-     *
-     * @return Detalhe
-     */
-    public function setValorDesconto($valorDesconto)
-    {
-        $this->valorDesconto = $valorDesconto;
-
-        return $this;
-    }
-
-
-    /**
-     * @return mixed
-     */
-    public function getValorAbatimento()
-    {
-        return $this->valorAbatimento;
-    }
-
-    /**
-     * @param mixed $valorAbatimento
-     */
-    public function setValorAbatimento($valorAbatimento)
-    {
-        $this->valorAbatimento = $valorAbatimento;
 
         return $this;
     }

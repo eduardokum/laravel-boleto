@@ -84,7 +84,7 @@ class Pdf extends AbstractPdf implements PdfContract
         $this->Ln(10);
         $this->SetFont($this->PadraoFont, '', $this->fdes);
 
-        $logo = $url = preg_replace('/\&.*/', '', $this->boleto[$i]->getLogo());
+        $logo = preg_replace('/\&.*/', '', $this->boleto[$i]->getLogo());
         $ext = pathinfo($logo, PATHINFO_EXTENSION);
 
         $this->Image( $this->boleto[$i]->getLogo(), 20, ($this->GetY()), 0 , 12, $ext);

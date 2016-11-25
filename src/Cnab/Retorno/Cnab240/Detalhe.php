@@ -3,21 +3,24 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Detalhe as DetalheContract;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\DetalheSegmentoT as DetalheSegmentoTContract;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\DetalheSegmentoU as DetalheSegmentoUContract;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\DetalheSegmentoY as DetalheSegmentoYContract;
 
 class Detalhe implements DetalheContract
 {
     /**
-     * @var SegmentoT
+     * @var DetalheSegmentoTContract
      */
     private $segmentoT;
 
     /**
-     * @var SegmentoU
+     * @var DetalheSegmentoUContract
      */
     private $segmentoU;
 
     /**
-     * @var SegmentoY
+     * @var DetalheSegmentoYContract
      */
     private $segmentoY;
 
@@ -57,7 +60,7 @@ class Detalhe implements DetalheContract
     private $errorCode;
 
     /**
-     * @return DetalheSegmentoT
+     * @return DetalheSegmentoTContract
      */
     public function getSegmentoT()
     {
@@ -65,9 +68,9 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @param DetalheSegmentoT $segmentoT
+     * @param DetalheSegmentoTContract $segmentoT
      */
-    public function setSegmentoT($segmentoT)
+    public function setSegmentoT(DetalheSegmentoTContract $segmentoT)
     {
         $this->segmentoT = $segmentoT;
 
@@ -75,7 +78,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @return DetalheSegmentoU
+     * @return DetalheSegmentoUContract
      */
     public function getSegmentoU()
     {
@@ -83,9 +86,9 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @param DetalheSegmentoU $segmentoU
+     * @param DetalheSegmentoUContract $segmentoU
      */
-    public function setSegmentoU($segmentoU)
+    public function setSegmentoU(DetalheSegmentoUContract $segmentoU)
     {
         $this->segmentoU = $segmentoU;
 
@@ -93,7 +96,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @return DetalheSegmentoY
+     * @return DetalheSegmentoYContract
      */
     public function getSegmentoY()
     {
@@ -101,9 +104,9 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @param DetalheSegmentoY $segmentoY
+     * @param DetalheSegmentoYContract $segmentoY
      */
-    public function setSegmentoY($segmentoY)
+    public function setSegmentoY(DetalheSegmentoYContract $segmentoY)
     {
         $this->segmentoY = $segmentoY;
 

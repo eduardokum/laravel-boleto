@@ -3,9 +3,9 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
 use Carbon\Carbon;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\DetalheSegmentoT as SegmentoT;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\DetalheSegmentoT as DetalheSegmentoTContract;
 
-class DetalheSegmentoT implements SegmentoT
+class DetalheSegmentoT implements DetalheSegmentoTContract
 {
     /**
      * @var string
