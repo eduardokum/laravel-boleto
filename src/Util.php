@@ -1052,7 +1052,7 @@ final class Util
      * @return bool
      */
     public static function isHeaderRetorno($header) {
-        if(!self::isCnab240($header) || !self::isCnab400($header)) {
+        if(!self::isCnab240($header) && !self::isCnab400($header)) {
             return false;
         }
         if(self::isCnab400($header) && substr($header, 0, 9) != '02RETORNO')

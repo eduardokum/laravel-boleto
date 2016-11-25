@@ -29,18 +29,17 @@ class Factory
             throw new \Exception("Arquivo: $file, não é um arquivo de retorno");
         }
 
-        $bancoClass = self::getBancoClass($banco);
-        $instancia = new $bancoClass($file_content);
+        $instancia = self::getBancoClass($file_content);
         return $instancia->processar();
     }
 
     /**
-     * @param $banco
+     * @param $file_content
      *
      * @return mixed
      * @throws \Exception
      */
-    private static function getBancoClass($banco) {
+    private static function getBancoClass($file_content) {
 
         if (Util::isCnab400($file_content)) {
             /**  Cnab 400 */
@@ -64,7 +63,8 @@ class Factory
         ];
 
         if(array_key_exists($banco, $aBancos)) {
-            return $namespace.$aBancos[$banco];
+            $bancoClass = $namespace . $aBancos[$banco];
+            return new $bancoClass($file_content);
         }
 
         throw new \Exception("Banco: $banco, inválido");
