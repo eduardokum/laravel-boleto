@@ -383,76 +383,6 @@ final class Util
     }
 
     /**
-     * Mostra um numero por extenso.
-     *
-     * @param $value
-     *
-     * @param $uppercase 1 - UPPER; 2 - Upper; false - tudo minusculo;
-     * @return string
-     */
-    public static function nRealExtenso($value, $uppercase)
-    {
-        $value = self::nFloat($value, 2);
-
-        $singular = ["centavo", "real", "mil", "milhão", "bilhão", "trilhão", "quatrilhão"];
-        $plural = ["centavos", "reais", "mil", "milhões", "bilhões", "trilhões", "quatrilhões"];
-
-        $c = ["", "cem", "duzentos", "trezentos", "quatrocentos", "quinhentos", "seiscentos", "setecentos", "oitocentos", "novecentos"];
-        $d = ["", "dez", "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa"];
-        $d10 = ["dez", "onze", "doze", "treze", "quatorze", "quinze", "dezesseis", "dezesete", "dezoito", "dezenove"];
-        $u = ["", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove"];
-
-        $z = 0;
-
-        $value = number_format($value, 2, ".", ".");
-        $integer = explode(".", $value);
-        $cont = count($integer);
-        for ($i = 0; $i < $cont; $i++) {
-            for ($ii = strlen($integer[$i]); $ii < 3; $ii++) {
-                $integer[$i] = "0" . $integer[$i];
-            }
-        }
-
-        $fim = $cont - ($integer[$cont - 1] > 0 ? 1 : 2);
-        $rt = '';
-        for ($i = 0; $i < $cont; $i++) {
-            $value = $integer[$i];
-            $rc = (($value > 100) && ($value < 200)) ? "cento" : $c[$value[0]];
-            $rd = ($value[1] < 2) ? "" : $d[$value[1]];
-            $ru = ($value > 0) ? (($value[1] == 1) ? $d10[$value[2]] : $u[$value[2]]) : "";
-
-            $r = $rc . (($rc && ($rd || $ru)) ? " e " : "") . $rd . (($rd &&
-                    $ru) ? " e " : "") . $ru;
-            $t = $cont - 1 - $i;
-            $r .= $r ? " " . ($value > 1 ? $plural[$t] : $singular[$t]) : "";
-            if ($value == "000"
-            ) {
-                $z++;
-            } elseif ($z > 0) {
-                $z--;
-            }
-
-            if (($t == 1) && ($z > 0) && ($integer[0] > 0)) {
-                $r .= (($z > 1) ? " de " : "") . $plural[$t];
-            }
-
-            if ($r) {
-                $rt = $rt . ((($i > 0) && ($i <= $fim) &&
-                        ($integer[0] > 0) && ($z < 1)) ? (($i < $fim) ? ", " : " e ") : " ") . $r;
-            }
-
-        }
-
-        if (!$uppercase) {
-            return trim($rt ? $rt : "zero");
-        } elseif ($uppercase == "2") {
-            return trim(strtoupper($rt) ? strtoupper(strtoupper($rt)) : "Zero");
-        } else {
-            return trim(ucwords($rt) ? ucwords($rt) : "Zero");
-        }
-    }
-
-    /**
      * Return percent x of y;
      *
      * @param     $big
@@ -591,38 +521,24 @@ final class Util
      */
     public static function formatCnab($tipo, $valor, $tamanho, $dec = 0, $sFill = '')
     {
-        $string = $valor;
-        if (in_array(strtoupper($tipo), array('9', 9, 'N', '9L', 'NL'))) {
-            if (strtoupper($tipo) == '9L' || strtoupper($tipo) == 'NL') {
-                $string = self::onlyNumbers($string);
+        $tipo = self::upper($tipo);
+        if (in_array($tipo, array('9', 9, 'N', '9L', 'NL'))) {
+            if ($tipo == '9L' || $tipo == 'NL') {
+                $valor = self::onlyNumbers($valor);
             }
             $left = '';
             $sFill = 0;
             $type = 's';
-            $string = ($dec > 0) ? sprintf("%.{$dec}f", $string) : $string;
-            $string = str_replace(array(',', '.'), '', $string);
-        } else if (in_array(strtoupper($tipo), array('A', 'X'))) {
+            $valor = ($dec > 0) ? sprintf("%.{$dec}f", $valor) : $valor;
+            $valor = str_replace(array(',', '.'), '', $valor);
+        } else if (in_array($tipo, array('A', 'X'))) {
             $left = '-';
             $type = 's';
-            $string = strtoupper(self::normalizeChars($string));
-        } else if (in_array(strtoupper($tipo), array('AM', 'XM'))) {
-            $left = '-';
-            $type = 's';
-            $string = (self::normalizeChars($string));
-        } else if (strtoupper($tipo) == 'L') {
-            $left = '-';
-            $type = 's';
-            $string = self::normalizeChars($string);
-        } else if (strtoupper($tipo) == 'D') {
-            $tamanho = 6;
-            $left = '-';
-            $type = 's';
-            $string = $string->format('dmy');
+            $valor = strtoupper(self::normalizeChars($valor));
         } else {
             throw new \Exception('Tipo inválido');
         }
-        $string = substr($string, 0, $tamanho);
-        return sprintf("%{$left}{$sFill}{$tamanho}{$type}", $string);
+        return sprintf("%{$left}{$sFill}{$tamanho}{$type}", substr($valor, 0, $tamanho));
     }
 
     /**

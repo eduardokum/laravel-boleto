@@ -41,6 +41,8 @@ class Factory
      */
     private static function getBancoClass($file_content) {
 
+        $banco = '';
+        $namespace = '';
         if (Util::isCnab400($file_content)) {
             /**  Cnab 400 */
             $banco = substr($file_content[0], 76, 3);

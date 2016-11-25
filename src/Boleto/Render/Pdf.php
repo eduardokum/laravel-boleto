@@ -173,10 +173,7 @@ class Pdf extends AbstractPdf implements PdfContract
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
         if(count($this->boleto[$i]->getDescricaoDemonstrativo()) > 0)
         {
-            foreach ($this->boleto[$i]->getDescricaoDemonstrativo() as $d) {
-                $pulaLinha -= 2;
-                $this->Cell (0, $this->cell, $this->_( preg_replace('/(%)/', '%$1', $d)), 0, 1);
-            }
+            $pulaLinha = $this->listaLinhas($this->boleto[$i]->getDescricaoDemonstrativo(), $pulaLinha);
         }
 
         $this->traco('Corte na linha pontilhada',$pulaLinha,5);
@@ -233,18 +230,18 @@ class Pdf extends AbstractPdf implements PdfContract
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
 
-        if(isset($this->boleto[$i]->variaveis_adicionais['esconde_uso_banco']) and $this->boleto[$i]->variaveis_adicionais['esconde_uso_banco'])
+        if(isset($this->boleto[$i]->variaveis_adicionais['esconde_uso_banco']) && $this->boleto[$i]->variaveis_adicionais['esconde_uso_banco'])
         {
             $this->Cell(55, $this->desc, $this->_('Carteira'), 'TLR');
         }
         else
         {
-            $cip = isset($this->boleto[$i]->variaveis_adicionais['mostra_cip']) and $this->boleto[$i]->variaveis_adicionais['mostra_cip'];
+            $cip = isset($this->boleto[$i]->variaveis_adicionais['mostra_cip']) && $this->boleto[$i]->variaveis_adicionais['mostra_cip'];
 
-            $this->Cell(($cip ? 25 : 30), $this->desc, $this->_('Uso do Banco'), 'TLR');
+            $this->Cell(($cip ? 23 : 30), $this->desc, $this->_('Uso do Banco'), 'TLR');
             if($cip)
             {
-                $this->Cell(5, $this->desc, $this->_('CIP'), 'TLR');
+                $this->Cell(7, $this->desc, $this->_('CIP'), 'TLR');
             }
             $this->Cell(25, $this->desc, $this->_('Carteira') , 'TR');
         }
@@ -256,17 +253,17 @@ class Pdf extends AbstractPdf implements PdfContract
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
 
-        if(isset($this->boleto[$i]->variaveis_adicionais['esconde_uso_banco']) and $this->boleto[$i]->variaveis_adicionais['esconde_uso_banco'])
+        if(isset($this->boleto[$i]->variaveis_adicionais['esconde_uso_banco']) && $this->boleto[$i]->variaveis_adicionais['esconde_uso_banco'])
         {
             $this->TextFitCell(55, $this->cell, $this->_( $this->boleto[$i]->getCarteiraNome()), 'LR', 0, 'L');
         }
         else
         {
-            $cip = isset($this->boleto[$i]->variaveis_adicionais['mostra_cip']) and $this->boleto[$i]->variaveis_adicionais['mostra_cip'];
-            $this->Cell(($cip ? 25 : 30), $this->cell, $this->_( '' ), 'LR');
+            $cip = isset($this->boleto[$i]->variaveis_adicionais['mostra_cip']) && $this->boleto[$i]->variaveis_adicionais['mostra_cip'];
+            $this->Cell(($cip ? 23 : 30), $this->cell, $this->_( '' ), 'LR');
             if($cip)
             {
-                $this->Cell(5, $this->desc, $this->_($this->boleto[$i]->getCip()), 'TLR');
+                $this->Cell(7, $this->cell, $this->_( $this->boleto[$i]->getCip() ), 'LR');
             }
             $this->Cell(25, $this->cell, $this->_( strtoupper( $this->boleto[$i]->getCarteiraNome() ) ), 'R');
         }
@@ -338,8 +335,8 @@ class Pdf extends AbstractPdf implements PdfContract
             $this->SetXY($xInstrucoes, $yInstrucoes);
             $this->Ln(1);
             $this->SetFont($this->PadraoFont,'B',  $this->fcel);
-            foreach($this->boleto[$i]->getInstrucoes() as $in )
-                $this->Cell (0, $this->cell, $this->_(preg_replace('/(%)/', '%$1', $in)), 0, 1);
+
+            $this->listaLinhas($this->boleto[$i]->getInstrucoes(), 0);
 
             $this->SetXY($xOriginal, $yOriginal);
         }
@@ -431,5 +428,21 @@ class Pdf extends AbstractPdf implements PdfContract
             return $save_path;
         }
         return $this->Output(rand(1,9999).'.pdf', $dest, $print);
+    }
+
+    /**
+     * @param $i
+     * @param $pulaLinha
+     *
+     * @return int
+     */
+    private function listaLinhas($lista, $pulaLinha)
+    {
+        foreach ($lista as $d) {
+            $pulaLinha -= 2;
+            $this->Cell(0, $this->cell, $this->_(preg_replace('/(%)/', '%$1', $d)), 0, 1);
+        }
+
+        return $pulaLinha;
     }
 }
