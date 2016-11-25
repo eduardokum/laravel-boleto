@@ -233,8 +233,8 @@ class Header implements HeaderContract
     }
 
     /**
-     * @param string $horaGeracao
      *
+     * @param string $numeroSequencialArquivo
      * @return Header
      */
     public function setNumeroSequencialArquivo($numeroSequencialArquivo)

@@ -78,7 +78,7 @@ class Bb extends AbstractRemessa implements RemessaContract
      * Define as carteiras disponíveis para cada banco
      * @var array
      */
-    protected $carteiras = [11,12,17,31,51];
+    protected $carteiras = [11, 12, 17, 31, 51];
 
     /**
      * Caracter de fim de linha
@@ -191,7 +191,7 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(20, 26, '');
         $this->add(27, 30, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(31, 31, Util::modulo11($this->getAgencia()));
-        $this->add(32, 39, Util::formatCnab('9', $this->getConta(),8));
+        $this->add(32, 39, Util::formatCnab('9', $this->getConta(), 8));
         $this->add(40, 40, Util::modulo11($this->getConta()));
         $this->add(41, 46, '000000');
         $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
@@ -224,7 +224,7 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(81, 82, '00');
         $this->add(83, 84, '00');
         $this->add(85, 87, '');
-        $this->add(88, 88, ($boleto->getSacadorAvalista()?'A':''));
+        $this->add(88, 88, ($boleto->getSacadorAvalista() ? 'A' : ''));
         $this->add(89, 91, '');
         $this->add(92, 94, Util::formatCnab('9', $this->getVariacaoCarteira(), 3));
         $this->add(95, 95, '0');
@@ -232,11 +232,11 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(102, 106, '');
         $this->add(107, 108, $this->getCarteiraNumero());
         $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
-        if($boleto->getStatus() == $boleto::STATUS_BAIXA)
+        if ($boleto->getStatus() == $boleto::STATUS_BAIXA)
         {
             $this->add(109, 110, self::OCORRENCIA_PEDIDO_BAIXA); // BAIXA
         }
-        if($boleto->getStatus() == $boleto::STATUS_ALTERACAO)
+        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO)
         {
             $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO); // ALTERAR VENCIMENTO
         }
@@ -253,7 +253,7 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(159, 160, self::INSTRUCAO_SEM);
         $diasProtesto = '00';
         $const = sprintf('self::INSTRUCAO_PROTESTAR_VENC_%02s', $boleto->getDiasProtesto());
-        if(defined($const))
+        if (defined($const))
         {
             $this->add(157, 158, constant($const));
         }
@@ -263,7 +263,7 @@ class Bb extends AbstractRemessa implements RemessaContract
             $diasProtesto = Util::formatCnab('9', $boleto->getDiasProtesto(), 2, 0);
         }
         $juros = 0;
-        if($boleto->getJuros() > 0)
+        if ($boleto->getJuros() > 0)
         {
             $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
         }
@@ -284,9 +284,9 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(352, 391, Util::formatCnab('X', $boleto->getSacadorAvalista() ? $boleto->getSacadorAvalista()->getNome() : '', 40));
         $this->add(392, 393, $diasProtesto);
         $this->add(394, 394, '');
-        $this->add(395, 400, Util::formatCnab('9', $this->iRegistros+1, 6));
+        $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
 
-        if($boleto->getMulta() > 0)
+        if ($boleto->getMulta() > 0)
         {
             $this->iniciaDetalhe();
 
@@ -297,7 +297,7 @@ class Bb extends AbstractRemessa implements RemessaContract
             $this->add(11, 22, Util::formatCnab('9', $boleto->getMulta(), 7, 2));
             $this->add(23, 394, '');
             $this->add(23, 394, '');
-            $this->add(395, 400, Util::formatCnab('9', $this->iRegistros+1, 6));
+            $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
         }
 
     }
@@ -315,7 +315,7 @@ class Bb extends AbstractRemessa implements RemessaContract
 
     public function isValid()
     {
-        if( $this->getConvenio() == '' || $this->getConvenioLider() == '' || !parent::isValid())
+        if ($this->getConvenio() == '' || $this->getConvenioLider() == '' || !parent::isValid())
         {
             return false;
         }

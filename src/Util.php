@@ -393,7 +393,7 @@ final class Util
      */
     public static function percentOf($big, $small, $defaultOnZero = 0)
     {
-        $result = $big > 0.01 ? (($small * 100) / $big) : $defaultOnZero;
+        $result = $big > 0.01 ? (($small*100)/$big) : $defaultOnZero;
         return self::nFloat($result);
     }
 
@@ -410,7 +410,7 @@ final class Util
         if ($percent < 0.01) {
             return 0;
         }
-        return self::nFloat($big * ($percent / 100));
+        return self::nFloat($big*($percent/100));
     }
 
     /**
@@ -494,12 +494,12 @@ final class Util
      */
     public static function numberFormatValue($n, $loop, $insert)
     {
-        return str_pad(self::onlyNumbers(number_format((float)$n, '2', ',', '.')), $loop, $insert, STR_PAD_LEFT);
+        return str_pad(self::onlyNumbers(number_format((float) $n, '2', ',', '.')), $loop, $insert, STR_PAD_LEFT);
     }
 
     /**
      * @param $n
-     * @param $loop
+     * @param integer $loop
      * @param $insert
      *
      * @return string
@@ -512,7 +512,7 @@ final class Util
     /**
      * @param        $tipo
      * @param        $valor
-     * @param        $tamanho
+     * @param        integer $tamanho
      * @param int $dec
      * @param string $sFill
      *
@@ -542,10 +542,10 @@ final class Util
     }
 
     /**
-     * @param        $date
+     * @param        Carbon $date
      * @param string $format
      *
-     * @return float
+     * @return integer
      */
     public static function fatorVencimento($date, $format = 'Y-m-d')
     {
@@ -612,7 +612,7 @@ final class Util
      * @param     $n
      * @param int $factor
      * @param int $base
-     * @param int|bool $rest
+     * @param integer $rest
      * @param int $whenTen
      *
      * @return int
@@ -621,7 +621,7 @@ final class Util
     {
         $sum = 0;
         for ($i = strlen($n); $i > 0; $i--) {
-            $sum +=  substr($n, $i - 1, 1) * $factor;
+            $sum += substr($n, $i - 1, 1)*$factor;
             if ($factor == $base) {
                 $factor = 1;
             }
@@ -630,13 +630,13 @@ final class Util
 
         if ($rest == 0) {
             $sum *= 10;
-            $digito = $sum % 11;
+            $digito = $sum%11;
             if ($digito >= 10) {
                 $digito = $whenTen;
             }
             return $digito;
         }
-        return $sum % 11;
+        return $sum%11;
     }
 
     /**
@@ -651,13 +651,13 @@ final class Util
         $factor = $lastFactor;
         $sum = 0;
         for ($i = strlen($n); $i > 0; $i--) {
-            $sum += substr($n, $i - 1, 1) * $factor;
+            $sum += substr($n, $i - 1, 1)*$factor;
             if (--$factor < $earlyFactor) {
                 $factor = $lastFactor;
             }
         }
 
-        $module = $sum % 11;
+        $module = $sum%11;
         if ($module > 9) {
             return 0;
         }
@@ -675,11 +675,11 @@ final class Util
         $chars = array_reverse(str_split($n, 1));
         $odd = array_intersect_key($chars, array_fill_keys(range(1, count($chars), 2), null));
         $even = array_intersect_key($chars, array_fill_keys(range(0, count($chars), 2), null));
-        $even = array_map(function ($n) {
-            return ($n >= 5) ? 2 * $n - 9 : 2 * $n;
+        $even = array_map(function($n) {
+            return ($n >= 5) ? 2*$n - 9 : 2*$n;
         }, $even);
         $total = array_sum($odd) + array_sum($even);
-        return ((floor($total / 10) + 1) * 10 - $total) % 10;
+        return ((floor($total/10) + 1)*10 - $total)%10;
     }
 
     /**
@@ -693,7 +693,7 @@ final class Util
         $sums = array_reverse(str_split('97310097131973', 1));
         $sum = 0;
         foreach ($chars as $i => $char) {
-            $sum += substr($char * $sums[$i], -1);
+            $sum += substr($char*$sums[$i], -1);
         }
         $unidade = substr($sum, -1);
         return $unidade == 0 ? $unidade : 10 - $unidade;
@@ -851,7 +851,7 @@ final class Util
                     break;
                 case Contracts\Boleto\Boleto::COD_BANCO_BANRISUL:
                     self::adiciona($retorno[$i], 38, 62, self::remove(38, 62, $detalhe));
-                    self::adiciona($retorno[$i], 63, 72, self::remove(111,120, $detalhe));
+                    self::adiciona($retorno[$i], 63, 72, self::remove(111, 120, $detalhe));
                     self::adiciona($retorno[$i], 18, 30, self::remove(18, 30, $detalhe));
                     break;
                 default:
@@ -864,7 +864,7 @@ final class Util
         self::adiciona($retorno[$i], 1, 1, '9');
         self::adiciona($retorno[$i], 395, 400, sprintf('%06s', count($retorno)));
 
-        $retorno = array_map(function ($a) {
+        $retorno = array_map(function($a) {
             return implode('', $a);
         }, $retorno);
 
@@ -968,10 +968,10 @@ final class Util
      * @return bool
      */
     public static function isHeaderRetorno($header) {
-        if(!self::isCnab240($header) && !self::isCnab400($header)) {
+        if (!self::isCnab240($header) && !self::isCnab400($header)) {
             return false;
         }
-        if(self::isCnab400($header) && substr($header, 0, 9) != '02RETORNO')
+        if (self::isCnab400($header) && substr($header, 0, 9) != '02RETORNO')
         {
             return false;
         }

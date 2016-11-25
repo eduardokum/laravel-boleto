@@ -2,8 +2,8 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
 use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 use Eduardokum\LaravelBoleto\Util;
 
 class Caixa  extends AbstractRemessa implements RemessaContract
@@ -69,7 +69,7 @@ class Caixa  extends AbstractRemessa implements RemessaContract
     /**
      * Retorna o codigo do cliente.
      *
-     * @return mixed
+     * @return string
      */
     public function getCodigoCliente()
     {
@@ -83,7 +83,7 @@ class Caixa  extends AbstractRemessa implements RemessaContract
      */
     public function getCarteiraNumero()
     {
-        if ($this->getCarteira() == 'SR'){
+        if ($this->getCarteira() == 'SR') {
             return '02';
         }
         return '01';
@@ -190,7 +190,7 @@ class Caixa  extends AbstractRemessa implements RemessaContract
         $this->add(390, 391, '00');
         $this->add(392, 393, Util::formatCnab('9', $boleto->getDiasProtesto('0'), 2));
         $this->add(394, 394, Util::formatCnab('9', $boleto->getMoeda(), 1));
-        $this->add(395, 400, Util::formatCnab('9', $this->iRegistros+1, 6));
+        $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
 
         return $this;
     }
@@ -208,7 +208,7 @@ class Caixa  extends AbstractRemessa implements RemessaContract
 
     public function isValid()
     {
-        if( $this->getCodigoCliente() == '' || !parent::isValid())
+        if ($this->getCodigoCliente() == '' || !parent::isValid())
         {
             return false;
         }

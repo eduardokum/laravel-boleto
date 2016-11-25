@@ -127,11 +127,11 @@ class Pessoa implements PessoaContract
      */
     public function getDocumento()
     {
-        if($this->getTipoDocumento() == 'CPF')
+        if ($this->getTipoDocumento() == 'CPF')
         {
             return Util::maskString(Util::onlyNumbers($this->documento), '###.###.###-##');
         }
-        if($this->getTipoDocumento() == 'CNPJ')
+        if ($this->getTipoDocumento() == 'CNPJ')
         {
             return Util::maskString(Util::onlyNumbers($this->documento), '##.###.###/####-##');
         }
@@ -217,7 +217,7 @@ class Pessoa implements PessoaContract
      */
     public function getNomeDocumento()
     {
-        if(!$this->getDocumento()) {
+        if (!$this->getDocumento()) {
             return $this->getNome();
         } else {
             return $this->getNome() . ' / ' . $this->getTipoDocumento() . ': ' . $this->getDocumento();

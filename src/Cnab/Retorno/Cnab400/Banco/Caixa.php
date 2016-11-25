@@ -136,32 +136,32 @@ class Caixa extends AbstractRetorno implements RetornoCnab400
 
         $this->totais['valor_recebido'] += $d->getValorRecebido();
 
-        if($d->hasOcorrencia('21','22'))
+        if ($d->hasOcorrencia('21', '22'))
         {
             $this->totais['liquidados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
         }
-        elseif($d->hasOcorrencia('01'))
+        elseif ($d->hasOcorrencia('01'))
         {
             $this->totais['entradas']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_ENTRADA);
         }
-        elseif($d->hasOcorrencia('02','23','24','25'))
+        elseif ($d->hasOcorrencia('02', '23', '24', '25'))
         {
             $this->totais['baixados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_BAIXADA);
         }
-        elseif($d->hasOcorrencia('56'))
+        elseif ($d->hasOcorrencia('56'))
         {
             $this->totais['protestados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_PROTESTADA);
         }
-        elseif($d->hasOcorrencia('05'))
+        elseif ($d->hasOcorrencia('05'))
         {
             $this->totais['alterados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
         }
-        elseif($d->hasOcorrencia('99'))
+        elseif ($d->hasOcorrencia('99'))
         {
             $this->totais['erros']++;
             $d->setError(array_get($this->rejeicoes, $this->rem(80, 82, $detalhe), 'Consulte seu Internet Banking'));

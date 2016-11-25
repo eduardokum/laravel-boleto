@@ -200,32 +200,32 @@ class Hsbc extends AbstractRetorno implements RetornoCnab400
 
         $this->totais['valor_recebido'] += $d->getValorRecebido();
 
-        if($d->hasOcorrencia('06','07','15','16','31','32','33','36','38','39'))
+        if ($d->hasOcorrencia('06', '07', '15', '16', '31', '32', '33', '36', '38', '39'))
         {
             $this->totais['liquidados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
         }
-        elseif($d->hasOcorrencia('02'))
+        elseif ($d->hasOcorrencia('02'))
         {
             $this->totais['entradas']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_ENTRADA);
         }
-        elseif($d->hasOcorrencia('09','10','16'))
+        elseif ($d->hasOcorrencia('09', '10', '16'))
         {
             $this->totais['baixados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_BAIXADA);
         }
-        elseif($d->hasOcorrencia('37'))
+        elseif ($d->hasOcorrencia('37'))
         {
             $this->totais['protestados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_PROTESTADA);
         }
-        elseif($d->hasOcorrencia('14', '49'))
+        elseif ($d->hasOcorrencia('14', '49'))
         {
             $this->totais['alterados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
         }
-        elseif($d->hasOcorrencia('03'))
+        elseif ($d->hasOcorrencia('03'))
         {
             $this->totais['erros']++;
             $d->setError(array_get($this->rejeicoes, $this->rem(302, 303, $detalhe), 'Consulte seu Internet Banking'));

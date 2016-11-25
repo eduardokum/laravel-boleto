@@ -134,7 +134,7 @@ abstract class AbstractRemessa
     /**
      * @param mixed $idremessa
      *
-     * @return AbstractCnab
+     * @return AbstractRemessa
      */
     public function setIdremessa($idremessa)
     {
@@ -154,7 +154,7 @@ abstract class AbstractRemessa
     /**
      * @param PessoaContract $beneficiario
      *
-     * @return AbstractCnab
+     * @return AbstractRemessa
      */
     public function setBeneficiario(PessoaContract $beneficiario)
     {
@@ -166,7 +166,7 @@ abstract class AbstractRemessa
      * Define a agência
      *
      * @param int $agencia
-     * @return AbstractBoleto
+     * @return AbstractRemessa
      */
     public function setAgencia($agencia)
     {
@@ -186,7 +186,7 @@ abstract class AbstractRemessa
      * Define o dígito da agência
      *
      * @param string|int $agenciaDv
-     * @return AbstractBoleto
+     * @return AbstractRemessa
      */
     public function setAgenciaDv($agenciaDv)
     {
@@ -206,7 +206,7 @@ abstract class AbstractRemessa
      * Define o número da conta
      *
      * @param int $conta
-     * @return AbstractBoleto
+     * @return AbstractRemessa
      */
     public function setConta($conta)
     {
@@ -226,7 +226,7 @@ abstract class AbstractRemessa
      * Define o dígito verificador da conta
      *
      * @param int $contaDv
-     * @return AbstractBoleto
+     * @return AbstractRemessa
      */
     public function setContaDv($contaDv)
     {
@@ -246,7 +246,7 @@ abstract class AbstractRemessa
      * Define o código da carteira (Com ou sem registro)
      *
      * @param string $carteira
-     * @return AbstractBoleto
+     * @return AbstractRemessa
      * @throws \Exception
      */
     public function setCarteira($carteira)
@@ -289,8 +289,8 @@ abstract class AbstractRemessa
      *
      * @return boolean
      */
-    public function isValid(){
-        if($this->agencia == '' || $this->conta == '' || ! $this->beneficiario instanceof PessoaContract)
+    public function isValid() {
+        if ($this->agencia == '' || $this->conta == '' || !$this->beneficiario instanceof PessoaContract)
         {
             return false;
         }
@@ -348,8 +348,8 @@ abstract class AbstractRemessa
     /**
      * Função para add valor a linha nas posições informadas.
      *
-     * @param $i
-     * @param $f
+     * @param integer $i
+     * @param integer $f
      * @param $value
      *
      * @return array
@@ -365,7 +365,7 @@ abstract class AbstractRemessa
      */
     protected function iniciaHeader()
     {
-        $this->aRegistros[self::HEADER] = array_fill(0,400, ' ');
+        $this->aRegistros[self::HEADER] = array_fill(0, 400, ' ');
         $this->atual = &$this->aRegistros[self::HEADER];
     }
 
@@ -374,7 +374,7 @@ abstract class AbstractRemessa
      */
     protected function iniciaTrailer()
     {
-        $this->aRegistros[self::TRAILER] = array_fill(0,400, ' ');
+        $this->aRegistros[self::TRAILER] = array_fill(0, 400, ' ');
         $this->atual = &$this->aRegistros[self::TRAILER];
     }
 
@@ -384,7 +384,7 @@ abstract class AbstractRemessa
     protected function iniciaDetalhe()
     {
         $this->iRegistros++;
-        $this->aRegistros[self::DETALHE][$this->iRegistros] = array_fill(0,400, ' ');
+        $this->aRegistros[self::DETALHE][$this->iRegistros] = array_fill(0, 400, ' ');
         $this->atual = &$this->aRegistros[self::DETALHE][$this->iRegistros];
     }
 
@@ -437,13 +437,13 @@ abstract class AbstractRemessa
     public function gerar()
     {
 
-        if(!$this->isValid())
+        if (!$this->isValid())
         {
             throw new \Exception('Campos requeridos pelo banco, aparentam estar ausentes');
         }
 
         $stringRemessa = '';
-        if($this->iRegistros < 1)
+        if ($this->iRegistros < 1)
         {
             throw new \Exception('Nenhuma linha detalhe foi adicionada');
         }
@@ -451,7 +451,7 @@ abstract class AbstractRemessa
         $this->header();
         $stringRemessa .= $this->valida($this->getHeader()) . $this->fimLinha;
 
-        foreach($this->getDetalhes() as $i => $detalhe)
+        foreach ($this->getDetalhes() as $i => $detalhe)
         {
             $stringRemessa .= $this->valida($detalhe) . $this->fimLinha;
         }
@@ -474,11 +474,11 @@ abstract class AbstractRemessa
     public function save($path)
     {
         $folder = dirname($path);
-        if(!is_dir($folder)) {
+        if (!is_dir($folder)) {
             mkdir($folder, 0777, true);
         }
 
-        if(!is_writable(dirname($path))) {
+        if (!is_writable(dirname($path))) {
             throw new \Exception('Path ' . $folder . ' não possui permissao de escrita');
         }
 

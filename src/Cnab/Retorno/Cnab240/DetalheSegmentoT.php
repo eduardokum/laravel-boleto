@@ -133,7 +133,7 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     private $valorPagoSacado;
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getCodigoBancoCompensacao()
     {
@@ -151,7 +151,7 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getNumeroLoteRetorno()
     {
@@ -169,7 +169,7 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getTipoRegistro()
     {
@@ -187,7 +187,7 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getNumeroSequencialRegistroLote()
     {
@@ -205,7 +205,7 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getCodigoSegmentoRegistroDetalhe()
     {
@@ -223,7 +223,7 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getDigitoAgenciaCedente()
     {
@@ -241,7 +241,7 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getAgenciaCedente()
     {
@@ -259,7 +259,7 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getAgenciaCedenteDigito()
     {
@@ -277,7 +277,7 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getContaCorrente()
     {
@@ -295,7 +295,7 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getContaDigito()
     {
@@ -313,7 +313,7 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getNossoNumero()
     {
@@ -331,7 +331,7 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getCodigoCarteira()
     {
@@ -349,7 +349,7 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getSeuNumero()
     {
@@ -387,7 +387,7 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getValorTitulo()
     {
@@ -405,7 +405,7 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getNumeroBancoCobradorRecebedor()
     {
@@ -423,7 +423,7 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getAgenciaCobradoraRecebedora()
     {
@@ -441,7 +441,7 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getCodigoMoeda()
     {
@@ -459,7 +459,7 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getTipoInscriçãoSacado()
     {
@@ -477,7 +477,7 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getNumeroInscricaoSacado()
     {
@@ -495,7 +495,7 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getNomeSacado()
     {
@@ -513,7 +513,7 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getContaCobranca()
     {
@@ -531,7 +531,7 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getValorTarifa()
     {
@@ -549,7 +549,7 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getIdentificacaoRejeicao()
     {
@@ -595,7 +595,7 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     /**
      * @param mixed $numeroDocumento
      *
-     * @return Detalhe
+     * @return DetalheSegmentoT
      */
     public function setNumeroDocumento($numeroDocumento)
     {
@@ -605,7 +605,7 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getValorPagoSacado()
     {

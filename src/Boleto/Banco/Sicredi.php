@@ -22,7 +22,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
      * Define as carteiras disponíveis para este banco
      * @var array
      */
-    protected $carteiras = ['1','2','3'];
+    protected $carteiras = ['1', '2', '3'];
     /**
      * Espécie do documento, coódigo para remessa
      * @var string
@@ -103,7 +103,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
      */
     public function setByte($byte)
     {
-        if($byte > 9)
+        if ($byte > 9)
         {
             throw new \Exception('O byte deve ser compreendido entre 1 e 9');
         }
@@ -124,7 +124,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
      */
     public function isValid()
     {
-        if($this->byte == '' || $this->posto == '' || !parent::isValid())
+        if ($this->byte == '' || $this->posto == '' || !parent::isValid())
         {
             return false;
         }

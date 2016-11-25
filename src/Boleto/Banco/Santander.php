@@ -56,7 +56,7 @@ class Santander  extends AbstractBoleto implements BoletoContract
      */
     public function setCarteira($carteira)
     {
-        switch($carteira)
+        switch ($carteira)
         {
             case '1':
             case '5':

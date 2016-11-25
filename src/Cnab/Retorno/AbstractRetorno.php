@@ -82,28 +82,27 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
 
         $this->_position = 0;
 
-        if(is_array($file) && is_string($file[0]))
+        if (is_array($file) && is_string($file[0]))
         {
             $this->file = $file;
         }
-        elseif(is_array($file) && is_array($file[0]) && count($file[0]) == 400)
+        elseif (is_array($file) && is_array($file[0]) && count($file[0]) == 400)
         {
             $this->file = $file;
         }
-        elseif(is_file($file) && file_exists($file))
+        elseif (is_file($file) && file_exists($file))
         {
             $this->file = file($file);
         }
-        elseif(is_string($file))
+        elseif (is_string($file))
         {
             $this->file = preg_split('/\r\n|\r|\n/', $file);
-            if(empty(end($this->file)))
+            if (empty(end($this->file)))
             {
                 array_pop($this->file);
             }
             reset($this->file);
-        }
-        else
+        } else
         {
             throw new \Exception("Arquivo: não existe");
         }
@@ -111,21 +110,21 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
         $r = new \ReflectionClass('\Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto');
         $constantNames = $r->getConstants();
         $bancosDisponiveis = [];
-        foreach($constantNames as $constantName => $codigoBanco)
+        foreach ($constantNames as $constantName => $codigoBanco)
         {
-            if(preg_match('/^COD_BANCO.*/', $constantName))
+            if (preg_match('/^COD_BANCO.*/', $constantName))
             {
                 $bancosDisponiveis[] = $codigoBanco;
             }
         }
 
-        if(!Util::isHeaderRetorno($this->file[0]))
+        if (!Util::isHeaderRetorno($this->file[0]))
         {
             throw new \Exception(sprintf("Arquivo de retorno inválido"));
         }
 
         $banco = Util::isCnab400($this->file[0]) ? substr($this->file[0], 76, 3) : substr($this->file[0], 0, 3);
-        if(!in_array($banco, $bancosDisponiveis))
+        if (!in_array($banco, $bancosDisponiveis))
         {
             throw new \Exception(sprintf("Banco: %s, inválido", $banco));
         }

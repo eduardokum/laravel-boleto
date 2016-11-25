@@ -460,7 +460,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getAceite()
     {
-        return is_numeric($this->aceite) ? ($this->aceite?'A':'N') : $this->aceite;
+        return is_numeric($this->aceite) ? ($this->aceite ? 'A' : 'N') : $this->aceite;
     }
     /**
      * Define o campo Espécie Doc, geralmente DM (Duplicata Mercantil)
@@ -594,7 +594,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function addInstrucao($instrucao)
     {
-        if(count($this->getInstrucoes()) > 8)
+        if (count($this->getInstrucoes()) > 8)
         {
             throw new \Exception('Atingido o máximo de 5 instruções.');
         }
@@ -611,7 +611,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setInstrucoes($instrucoes)
     {
-        if(count($instrucoes) > 8)
+        if (count($instrucoes) > 8)
         {
             throw new \Exception('Máximo de 8 instruções.');
         }
@@ -638,7 +638,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function addDescricaoDemonstrativo($descricaoDemonstrativo)
     {
-        if(count($this->getDescricaoDemonstrativo()) > 5)
+        if (count($this->getDescricaoDemonstrativo()) > 5)
         {
             throw new \Exception('Atingido o máximo de 5 demonstrativos.');
         }
@@ -656,7 +656,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setDescricaoDemonstrativo($descricaoDemonstrativo)
     {
-        if(count($descricaoDemonstrativo) > 5)
+        if (count($descricaoDemonstrativo) > 5)
         {
             throw new \Exception('Máximo de 5 demonstrativos.');
         }
@@ -786,7 +786,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Retorna o campo Descontos / Abatimentos
      *
-     * @return float
+     * @return string
      */
     public function getDescontosAbatimentos()
     {
@@ -843,7 +843,7 @@ abstract class AbstractBoleto implements BoletoContract
     public function setJurosApos($jurosApos)
     {
         $jurosApos = (int) $jurosApos;
-        $this->jurosApos =  $jurosApos > 0 ? $jurosApos : 0;
+        $this->jurosApos = $jurosApos > 0 ? $jurosApos : 0;
         return $this;
     }
 
@@ -872,7 +872,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Retorna os diasProtesto
      *
-     * @return int
+     * @return double
      */
     public function getDiasProtesto()
     {
@@ -1077,7 +1077,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getNossoNumero($incluirFormatacao = true)
     {
-        if(empty($this->campoNossoNumero))
+        if (empty($this->campoNossoNumero))
         {
             $this->campoNossoNumero = $this->gerarNossoNumero();
         }
@@ -1116,7 +1116,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function isValid()
     {
-        if(
+        if (
             $this->numeroDocumento == '' ||
             $this->agencia == '' ||
             $this->conta == '' ||
@@ -1160,12 +1160,12 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getCodigoBarras()
     {
-        if(!empty($this->campoCodigoBarras))
+        if (!empty($this->campoCodigoBarras))
         {
             return $this->campoCodigoBarras;
         }
 
-        if(!$this->isValid())
+        if (!$this->isValid())
         {
             throw new \Exception('Campos requeridos pelo banco, aparentam estar ausentes');
         }
@@ -1177,7 +1177,7 @@ abstract class AbstractBoleto implements BoletoContract
             . $this->getCampoLivre();
 
         $resto = Util::modulo11($codigo, 2, 9, false);
-        $dv = (in_array($resto, [0,10,11])) ? 1 : $resto;
+        $dv = (in_array($resto, [0, 10, 11])) ? 1 : $resto;
 
         return $this->campoCodigoBarras = substr($codigo, 0, 4) . $dv . substr($codigo, 4);
     }
@@ -1198,7 +1198,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getLinhaDigitavel()
     {
-        if(!empty($this->campoLinhaDigitavel))
+        if (!empty($this->campoLinhaDigitavel))
         {
             return $this->campoLinhaDigitavel;
         }
