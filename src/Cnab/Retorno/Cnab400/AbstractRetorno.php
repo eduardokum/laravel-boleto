@@ -68,33 +68,33 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
      */
     public function processar() {
 
-        if($this->isProcessado())
+        if ($this->isProcessado())
         {
             return $this;
         }
 
-        if(method_exists($this, 'init')) {
+        if (method_exists($this, 'init')) {
             call_user_func([$this, 'init']);
         }
 
-        foreach($this->file as $linha) {
+        foreach ($this->file as $linha) {
 
             $inicio = $this->rem(1, 1, $linha);
 
-            if( $inicio == '0' ) {
+            if ($inicio == '0') {
                 $this->processarHeader($linha);
-            } else if( $inicio == '9' ) {
+            } else if ($inicio == '9') {
                 $this->processarTrailer($linha);
             } else {
                 $this->incrementDetalhe();
-                if($this->processarDetalhe($linha) === false)
+                if ($this->processarDetalhe($linha) === false)
                 {
                     unset($this->detalhe[$this->increment]);
                     $this->increment--;
                 }
             }
         }
-        if(method_exists($this, 'finalize')) {
+        if (method_exists($this, 'finalize')) {
             call_user_func([$this, 'finalize']);
         }
 

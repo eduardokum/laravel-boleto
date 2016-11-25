@@ -216,33 +216,27 @@ class Bb extends AbstractRetorno implements RetornoCnab400
         {
             $this->totais['liquidados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
-        }
-        elseif ($d->hasOcorrencia('02'))
+        } elseif ($d->hasOcorrencia('02'))
         {
             $this->totais['entradas']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_ENTRADA);
-        }
-        elseif ($d->hasOcorrencia('09'))
+        } elseif ($d->hasOcorrencia('09'))
         {
             $this->totais['baixados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_BAIXADA);
-        }
-        elseif ($d->hasOcorrencia('61'))
+        } elseif ($d->hasOcorrencia('61'))
         {
             $this->totais['protestados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_PROTESTADA);
-        }
-        elseif ($d->hasOcorrencia('14'))
+        } elseif ($d->hasOcorrencia('14'))
         {
             $this->totais['alterados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
-        }
-        elseif ($d->hasOcorrencia('03'))
+        } elseif ($d->hasOcorrencia('03'))
         {
             $this->totais['erros']++;
             $d->setError(array_get($this->rejeicoes, $d->getOcorrencia(), 'Consulte seu Internet Banking'));
-        }
-        else
+        } else
         {
             $d->setOcorrenciaTipo($d::OCORRENCIA_OUTROS);
         }

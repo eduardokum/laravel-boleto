@@ -473,7 +473,7 @@ final class Util
 
     /**
      * @param $n
-     * @param $loop
+     * @param integer $loop
      * @param $insert
      *
      * @return string
@@ -486,9 +486,9 @@ final class Util
     }
 
     /**
-     * @param $n
-     * @param $loop
-     * @param $insert
+     * @param string $n
+     * @param integer $loop
+     * @param integer $insert
      *
      * @return string
      */
@@ -908,8 +908,8 @@ final class Util
      * Função para add valor a linha nas posições informadas.
      *
      * @param $line
-     * @param $i
-     * @param $f
+     * @param integer $i
+     * @param integer $f
      * @param $value
      *
      * @return array

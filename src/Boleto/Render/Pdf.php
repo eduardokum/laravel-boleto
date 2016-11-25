@@ -348,13 +348,17 @@ class Pdf extends AbstractPdf implements PdfContract
      * @param integer $ln2
      */
     protected function traco($texto, $ln = null, $ln2 = null) {
-        if ($ln) $this->Ln($ln);
+        if ($ln == 1 || $ln === true) {
+            $this->Ln($ln);
+        }
         $this->SetFont($this->PadraoFont, '', $this->fdes);
         if ($texto) {
             $this->Cell(0, 2, $this->_($texto), 0, 1, 'R');
         }
         $this->Cell(0, 2, str_pad('-', '261', ' -', STR_PAD_RIGHT), 0, 1);
-        if ($ln2) $this->Ln($ln2);
+        if ($ln2 == 1 || $ln2 === true) {
+            $this->Ln($ln2);
+        }
     }
 
     /**

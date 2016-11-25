@@ -28,7 +28,7 @@ class Hsbc  extends AbstractBoleto implements BoletoContract
         'NS' => '03',
         'REC' => '05',
         'CE' => '09',
-        'NS' => '10',
+        'DS' => '10',
         'PD' => '98',
     ];
     /**
@@ -82,12 +82,10 @@ class Hsbc  extends AbstractBoleto implements BoletoContract
         if($this->getContaDv() !== null && strlen($this->getContaDv()) == 1)
         {
                 $conta = substr($this->getConta(), 0, -1) . '-' .substr($this->getConta(), -1).$this->getContaDv();
-        }
-        elseif($this->getContaDv() !== null && strlen($this->getContaDv()) == 2)
+        } elseif($this->getContaDv() !== null && strlen($this->getContaDv()) == 2)
         {
             $conta = substr($this->getConta(), 0, -1) . '-' .substr($this->getConta(), -1).$this->getContaDv();
-        }
-        else
+        } else
         {
             $conta = $this->getConta();
         }

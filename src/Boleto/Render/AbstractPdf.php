@@ -73,15 +73,15 @@ abstract class AbstractPdf extends FPDF
     public function _beginpage($orientation, $size)
     {
         parent::_beginpage($orientation, $size);
-        if($this->NewPageGroup)
+        if ($this->NewPageGroup)
         {
             // start a new group
-            $n = sizeof($this->PageGroups)+1;
-            $alias = '{'.$n.'}';
+            $n = sizeof($this->PageGroups) + 1;
+            $alias = '{' . $n . '}';
             $this->PageGroups[$alias] = 1;
             $this->CurrPageGroup = $alias;
-            $this->NewPageGroup=false;
-        } elseif($this->CurrPageGroup) {
+            $this->NewPageGroup = false;
+        } elseif ($this->CurrPageGroup) {
                     $this->PageGroups[$this->CurrPageGroup]++;
         }
     }
@@ -162,36 +162,36 @@ abstract class AbstractPdf extends FPDF
      * @param $maxheight
      * @return array
      */
-    protected function calculateDimensions($width,$height,$maxwidth,$maxheight)
+    protected function calculateDimensions($width, $height, $maxwidth, $maxheight)
     {
-        if($width != $height)
+        if ($width != $height)
         {
-            if($width > $height)
+            if ($width > $height)
             {
                 $t_width = $maxwidth;
-                $t_height = (($t_width * $height)/$width);
+                $t_height = (($t_width*$height)/$width);
                 //fix height
-                if($t_height > $maxheight)
+                if ($t_height > $maxheight)
                 {
                     $t_height = $maxheight;
-                    $t_width = (($width * $t_height)/$height);
+                    $t_width = (($width*$t_height)/$height);
                 }
             } else
             {
                 $t_height = $maxheight;
-                $t_width = (($width * $t_height)/$height);
+                $t_width = (($width*$t_height)/$height);
                 //fix width
-                if($t_width > $maxwidth)
+                if ($t_width > $maxwidth)
                 {
                     $t_width = $maxwidth;
-                    $t_height = (($t_width * $height)/$width);
+                    $t_height = (($t_width*$height)/$width);
                 }
             }
         } else {
-                    $t_width = $t_height = min($maxheight,$maxwidth);
+                    $t_width = $t_height = min($maxheight, $maxwidth);
         }
 
-        return array('width'=>(int)$t_width,'w'=>(int)$t_width,'height'=>(int)$t_height, 'h'=>(int)$t_height);
+        return array('width'=>(int) $t_width, 'w'=>(int) $t_width, 'height'=>(int) $t_height, 'h'=>(int) $t_height);
     }
 
     /**

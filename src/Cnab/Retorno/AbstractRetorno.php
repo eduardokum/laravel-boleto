@@ -85,16 +85,13 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
         if (is_array($file) && is_string($file[0]))
         {
             $this->file = $file;
-        }
-        elseif (is_array($file) && is_array($file[0]) && count($file[0]) == 400)
+        } elseif (is_array($file) && is_array($file[0]) && count($file[0]) == 400)
         {
             $this->file = $file;
-        }
-        elseif (is_file($file) && file_exists($file))
+        } elseif (is_file($file) && file_exists($file))
         {
             $this->file = file($file);
-        }
-        elseif (is_string($file))
+        } elseif (is_string($file))
         {
             $this->file = preg_split('/\r\n|\r|\n/', $file);
             if (empty(end($this->file)))

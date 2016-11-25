@@ -179,11 +179,11 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(87, 107, '');
         $this->add(108, 108, 'I');
         $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
-        if($boleto->getStatus() == $boleto::STATUS_BAIXA)
+        if ($boleto->getStatus() == $boleto::STATUS_BAIXA)
         {
             $this->add(109, 110, self::OCORRENCIA_PEDIDO_BAIXA); // BAIXA
         }
-        if($boleto->getStatus() == $boleto::STATUS_ALTERACAO)
+        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO)
         {
             $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO); // ALTERAR VENCIMENTO
         }
@@ -197,12 +197,12 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(151, 156, $boleto->getDataDocumento()->format('dmy'));
         $this->add(157, 158, self::INSTRUCAO_SEM);
         $this->add(159, 160, self::INSTRUCAO_VALOR_SOMA_MORA);
-        if($boleto->getDiasProtesto() > 0)
+        if ($boleto->getDiasProtesto() > 0)
         {
             $this->add(157, 158, self::INSTRUCAO_PROTESTAR_VENC_XX);
         }
         $juros = 0;
-        if($boleto->getJuros() > 0)
+        if ($boleto->getJuros() > 0)
         {
             $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
         }

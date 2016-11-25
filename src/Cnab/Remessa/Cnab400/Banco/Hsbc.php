@@ -65,9 +65,9 @@ class Hsbc extends AbstractRemessa implements RemessaContract
     const INSTRUCAO_PROTESTAR_XX_VENC_NAO_PAGO = '84';
 
     /**
-    * Código do banco
-    * @var string
-    */
+     * Código do banco
+     * @var string
+     */
     protected $codigoBanco = BoletoContract::COD_BANCO_HSBC;
 
     /**
