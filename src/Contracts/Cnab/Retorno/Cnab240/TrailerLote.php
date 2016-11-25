@@ -64,4 +64,9 @@ interface TrailerLote
      * @return mixed
      */
     public function getValorTotalTitulosCobrancaVinculada();
+
+    /**
+     * @return array
+     */
+    public function toArray();
 }

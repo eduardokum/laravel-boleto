@@ -45,4 +45,9 @@ interface DetalheSegmentoY
      * @return mixed
      */
     public function getTipoRegistro();
+
+    /**
+     * @return array
+     */
+    public function toArray();
 }

@@ -76,4 +76,9 @@ interface HeaderLote
      */
     public function getDataGravacao($format = 'd/m/Y');
 
+    /**
+     * @return array
+     */
+    public function toArray();
+
 }

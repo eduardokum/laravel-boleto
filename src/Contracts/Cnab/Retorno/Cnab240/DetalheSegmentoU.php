@@ -66,4 +66,8 @@ interface DetalheSegmentoU
      */
     public function getValorAbatimentoConcedidoCancelado();
 
+    /**
+     * @return array
+     */
+    public function toArray();
 }

@@ -130,4 +130,8 @@ interface DetalheSegmentoT
      */
     public function getIdentificacaoRejeicao();
 
+    /**
+     * @return array
+     */
+    public function toArray();
 }

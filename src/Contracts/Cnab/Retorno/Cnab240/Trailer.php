@@ -25,4 +25,10 @@ interface Trailer
      * @return mixed
      */
     public function getQtdRegistroArquivo();
+
+    /**
+     * @return array
+     */
+    public function toArray();
+
 }
