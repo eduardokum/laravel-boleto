@@ -73,7 +73,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(46, 76, '');
         $this->add(77, 79, $this->getCodigoBanco());
         $this->add(80, 94, Util::formatCnab('X', 'Sicredi', 15));
-        $this->add(95, 102, date('dmY'));
+        $this->add(95, 102, date('Ymd'));
         $this->add(103, 110, '');
         $this->add(111, 117, Util::formatCnab('9', $this->getIdremessa(), 7));
         $this->add(118, 390, '');
