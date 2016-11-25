@@ -357,7 +357,7 @@ class DetalheSegmentoU implements SegmentoU
     /**
      * @param mixed $dataOcorrencia
      */
-    public function setDataOcorrencia($dataOcorrencia, $format = 'dmy')
+    public function setDataOcorrencia($dataOcorrencia, $format = 'dmY')
     {
         $this->dataOcorrencia = trim($dataOcorrencia, '0 ') ? Carbon::createFromFormat($format, $dataOcorrencia) : null;
 
@@ -377,7 +377,7 @@ class DetalheSegmentoU implements SegmentoU
     /**
      * @param mixed $dataCredito
      */
-    public function setDataCredito($dataCredito, $format = 'dmy')
+    public function setDataCredito($dataCredito, $format = 'dmY')
     {
         $this->dataCredito = trim($dataCredito, '0 ') ? Carbon::createFromFormat($format, $dataCredito) : null;
 
@@ -415,7 +415,7 @@ class DetalheSegmentoU implements SegmentoU
     /**
      * @param mixed $dataOcorrenciaSacado
      */
-    public function setDataOcorrenciaSacado($dataOcorrenciaSacado, $format = 'dmy')
+    public function setDataOcorrenciaSacado($dataOcorrenciaSacado, $format = 'dmY')
     {
         $this->dataOcorrenciaSacado = trim($dataOcorrenciaSacado, '0 ') ? Carbon::createFromFormat($format, $dataOcorrenciaSacado) : null;
 

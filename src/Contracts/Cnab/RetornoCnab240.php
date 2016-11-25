@@ -43,9 +43,9 @@ interface RetornoCnab240 extends Cnab
     public function getTrailerLote();
 
     /**
-     *  @return Retorno\TrailerArquivo
+     *  @return Retorno\Trailer
      */
-    public function getTrailerArquivo();
+    public function getTrailer();
 
     /**
      * @return string

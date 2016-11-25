@@ -2,53 +2,25 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
 use Eduardokum\LaravelBoleto\Util;
+use \Eduardokum\LaravelBoleto\Cnab\Retorno\AbstractRetorno as AbstractRetornoGeneric;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Header as HeaderContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\HeaderLote as HeaderLoteContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Detalhe as DetalheContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\TrailerLote as TrailerLoteContract;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\TrailerArquivo as TrailerArquivoContract;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Trailer as TrailerContract;
 use Illuminate\Support\Collection;
 
-abstract class AbstractRetorno implements \Countable, \SeekableIterator
+/**
+ * Class AbstractRetorno
+ *
+ * @method \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Detalhe getDetalhe()
+ * @method \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Header getHeader()
+ * @method \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Trailer getTrailer()
+ * @method \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Detalhe detalheAtual()
+ * @package Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240
+ */
+abstract class AbstractRetorno extends AbstractRetornoGeneric
 {
-
-    /**
-     * Se Cnab ja foi processado
-     *
-     * @var bool
-     */
-    protected $processado = false;
-
-    /**
-     * Código do banco
-     * @var string
-     */
-    protected $codigoBanco;
-
-    /**
-     * Incremeto de detalhes
-     *
-     * @var int
-     */
-    private $increment = 0;
-
-    /**
-     * Arquivo transformado em array por linha.
-     *
-     * @var array
-     */
-    protected $file;
-
-    /**
-     * @var int
-     */
-    private $_position = 0;
-
-    /**
-     * @var HeaderContract
-     */
-    private $header;
-
     /**
      * @var HeaderLoteContract
      */
@@ -60,115 +32,16 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
     private $trailerLote;
 
     /**
-     * @var TrailerArquivoContract
-     */
-    private $trailerArquivo;
-
-    /**
-     * @var DetalheContract[]
-     */
-    private $detalhe = [];
-
-    /**
-     * Helper de totais.
-     *
-     * @var array
-     */
-    protected $totais = [];
-
-    /**
-     *
      * @param String $file
      * @throws \Exception
      */
-    public function __construct($file)
-    {
-        $this->_position = 0;
-
-        if (is_array($file) && is_string($file[0])) {
-            $this->file = $file;
-        } elseif (is_array($file) && is_array($file[0])) {
-            $this->file = $file;
-        } elseif (is_file($file) && file_exists($file)) {
-            $this->file = file($file);
-        } elseif (is_string($file)) {
-            $this->file = preg_split('/\r\n|\r|\n/', $file);
-            if (empty(end($this->file))) {
-                array_pop($this->file);
-            }
-            reset($this->file);
-        } else {
-            throw new \Exception("Arquivo: não existe");
-        }
-
-        if (substr($this->file[0], 142, 1) != '2') {
-            throw new \Exception(sprintf("Arquivo de retorno inválido"));
-        }
-
-        $r = new \ReflectionClass('\Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto');
-        $constantNames = $r->getConstants();
-
-        $bancosDisponiveis = [];
-
-        foreach ($constantNames as $constantName => $codigoBanco) {
-            if (preg_match('/^COD_BANCO.*/', $constantName)) {
-                $bancosDisponiveis[] = $codigoBanco;
-            }
-        }
-
-        if (!in_array(substr($this->file[0], 0, 3), $bancosDisponiveis)) {
-            throw new \Exception(sprintf("Banco: %s, inválido", substr($this->file[0], 76, 3)));
-        }
+    public function __construct($file) {
+        parent::__construct($file);
 
         $this->header = new Header();
         $this->headerLote = new HeaderLote();
         $this->trailerLote = new TrailerLote();
-        $this->trailerArquivo = new TrailerArquivo();
-
-    }
-
-    /**
-     * Retorna o código do banco
-     *
-     * @return string
-     */
-    public function getCodigoBanco()
-    {
-        return $this->codigoBanco;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getBancoNome()
-    {
-        return Util::$bancos[$this->codigoBanco];
-    }
-
-    /**
-     * @return Collection
-     */
-    public function getDetalhes()
-    {
-        return new Collection($this->detalhe);
-    }
-
-    /**
-     * @param $i
-     *
-     * @return Detalhe
-     */
-    public function getDetalhe($i)
-    {
-        return array_key_exists($i, $this->detalhe) ? $this->detalhe[$i] : null;
-    }
-
-    /**
-     * @return Header
-     */
-    public function getHeader()
-    {
-        return $this->header;
+        $this->trailer = new Trailer();
     }
 
     /**
@@ -185,37 +58,6 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
     public function getTrailerLote()
     {
         return $this->trailerLote;
-    }
-
-    /**
-     * @return TrailerArquivo
-     */
-    public function getTrailerArquivo()
-    {
-        return $this->trailerArquivo;
-    }
-
-    /**
-     * Incrementa o detalhe.
-     */
-    protected function incrementDetalhe()
-    {
-        $this->increment++;
-        $detalhe = new Detalhe();
-        $detalhe->setSegmentoT(new DetalheSegmentoT());
-        $detalhe->setSegmentoU(new DetalheSegmentoU());
-        $detalhe->setSegmentoY(new DetalheSegmentoY());
-        $this->detalhe[$this->increment] = $detalhe;
-    }
-
-    /**
-     * Retorna o detalhe atual.
-     *
-     * @return Detalhe
-     */
-    protected function detalheAtual()
-    {
-        return $this->detalhe[$this->increment];
     }
 
     /**
@@ -251,7 +93,20 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
      *
      * @return boolean
      */
-    protected abstract function processarTrailerArquivo(array $trailer);
+    protected abstract function processarTrailer(array $trailer);
+
+    /**
+     * Incrementa o detalhe.
+     */
+    protected function incrementDetalhe()
+    {
+        $this->increment++;
+        $detalhe = new Detalhe();
+        $detalhe->setSegmentoT(new DetalheSegmentoT());
+        $detalhe->setSegmentoU(new DetalheSegmentoU());
+        $detalhe->setSegmentoY(new DetalheSegmentoY());
+        $this->detalhe[$this->increment] = $detalhe;
+    }
 
     /**
      * Processa o arquivo
@@ -260,16 +115,16 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
      */
     public function processar()
     {
+        if($this->isProcessado())
+        {
+            return $this;
+        }
+
         if (method_exists($this, 'init')) {
             $this->init();
         }
 
         foreach ($this->file as $linha) {
-
-            if($this->isProcessado())
-            {
-                return $this;
-            }
 
             $recordType = $this->rem(8, 8, $linha);
 
@@ -291,7 +146,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
             } else if ($recordType == '5') {
                 $this->processarTrailerLote($linha);
             } else if ($recordType == '9') {
-                $this->processarTrailerArquivo($linha);
+                $this->processarTrailer($linha);
             }
 
         }
@@ -314,7 +169,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
             'header' => $this->header->toArray(),
             'headerLote' => $this->headerLote->toArray(),
             'trailerLote' => $this->trailerLote->toArray(),
-            'trailerArquivo' => $this->trailerArquivo->toArray(),
+            'trailer' => $this->trailer->toArray(),
             'detalhes' => new Collection()
         ];
 
@@ -340,76 +195,6 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
         return $array;
     }
 
-    /**
-     * Se esta processado
-     *
-     * @return bool
-     */
-    private function isProcessado()
-    {
-        return $this->processado;
-    }
-    /**
-     * Seta cnab como processado
-     *
-     * @return $this
-     */
-    private function setProcessado()
-    {
-        $this->processado = true;
-        return $this;
-    }
-
-    /**
-     * Remove trecho do array.
-     *
-     * @param $i
-     * @param $f
-     * @param $array
-     *
-     * @return string
-     * @throws \Exception
-     */
-    protected function rem($i, $f, &$array)
-    {
-        return Util::remove($i, $f, $array);
-    }
-
-    public function current()
-    {
-        return $this->detalhe[$this->_position];
-    }
-
-    public function next()
-    {
-        ++$this->_position;
-    }
-
-    public function key()
-    {
-        return $this->_position;
-    }
-
-    public function valid()
-    {
-        return isset($this->detalhe[$this->_position]);
-    }
-
-    public function rewind()
-    {
-        $this->_position = 0;
-    }
-
-    public function count()
-    {
-        return count($this->detalhe);
-    }
-
-    public function convertDate($date)
-    {
-        return Util::convertDateToSingleYear($date);
-    }
-
     protected function getSegmentType($line)
     {
         return strtoupper($this->rem(14, 14, $line));
@@ -418,13 +203,5 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
     protected function getServiceType($line)
     {
         return $this->rem(8, 8, $line);
-    }
-
-    public function seek($position)
-    {
-        $this->_position = $position;
-        if (!$this->valid()) {
-            throw new \OutOfBoundsException('"Posição inválida "$position"');
-        }
     }
 }

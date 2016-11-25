@@ -333,9 +333,9 @@ class HeaderLote implements HeaderLoteContract
      *
      * @return Header
      */
-    public function setDataGravacao($dataGravacao)
+    public function setDataGravacao($dataGravacao, $format = 'dmY')
     {
-        $this->dataGravacao = trim($dataGravacao, '0 ') ? Carbon::createFromFormat('dmy', $dataGravacao) : null;
+        $this->dataGravacao = trim($dataGravacao, '0 ') ? Carbon::createFromFormat($format, $dataGravacao) : null;
 
         return $this;
     }

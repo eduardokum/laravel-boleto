@@ -4,6 +4,7 @@ namespace Cnab400\Tests;
 
 class RetornoCnab400Test extends \PHPUnit_Framework_TestCase
 {
+
     public function testRetornoBradescoCnab400()
     {
         $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make(__DIR__ . '/files/cnab400/bradesco.ret');

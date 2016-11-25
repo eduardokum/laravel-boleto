@@ -1033,7 +1033,8 @@ final class Util
      */
     public static function isCnab240($content)
     {
-        return strlen(rtrim($content[0], "\r\n")) == 240 ? true : false;
+        $content = is_array($content) ? $content[0] : $content;
+        return strlen(rtrim($content, "\r\n")) == 240 ? true : false;
     }
 
     /**
@@ -1043,6 +1044,28 @@ final class Util
      */
     public static function isCnab400($content)
     {
-        return strlen(rtrim($content[0], "\r\n")) == 400 ? true : false;
+        $content = is_array($content) ? $content[0] : $content;
+        return strlen(rtrim($content, "\r\n")) == 400 ? true : false;
+    }
+
+    /**
+     * Valida se o header é de um arquivo retorno valido, 240 ou 400 posicoes
+     * @param $header
+     *
+     * @return bool
+     */
+    public static function isHeaderRetorno($header) {
+
+        if(self::isCnab400($header) && substr($header, 0, 9) != '02RETORNO')
+        {
+            return false;
+        }
+
+        if (self::isCnab240($header) && substr($header, 142, 1) != '2')
+        {
+            return false;
+        }
+
+        return true;
     }
 }

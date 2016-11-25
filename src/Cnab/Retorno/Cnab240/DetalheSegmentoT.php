@@ -379,7 +379,7 @@ class DetalheSegmentoT implements SegmentoT
     /**
      * @param mixed $dataVencimento
      */
-    public function setDataVencimento($dataVencimento, $format = 'dmy')
+    public function setDataVencimento($dataVencimento, $format = 'dmY')
     {
         $this->dataVencimento = trim($dataVencimento, '0 ') ? Carbon::createFromFormat($format, $dataVencimento) : null;
 

@@ -3,7 +3,7 @@
 namespace Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240;
 
 
-interface TrailerArquivo
+interface Trailer
 {
 
     /**

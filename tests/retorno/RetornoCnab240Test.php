@@ -13,11 +13,10 @@ class RetornoCnab240Test extends \PHPUnit_Framework_TestCase
         $this->assertNotNull($retorno->getHeaderLote());
         $this->assertNotNull($retorno->getDetalhes());
         $this->assertNotNull($retorno->getTrailerLote());
-        $this->assertNotNull($retorno->getTrailerArquivo());
+        $this->assertNotNull($retorno->getTrailer());
 
         $this->assertEquals('Banco Santander (Brasil) S.A.', $retorno->getBancoNome());
         $this->assertEquals('033', $retorno->getCodigoBanco());
-
     }
 
 }

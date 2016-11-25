@@ -3,7 +3,7 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
 
-class TrailerArquivo
+class Trailer
 {
     private $numeroLoteRemessa;
     private $tipoRegistro;

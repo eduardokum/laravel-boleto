@@ -159,7 +159,7 @@ class Santander extends AbstractRetorno implements RetornoCnab240
             ->setNomeEmpresa($this->rem(73, 102, $header))
             ->setNomeBanco($this->rem(103, 132, $header))
             ->setCodigoRemessaRetorno($this->rem(143, 143, $header))
-            ->setData($this->convertDate($this->rem(144, 151, $header)))
+            ->setData($this->rem(144, 151, $header))
             ->setNumeroSequencialArquivo($this->rem(158, 163, $header))
             ->setVersaoLayoutArquivo($this->rem(164, 166, $header));
 
@@ -188,7 +188,7 @@ class Santander extends AbstractRetorno implements RetornoCnab240
             ->setCodigoCedente($this->rem(34, 42, $headerLote))
             ->setNomeEmpresa($this->rem(74, 103, $headerLote))
             ->setNumeroRetorno($this->rem(184, 191, $headerLote))
-            ->setDataGravacao($this->convertDate($this->rem(192, 199, $headerLote)));
+            ->setDataGravacao($this->rem(192, 199, $headerLote));
 
         return true;
     }
@@ -222,7 +222,7 @@ class Santander extends AbstractRetorno implements RetornoCnab240
                     ->setNossoNumero($this->rem(41, 53, $detalhe))
                     ->setCodigoCarteira($this->rem(54, 54, $detalhe))
                     ->setSeuNumero($this->rem(55, 69, $detalhe))
-                    ->setDataVencimento($this->convertDate($this->rem(70, 77, $detalhe)))
+                    ->setDataVencimento($this->rem(70, 77, $detalhe))
                     ->setValorTitulo(Util::nFloat($this->rem(78, 92, $detalhe) / 100, 2, false))
                     ->setNumeroBancoCobradorRecebedor($this->rem(93, 95, $detalhe))
                     ->setAgenciaCobradoraRecebedora($this->rem(96, 99, $detalhe))
@@ -291,10 +291,10 @@ class Santander extends AbstractRetorno implements RetornoCnab240
                     ->setValorLiquidoCreditado(Util::nFloat($this->rem(93, 107, $detalhe) / 100, 2, false))
                     ->setValorOutrasDespesas(Util::nFloat($this->rem(108, 122, $detalhe) / 100, 2, false))
                     ->setValorOutrosCreditos(Util::nFloat($this->rem(123, 137, $detalhe) / 100, 2, false))
-                    ->setDataOcorrencia($this->convertDate($this->rem(138, 145, $detalhe)))
-                    ->setDataCredito($this->convertDate($this->rem(146, 153, $detalhe)))
+                    ->setDataOcorrencia($this->rem(138, 145, $detalhe))
+                    ->setDataCredito($this->rem(146, 153, $detalhe))
                     ->setCodigoOcorrenciaSacado($this->rem(154, 157, $detalhe))
-                    ->setDataOcorrenciaSacado($this->convertDate($this->rem(158, 165, $detalhe)))
+                    ->setDataOcorrenciaSacado($this->rem(158, 165, $detalhe))
                     ->setValorOcorrenciaSacado(Util::nFloat($this->rem(166, 180, $detalhe) / 100, 2, false))
                     ->setComplementoOcorrenciaSacado($this->rem(181, 210, $detalhe))
                     ->setCodigoBancoCorrespondenteCompensacao($this->rem(211, 213, $detalhe));
@@ -354,13 +354,13 @@ class Santander extends AbstractRetorno implements RetornoCnab240
     }
 
     /**
-     * @param array $trailerArquivo
+     * @param array $trailer
      *
      * @return boolean
      */
-    protected function processarTrailerArquivo(array $trailer)
+    protected function processarTrailer(array $trailer)
     {
-        $this->getTrailerArquivo()
+        $this->getTrailer()
             ->setNumeroLoteRemessa($this->rem(4, 7, $trailer))
             ->setTipoRegistro($this->rem(8, 8, $trailer))
             ->setQtdLotesArquivo((int)$this->rem(18, 23, $trailer))
