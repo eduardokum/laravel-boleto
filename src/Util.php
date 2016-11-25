@@ -739,7 +739,6 @@ final class Util
             if (--$factor < $earlyFactor) {
                 $factor = $lastFactor;
             }
-
         }
 
         $module = $sum % 11;
@@ -1053,17 +1052,17 @@ final class Util
      * @return bool
      */
     public static function isHeaderRetorno($header) {
-
+        if(!self::isCnab240($header) || !self::isCnab400($header)) {
+            return false;
+        }
         if(self::isCnab400($header) && substr($header, 0, 9) != '02RETORNO')
         {
             return false;
         }
-
         if (self::isCnab240($header) && substr($header, 142, 1) != '2')
         {
             return false;
         }
-
         return true;
     }
 }

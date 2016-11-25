@@ -29,23 +29,9 @@ class Factory
             throw new \Exception("Arquivo: $file, não é um arquivo de retorno");
         }
 
-        if (Util::isCnab400($file_content)) {
-            /**  Cnab 400 */
-            $banco = substr($file_content[0], 76, 3);
-            $bancoClass = __NAMESPACE__ . '\\Cnab400\\'.self::getBancoClass($banco);
-            $instancia = new $bancoClass($file_content);
-            return $instancia->processar();
-        }
-
-        if (Util::isCnab240($file_content)) {
-            /** Cnab 240 */
-            $banco = substr($file_content[0], 0, 3);
-            $bancoClass = __NAMESPACE__ . '\\Cnab240\\'.self::getBancoClass($banco);
-            $instancia = new $bancoClass($file_content);
-            return $instancia->processar();
-        }
-
-        throw new \Exception("Formato do arquivo não identificado.");
+        $bancoClass = self::getBancoClass($banco);
+        $instancia = new $bancoClass($file_content);
+        return $instancia->processar();
     }
 
     /**
@@ -55,6 +41,16 @@ class Factory
      * @throws \Exception
      */
     private static function getBancoClass($banco) {
+
+        if (Util::isCnab400($file_content)) {
+            /**  Cnab 400 */
+            $banco = substr($file_content[0], 76, 3);
+            $namespace = __NAMESPACE__ . '\\Cnab400\\';
+        } elseif (Util::isCnab240($file_content)) {
+            /** Cnab 240 */
+            $banco = substr($file_content[0], 0, 3);
+            $namespace = __NAMESPACE__ . '\\Cnab240\\';
+        }
 
         $aBancos = [
             BoletoContract::COD_BANCO_BB => 'Banco\\Bb',
@@ -68,7 +64,7 @@ class Factory
         ];
 
         if(array_key_exists($banco, $aBancos)) {
-            return $aBancos[$banco];
+            return $namespace.$aBancos[$banco];
         }
 
         throw new \Exception("Banco: $banco, inválido");

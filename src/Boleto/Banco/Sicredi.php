@@ -186,8 +186,6 @@ class Sicredi extends AbstractBoleto implements BoletoContract
         $possui_valor = $this->getValor() > 0 ? '1' : '0';
 
         $campo_livre = $tipo_cobranca . $carteira . $nosso_numero . $agencia . $posto . $conta . $possui_valor . '0';
-        $resto = Util::modulo11($campo_livre, 2, 9);
-        $dv = (in_array($resto, [1,10,11])) ? 0 : $resto;
         return $this->campoLivre = $campo_livre . Util::modulo11($campo_livre);
     }
 }
