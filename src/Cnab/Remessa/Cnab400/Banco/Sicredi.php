@@ -33,6 +33,13 @@ class Sicredi extends AbstractRemessa implements RemessaContract
     const INSTRUCAO_SEM = '00';
     const INSTRUCAO_PROTESTO = '06';
 
+    public function __construct(array $params)
+    {
+        parent::__construct($params);
+        $this->setCarteira('A'); // Carteira Simples 'A'
+    }
+
+
     /**
      * Código do banco
      * @var string
@@ -93,7 +100,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
 
         $this->add(1, 1, '1');
         $this->add(2, 2, 'A');
-        $this->add(3, 3, 'A');
+        $this->add(3, 3, $this->getCarteiraNumero());
         $this->add(4, 4, 'A');
         $this->add(5, 16, '');
         $this->add(17, 17, 'A');
