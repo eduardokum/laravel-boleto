@@ -4,7 +4,7 @@
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/eduardokum/laravel-boleto/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/eduardokum/laravel-boleto/?branch=master)
 [![Build Status](https://scrutinizer-ci.com/g/eduardokum/laravel-boleto/badges/build.png?b=master)](https://scrutinizer-ci.com/g/eduardokum/laravel-boleto/build-status/master)
 [![Build Status](https://travis-ci.org/eduardokum/laravel-boleto.svg?branch=master)](https://travis-ci.org/eduardokum/laravel-boleto)
-[![GitHub forks](https://img.shields.io/github/forks/eduardokum/laravel-boleto.svg?style=social&label=Fork)](https://github.com/eduardokum/
+[![GitHub forks](https://img.shields.io/github/forks/eduardokum/laravel-boleto.svg?style=social&label=Fork)](https://github.com/eduardokum/)
 laravel-boleto)
 
 # laravel-boleto
@@ -19,8 +19,8 @@ Pacote para gerar boletos e remessas
 - Hsbc
 - Itau
 - Santander
-- Sicredi ** em processo de homologação **
-- Banrisul ** necessita homologação **
+- Sicredi **em processo de homologação**
+- Banrisul **necessita homologação**
 
 **Remessa**
 - Banco do Brasil [400]
@@ -28,9 +28,9 @@ Pacote para gerar boletos e remessas
 - Caixa [400]
 - Hsbc [400]
 - Itau [400]
-- Santander [400
-- Sicredi [400]  ** em processo de homologação **
-- Banrisul [400] ** necessita homologação e complemento **
+- Santander [400, 240 **necessita testes**		]
+- Sicredi [400]  **em processo de homologação**
+- Banrisul [400] **necessita homologação e complemento**
 
 **Retorno**
 - Banco do Brasil  [400]
@@ -39,7 +39,7 @@ Pacote para gerar boletos e remessas
 - Hsbc [400]
 - Itau [400]
 - Santander [400, 240]
-- Sicredi [400] ** em testes **
+- Sicredi [400] **em testes**
 
 ## Instalação
 Via composer:
