@@ -69,7 +69,7 @@ class Pdf extends AbstractPdf implements PdfContract
         $this->Cell(0, $this->cell, $this->_(Util::nReal($this->boleto[$i]->getValor())));
         $this->SetFont($this->PadraoFont, '', $this->fcel);
 
-        $this->Ln(2);
+        $this->Ln(5);
         $this->traco('Recibo do Pagador', 4);
 
         return $this;
@@ -178,6 +178,8 @@ class Pdf extends AbstractPdf implements PdfContract
         }
 
         $this->traco('Corte na linha pontilhada', $pulaLinha, 5);
+        
+        $this->Ln(10);
 
         return $this;
 
