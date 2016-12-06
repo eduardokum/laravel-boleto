@@ -41,6 +41,7 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Banrisul([
 $remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Banrisul([
     'agencia' => 1111,
     'conta' => 22222,
+    'carteira' => 1,
     'codigoCliente' => 11112222222,
     'beneficiario' => $beneficiario,
 ]);

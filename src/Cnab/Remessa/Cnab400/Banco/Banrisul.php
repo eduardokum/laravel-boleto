@@ -3,7 +3,7 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
-use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa;
+use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
@@ -243,7 +243,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(63, 72, Util::formatCnab('9L', $boleto->getNossoNumero(), 10));
         $this->add(73, 104, '');
         $this->add(105, 107, '');
-        $this->add(108, 108, Util::formatCnab('X', $boleto->getCarteira(), 1));
+        $this->add(108, 108, Util::formatCnab('X', $this->getCarteiraNumero(), 1));
         $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
         if ($boleto->getStatus() == $boleto::STATUS_BAIXA)
         {

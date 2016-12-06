@@ -42,6 +42,7 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Sicredi([
 
 $remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Sicredi([
     'agencia' => 2606,
+    'carteira' => '1',
     'conta' => 12510,
     'idremessa' => 1,
     'beneficiario' => $beneficiario,

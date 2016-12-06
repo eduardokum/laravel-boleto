@@ -40,6 +40,7 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Santander([
 
 $remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Santander([
     'agencia' => 1111,
+    'carteira' => 101,
     'conta' => 99999999,
     'codigoCliente' => 12345678,
     'beneficiario' => $beneficiario,

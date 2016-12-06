@@ -2,7 +2,7 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
 use Carbon\Carbon;
-use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa;
+use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 use Eduardokum\LaravelBoleto\Util;
@@ -36,9 +36,22 @@ class Sicredi extends AbstractRemessa implements RemessaContract
     public function __construct(array $params)
     {
         parent::__construct($params);
-        $this->setCarteira('A'); // Carteira Simples 'A'
+        $this->setCarteira('A'); //Carteira Simples 'A'
     }
 
+    /**
+     * Define o código da carteira (Com ou sem registro)
+     *
+     * @param string $carteira
+     *
+     * @return AbstractRemessa
+     * @throws \Exception
+     */
+    public function setCarteira($carteira)
+    {
+        $this->carteira = 'A';
+        return $this;
+    }
 
     /**
      * Código do banco
@@ -50,7 +63,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
      * Define as carteiras disponíveis para cada banco
      * @var array
      */
-    protected $carteiras = ['1', '2', '3'];
+    protected $carteiras = ['A'];
 
     /**
      * Caracter de fim de linha

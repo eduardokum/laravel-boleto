@@ -8,7 +8,9 @@ use Eduardokum\LaravelBoleto\Util;
 abstract class AbstractRemessa
 {
     const HEADER = 'header';
+    const HEADER_LOTE = 'header_lote';
     const DETALHE = 'detalhe';
+    const TRAILER_LOTE = 'trailer_lote';
     const TRAILER = 'trailer';
 
     /**
@@ -28,7 +30,7 @@ abstract class AbstractRemessa
      *
      * @var array
      */
-    private $aRegistros = [
+    protected $aRegistros = [
         self::HEADER => [],
         self::DETALHE => [],
         self::TRAILER => [],
@@ -38,7 +40,7 @@ abstract class AbstractRemessa
      * Variavel com ponteiro para linha que esta sendo editada.
      * @var
      */
-    private $atual;
+    protected $atual;
 
     /**
      * Caracter de fim de linha
@@ -361,34 +363,6 @@ abstract class AbstractRemessa
     }
 
     /**
-     * Inicia a edição do header
-     */
-    protected function iniciaHeader()
-    {
-        $this->aRegistros[self::HEADER] = array_fill(0, 400, ' ');
-        $this->atual = &$this->aRegistros[self::HEADER];
-    }
-
-    /**
-     * Inicia a edição do trailer (footer).
-     */
-    protected function iniciaTrailer()
-    {
-        $this->aRegistros[self::TRAILER] = array_fill(0, 400, ' ');
-        $this->atual = &$this->aRegistros[self::TRAILER];
-    }
-
-    /**
-     * Inicia uma nova linha de detalhe e marca com a atual de edição
-     */
-    protected function iniciaDetalhe()
-    {
-        $this->iRegistros++;
-        $this->aRegistros[self::DETALHE][$this->iRegistros] = array_fill(0, 400, ' ');
-        $this->atual = &$this->aRegistros[self::DETALHE][$this->iRegistros];
-    }
-
-    /**
      * Retorna o header do arquivo.
      * @return mixed
      */
@@ -420,7 +394,7 @@ abstract class AbstractRemessa
      * @return string
      * @throws \Exception
      */
-    private function valida(array $a) {
+    protected function valida(array $a) {
         $a = array_filter($a, 'strlen');
         if (count($a) != 400) {
             throw new \Exception('$a não possui 400 posições, possui: ' . count($a));
@@ -436,31 +410,7 @@ abstract class AbstractRemessa
      */
     public function gerar()
     {
-
-        if (!$this->isValid())
-        {
-            throw new \Exception('Campos requeridos pelo banco, aparentam estar ausentes');
-        }
-
-        $stringRemessa = '';
-        if ($this->iRegistros < 1)
-        {
-            throw new \Exception('Nenhuma linha detalhe foi adicionada');
-        }
-
-        $this->header();
-        $stringRemessa .= $this->valida($this->getHeader()) . $this->fimLinha;
-
-        foreach ($this->getDetalhes() as $i => $detalhe)
-        {
-            $stringRemessa .= $this->valida($detalhe) . $this->fimLinha;
-        }
-
-        $this->trailer();
-        $stringRemessa .= $this->valida($this->getTrailer());
-        $stringRemessa .= $this->fimArquivo;
-
-        return $stringRemessa;
+        throw new \Exception('Método não implementado');
     }
 
     /**

@@ -42,6 +42,7 @@ $remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Itau([
     'agencia' => 1111,
     'conta' => 99999,
     'contaDv' => 9,
+    'carteira' => 112,
     'beneficiario' => $beneficiario,
 ]);
 $remessa->addBoleto($boleto);

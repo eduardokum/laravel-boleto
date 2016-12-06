@@ -8,7 +8,7 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco;
 
-use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa;
+use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 use Eduardokum\LaravelBoleto\Util;
@@ -26,12 +26,6 @@ class Santander extends AbstractRemessa implements RemessaContract
     const AP_APOLICE_DE_SEGURO = 20;
     const CH_CHEQUE = 97;
     const ND_NOTA_PROMISSORIA_DIRETA = 98;
-
-    /**
-     * Tipo do Layout
-     * @var int
-     */
-    protected $cnab = 240;
 
     /**
      * Código do banco
@@ -75,11 +69,27 @@ class Santander extends AbstractRemessa implements RemessaContract
      * @var string
      */
     protected $codigoCliente;
+
     /**
-     * Valor total dos titulos.
-     * @var float
+     * Retorna o codigo do cliente.
+     * @return string
      */
-    private $total = 0;
+    public function getCodigoCliente()
+    {
+        return $this->codigoCliente;
+    }
+
+    /**
+     * Seta o codigo do cliente.
+     * @param mixed $codigoCliente
+     * @return Santander
+     */
+    public function setCodigoCliente($codigoCliente)
+    {
+        $this->codigoCliente = $codigoCliente;
+
+        return $this;
+    }
 
     /**
      * Quantidade de registros do lote.
@@ -97,7 +107,11 @@ class Santander extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @param integer $nSequencialLote
+     * @param integer        $nSequencialLote
+     * @param BoletoContract $boleto
+     *
+     * @return $this
+     * @throws \Exception
      */
     protected function segmentoP($nSequencialLote, BoletoContract $boleto)
     {
@@ -162,7 +176,10 @@ class Santander extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @param integer $nSequencialLote
+     * @param integer        $nSequencialLote
+     * @param BoletoContract $boleto
+     *
+     * @throws \Exception
      */
     public function segmentoQ($nSequencialLote, BoletoContract $boleto)
     {
@@ -194,7 +211,6 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(218, 221, Util::formatCnab(9, 0, 3)); // Número do plano
         $this->add(218, 240, ''); // Reservado (Uso Banco)
 
-
     }
 
     public function isValid()
@@ -204,27 +220,6 @@ class Santander extends AbstractRemessa implements RemessaContract
         }
 
         return true;
-    }
-
-    /**
-     * Retorna o codigo do cliente.
-     * @return string
-     */
-    public function getCodigoCliente()
-    {
-        return $this->codigoCliente;
-    }
-
-    /**
-     * Seta o codigo do cliente.
-     * @param mixed $codigoCliente
-     * @return Santander
-     */
-    public function setCodigoCliente($codigoCliente)
-    {
-        $this->codigoCliente = $codigoCliente;
-
-        return $this;
     }
 
     protected function header()
@@ -258,7 +253,9 @@ class Santander extends AbstractRemessa implements RemessaContract
 
     /**
      * Retorna o codigo de transmissão.
+     *
      * @return string
+     * @throws \Exception
      */
     public function getCodigoTransmissao()
     {
@@ -269,7 +266,7 @@ class Santander extends AbstractRemessa implements RemessaContract
 
     protected function headerLote()
     {
-        $this->iniciaHeader();
+        $this->iniciaHeaderLote();
 
         /**
          * HEADER DE LOTE
@@ -299,12 +296,13 @@ class Santander extends AbstractRemessa implements RemessaContract
 
     /**
      * Define o trailer de lote
-     * @param $qtyRegistrosLote
+     *
      * @return $this
+     * @throws \Exception
      */
-    protected function trailerLote($qtyRegistrosLote)
+    protected function trailerLote()
     {
-        $this->iniciaTrailer();
+        $this->iniciaTrailerLote();
 
         $this->add(1, 3, Util::onlyNumbers($this->getCodigoBanco())); //Codigo do banco
         $this->add(4, 7, '0001'); // Numero do lote remessa
@@ -330,6 +328,5 @@ class Santander extends AbstractRemessa implements RemessaContract
 
         return $this;
     }
-
 
 }
