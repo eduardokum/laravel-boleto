@@ -112,7 +112,6 @@ class Itau extends AbstractRetorno implements RetornoCnab400
 
     protected function processarDetalhe(array $detalhe)
     {
-
         $d = $this->detalheAtual();
 
         $d->setNossoNumero($this->rem(86, 94, $detalhe))
@@ -149,8 +148,7 @@ class Itau extends AbstractRetorno implements RetornoCnab400
         } elseif ($d->hasOcorrencia('03', '15', '16', '60', '03')) {
             $this->totais['erros']++;
             $d->setError('Consulte seu Internet Banking');
-        } else
-        {
+        } else {
             $d->setOcorrenciaTipo($d::OCORRENCIA_OUTROS);
         }
 

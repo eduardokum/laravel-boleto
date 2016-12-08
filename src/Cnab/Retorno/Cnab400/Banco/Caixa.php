@@ -155,8 +155,7 @@ class Caixa extends AbstractRetorno implements RetornoCnab400
         } elseif ($d->hasOcorrencia('99')) {
             $this->totais['erros']++;
             $d->setError(array_get($this->rejeicoes, $this->rem(80, 82, $detalhe), 'Consulte seu Internet Banking'));
-        } else
-        {
+        } else {
             $d->setOcorrenciaTipo($d::OCORRENCIA_OUTROS);
         }
 

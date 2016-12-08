@@ -1358,7 +1358,7 @@ abstract class AbstractBoleto implements BoletoContract
             'pagador' => $this->getPagador()->getNome(),
             'pagador_nome_documento' => $this->getPagador()->getNomeDocumento(),
             'pagador_documento' => $this->getPagador()->getDocumento(),
-            'pagador_endereco1' => $this->getPagador()->getEndereco(),
+            'pagador_endereco1' => trim($this->getPagador()->getEndereco() . ' - ' . $this->getPagador()->getBairro(), ' -'),
             'pagador_endereco2' => $this->getPagador()->getCepCidadeUf(),
             'demonstrativo' => $this->getDescricaoDemonstrativo(),
             'instrucoes' => $this->getInstrucoes(),

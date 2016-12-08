@@ -454,18 +454,4 @@ abstract class AbstractRemessa
 
         return $path;
     }
-    //
-    //    public function __call($name, $arguments)
-    //    {
-    //        if(strtolower(substr($name, 0, 3)) == 'get')
-    //        {
-    //            $name = lcfirst(substr($name, 3));
-    //            if(property_exists($this, $name))
-    //            {
-    //                return $this->$name;
-    //            }
-    //        }
-    //
-    //        throw new \Exception('Método ' . $name . ' não existe');
-    //    }
 }

@@ -230,8 +230,7 @@ class Bb extends AbstractRetorno implements RetornoCnab400
         } elseif ($d->hasOcorrencia('03')) {
             $this->totais['erros']++;
             $d->setError(array_get($this->rejeicoes, $d->getOcorrencia(), 'Consulte seu Internet Banking'));
-        } else
-        {
+        } else {
             $d->setOcorrenciaTipo($d::OCORRENCIA_OUTROS);
         }
 
