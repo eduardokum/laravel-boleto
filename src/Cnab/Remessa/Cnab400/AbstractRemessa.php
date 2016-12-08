@@ -6,6 +6,8 @@ use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa as AbstractRemessaGene
 abstract class AbstractRemessa extends AbstractRemessaGeneric
 {
 
+    protected $tamanho_linha = 400;
+
     /**
      * Inicia a edição do header
      */

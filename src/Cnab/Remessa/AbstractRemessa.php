@@ -413,8 +413,8 @@ abstract class AbstractRemessa
     protected function valida(array $a) 
     {
         $a = array_filter($a, 'strlen');
-        if (count($a) != 400) {
-            throw new \Exception('$a não possui 400 posições, possui: ' . count($a));
+        if (count($a) != $this->tamanho_linha) {
+            throw new \Exception(sprintf('$a não possui %s posições, possui: %s', $this->tamanho_linha, count($a)));
         }
         return implode('', $a);
     }

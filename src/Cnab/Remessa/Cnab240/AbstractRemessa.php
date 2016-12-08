@@ -5,6 +5,9 @@ use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa as AbstractRemessaGene
 
 abstract class AbstractRemessa extends AbstractRemessaGeneric
 {
+
+    protected $tamanho_linha = 240;
+
     /**
      * Array contendo o cnab.
      *
@@ -17,6 +20,21 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
         self::TRAILER_LOTE => [],
         self::TRAILER => [],
     ];
+
+    /**
+     * Função para gerar o cabeçalho do arquivo.
+     *
+     * @return mixed
+     */
+    protected abstract function headerLote();
+
+
+    /**
+     * Função que gera o trailer (footer) do arquivo.
+     *
+     * @return mixed
+     */
+    protected abstract function trailerLote();
 
     /**
      * Retorna o header do lote.
@@ -103,8 +121,9 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
         }
 
         $this->header();
-
         $stringRemessa .= $this->valida($this->getHeader()) . $this->fimLinha;
+
+        $this->headerLote();
         $stringRemessa .= $this->valida($this->getHeaderLote()) . $this->fimLinha;
 
         foreach ($this->getDetalhes() as $i => $detalhe)
@@ -112,8 +131,10 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
             $stringRemessa .= $this->valida($detalhe) . $this->fimLinha;
         }
 
-        $this->trailer();
+        $this->trailerLote();
         $stringRemessa .= $this->valida($this->getTrailerLote()) . $this->fimLinha;
+
+        $this->trailer();
         $stringRemessa .= $this->valida($this->getTrailer()) . $this->fimArquivo;
 
         return $stringRemessa;

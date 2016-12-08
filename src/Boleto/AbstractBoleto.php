@@ -66,13 +66,13 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Dias para protesto
      *
-     * @var float
+     * @var integer
      */
     protected $diasProtesto = 0;
     /**
      * Dias para baixa automática
      *
-     * @var float
+     * @var integer
      */
     protected $diasBaixaAutomatica;
     /**

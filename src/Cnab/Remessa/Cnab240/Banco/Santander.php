@@ -111,7 +111,6 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->segmentoP($nSequencialLote + $nSequencialLote + 1, $boleto);
         $this->segmentoQ($nSequencialLote + $nSequencialLote + 2, $boleto);
 
-
         return $this;
     }
 

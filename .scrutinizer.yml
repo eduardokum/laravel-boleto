@@ -4,6 +4,13 @@ filter:
 build:
     environment:
         php: 5.6
+    tests:
+        override:
+            -
+                command: 'phpunit --coverage-clover=clover-file'
+                coverage:
+                    file: 'clover-file'
+                    format: 'clover
 
 checks:
     php:
