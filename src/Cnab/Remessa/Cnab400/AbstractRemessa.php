@@ -43,14 +43,12 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
     public function gerar()
     {
 
-        if (!$this->isValid())
-        {
+        if (!$this->isValid()) {
             throw new \Exception('Campos requeridos pelo banco, aparentam estar ausentes');
         }
 
         $stringRemessa = '';
-        if ($this->iRegistros < 1)
-        {
+        if ($this->iRegistros < 1) {
             throw new \Exception('Nenhuma linha detalhe foi adicionada');
         }
 

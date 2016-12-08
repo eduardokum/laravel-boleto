@@ -9,16 +9,19 @@ class Santander  extends AbstractBoleto implements BoletoContract
 {
     /**
      * Código do banco
+     *
      * @var string
      */
     protected $codigoBanco = self::COD_BANCO_SANTANDER;
     /**
      * Define as carteiras disponíveis para este banco
+     *
      * @var array
      */
     protected $carteiras = ['101', '201'];
     /**
      * Espécie do documento, coódigo para remessa
+     *
      * @var string
      */
     protected $especiesCodigo = [
@@ -31,11 +34,13 @@ class Santander  extends AbstractBoleto implements BoletoContract
     ];
     /**
      * Define os nomes das carteiras para exibição no boleto
+     *
      * @var array
      */
     protected $carteirasNomes = ['101' => 'Cobrança Simples ECR', '102' => 'Cobrança Simples CSR'];
     /**
      * Define o valor do IOS - Seguradoras (Se 7% informar 7. Limitado a 9%) - Demais clientes usar 0 (zero)
+     *
      * @var int
      */
     protected $ios = 0;
@@ -50,7 +55,7 @@ class Santander  extends AbstractBoleto implements BoletoContract
     /**
      * Define o código da carteira (Com ou sem registro)
      *
-     * @param string $carteira
+     * @param  string $carteira
      * @return AbstractBoleto
      * @throws \Exception
      */
@@ -58,13 +63,13 @@ class Santander  extends AbstractBoleto implements BoletoContract
     {
         switch ($carteira)
         {
-            case '1':
-            case '5':
-                $carteira = '101';
-                break;
-            case '4':
-                $carteira = '102';
-                break;
+        case '1':
+        case '5':
+            $carteira = '101';
+            break;
+        case '4':
+            $carteira = '102';
+            break;
         }
         return parent::setCarteira($carteira);
     }
@@ -113,12 +118,10 @@ class Santander  extends AbstractBoleto implements BoletoContract
      */
     public function isValid()
     {
-        if(
-            $this->numeroDocumento == '' ||
-            $this->conta == '' ||
-            $this->carteira == ''
-        )
-        {
+        if($this->numeroDocumento == '' 
+            || $this->conta == '' 
+            || $this->carteira == ''
+        ) {
             return false;
         }
         return true;

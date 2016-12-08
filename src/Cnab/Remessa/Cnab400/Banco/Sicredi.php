@@ -55,12 +55,14 @@ class Sicredi extends AbstractRemessa implements RemessaContract
 
     /**
      * Código do banco
+     *
      * @var string
      */
     protected $codigoBanco = BoletoContract::COD_BANCO_SICREDI;
 
     /**
      * Define as carteiras disponíveis para cada banco
+     *
      * @var array
      */
     protected $carteiras = ['A'];
@@ -134,12 +136,10 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(93, 96, Util::formatCnab('9', $boleto->getMulta(), 4, 2));
         $this->add(97, 108, '');
         $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
-        if ($boleto->getStatus() == $boleto::STATUS_BAIXA)
-        {
+        if ($boleto->getStatus() == $boleto::STATUS_BAIXA) {
             $this->add(109, 110, self::OCORRENCIA_BAIXA); // BAIXA
         }
-        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO)
-        {
+        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
             $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO); // ALTERAR VENCIMENTO
         }
         $this->add(111, 120, Util::formatCnab('X', $boleto->getNumeroDocumento(), 10));
@@ -151,8 +151,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(151, 156, $boleto->getDataDocumento()->format('dmy'));
         $this->add(157, 158, self::INSTRUCAO_SEM);
         $this->add(159, 160, self::INSTRUCAO_SEM);
-        if ($boleto->getDiasProtesto() > 0)
-        {
+        if ($boleto->getDiasProtesto() > 0) {
             $this->add(157, 158, self::INSTRUCAO_PROTESTO);
             $this->add(159, 160, Util::formatCnab('9', $boleto->getDiasProtesto(), 2));
         }
@@ -174,8 +173,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(354, 394, Util::formatCnab('X', $boleto->getSacadorAvalista() ? $boleto->getSacadorAvalista()->getNome() : '', 41));
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
 
-        if ($boleto->getByte() == 1)
-        {
+        if ($boleto->getByte() == 1) {
             $this->iniciaDetalhe();
 
             $this->add(1, 1, '2');
@@ -209,8 +207,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
 
     public function isValid()
     {
-        if ($this->getIdremessa() == '' || !parent::isValid())
-        {
+        if ($this->getIdremessa() == '' || !parent::isValid()) {
             return false;
         }
 

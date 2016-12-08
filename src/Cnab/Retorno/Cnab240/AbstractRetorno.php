@@ -9,10 +9,10 @@ use Illuminate\Support\Collection;
 /**
  * Class AbstractRetorno
  *
- * @method \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Detalhe getDetalhe()
- * @method \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Header getHeader()
- * @method \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Trailer getTrailer()
- * @method \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Detalhe detalheAtual()
+ * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Detalhe getDetalhe()
+ * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Header getHeader()
+ * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Trailer getTrailer()
+ * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Detalhe detalheAtual()
  * @package Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240
  */
 abstract class AbstractRetorno extends AbstractRetornoGeneric
@@ -31,7 +31,8 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
      * @param String $file
      * @throws \Exception
      */
-    public function __construct($file) {
+    public function __construct($file) 
+    {
         parent::__construct($file);
 
         $this->header = new Header();
@@ -111,8 +112,7 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
      */
     public function processar()
     {
-        if ($this->isProcessado())
-        {
+        if ($this->isProcessado()) {
             return $this;
         }
 

@@ -506,7 +506,7 @@ class Detalhe implements DetalheContract
     /**
      * Determine if an attribute exists on the detalhe.
      *
-     * @param  string  $key
+     * @param  string $key
      * @return bool
      */
     public function __isset($key)

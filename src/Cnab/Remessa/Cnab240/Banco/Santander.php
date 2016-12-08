@@ -29,18 +29,21 @@ class Santander extends AbstractRemessa implements RemessaContract
 
     /**
      * Código do banco
+     *
      * @var string
      */
     protected $codigoBanco = BoletoContract::COD_BANCO_SANTANDER;
 
     /**
      * Tipo de inscrição da empresa
+     *
      * @var string
      */
     protected $tipoInscricaoEmpresa;
 
     /**
      * Numero de inscrição da empresa
+     *
      * @var string
      */
     protected $numeroInscricaoEmpresa;
@@ -48,30 +51,35 @@ class Santander extends AbstractRemessa implements RemessaContract
 
     /**
      * Define as carteiras disponíveis para cada banco
+     *
      * @var array
      */
     protected $carteiras = [101, 201];
 
     /**
      * Caracter de fim de linha
+     *
      * @var string
      */
     protected $fimLinha = "\r\n";
 
     /**
      * Caracter de fim de arquivo
+     *
      * @var null
      */
     protected $fimArquivo = "\r\n";
 
     /**
      * Codigo do cliente junto ao banco.
+     *
      * @var string
      */
     protected $codigoCliente;
 
     /**
      * Retorna o codigo do cliente.
+     *
      * @return string
      */
     public function getCodigoCliente()
@@ -81,7 +89,8 @@ class Santander extends AbstractRemessa implements RemessaContract
 
     /**
      * Seta o codigo do cliente.
-     * @param mixed $codigoCliente
+     *
+     * @param  mixed $codigoCliente
      * @return Santander
      */
     public function setCodigoCliente($codigoCliente)
@@ -151,8 +160,7 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(110, 117, date('dmY')); //Data da emissão do título
 
         $juros = 0;
-        if ($boleto->getJuros() > 0)
-        {
+        if ($boleto->getJuros() > 0) {
             $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
         }
         $this->add(118, 118, Util::formatCnab(9, '', 1)); //Código do juros de mora

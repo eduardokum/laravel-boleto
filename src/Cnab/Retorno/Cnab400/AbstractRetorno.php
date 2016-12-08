@@ -11,10 +11,10 @@ use Illuminate\Support\Collection;
 /**
  * Class AbstractRetorno
  *
- * @method \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Detalhe getDetalhe()
- * @method \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Header getHeader()
- * @method \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Trailer getTrailer()
- * @method \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Detalhe detalheAtual()
+ * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Detalhe getDetalhe()
+ * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Header getHeader()
+ * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Trailer getTrailer()
+ * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Detalhe detalheAtual()
  * @package Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400
  */
 abstract class AbstractRetorno extends AbstractRetornoGeneric
@@ -23,7 +23,8 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
      * @param String $file
      * @throws \Exception
      */
-    public function __construct($file) {
+    public function __construct($file) 
+    {
 
         parent::__construct($file);
 
@@ -66,10 +67,10 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
      *
      * @return $this
      */
-    public function processar() {
+    public function processar() 
+    {
 
-        if ($this->isProcessado())
-        {
+        if ($this->isProcessado()) {
             return $this;
         }
 
@@ -87,8 +88,7 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
                 $this->processarTrailer($linha);
             } else {
                 $this->incrementDetalhe();
-                if ($this->processarDetalhe($linha) === false)
-                {
+                if ($this->processarDetalhe($linha) === false) {
                     unset($this->detalhe[$this->increment]);
                     $this->increment--;
                 }

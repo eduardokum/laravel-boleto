@@ -15,12 +15,14 @@ abstract class AbstractRemessa
 
     /**
      * Código do banco
+     *
      * @var string
      */
     protected $codigoBanco;
 
     /**
      * Contagem dos registros Detalhes
+     *
      * @var int
      */
     protected $iRegistros = 0;
@@ -38,6 +40,7 @@ abstract class AbstractRemessa
 
     /**
      * Variavel com ponteiro para linha que esta sendo editada.
+     *
      * @var
      */
     protected $atual;
@@ -64,21 +67,25 @@ abstract class AbstractRemessa
     protected $idremessa;
     /**
      * Agência
+     *
      * @var int
      */
     protected $agencia;
     /**
      * Dígito da agência
+     *
      * @var string|int
      */
     protected $agenciaDv;
     /**
      * Conta
+     *
      * @var int
      */
     protected $conta;
     /**
      * Dígito da conta
+     *
      * @var int
      */
     protected $contaDv;
@@ -90,12 +97,14 @@ abstract class AbstractRemessa
     protected $carteira;
     /**
      * Define as carteiras disponíveis para cada banco
+     *
      * @var array
      */
     protected $carteiras = [];
 
     /**
      * Entidade beneficiario (quem esta gerando a remessa)
+     *
      * @var PessoaContract
      */
     protected $beneficiario;
@@ -105,7 +114,7 @@ abstract class AbstractRemessa
      *
      * @param array $params Parâmetros iniciais para construção do objeto
      */
-    public function  __construct($params = array())
+    public function __construct($params = array())
     {
         foreach ($params as $param => $value)
         {
@@ -167,7 +176,7 @@ abstract class AbstractRemessa
     /**
      * Define a agência
      *
-     * @param int $agencia
+     * @param  int $agencia
      * @return AbstractRemessa
      */
     public function setAgencia($agencia)
@@ -187,7 +196,7 @@ abstract class AbstractRemessa
     /**
      * Define o dígito da agência
      *
-     * @param string|int $agenciaDv
+     * @param  string|int $agenciaDv
      * @return AbstractRemessa
      */
     public function setAgenciaDv($agenciaDv)
@@ -207,7 +216,7 @@ abstract class AbstractRemessa
     /**
      * Define o número da conta
      *
-     * @param int $conta
+     * @param  int $conta
      * @return AbstractRemessa
      */
     public function setConta($conta)
@@ -227,7 +236,7 @@ abstract class AbstractRemessa
     /**
      * Define o dígito verificador da conta
      *
-     * @param int $contaDv
+     * @param  int $contaDv
      * @return AbstractRemessa
      */
     public function setContaDv($contaDv)
@@ -247,7 +256,7 @@ abstract class AbstractRemessa
     /**
      * Define o código da carteira (Com ou sem registro)
      *
-     * @param string $carteira
+     * @param  string $carteira
      * @return AbstractRemessa
      * @throws \Exception
      */
@@ -291,9 +300,9 @@ abstract class AbstractRemessa
      *
      * @return boolean
      */
-    public function isValid() {
-        if ($this->carteira == '' || $this->agencia == '' || $this->conta == '' || !$this->beneficiario instanceof PessoaContract)
-        {
+    public function isValid() 
+    {
+        if ($this->carteira == '' || $this->agencia == '' || $this->conta == '' || !$this->beneficiario instanceof PessoaContract) {
             return false;
         }
         return true;
@@ -339,7 +348,8 @@ abstract class AbstractRemessa
      *
      * @return $this
      */
-    public function addBoletos(array $boletos) {
+    public function addBoletos(array $boletos) 
+    {
         foreach ($boletos as $boleto) {
             $this->addBoleto($boleto);
         }
@@ -364,25 +374,31 @@ abstract class AbstractRemessa
 
     /**
      * Retorna o header do arquivo.
+     *
      * @return mixed
      */
-    protected function getHeader() {
+    protected function getHeader() 
+    {
         return $this->aRegistros[self::HEADER];
     }
 
     /**
      * Retorna os detalhes do arquivo
+     *
      * @return \Illuminate\Support\Collection
      */
-    protected function getDetalhes() {
+    protected function getDetalhes() 
+    {
         return collect($this->aRegistros[self::DETALHE]);
     }
 
     /**
      * Retorna o trailer do arquivo.
+     *
      * @return mixed
      */
-    protected function getTrailer() {
+    protected function getTrailer() 
+    {
         return $this->aRegistros[self::TRAILER];
     }
 
@@ -394,7 +410,8 @@ abstract class AbstractRemessa
      * @return string
      * @throws \Exception
      */
-    protected function valida(array $a) {
+    protected function valida(array $a) 
+    {
         $a = array_filter($a, 'strlen');
         if (count($a) != 400) {
             throw new \Exception('$a não possui 400 posições, possui: ' . count($a));
@@ -437,18 +454,18 @@ abstract class AbstractRemessa
 
         return $path;
     }
-//
-//    public function __call($name, $arguments)
-//    {
-//        if(strtolower(substr($name, 0, 3)) == 'get')
-//        {
-//            $name = lcfirst(substr($name, 3));
-//            if(property_exists($this, $name))
-//            {
-//                return $this->$name;
-//            }
-//        }
-//
-//        throw new \Exception('Método ' . $name . ' não existe');
-//    }
+    //
+    //    public function __call($name, $arguments)
+    //    {
+    //        if(strtolower(substr($name, 0, 3)) == 'get')
+    //        {
+    //            $name = lcfirst(substr($name, 3));
+    //            if(property_exists($this, $name))
+    //            {
+    //                return $this->$name;
+    //            }
+    //        }
+    //
+    //        throw new \Exception('Método ' . $name . ' não existe');
+    //    }
 }

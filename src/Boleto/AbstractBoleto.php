@@ -17,106 +17,127 @@ abstract class AbstractBoleto implements BoletoContract
 {
     /**
      * Código do banco
+     *
      * @var string
      */
     protected $codigoBanco;
     /**
      * Moeda
+     *
      * @var int
      */
     protected $moeda = 9;
     /**
      * Valor total do boleto
+     *
      * @var float
      */
     protected $valor;
     /**
      * Valor de descontos e abatimentos
+     *
      * @var float
      */
     protected $descontosAbatimentos;
     /**
      * Valor para outras deduções
+     *
      * @var float
      */
     protected $outrasDeducoes;
     /**
      * Valor para multa
+     *
      * @var float
      */
     protected $multa = 0;
     /**
      * Valor para mora juros
+     *
      * @var float
      */
     protected $juros = 0;
     /**
      * Dias apos vencimento do juros
+     *
      * @var int
      */
     protected $jurosApos = 0;
     /**
      * Dias para protesto
+     *
      * @var float
      */
     protected $diasProtesto = 0;
     /**
      * Dias para baixa automática
+     *
      * @var float
      */
     protected $diasBaixaAutomatica;
     /**
      * Valor para outros acréscimos
+     *
      * @var float
      */
     protected $outrosAcrescimos;
     /**
      * Valor cobrado
+     *
      * @var
      */
     protected $valorCobrado;
     /**
      * Campo valor do boleto
+     *
      * @var
      */
     protected $valorUnitario;
     /**
      * Campo quantidade
+     *
      * @var
      */
     protected $quantidade;
     /**
      * Data do documento
+     *
      * @var \Carbon\Carbon
      */
     protected $dataDocumento;
     /**
      * Data de emissão
+     *
      * @var \Carbon\Carbon
      */
     protected $dataProcessamento;
     /**
      * Data de vencimento
+     *
      * @var \Carbon\Carbon
      */
     protected $dataVencimento;
     /**
      * Campo de aceite
+     *
      * @var string
      */
     protected $aceite = 'N';
     /**
      * Espécie do documento, geralmente DM (Duplicata Mercantil)
+     *
      * @var string
      */
     protected $especieDoc = 'DM';
     /**
      * Espécie do documento, coódigo para remessa
+     *
      * @var string
      */
     protected $especiesCodigo = [];
     /**
      * Número do documento
+     *
      * @var int
      */
     protected $numeroDocumento;
@@ -128,81 +149,97 @@ abstract class AbstractBoleto implements BoletoContract
     protected $numero;
     /**
      * Campo de uso do banco no boleto
+     *
      * @var string
      */
     protected $usoBanco;
     /**
      * Agência
+     *
      * @var string
      */
     protected $agencia;
     /**
      * Dígito da agência
+     *
      * @var string
      */
     protected $agenciaDv;
     /**
      * Conta
+     *
      * @var string
      */
     protected $conta;
     /**
      * Dígito da conta
+     *
      * @var string
      */
     protected $contaDv;
     /**
      * Modalidade de cobrança do cliente, geralmente Cobrança Simples ou Registrada
+     *
      * @var string
      */
     protected $carteira;
     /**
      * Define as carteiras disponíveis para cada banco
+     *
      * @var array
      */
     protected $carteiras = array();
     /**
      * Define as carteiras disponíveis para cada banco
+     *
      * @var array
      */
     protected $carteirasNomes = array();
     /**
      * Entidade beneficiario (quem emite o boleto)
+     *
      * @var PessoaContract
      */
     protected $beneficiario;
     /**
      * Entidade pagadora (de quem se cobra o boleto)
+     *
      * @var PessoaContract
      */
     protected $pagador;
     /**
      * Entidade sacador avalista
+     *
      * @var PessoaContract
      */
     protected $sacadorAvalista;
     /**
      * Array com as linhas do demonstrativo (descrição do pagamento)
+     *
      * @var array
      */
     protected $descricaoDemonstrativo;
     /**
      * Linha de local de pagamento
+     *
      * @var string
      */
     protected $localPagamento = 'Pagável em qualquer agência bancária até o vencimento.';
     /**
      * Array com as linhas de instruções
+     *
      * @var array
      */
     protected $instrucoes = ['Pagar até a data do vencimento.'];
     /**
      * Localização do logotipo do banco, referente ao diretório de imagens
+     *
      * @var string
      */
     protected $logo;
     /**
      * Variáveis adicionais.
+     *
      * @var array
      */
     public $variaveis_adicionais = [];
@@ -245,7 +282,7 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @param array $params Parâmetros iniciais para construção do objeto
      */
-    public function  __construct($params = array())
+    public function __construct($params = array())
     {
         foreach ($params as $param => $value)
         {
@@ -269,7 +306,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define a agência
      *
-     * @param string $agencia
+     * @param  string $agencia
      * @return AbstractBoleto
      */
     public function setAgencia($agencia)
@@ -289,7 +326,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o dígito da agência
      *
-     * @param string $agenciaDv
+     * @param  string $agenciaDv
      * @return AbstractBoleto
      */
     public function setAgenciaDv($agenciaDv)
@@ -309,7 +346,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o código da carteira (Com ou sem registro)
      *
-     * @param string $carteira
+     * @param  string $carteira
      * @return AbstractBoleto
      * @throws \Exception
      */
@@ -342,7 +379,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define a entidade beneficiario
      *
-     * @param PessoaContract $beneficiario
+     * @param  PessoaContract $beneficiario
      * @return AbstractBoleto
      */
     public function setBeneficiario(PessoaContract $beneficiario)
@@ -371,7 +408,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o número da conta
      *
-     * @param string $conta
+     * @param  string $conta
      * @return AbstractBoleto
      */
     public function setConta($conta)
@@ -391,7 +428,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o dígito verificador da conta
      *
-     * @param string $contaDv
+     * @param  string $contaDv
      * @return AbstractBoleto
      */
     public function setContaDv($contaDv)
@@ -411,7 +448,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define a data de vencimento
      *
-     * @param \Carbon\Carbon $dataVencimento
+     * @param  \Carbon\Carbon $dataVencimento
      * @return AbstractBoleto
      */
     public function setDataVencimento(Carbon $dataVencimento)
@@ -431,7 +468,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define a data do documento
      *
-     * @param \Carbon\Carbon $dataDocumento
+     * @param  \Carbon\Carbon $dataDocumento
      * @return AbstractBoleto
      */
     public function setDataDocumento(Carbon $dataDocumento)
@@ -451,7 +488,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o campo aceite
      *
-     * @param string $aceite
+     * @param  string $aceite
      * @return AbstractBoleto
      */
     public function setAceite($aceite)
@@ -471,7 +508,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o campo Espécie Doc, geralmente DM (Duplicata Mercantil)
      *
-     * @param string $especieDoc
+     * @param  string $especieDoc
      * @return AbstractBoleto
      */
     public function setEspecieDoc($especieDoc)
@@ -502,7 +539,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o campo Número do documento
      *
-     * @param int $numeroDocumento
+     * @param  int $numeroDocumento
      * @return AbstractBoleto
      */
     public function setNumeroDocumento($numeroDocumento)
@@ -522,7 +559,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o número  definido pelo cliente para compor o nosso número
      *
-     * @param int $numero
+     * @param  int $numero
      * @return AbstractBoleto
      */
     public function setNumero($numero)
@@ -553,7 +590,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o campo Uso do banco
      *
-     * @param string $usoBanco
+     * @param  string $usoBanco
      * @return AbstractBoleto
      */
     public function setUsoBanco($usoBanco)
@@ -573,7 +610,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define a data de geração do boleto
      *
-     * @param \Carbon\Carbon $dataProcessamento
+     * @param  \Carbon\Carbon $dataProcessamento
      * @return AbstractBoleto
      */
     public function setDataProcessamento(Carbon $dataProcessamento)
@@ -600,8 +637,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function addInstrucao($instrucao)
     {
-        if (count($this->getInstrucoes()) > 8)
-        {
+        if (count($this->getInstrucoes()) > 8) {
             throw new \Exception('Atingido o máximo de 5 instruções.');
         }
         $this->instrucoes[] = $instrucao;
@@ -617,8 +653,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setInstrucoes($instrucoes)
     {
-        if (count($instrucoes) > 8)
-        {
+        if (count($instrucoes) > 8) {
             throw new \Exception('Máximo de 8 instruções.');
         }
         $this->instrucoes = $instrucoes;
@@ -644,8 +679,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function addDescricaoDemonstrativo($descricaoDemonstrativo)
     {
-        if (count($this->getDescricaoDemonstrativo()) > 5)
-        {
+        if (count($this->getDescricaoDemonstrativo()) > 5) {
             throw new \Exception('Atingido o máximo de 5 demonstrativos.');
         }
         $this->descricaoDemonstrativo[] = $descricaoDemonstrativo;
@@ -662,8 +696,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setDescricaoDemonstrativo($descricaoDemonstrativo)
     {
-        if (count($descricaoDemonstrativo) > 5)
-        {
+        if (count($descricaoDemonstrativo) > 5) {
             throw new \Exception('Máximo de 5 demonstrativos.');
         }
         $this->descricaoDemonstrativo = $descricaoDemonstrativo;
@@ -681,7 +714,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o local de pagamento do boleto
      *
-     * @param string $localPagamento
+     * @param  string $localPagamento
      * @return AbstractBoleto
      */
     public function setLocalPagamento($localPagamento)
@@ -701,7 +734,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define a moeda utilizada pelo boleto
      *
-     * @param int $moeda
+     * @param  int $moeda
      * @return AbstractBoleto
      */
     public function setMoeda($moeda)
@@ -721,7 +754,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o objeto do pagador
      *
-     * @param PessoaContract $pagador
+     * @param  PessoaContract $pagador
      * @return AbstractBoleto
      */
     public function setPagador(PessoaContract $pagador)
@@ -741,7 +774,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o objeto sacador avalista do boleto
      *
-     * @param PessoaContract $sacadorAvalista
+     * @param  PessoaContract $sacadorAvalista
      * @return AbstractBoleto
      */
     public function setSacadorAvalista(PessoaContract $sacadorAvalista)
@@ -761,7 +794,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o valor total do boleto (incluindo taxas)
      *
-     * @param string $valor
+     * @param  string $valor
      * @return AbstractBoleto
      */
     public function setValor($valor)
@@ -781,7 +814,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o campo Descontos / Abatimentos
      *
-     * @param float $descontosAbatimentos
+     * @param  float $descontosAbatimentos
      * @return AbstractBoleto
      */
     public function setDescontosAbatimentos($descontosAbatimentos)
@@ -801,7 +834,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Seta a % de multa
      *
-     * @param float $multa
+     * @param  float $multa
      * @return AbstractBoleto
      */
     public function setMulta($multa)
@@ -822,7 +855,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Seta a % de juros
      *
-     * @param float $juros
+     * @param  float $juros
      * @return AbstractBoleto
      */
     public function setJuros($juros)
@@ -843,7 +876,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Seta a quantidade de dias apos o vencimento que cobra o juros
      *
-     * @param int $jurosApos
+     * @param  int $jurosApos
      * @return AbstractBoleto
      */
     public function setJurosApos($jurosApos)
@@ -920,7 +953,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o campo outras deduções do boleto
      *
-     * @param float $outrasDeducoes
+     * @param  float $outrasDeducoes
      * @return AbstractBoleto
      */
     public function setOutrasDeducoes($outrasDeducoes)
@@ -940,7 +973,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o campo outros acréscimos do boleto
      *
-     * @param float $outrosAcrescimos
+     * @param  float $outrosAcrescimos
      * @return AbstractBoleto
      */
     public function setOutrosAcrescimos($outrosAcrescimos)
@@ -1020,7 +1053,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define a localização do logotipo
      *
-     * @param string $logo
+     * @param  string $logo
      * @return AbstractBoleto
      */
     public function setLogo($logo)
@@ -1111,13 +1144,12 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Retorna o Nosso Número calculado.
      *
-     * @param bool $incluirFormatacao Incluir formatação ou não (pontuação, espaços e barras)
+     * @param  bool $incluirFormatacao Incluir formatação ou não (pontuação, espaços e barras)
      * @return string
      */
     public function getNossoNumero($incluirFormatacao = true)
     {
-        if (empty($this->campoNossoNumero))
-        {
+        if (empty($this->campoNossoNumero)) {
             $this->campoNossoNumero = $this->gerarNossoNumero();
         }
         $numero = $this->campoNossoNumero;
@@ -1155,13 +1187,11 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function isValid()
     {
-        if (
-            $this->numeroDocumento == '' ||
-            $this->agencia == '' ||
-            $this->conta == '' ||
-            $this->carteira == ''
-        )
-        {
+        if ($this->numeroDocumento == '' 
+            || $this->agencia == '' 
+            || $this->conta == '' 
+            || $this->carteira == ''
+        ) {
             return false;
         }
         return true;
@@ -1194,18 +1224,17 @@ abstract class AbstractBoleto implements BoletoContract
     }
     /**
      * Retorna o codigo de barras
+     *
      * @return string
      * @throws \Exception
      */
     public function getCodigoBarras()
     {
-        if (!empty($this->campoCodigoBarras))
-        {
+        if (!empty($this->campoCodigoBarras)) {
             return $this->campoCodigoBarras;
         }
 
-        if (!$this->isValid())
-        {
+        if (!$this->isValid()) {
             throw new \Exception('Campos requeridos pelo banco, aparentam estar ausentes');
         }
 
@@ -1232,13 +1261,13 @@ abstract class AbstractBoleto implements BoletoContract
     }
     /**
      * Retorna a linha digitável do boleto
+     *
      * @return string
      * @throws \Exception
      */
     public function getLinhaDigitavel()
     {
-        if (!empty($this->campoLinhaDigitavel))
-        {
+        if (!empty($this->campoLinhaDigitavel)) {
             return $this->campoLinhaDigitavel;
         }
 
@@ -1265,7 +1294,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Render PDF
      *
-     * @param bool   $print
+     * @param bool $print
      *
      * @return string
      * @throws \Exception
@@ -1279,7 +1308,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Render HTML
      *
-     * @param bool   $print
+     * @param bool $print
      *
      * @return string
      * @throws \Exception
@@ -1296,7 +1325,8 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function toArray()
     {
-        return array_merge([
+        return array_merge(
+            [
             'linha_digitavel' => $this->getLinhaDigitavel(),
             'codigo_barras' => $this->getCodigoBarras(),
             'beneficiario' => $this->getBeneficiario()->getNome(),
@@ -1343,7 +1373,8 @@ abstract class AbstractBoleto implements BoletoContract
             'carteira' => $this->getCarteiraNome(),
             'uso_banco' => $this->getUsoBanco(),
             'status' => $this->getStatus(),
-        ], $this->variaveis_adicionais);
+            ], $this->variaveis_adicionais
+        );
     }
 
 }

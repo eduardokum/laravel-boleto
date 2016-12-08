@@ -11,6 +11,7 @@ class Santander extends AbstractRetorno implements RetornoCnab240
 {
     /**
      * Código do banco
+     *
      * @var string
      */
     protected $codigoBanco = BoletoContract::COD_BANCO_SANTANDER;
@@ -236,7 +237,9 @@ class Santander extends AbstractRetorno implements RetornoCnab240
                     ->setIdentificacaoRejeicao($this->rem(209, 218, $detalhe))
                     ->setNumeroDocumento($this->rem(55, 69, $detalhe));
 
-                /** ocorrencias  */
+                /**
+ * ocorrencias  
+*/
                 if ($d->hasOcorrencia('06', '09', '17')) {
                     $this->totais['liquidados']++;
                     $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
@@ -302,14 +305,16 @@ class Santander extends AbstractRetorno implements RetornoCnab240
                     ->setCodigoSegmentoRegistroDetalhe($this->rem(14, 14, $detalhe))
                     ->setCodigoOcorrencia($this->rem(16, 17, $detalhe))
                     ->setIdentificacaoRegistroOpcional($this->rem(18, 19, $detalhe))
-                    ->setIdentificacaoCheque(array(
+                    ->setIdentificacaoCheque(
+                        array(
                         '1' => $this->rem(20, 53, $detalhe),
                         '2' => $this->rem(44, 87, $detalhe),
                         '3' => $this->rem(88, 121, $detalhe),
                         '4' => $this->rem(122, 155, $detalhe),
                         '5' => $this->rem(156, 189, $detalhe),
                         '6' => $this->rem(190, 223, $detalhe),
-                    ));
+                        )
+                    );
 
             }
             return true;

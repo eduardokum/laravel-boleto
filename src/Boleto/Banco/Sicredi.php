@@ -10,21 +10,25 @@ class Sicredi extends AbstractBoleto implements BoletoContract
 
     /**
      * Local de pagamento
+     *
      * @var string
      */
     protected $localPagamento = 'Pagável preferencialmente nas cooperativas de crédito do sicredi';
     /**
      * Código do banco
+     *
      * @var string
      */
     protected $codigoBanco = self::COD_BANCO_SICREDI;
     /**
      * Define as carteiras disponíveis para este banco
+     *
      * @var array
      */
     protected $carteiras = ['1', '2', '3'];
     /**
      * Espécie do documento, coódigo para remessa
+     *
      * @var string
      */
     protected $especiesCodigo = [
@@ -42,23 +46,26 @@ class Sicredi extends AbstractBoleto implements BoletoContract
     ];
     /**
      * Se possui registro o boleto (tipo = 1 com registro e 3 sem registro)
+     *
      * @var bool
      */
     protected $registro = true;
     /**
      * Código do posto do cliente no banco.
+     *
      * @var int
      */
     protected $posto;
     /**
      * Byte que compoe o nosso número.
+     *
      * @var int
      */
     protected $byte = 2;
     /**
      * Define se possui ou não registro
      *
-     * @param bool $registro
+     * @param  bool $registro
      * @return $this
      */
     public function setComRegistro(bool $registro)
@@ -78,7 +85,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
     /**
      * Define o posto do cliente
      *
-     * @param int $posto
+     * @param  int $posto
      * @return $this
      */
     public function setPosto($posto)
@@ -98,13 +105,12 @@ class Sicredi extends AbstractBoleto implements BoletoContract
     /**
      * Define o byte
      *
-     * @param int $byte
+     * @param  int $byte
      * @return $this
      */
     public function setByte($byte)
     {
-        if ($byte > 9)
-        {
+        if ($byte > 9) {
             throw new \Exception('O byte deve ser compreendido entre 1 e 9');
         }
         $this->byte = $byte;
@@ -124,8 +130,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
      */
     public function isValid()
     {
-        if ($this->byte == '' || $this->posto == '' || !parent::isValid())
-        {
+        if ($this->byte == '' || $this->posto == '' || !parent::isValid()) {
             return false;
         }
         return true;

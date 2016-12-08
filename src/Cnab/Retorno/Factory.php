@@ -39,16 +39,21 @@ class Factory
      * @return mixed
      * @throws \Exception
      */
-    private static function getBancoClass($file_content) {
+    private static function getBancoClass($file_content) 
+    {
 
         $banco = '';
         $namespace = '';
         if (Util::isCnab400($file_content)) {
-            /**  Cnab 400 */
+            /**
+  * Cnab 400 
+*/
             $banco = substr($file_content[0], 76, 3);
             $namespace = __NAMESPACE__ . '\\Cnab400\\';
         } elseif (Util::isCnab240($file_content)) {
-            /** Cnab 240 */
+            /**
+ * Cnab 240 
+*/
             $banco = substr($file_content[0], 0, 3);
             $namespace = __NAMESPACE__ . '\\Cnab240\\';
         }

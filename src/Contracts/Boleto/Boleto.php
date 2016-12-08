@@ -21,7 +21,7 @@ interface Boleto
     /**
      * Render PDF.
      *
-     * @param bool   $print
+     * @param bool $print
      *
      * @return mixed
      */

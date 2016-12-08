@@ -20,17 +20,21 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
 
     /**
      * Retorna o header do lote.
+     *
      * @return mixed
      */
-    protected function getHeaderLote() {
+    protected function getHeaderLote() 
+    {
         return $this->aRegistros[self::HEADER_LOTE];
     }
 
     /**
      * Retorna o trailer do lote.
+     *
      * @return mixed
      */
-    protected function getTrailerLote() {
+    protected function getTrailerLote() 
+    {
         return $this->aRegistros[self::TRAILER_LOTE];
     }
 
@@ -89,14 +93,12 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
     public function gerar()
     {
 
-        if (!$this->isValid())
-        {
+        if (!$this->isValid()) {
             throw new \Exception('Campos requeridos pelo banco, aparentam estar ausentes');
         }
 
         $stringRemessa = '';
-        if ($this->iRegistros < 1)
-        {
+        if ($this->iRegistros < 1) {
             throw new \Exception('Nenhuma linha detalhe foi adicionada');
         }
 

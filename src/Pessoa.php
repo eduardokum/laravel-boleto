@@ -38,12 +38,12 @@ class Pessoa implements PessoaContract
     /**
      * Cria a pessoa passando os parametros.
      *
-     * @param      $nome
-     * @param      $documento
-     * @param null $endereco
-     * @param null $cep
-     * @param null $cidade
-     * @param null $uf
+     * @param $nome
+     * @param $documento
+     * @param null      $endereco
+     * @param null      $cep
+     * @param null      $cidade
+     * @param null      $uf
      *
      * @return Pessoa
      */
@@ -126,12 +126,10 @@ class Pessoa implements PessoaContract
      */
     public function getDocumento()
     {
-        if ($this->getTipoDocumento() == 'CPF')
-        {
+        if ($this->getTipoDocumento() == 'CPF') {
             return Util::maskString(Util::onlyNumbers($this->documento), '###.###.###-##');
         }
-        if ($this->getTipoDocumento() == 'CNPJ')
-        {
+        if ($this->getTipoDocumento() == 'CNPJ') {
             return Util::maskString(Util::onlyNumbers($this->documento), '##.###.###/####-##');
         }
         return $this->documento;

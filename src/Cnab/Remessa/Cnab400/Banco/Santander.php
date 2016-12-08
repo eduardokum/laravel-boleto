@@ -35,12 +35,14 @@ class Santander extends AbstractRemessa implements RemessaContract
 
     /**
      * Código do banco
+     *
      * @var string
      */
     protected $codigoBanco = BoletoContract::COD_BANCO_SANTANDER;
 
     /**
      * Define as carteiras disponíveis para cada banco
+     *
      * @var array
      */
     protected $carteiras = [101, 201];
@@ -153,12 +155,10 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(102, 107, $boleto->getDataVencimento()->copy()->addDays($boleto->getJurosApos())->format('dmy'));
         $this->add(108, 108, $this->getCarteiraNumero() > 200 ? '1' : '5');
         $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
-        if ($boleto->getStatus() == $boleto::STATUS_BAIXA)
-        {
+        if ($boleto->getStatus() == $boleto::STATUS_BAIXA) {
             $this->add(109, 110, self::OCORRENCIA_PEDIDO_BAIXA); // BAIXA
         }
-        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO)
-        {
+        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
             $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO); // ALTERAR VENCIMENTO
         }
         $this->add(111, 120, Util::formatCnab('X', $boleto->getNumeroDocumento(), 10));
@@ -171,19 +171,15 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(151, 156, $boleto->getDataDocumento()->format('dmy'));
         $this->add(157, 158, self::INSTRUCAO_SEM);
         $this->add(159, 160, self::INSTRUCAO_SEM);
-        if ($boleto->getDiasProtesto() > 0)
-        {
+        if ($boleto->getDiasProtesto() > 0) {
             $this->add(157, 158, self::INSTRUCAO_PROTESTAR);
-        } elseif($boleto->getDiasBaixaAutomatica() == 15)
-        {
+        } elseif($boleto->getDiasBaixaAutomatica() == 15) {
             $this->add(157, 158, self::INSTRUCAO_BAIXAR_APOS_VENC_15);
-        } elseif($boleto->getDiasBaixaAutomatica() == 30)
-        {
+        } elseif($boleto->getDiasBaixaAutomatica() == 30) {
             $this->add(157, 158, self::INSTRUCAO_BAIXAR_APOS_VENC_30);
         }
         $juros = 0;
-        if ($boleto->getJuros() > 0)
-        {
+        if ($boleto->getJuros() > 0) {
             $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
         }
         $this->add(161, 173, Util::formatCnab('9', $juros, 13, 2));
@@ -226,8 +222,7 @@ class Santander extends AbstractRemessa implements RemessaContract
 
     public function isValid()
     {
-        if ($this->getCodigoCliente() == '' || !parent::isValid())
-        {
+        if ($this->getCodigoCliente() == '' || !parent::isValid()) {
             return false;
         }
 
