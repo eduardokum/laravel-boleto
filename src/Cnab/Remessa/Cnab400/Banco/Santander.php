@@ -174,8 +174,13 @@ class Santander extends AbstractRemessa implements RemessaContract
         if ($boleto->getDiasProtesto() > 0)
         {
             $this->add(157, 158, self::INSTRUCAO_PROTESTAR);
+        } elseif($boleto->getDiasBaixaAutomatica() == 15)
+        {
+            $this->add(157, 158, self::INSTRUCAO_BAIXAR_APOS_VENC_15);
+        } elseif($boleto->getDiasBaixaAutomatica() == 30)
+        {
+            $this->add(157, 158, self::INSTRUCAO_BAIXAR_APOS_VENC_30);
         }
-
         $juros = 0;
         if ($boleto->getJuros() > 0)
         {
