@@ -266,6 +266,8 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         if ($boleto->getDiasProtesto() > 0)
         {
             $this->add(157, 158, self::INSTRUCAO_PROTESTAR_XX);
+        } else {
+            $this->add(157, 158, self::INSTRUCAO_DEVOLVER_XX);
         }
         if ($boleto->getMulta() > 0)
         {
@@ -296,7 +298,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(352, 355, Util::formatCnab('9', 0, 3));
         $this->add(356, 357, '');
         $this->add(358, 369, '00');
-        $this->add(370, 371, Util::formatCnab('9', $boleto->getDiasProtesto(), 2));
+        $this->add(370, 371, Util::formatCnab('9', $boleto->getDiasProtesto($boleto->getDiasBaixaAutomatica()), 2));
         $this->add(372, 394, '');
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
 

@@ -26,6 +26,7 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Banrisul([
     'multa' => false,
     'juros' => false,
     'numero' => 1,
+    'diasBaixaAutomatica' => 2,
     'numeroDocumento' => 1,
     'pagador' => $pagador,
     'beneficiario' => $beneficiario,

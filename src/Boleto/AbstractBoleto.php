@@ -61,6 +61,11 @@ abstract class AbstractBoleto implements BoletoContract
      */
     protected $diasProtesto = 0;
     /**
+     * Dias para baixa automática
+     * @var float
+     */
+    protected $diasBaixaAutomatica;
+    /**
      * Valor para outros acréscimos
      * @var float
      */
@@ -234,6 +239,7 @@ abstract class AbstractBoleto implements BoletoContract
      * @var int
      */
     protected $status = self::STATUS_REGISTRO;
+
     /**
      * Construtor
      *
@@ -872,11 +878,38 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Retorna os diasProtesto
      *
-     * @return double
+     * @param int $default
+     *
+     * @return int
      */
-    public function getDiasProtesto()
+    public function getDiasProtesto($default = 0)
     {
-        return $this->diasProtesto;
+        return $this->diasProtesto > 0 ? $this->diasProtesto : $default;
+    }
+
+    /**
+     * Seta dias para baixa automática
+     *
+     * @param int $baixaAutomatica
+     *
+     * @return AbstractBoleto
+     * @throws \Exception
+     */
+    public function setDiasBaixaAutomatica($baixaAutomatica)
+    {
+        throw new \Exception('O Banco ' . basename(get_class($this)) . ' não suporta baixa automática');
+    }
+
+    /**
+     * Retorna os diasProtesto
+     *
+     * @param int $default
+     *
+     * @return int
+     */
+    public function getDiasBaixaAutomatica($default = 0)
+    {
+        return $this->diasBaixaAutomatica > 0 ? $this->diasBaixaAutomatica : $default;
     }
     /**
      * Define o campo outras deduções do boleto

@@ -137,9 +137,18 @@ interface Boleto
     public function getJurosApos();
 
     /**
+     * @param int $default
+     *
      * @return mixed
      */
-    public function getDiasProtesto();
+    public function getDiasProtesto($default = 0);
+
+    /**
+     * @param int $default
+     *
+     * @return mixed
+     */
+    public function getDiasBaixaAutomatica($default = 0);
 
     /**
      * @return mixed
