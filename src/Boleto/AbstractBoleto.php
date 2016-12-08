@@ -1318,10 +1318,12 @@ abstract class AbstractBoleto implements BoletoContract
         $html = new Html($this->toArray());
         return $html->gerarBoleto($print);
     }
+
     /**
      * Return Boleto Array.
      *
      * @return array
+     * @throws \Exception
      */
     public function toArray()
     {

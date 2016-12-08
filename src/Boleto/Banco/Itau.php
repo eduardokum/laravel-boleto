@@ -84,7 +84,7 @@ class Itau extends AbstractBoleto implements BoletoContract
             throw new \Exception('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
         }
         $baixaAutomatica = (int) $baixaAutomatica;
-        $this->diasProtesto = $baixaAutomatica > 0 ? $baixaAutomatica : 0;
+        $this->diasBaixaAutomatica = $baixaAutomatica > 0 ? $baixaAutomatica : 0;
         return $this;
     }
 
