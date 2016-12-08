@@ -79,22 +79,6 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
     }
 
     /**
-     * Seta dias para protesto
-     *
-     * @param int $diasProtesto
-     *
-     * @return AbstractBoleto
-     * @throws \Exception
-     */
-    public function setDiasProtesto($diasProtesto)
-    {
-        if($this->getDiasBaixaAutomatica() > 0) {
-            throw new \Exception('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
-        }
-        parent::setDiasProtesto($diasProtesto);
-    }
-
-    /**
      * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
      *
      * @return string

@@ -57,6 +57,25 @@ class Caixa  extends AbstractBoleto implements BoletoContract
     {
         return $this->getNossoNumero() . '-' . Util::modulo11($this->getNossoNumero());
     }
+
+    /**
+     * Seta dias para baixa automática
+     *
+     * @param int $baixaAutomatica
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    public function setDiasBaixaAutomatica($baixaAutomatica)
+    {
+        if($this->getDiasProtesto() > 0) {
+            throw new \Exception('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
+        }
+        $baixaAutomatica = (int) $baixaAutomatica;
+        $this->diasProtesto = $baixaAutomatica > 0 ? $baixaAutomatica : 0;
+        return $this;
+    }
+
     /**
      * Método para gerar o código da posição de 20 a 44
      *

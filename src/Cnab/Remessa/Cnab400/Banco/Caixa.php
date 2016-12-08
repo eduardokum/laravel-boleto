@@ -165,6 +165,9 @@ class Caixa  extends AbstractRemessa implements RemessaContract
         if ($boleto->getDiasProtesto() > 0)
         {
             $this->add(157, 158, self::INSTRUCAO_PROTESTAR_VENC_XX);
+        } elseif($boleto->getDiasBaixaAutomatica() > 0)
+        {
+            $this->add(157, 158, self::INSTRUCAO_DEVOLVER_VENC_XX);
         }
         $juros = 0;
         if ($boleto->getJuros() > 0)
@@ -188,7 +191,7 @@ class Caixa  extends AbstractRemessa implements RemessaContract
         $this->add(358, 367, Util::formatCnab('9', Util::percent($boleto->getValor(), $boleto->getMulta()), 10, 2));
         $this->add(368, 389, Util::formatCnab('X', $boleto->getSacadorAvalista() ? $boleto->getSacadorAvalista()->getNome() : '', 22));
         $this->add(390, 391, '00');
-        $this->add(392, 393, Util::formatCnab('9', $boleto->getDiasProtesto('0'), 2));
+        $this->add(392, 393, Util::formatCnab('9', $boleto->getDiasProtesto($boleto->getDiasBaixaAutomatica()), 2));
         $this->add(394, 394, Util::formatCnab('9', $boleto->getMoeda(), 1));
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
 
