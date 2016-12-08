@@ -28,6 +28,7 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Caixa([
     'numero' => 1,
     'numeroDocumento' => 1,
     'pagador' => $pagador,
+    'diasBaixaAutomatica' => 2,
     'beneficiario' => $beneficiario,
     'agencia' => 1111,
     'conta' => 123456,

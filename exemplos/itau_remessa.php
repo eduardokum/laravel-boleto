@@ -29,6 +29,7 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Itau([
     'numeroDocumento' => 1,
     'pagador' => $pagador,
     'beneficiario' => $beneficiario,
+    'diasBaixaAutomatica' => 2,
     'carteira' => 112,
     'agencia' => 1111,
     'conta' => 99999,

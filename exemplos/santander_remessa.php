@@ -29,6 +29,7 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Santander([
     'numeroDocumento' => 1,
     'pagador' => $pagador,
     'beneficiario' => $beneficiario,
+    'diasBaixaAutomatica' => 15,
     'carteira' => 101,
     'agencia' => 1111,
     'conta' => 99999999,

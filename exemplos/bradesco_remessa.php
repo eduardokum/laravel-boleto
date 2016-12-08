@@ -26,6 +26,7 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Bradesco([
     'multa' => false,
     'juros' => false,
     'numero' => 1,
+    'diasBaixaAutomatica' => 2,
     'numeroDocumento' => 1,
     'pagador' => $pagador,
     'beneficiario' => $beneficiario,
@@ -39,6 +40,7 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Bradesco([
 ]);
 
 $remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Bradesco([
+    'idRemessa' => 1,
     'agencia' => 1111,
     'carteira' => '09',
     'conta' => 99999999,
