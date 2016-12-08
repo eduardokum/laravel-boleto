@@ -1,16 +1,9 @@
 filter:
-    excluded_paths: [tests/*, exemplos/*]
+    excluded_paths: [tests/*, exemplos/*, manuais/*]
 
 build:
     environment:
         php: 5.6
-    tests:
-        override:
-            -
-                command: 'phpunit --coverage-clover=tests/_reports/logs/clover.xml'
-                coverage:
-                    file: 'tests/_reports/logs/clover.xml'
-                    format: 'clover'
 
 checks:
     php:
