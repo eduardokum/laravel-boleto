@@ -266,7 +266,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         if ($boleto->getDiasProtesto() > 0)
         {
             $this->add(157, 158, self::INSTRUCAO_PROTESTAR_XX);
-        } else {
+        } elseif($boleto->getDiasBaixaAutomatica() > 0) {
             $this->add(157, 158, self::INSTRUCAO_DEVOLVER_XX);
         }
         if ($boleto->getMulta() > 0)

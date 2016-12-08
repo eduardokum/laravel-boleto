@@ -59,6 +59,41 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
     {
         return Util::numberFormatGeral($this->getNumeroDocumento(), 11);
     }
+
+    /**
+     * Seta dias para baixa automática
+     *
+     * @param int $baixaAutomatica
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    public function setDiasBaixaAutomatica($baixaAutomatica)
+    {
+        if($this->getDiasProtesto() > 0) {
+            throw new \Exception('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
+        }
+        $baixaAutomatica = (int) $baixaAutomatica;
+        $this->diasProtesto = $baixaAutomatica > 0 ? $baixaAutomatica : 0;
+        return $this;
+    }
+
+    /**
+     * Seta dias para protesto
+     *
+     * @param int $diasProtesto
+     *
+     * @return AbstractBoleto
+     * @throws \Exception
+     */
+    public function setDiasProtesto($diasProtesto)
+    {
+        if($this->getDiasBaixaAutomatica() > 0) {
+            throw new \Exception('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
+        }
+        parent::setDiasProtesto($diasProtesto);
+    }
+
     /**
      * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
      *

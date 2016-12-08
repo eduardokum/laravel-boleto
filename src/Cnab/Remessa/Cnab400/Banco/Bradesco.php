@@ -37,7 +37,9 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     const OCORRENCIA_ACERTO_RATEIO_CREDITO = '68';
     const OCORRENCIA_CANC_RATEIO_CREDITO = '69';
 
+
     const INSTRUCAO_SEM = '00';
+    const INSTRUCAO_PROTESTAR_FAMILIAR_XX = '05';
     const INSTRUCAO_PROTESTAR_XX = '06';
     const INSTRUCAO_NAO_COBRAR_JUROS = '08';
     const INSTRUCAO_NAO_RECEBER_APOS_VENC = '09';
@@ -47,6 +49,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     const INSTRUCAO_COBRAR_ENCAR_APOS_10 = '13';
     const INSTRUCAO_COBRAR_ENCAR_APOS_15 = '14';
     const INSTRUCAO_CENCEDER_DESC_APOS_VENC = '15';
+    const INSTRUCAO_DEVOLVER_XX = '18';
 
     /**
      * Código do banco
@@ -183,6 +186,10 @@ class Bradesco extends AbstractRemessa implements RemessaContract
         {
             $this->add(157, 158, self::INSTRUCAO_PROTESTAR_XX);
             $this->add(159, 160, Util::formatCnab('9', $boleto->getDiasProtesto(), 2));
+        } elseif($boleto->getDiasBaixaAutomatica() > 0)
+        {
+            $this->add(157, 158, self::INSTRUCAO_DEVOLVER_XX);
+            $this->add(159, 160, Util::formatCnab('9', $boleto->getDiasBaixaAutomatica(), 2));
         }
         $juros = 0;
         if ($boleto->getJuros() > 0)
