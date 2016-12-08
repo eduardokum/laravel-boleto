@@ -34,13 +34,13 @@ class Itau extends AbstractBoleto implements BoletoContract
         'NS' => '03',
         'REC' => '05',
         'CT' => '06',
-        'NS' => '07',
+        'CS' => '07',
         'DS' => '08',
         'LC' => '09',
         'ND' => '13',
         'CDA' => '15',
         'EC' => '16',
-        'DS' => '17',
+        'CPS' => '17',
     ];
     /**
      * Campo obrigatório para emissão de boletos com carteira 198 fornecido pelo Banco com 5 dígitos
@@ -63,6 +63,25 @@ class Itau extends AbstractBoleto implements BoletoContract
         $this->codigoCliente = $codigoCliente;
         return $this;
     }
+
+    /**
+     * Seta dias para baixa automática
+     *
+     * @param int $baixaAutomatica
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    public function setDiasBaixaAutomatica($baixaAutomatica)
+    {
+        if($this->getDiasProtesto() > 0) {
+            throw new \Exception('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
+        }
+        $baixaAutomatica = (int) $baixaAutomatica;
+        $this->diasProtesto = $baixaAutomatica > 0 ? $baixaAutomatica : 0;
+        return $this;
+    }
+
     /**
      * Retorna o código do cliente
      *

@@ -52,7 +52,7 @@ class Itau extends AbstractRemessa implements RemessaContract
     const INSTRUCAO_DEVOL_VENC_20 = '08';
     const INSTRUCAO_PROTESTAR_VENC_XX_CARTORIO_5 = '09';
     const INSTRUCAO_NAO_PROTESTAR = '10';
-    const INSTRUCAO_INSTRUCAO_DEVOL_VENC_25 = '11';
+    const INSTRUCAO_DEVOL_VENC_25 = '11';
     const INSTRUCAO_DEVOL_VENC_35 = '12';
     const INSTRUCAO_DEVOL_VENC_40 = '13';
     const INSTRUCAO_DEVOL_VENC_45 = '14';
@@ -104,8 +104,8 @@ class Itau extends AbstractRemessa implements RemessaContract
     const INSTRUCAO_ANTES_VENC_APOS_15_SEDE = '86';
     const INSTRUCAO_NAO_RECEBER_ANTES_VENC = '88';
     const INSTRUCAO_VENC_QLQ_AG = '90';
-    const INSTRUCAO_INSTRUCAO_NAO_RECEBER_VENC_XX = '91';
-    const INSTRUCAO_INSTRUCAO_DEVOL_VENC_XX = '92';
+    const INSTRUCAO_NAO_RECEBER_VENC_XX = '91';
+    const INSTRUCAO_DEVOL_VENC_XX = '92';
     const INSTRUCAO_MSG_30_POS = '93';
     const INSTRUCAO_MSG_40_POS = '94';
 
@@ -200,6 +200,9 @@ class Itau extends AbstractRemessa implements RemessaContract
         if ($boleto->getDiasProtesto() > 0)
         {
             $this->add(157, 158, self::INSTRUCAO_PROTESTAR_VENC_XX);
+        } elseif($boleto->getDiasBaixaAutomatica() > 0)
+        {
+            $this->add(157, 158, self::INSTRUCAO_DEVOL_VENC_XX);
         }
         $juros = 0;
         if ($boleto->getJuros() > 0)
@@ -223,7 +226,7 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(352, 381, Util::formatCnab('X', $boleto->getSacadorAvalista() ? $boleto->getSacadorAvalista()->getNome() : '', 30));
         $this->add(382, 385, '');
         $this->add(386, 391, $boleto->getDataVencimento()->copy()->addDays($boleto->getJurosApos())->format('dmy'));
-        $this->add(392, 393, Util::formatCnab('9', $boleto->getDiasProtesto('0'), 2));
+        $this->add(392, 393, Util::formatCnab('9', $boleto->getDiasProtesto($boleto->getDiasBaixaAutomatica()), 2));
         $this->add(394, 394, '');
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
 
