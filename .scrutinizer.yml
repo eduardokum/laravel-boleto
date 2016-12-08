@@ -10,7 +10,7 @@ build:
                 command: 'phpunit --coverage-clover=clover-file'
                 coverage:
                     file: 'clover-file'
-                    format: 'clover
+                    format: 'clover'
 
 checks:
     php:
