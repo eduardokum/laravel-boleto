@@ -1,6 +1,6 @@
 <?php
 require realpath(__DIR__ . '/../../../') . DIRECTORY_SEPARATOR . 'autoload.php';
-$beneficiario = new \Eduardokum\LaravelBoleto\Boleto\Pessoa(
+$beneficiario = new \Eduardokum\LaravelBoleto\Pessoa(
     [
     'nome' => 'ACME',
     'endereco' => 'Rua um, 123',
@@ -11,7 +11,7 @@ $beneficiario = new \Eduardokum\LaravelBoleto\Boleto\Pessoa(
     ]
 );
 
-$pagador = new \Eduardokum\LaravelBoleto\Boleto\Pessoa(
+$pagador = new \Eduardokum\LaravelBoleto\Pessoa(
     [
     'nome' => 'Cliente',
     'endereco' => 'Rua um, 123',

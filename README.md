@@ -56,7 +56,7 @@ Gerando somente 1
 ### Criando o beneficiário ou pagador
 
 ```php
-$beneficiario = new \Eduardokum\LaravelBoleto\Boleto\Pessoa([
+$beneficiario = new \Eduardokum\LaravelBoleto\Pessoa([
     'nome' => 'ACME',
     'endereco' => 'Rua um, 123',
     'cep' => '99999-999',
@@ -65,7 +65,7 @@ $beneficiario = new \Eduardokum\LaravelBoleto\Boleto\Pessoa([
     'documento' => '99.999.999/9999-99',
 ]);
 
-$pagador = new \Eduardokum\LaravelBoleto\Boleto\Pessoa([
+$pagador = new \Eduardokum\LaravelBoleto\Pessoa([
     'nome' => 'Cliente',
     'endereco' => 'Rua um, 123',
     'bairro' => 'Bairro',

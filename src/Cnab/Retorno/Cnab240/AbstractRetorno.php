@@ -62,35 +62,35 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
      *
      * @return boolean
      */
-    protected abstract function processarHeader(array $header);
+    abstract protected function processarHeader(array $header);
 
     /**
      * @param array $headerLote
      *
      * @return boolean
      */
-    protected abstract function processarHeaderLote(array $headerLote);
+    abstract protected function processarHeaderLote(array $headerLote);
 
     /**
      * @param array $detalhe
      *
      * @return boolean
      */
-    protected abstract function processarDetalhe(array $detalhe);
+    abstract protected function processarDetalhe(array $detalhe);
 
     /**
      * @param array $trailer
      *
      * @return boolean
      */
-    protected abstract function processarTrailerLote(array $trailer);
+    abstract protected function processarTrailerLote(array $trailer);
 
     /**
      * @param array $trailer
      *
      * @return boolean
      */
-    protected abstract function processarTrailer(array $trailer);
+    abstract protected function processarTrailer(array $trailer);
 
     /**
      * Incrementa o detalhe.

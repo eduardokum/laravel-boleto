@@ -26,7 +26,7 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
      *
      * @return mixed
      */
-    protected abstract function headerLote();
+    abstract protected  function headerLote();
 
 
     /**
@@ -34,7 +34,7 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
      *
      * @return mixed
      */
-    protected abstract function trailerLote();
+    abstract protected function trailerLote();
 
     /**
      * Retorna o header do lote.

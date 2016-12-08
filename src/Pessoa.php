@@ -1,5 +1,5 @@
 <?php
-namespace Eduardokum\LaravelBoleto\Boleto;
+namespace Eduardokum\LaravelBoleto;
 
 use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
 use Eduardokum\LaravelBoleto\Util;

@@ -13,6 +13,8 @@ abstract class AbstractRemessa
     const TRAILER_LOTE = 'trailer_lote';
     const TRAILER = 'trailer';
 
+    protected $tamanho_linha = false;
+
     /**
      * Código do banco
      *
@@ -313,7 +315,7 @@ abstract class AbstractRemessa
      *
      * @return mixed
      */
-    protected abstract function header();
+    abstract protected function header();
 
     /**
      * Função para adicionar detalhe ao arquivo.
@@ -322,14 +324,14 @@ abstract class AbstractRemessa
      *
      * @return mixed
      */
-    public abstract function addBoleto(BoletoContract $detalhe);
+    abstract public function addBoleto(BoletoContract $detalhe);
 
     /**
      * Função que gera o trailer (footer) do arquivo.
      *
      * @return mixed
      */
-    protected abstract function trailer();
+    abstract protected function trailer();
 
     /**
      * Função que mostra a quantidade de linhas do arquivo.
@@ -412,6 +414,11 @@ abstract class AbstractRemessa
      */
     protected function valida(array $a) 
     {
+        if($this->tamanho_linha === false)
+        {
+            throw new \Exception('Classe remessa deve informar o tamanho da linha');
+        }
+
         $a = array_filter($a, 'strlen');
         if (count($a) != $this->tamanho_linha) {
             throw new \Exception(sprintf('$a não possui %s posições, possui: %s', $this->tamanho_linha, count($a)));

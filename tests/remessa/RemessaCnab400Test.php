@@ -3,8 +3,8 @@
 namespace Cnab400\Tests;
 
 use Eduardokum\LaravelBoleto\Boleto\Banco as Boleto;
-use \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco as Remessa;
-use Eduardokum\LaravelBoleto\Boleto\Pessoa;
+use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco as Remessa;
+use Eduardokum\LaravelBoleto\Pessoa;
 
 class RemessaCnab400Test extends \PHPUnit_Framework_TestCase
 {

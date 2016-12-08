@@ -1173,13 +1173,13 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @return string
      */
-    protected abstract function gerarNossoNumero();
+    abstract protected function gerarNossoNumero();
     /**
      * Método onde qualquer boleto deve extender para gerar o código da posição de 20 a 44
      *
      * @return string
      */
-    protected abstract function getCampoLivre();
+    abstract protected function getCampoLivre();
     /**
      * Método que valida se o banco tem todos os campos obrigadotorios preenchidos
      *
