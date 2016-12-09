@@ -972,6 +972,27 @@ final class Util
     }
 
     /**
+     * @param $file
+     *
+     * @return array|bool
+     */
+    public static function file2array($file) {
+        if (is_array($file) && is_string($file[0])) {
+            return $file;
+        } elseif (is_file($file) && file_exists($file)) {
+            return file($file);
+        } elseif (is_string($file) && strstr($file, PHP_EOL) !== false) {
+            $file_content = explode(PHP_EOL, $file);
+            if (empty(end($file_content))) {
+                array_pop($file_content);
+            }
+            reset($file_content);
+            return $file_content;
+        }
+        return false;
+    }
+
+    /**
      * Valida se o header é de um arquivo retorno valido, 240 ou 400 posicoes
      *
      * @param $header

@@ -15,14 +15,8 @@ class Factory
      */
     public static function make($file)
     {
-        if ($file == '') {
-            throw new \Exception("file url is required.");
-        } elseif (file_exists($file)) {
-            $file_content = file($file);
-        } elseif (is_string($file)) {
-            $file_content = explode(PHP_EOL, $file);
-        } else {
-            throw new \Exception("Arquivo: $file, não existe");
+        if (!$file_content = Util::file2array($file)) {
+            throw new \Exception("Arquivo: não existe");
         }
 
         if (!Util::isHeaderRetorno($file_content[0])) {
@@ -45,15 +39,9 @@ class Factory
         $banco = '';
         $namespace = '';
         if (Util::isCnab400($file_content)) {
-            /**
-  * Cnab 400 
-*/
             $banco = substr($file_content[0], 76, 3);
             $namespace = __NAMESPACE__ . '\\Cnab400\\';
         } elseif (Util::isCnab240($file_content)) {
-            /**
- * Cnab 240 
-*/
             $banco = substr($file_content[0], 0, 3);
             $namespace = __NAMESPACE__ . '\\Cnab240\\';
         }

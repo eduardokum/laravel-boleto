@@ -47,7 +47,7 @@ class RemessaCnab400Test extends \PHPUnit_Framework_TestCase
         $files = glob(implode(DIRECTORY_SEPARATOR, $aFiles) . '/*'); // get all file names
         foreach($files as $file){
             if(is_file($file))
-                unlink($file);
+                @unlink($file);
         }
     }
 

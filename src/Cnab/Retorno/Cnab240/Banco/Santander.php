@@ -238,8 +238,8 @@ class Santander extends AbstractRetorno implements RetornoCnab240
                     ->setNumeroDocumento($this->rem(55, 69, $detalhe));
 
                 /**
- * ocorrencias  
-*/
+                 * ocorrencias
+                */
                 if ($d->hasOcorrencia('06', '09', '17')) {
                     $this->totais['liquidados']++;
                     $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);

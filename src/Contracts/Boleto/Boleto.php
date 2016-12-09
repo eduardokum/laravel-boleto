@@ -198,11 +198,6 @@ interface Boleto
     /**
      * @return mixed
      */
-    public function getCip();
-
-    /**
-     * @return mixed
-     */
     public function getNumeroDocumento();
 
     /**

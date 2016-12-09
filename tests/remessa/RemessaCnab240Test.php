@@ -47,11 +47,11 @@ class RemessaCnab240Test extends \PHPUnit_Framework_TestCase
         $files = glob(implode(DIRECTORY_SEPARATOR, $aFiles) . '/*'); // get all file names
         foreach($files as $file){
             if(is_file($file))
-                unlink($file);
+                @unlink($file);
         }
     }
 
-    public function testRemessaSantanderCnab400(){
+    public function testRemessaSantanderCnab240(){
         $boleto = new Boleto\Santander(
             [
                 'logo' => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '033.png',

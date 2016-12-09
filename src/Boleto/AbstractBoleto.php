@@ -4,8 +4,8 @@ namespace Eduardokum\LaravelBoleto\Boleto;
 use Carbon\Carbon;
 use Eduardokum\LaravelBoleto\Boleto\Render\Html;
 use Eduardokum\LaravelBoleto\Boleto\Render\Pdf;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
 
 /**
@@ -13,7 +13,7 @@ use Eduardokum\LaravelBoleto\Util;
  *
  * @package Eduardokum\LaravelBoleto\Boleto
  */
-abstract class AbstractBoleto implements BoletoContract
+abstract class AbstractBoleto
 {
     /**
      * Código do banco
@@ -275,7 +275,7 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @var int
      */
-    protected $status = self::STATUS_REGISTRO;
+    protected $status = BoletoContract::STATUS_REGISTRO;
 
     /**
      * Construtor
@@ -578,16 +578,6 @@ abstract class AbstractBoleto implements BoletoContract
     }
 
     /**
-     * Retorna o número cip para o bradesco
-     *
-     * @return int
-     * @throws \Exception
-     */
-    public function getCip()
-    {
-        throw new \Exception('Precisa ser implementado no Bradesco');
-    }
-    /**
      * Define o campo Uso do banco
      *
      * @param  string $usoBanco
@@ -640,7 +630,7 @@ abstract class AbstractBoleto implements BoletoContract
         if (count($this->getInstrucoes()) > 8) {
             throw new \Exception('Atingido o máximo de 5 instruções.');
         }
-        $this->instrucoes[] = $instrucao;
+        array_push($this->instrucoes, $instrucao);
         return $this;
     }
     /**
@@ -651,7 +641,7 @@ abstract class AbstractBoleto implements BoletoContract
      * @return AbstractBoleto
      * @throws \Exception
      */
-    public function setInstrucoes($instrucoes)
+    public function setInstrucoes(array $instrucoes)
     {
         if (count($instrucoes) > 8) {
             throw new \Exception('Máximo de 8 instruções.');
@@ -682,7 +672,7 @@ abstract class AbstractBoleto implements BoletoContract
         if (count($this->getDescricaoDemonstrativo()) > 5) {
             throw new \Exception('Atingido o máximo de 5 demonstrativos.');
         }
-        $this->descricaoDemonstrativo[] = $descricaoDemonstrativo;
+        array_push($this->descricaoDemonstrativo, $descricaoDemonstrativo);
         return $this;
     }
 
@@ -694,7 +684,7 @@ abstract class AbstractBoleto implements BoletoContract
      * @return AbstractBoleto
      * @throws \Exception
      */
-    public function setDescricaoDemonstrativo($descricaoDemonstrativo)
+    public function setDescricaoDemonstrativo(array $descricaoDemonstrativo)
     {
         if (count($descricaoDemonstrativo) > 5) {
             throw new \Exception('Máximo de 5 demonstrativos.');
@@ -839,8 +829,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setMulta($multa)
     {
-        $multa = (float) $multa;
-        $this->multa = $multa > 0 ? $multa : 0;
+        $this->multa = (float) ($multa > 0.00 ? $multa : 0.00);
         return $this;
     }
     /**
@@ -860,8 +849,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setJuros($juros)
     {
-        $juros = (float) $juros;
-        $this->juros = $juros > 0 ? $juros : 0;
+        $this->juros = (float) ($juros > 0.00 ? $juros : 0.00);
         return $this;
     }
     /**
@@ -1105,7 +1093,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function alterarBoleto()
     {
-        $this->status = self::STATUS_ALTERACAO;
+        $this->status = BoletoContract::STATUS_ALTERACAO;
 
         return $this;
     }
@@ -1116,7 +1104,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function baixarBoleto()
     {
-        $this->status = self::STATUS_BAIXA;
+        $this->status = BoletoContract::STATUS_BAIXA;
 
         return $this;
     }
@@ -1127,10 +1115,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getLogoBancoBase64()
     {
-        static $logoData;
-        $logoData or $logoData = 'data:image/' . pathinfo($this->getLogoBanco(), PATHINFO_EXTENSION) .
-            ';base64,' . base64_encode(file_get_contents($this->getLogoBanco()));
-        return $logoData;
+        return 'data:image/' . pathinfo($this->getLogoBanco(), PATHINFO_EXTENSION) . ';base64,' . base64_encode(file_get_contents($this->getLogoBanco()));
     }
     /**
      * Mostra exception ao erroneamente tentar setar o nosso número
@@ -1244,7 +1229,7 @@ abstract class AbstractBoleto implements BoletoContract
             . Util::numberFormatValue($this->getValor(), 10, 0)
             . $this->getCampoLivre();
 
-        $resto = Util::modulo11($codigo, 2, 9, false);
+        $resto = Util::modulo11($codigo, 2, 9, 0);
         $dv = (in_array($resto, [0, 10, 11])) ? 1 : $resto;
 
         return $this->campoCodigoBarras = substr($codigo, 0, 4) . $dv . substr($codigo, 4);
