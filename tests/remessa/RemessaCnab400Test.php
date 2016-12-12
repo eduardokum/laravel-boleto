@@ -219,6 +219,7 @@ class RemessaCnab400Test extends \PHPUnit_Framework_TestCase
             [
                 'agencia' => 1111,
                 'conta' => 123456,
+                'idremessa' => 1,
                 'carteira' => 'RG',
                 'codigoCliente' => 999999,
                 'beneficiario' => self::$beneficiario,
