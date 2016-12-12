@@ -189,7 +189,8 @@ class Caixa  extends AbstractRemessa implements RemessaContract
         $this->add(368, 389, Util::formatCnab('X', $boleto->getSacadorAvalista() ? $boleto->getSacadorAvalista()->getNome() : '', 22));
         $this->add(390, 391, '00');
         $this->add(392, 393, Util::formatCnab('9', $boleto->getDiasProtesto($boleto->getDiasBaixaAutomatica()), 2));
-        $this->add(394, 394, Util::formatCnab('9', $boleto->getMoeda(), 1));
+        // Código da Moeda - Código adotado para identificar a moeda referenciada no Título. Informar fixo: ‘1’ = REAL
+        $this->add(394, 394, Util::formatCnab('9', 1, 1));
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
 
         return $this;
@@ -208,7 +209,7 @@ class Caixa  extends AbstractRemessa implements RemessaContract
 
     public function isValid()
     {
-        if ($this->getCodigoCliente() == '' || !parent::isValid()) {
+        if ($this->getCodigoCliente() == '' || $this->getIdremessa() == '' || !parent::isValid()) {
             return false;
         }
 
