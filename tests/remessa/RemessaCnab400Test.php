@@ -1,6 +1,6 @@
 <?php
 
-namespace Cnab400\Tests;
+namespace Remessa\Tests;
 
 use Eduardokum\LaravelBoleto\Boleto\Banco as Boleto;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco as Remessa;

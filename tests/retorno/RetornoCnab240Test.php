@@ -1,6 +1,6 @@
 <?php
 
-namespace Cnab240\Tests;
+namespace Retorno\Tests;
 
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Detalhe;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\DetalheSegmentoT;

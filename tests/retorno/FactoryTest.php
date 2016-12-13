@@ -1,6 +1,6 @@
 <?php
 
-namespace Cnab400\Tests;
+namespace Retorno\Tests;
 
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Detalhe;
 use Illuminate\Support\Collection;

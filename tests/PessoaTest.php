@@ -1,6 +1,6 @@
 <?php
 
-namespace Cnab400\Tests;
+namespace Tests;
 
 use Eduardokum\LaravelBoleto\Pessoa;
 use Eduardokum\LaravelBoleto\Util;
