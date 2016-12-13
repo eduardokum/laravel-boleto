@@ -115,7 +115,7 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
         ];
         foreach ($this->detalhe as $detalhe)
         {
-            $array['detalhes']->add($detalhe->toArray());
+            $array['detalhes']->push($detalhe->toArray());
         }
         return $array;
     }

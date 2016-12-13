@@ -132,7 +132,7 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(15, 15, ''); // Reservado (Uso Banco)
         $this->add(16, 17, Util::formatCnab(9, 01, 2)); // Código de movimento remessa
         $this->add(18, 21, Util::formatCnab(9, $this->getAgencia(), 4)); // Agência do cedente
-        $this->add(22, 22, Util::formatCnab(9, $this->getAgenciaDv(), 1)); // Digito verificador da Agência do cedente
+        $this->add(22, 22, Util::formatCnab(9, '', 1)); // Digito verificador da Agência do cedente
         $this->add(23, 31, Util::formatCnab(9, $this->getConta(), 9)); // Numero da conta corrente
         $this->add(32, 32, Util::formatCnab(9, $this->getContaDv(), 1)); // Digito verificador da conta corrente
         $this->add(33, 41, Util::formatCnab(9, $this->getConta(), 9)); // Conta Cobrança

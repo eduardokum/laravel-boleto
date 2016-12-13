@@ -96,6 +96,7 @@ class Santander extends AbstractRemessa implements RemessaContract
      * Retorna o codigo de transmissão.
      *
      * @return string
+     * @throws \Exception
      */
     public function getCodigoTransmissao()
     {

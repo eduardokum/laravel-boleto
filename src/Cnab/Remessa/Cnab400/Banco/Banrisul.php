@@ -304,6 +304,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
 
     /**
      * @return $this
+     * @throws \Exception
      */
     protected function trailer()
     {

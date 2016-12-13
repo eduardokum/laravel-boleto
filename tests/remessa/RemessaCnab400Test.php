@@ -5,6 +5,7 @@ namespace Cnab400\Tests;
 use Eduardokum\LaravelBoleto\Boleto\Banco as Boleto;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco as Remessa;
 use Eduardokum\LaravelBoleto\Pessoa;
+use Eduardokum\LaravelBoleto\Util;
 
 class RemessaCnab400Test extends \PHPUnit_Framework_TestCase
 {
@@ -49,6 +50,70 @@ class RemessaCnab400Test extends \PHPUnit_Framework_TestCase
             if(is_file($file))
                 @unlink($file);
         }
+    }
+
+    /**
+     * @expectedException     \Exception
+     */
+    public function testRemessaCamposInvalidos(){
+        $remessa = new Remessa\Banrisul([
+            'codigoCliente' => 11112222222,
+            'beneficiario' => self::$beneficiario,
+        ]);
+        $remessa->gerar();
+    }
+
+    /**
+     * @expectedException     \Exception
+     */
+    public function testRemessaCarteiraIndisponivel(){
+        $remessa = new Remessa\Banrisul([
+            'agencia' => 1111,
+            'conta' => 22222,
+            'carteira' => '123',
+            'codigoCliente' => 11112222222,
+            'beneficiario' => self::$beneficiario,
+        ]);
+        $remessa->gerar();
+    }
+
+    public function testRemessaAddboletosCnab400(){
+        $boleto = new Boleto\Banrisul(
+            [
+                'logo' => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '041.png',
+                'dataVencimento' => new \Carbon\Carbon(),
+                'valor' => 100,
+                'multa' => false,
+                'juros' => false,
+                'numero' => 1,
+                'diasBaixaAutomatica' => 20,
+                'numeroDocumento' => 1,
+                'pagador' => self::$pagador,
+                'beneficiario' => self::$beneficiario,
+                'carteira' => 1,
+                'agencia' => 1111,
+                'conta' => 22222,
+                'descricaoDemonstrativo' => ['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'],
+                'instrucoes' =>  ['instrucao 1', 'instrucao 2', 'instrucao 3'],
+                'aceite' => 'S',
+                'especieDoc' => 'DM',
+            ]
+        );
+
+        $boleto2 = $boleto;
+        $boleto2->setNumeroDocumento(2);
+
+        $remessa = new Remessa\Banrisul(
+            [
+                'agencia' => 1111,
+                'conta' => 22222,
+                'carteira' => 1,
+                'codigoCliente' => 11112222222,
+                'beneficiario' => self::$beneficiario,
+            ]
+        );
+        $remessa->addBoletos([$boleto, $boleto2]);
+        $this->assertEquals(4, count(Util::file2array($remessa->gerar())));
     }
 
     public function testRemessaBanrisulCnab400()
@@ -382,36 +447,37 @@ class RemessaCnab400Test extends \PHPUnit_Framework_TestCase
         $this->assertEquals($file, $file2);
     }
 
-    public function testRemessaSicrediCnab400(){
+    public function testRemessaSicrediCnab400()
+    {
         $boleto = new Boleto\Sicredi(
             [
-                'logo' => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '748.png',
-                'dataVencimento' => new \Carbon\Carbon(),
-                'valor' => 100 ,
-                'multa' => false,
-                'juros' => false,
-                'numero' => 1,
-                'numeroDocumento' => 1,
-                'pagador' => self::$pagador,
-                'beneficiario' => self::$beneficiario,
-                'carteira' => '1',
-                'byte' => 2,
-                'agencia' => 1111,
-                'posto' => 11,
-                'conta' => 11111,
+                'logo'                   => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '748.png',
+                'dataVencimento'         => new \Carbon\Carbon(),
+                'valor'                  => 100,
+                'multa'                  => false,
+                'juros'                  => false,
+                'numero'                 => 1,
+                'numeroDocumento'        => 1,
+                'pagador'                => self::$pagador,
+                'beneficiario'           => self::$beneficiario,
+                'carteira'               => '1',
+                'byte'                   => 2,
+                'agencia'                => 1111,
+                'posto'                  => 11,
+                'conta'                  => 11111,
                 'descricaoDemonstrativo' => ['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'],
-                'instrucoes' =>  ['instrucao 1', 'instrucao 2', 'instrucao 3'],
-                'aceite' => 'S',
-                'especieDoc' => 'DM',
+                'instrucoes'             => ['instrucao 1', 'instrucao 2', 'instrucao 3'],
+                'aceite'                 => 'S',
+                'especieDoc'             => 'DM',
             ]
         );
 
         $remessa = new Remessa\Sicredi(
             [
-                'agencia' => 2606,
-                'carteira' => '1',
-                'conta' => 12510,
-                'idremessa' => 1,
+                'agencia'      => 2606,
+                'carteira'     => '1',
+                'conta'        => 12510,
+                'idremessa'    => 1,
                 'beneficiario' => self::$beneficiario,
             ]
         );
@@ -429,5 +495,4 @@ class RemessaCnab400Test extends \PHPUnit_Framework_TestCase
         $this->assertFileExists($file);
         $this->assertEquals($file, $file2);
     }
-
 }

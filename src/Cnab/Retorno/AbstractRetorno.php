@@ -72,7 +72,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
     /**
      * @var int
      */
-    private $_position = 0;
+    private $_position = 1;
 
     /**
      *
@@ -82,7 +82,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
     public function __construct($file) 
     {
 
-        $this->_position = 0;
+        $this->_position = 1;
 
         if (!$this->file = Util::file2array($file)) {
             throw new \Exception("Arquivo: não existe");
@@ -247,7 +247,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
 
     public function rewind() 
     {
-        $this->_position = 0;
+        $this->_position = 1;
     }
 
     public function count() 

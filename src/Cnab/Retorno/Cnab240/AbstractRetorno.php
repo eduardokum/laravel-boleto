@@ -186,7 +186,7 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
                 ];
             }
 
-            $array['detalhes']->add($arr);
+            $array['detalhes']->push($arr);
         }
         return $array;
     }

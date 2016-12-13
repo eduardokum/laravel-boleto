@@ -449,31 +449,6 @@ final class Util
     }
 
     /**
-     *
-     * @param string $date
-     *
-     * @return string
-     */
-    public static function dateBrToUs($date)
-    {
-        if (empty($date)) {
-            return false;
-        }
-        $numbersOnly = self::numbersOnly($date);
-        if (self::maskString($numbersOnly, '##/##/####') == $date) {
-            $date_time = \Carbon\Carbon::createFromFormat('d/m/Y', $date);
-        } elseif (self::maskString($numbersOnly, '##/##/##') == $date) {
-            $date_time = \Carbon\Carbon::createFromFormat('d/m/y', $date);
-        } elseif (self::maskString($numbersOnly, '####-##-##') == $date) {
-            $date_time = \Carbon\Carbon::createFromFormat('Y-m-d', $date);
-        } else {
-            return false;
-        }
-
-        return $date_time;
-    }
-
-    /**
      * @param $n
      * @param integer $loop
      * @param $insert
@@ -485,30 +460,6 @@ final class Util
         // Removo os caracteras a mais do que o pad solicitado caso a string seja maior
         $n = substr(self::onlyNumbers($n), 0, $loop);
         return str_pad($n, $loop, $insert, STR_PAD_LEFT);
-    }
-
-    /**
-     * @param string  $n
-     * @param integer $loop
-     * @param integer $insert
-     *
-     * @return string
-     */
-    public static function numberFormatValue($n, $loop, $insert)
-    {
-        return str_pad(self::onlyNumbers(number_format((float) $n, '2', ',', '.')), $loop, $insert, STR_PAD_LEFT);
-    }
-
-    /**
-     * @param $n
-     * @param integer $loop
-     * @param $insert
-     *
-     * @return string
-     */
-    public static function numberFormatConvenio($n, $loop, $insert)
-    {
-        return str_pad(self::onlyNumbers($n), $loop, $insert, STR_PAD_RIGHT);
     }
 
     /**
@@ -568,38 +519,6 @@ final class Util
     }
 
     /**
-     * Conversão para as datas no formato ddmmyyyy para ddmmyy
-     *
-     * @param $data
-     */
-    public static function convertDateToSingleYear($date)
-    {
-        $day = substr($date, 0, 2);
-        $month = substr($date, 2, 2);
-        $year = substr($date, 6, 2);
-        return $day . $month . $year;
-    }
-
-    /**
-     * Conversão da data no formato 'XXXXXX' para Carbon
-     *
-     * @param  $date
-     * @return Carbon
-     */
-    public static function convertSingleStringDate($date)
-    {
-        if ($date == '000000') {
-            return $date;
-        }
-
-        $day = substr($date, 0, 2);
-        $month = substr($date, 2, 2);
-        $year = '20' . substr($date, 4, 2);
-
-        return Carbon::createFromDate($year, $month, $day)->format('d/m/Y');
-    }
-
-    /**
      * @param        $date
      * @param string $format
      *
@@ -621,7 +540,7 @@ final class Util
      *
      * @return int
      */
-    public static function modulo11($n, $factor = 2, $base = 9, $rest = 0, $whenTen = 0)
+    public static function modulo11($n, $factor = 2, $base = 9, $x10 = 0, $resto10 = 0)
     {
         $sum = 0;
         for ($i = strlen($n); $i > 0; $i--) {
@@ -632,41 +551,15 @@ final class Util
             $factor++;
         }
 
-        if ($rest == 0) {
+        if ($x10 == 0) {
             $sum *= 10;
             $digito = $sum%11;
             if ($digito >= 10) {
-                $digito = $whenTen;
+                $digito = $resto10;
             }
             return $digito;
         }
         return $sum%11;
-    }
-
-    /**
-     * @param     $n
-     * @param int $earlyFactor
-     * @param int $lastFactor
-     *
-     * @return int
-     */
-    public static function modulo11Reverso($n, $earlyFactor = 2, $lastFactor = 9)
-    {
-        $factor = $lastFactor;
-        $sum = 0;
-        for ($i = strlen($n); $i > 0; $i--) {
-            $sum += substr($n, $i - 1, 1)*$factor;
-            if (--$factor < $earlyFactor) {
-                $factor = $lastFactor;
-            }
-        }
-
-        $module = $sum%11;
-        if ($module > 9) {
-            return 0;
-        }
-
-        return $module;
     }
 
     /**
@@ -686,23 +579,6 @@ final class Util
         );
         $total = array_sum($odd) + array_sum($even);
         return ((floor($total/10) + 1)*10 - $total)%10;
-    }
-
-    /**
-     * @param $n
-     *
-     * @return int
-     */
-    public static function dvSatander($n)
-    {
-        $chars = array_reverse(str_split($n, 1));
-        $sums = array_reverse(str_split('97310097131973', 1));
-        $sum = 0;
-        foreach ($chars as $i => $char) {
-            $sum += substr($char*$sums[$i], -1);
-        }
-        $unidade = substr($sum, -1);
-        return $unidade == 0 ? $unidade : 10 - $unidade;
     }
 
     /**
@@ -756,6 +632,7 @@ final class Util
      *
      * @return string
      * @throws \Exception
+     * @codeCoverageIgnore
      */
     public static function criarRetornoFake($file, $ocorrencia = '02')
     {
@@ -977,9 +854,9 @@ final class Util
      * @return array|bool
      */
     public static function file2array($file) {
-        if (is_array($file) && is_string($file[0])) {
+        if (is_array($file) && isset($file[0]) && is_string($file[0])) {
             return $file;
-        } elseif (is_file($file) && file_exists($file)) {
+        } elseif (is_string($file) && is_file($file) && file_exists($file)) {
             return file($file);
         } elseif (is_string($file) && strstr($file, PHP_EOL) !== false) {
             $file_content = explode(PHP_EOL, $file);

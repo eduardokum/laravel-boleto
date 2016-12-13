@@ -2,11 +2,72 @@
 
 namespace Cnab400\Tests;
 
+use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco\Bradesco;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Detalhe;
 use Illuminate\Support\Collection;
 
 class RetornoCnab400Test extends \PHPUnit_Framework_TestCase
 {
+
+    /**
+     * @expectedException     \Exception
+     */
+    public function testRetornoInvalido(){
+        new Bradesco([]);
+    }
+
+    /**
+     * @expectedException     \Exception
+     */
+    public function testRetornoBancoInvalido(){
+        new Bradesco(__DIR__ . '/files/cnab400/retorno_banco_fake.ret');
+    }
+
+    /**
+     * @expectedException     \Exception
+     */
+    public function testRetornoServicoInvalido(){
+        new Bradesco(__DIR__ . '/files/cnab400/retorno_banco_fake_2.ret');
+    }
+
+    public function testRetornoSeekableIterator(){
+        $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make(__DIR__ . '/files/cnab400/bradesco.ret');
+        $retorno->processar();
+        $retorno->rewind();
+        $this->assertEquals(1, $retorno->key());
+        $this->assertInstanceOf(Detalhe::class, $retorno->current());
+        $retorno->seek(2);
+        $this->assertEquals(2, $retorno->key());
+        $this->assertInstanceOf(Detalhe::class, $retorno->current());
+        $retorno->next();
+        $this->assertEquals(3, $retorno->key());
+        $this->assertInstanceOf(Detalhe::class, $retorno->current());
+
+        $this->setExpectedException(\Exception::class);
+        $retorno->seek(100);
+    }
+
+    public function testRetornoToArray(){
+        $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make(__DIR__ . '/files/cnab400/bradesco.ret');
+        $retorno->processar();
+
+        $array = $retorno->toArray();
+
+        $this->assertArrayHasKey('header', $array);
+        $this->assertArrayHasKey('trailer', $array);
+        $this->assertArrayHasKey('detalhes', $array);
+    }
+
+    public function testRetornoOcorrencia(){
+        $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make(__DIR__ . '/files/cnab400/bradesco.ret');
+        $retorno->processar();
+
+        $detalhe = $retorno->current();
+
+        $this->assertTrue($detalhe->hasOcorrencia());
+        $this->assertTrue($detalhe->hasOcorrencia('02'));
+        $this->assertTrue($detalhe->hasOcorrencia(['02']));
+    }
 
     public function testRetornoBradescoCnab400()
     {
