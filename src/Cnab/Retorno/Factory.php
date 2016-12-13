@@ -15,89 +15,53 @@ class Factory
      */
     public static function make($file)
     {
-        if ($file == '') {
-            throw new \Exception("file url is required.");
-        } elseif (file_exists($file)) {
-            $file_content = file($file);
-        } elseif (is_string($file)) {
-            $file_content = explode(PHP_EOL, $file);
-        } else {
-            throw new \Exception("Arquivo: $file, não existe");
+        if (!$file_content = Util::file2array($file)) {
+            throw new \Exception("Arquivo: não existe");
         }
 
-        if (!Util::isCnab400($file_content) && !Util::isCnab240($file_content)) {
-
-            throw new \Exception("Formato do arquivo não identificado.");
-
-        } elseif (Util::isCnab400($file_content)) {
-
-            /**  Cnab 400 */
-
-            if (substr($file_content[0], 0, 9) != '02RETORNO') {
-                throw new \Exception("Arquivo: $file, não é um arquivo de retorno");
-            }
-
-            $banco = substr($file_content[0], 76, 3);
-
-            switch ($banco) {
-                case BoletoContract::COD_BANCO_BB:
-                    $instancia = new Cnab400\Banco\Bb($file_content);
-                    break;
-                case BoletoContract::COD_BANCO_SANTANDER:
-                    $instancia = new Cnab400\Banco\Santander($file_content);
-                    break;
-                case BoletoContract::COD_BANCO_CEF:
-                    $instancia = new Cnab400\Banco\Caixa($file_content);
-                    break;
-                case BoletoContract::COD_BANCO_BRADESCO:
-                    $instancia = new Cnab400\Banco\Bradesco($file_content);
-                    break;
-                case BoletoContract::COD_BANCO_ITAU:
-                    $instancia = new Cnab400\Banco\Itau($file_content);
-                    break;
-                case BoletoContract::COD_BANCO_HSBC:
-                    $instancia = new Cnab400\Banco\Hsbc($file_content);
-                    break;
-                case BoletoContract::COD_BANCO_SICREDI:
-                    $instancia = new Cnab400\Banco\Sicredi($file_content);
-                    break;
-                default:
-                    throw new \Exception("Banco: $banco, inválido");
-            }
-
-        } else if (Util::isCnab240($file_content)) {
-
-            /** Cnab 240 */
-
-            if (substr($file_content[0], 142, 1) != '2') {
-                throw new \Exception("Arquivo: $file, não é um arquivo retorno");
-            }
-
-            $banco = substr($file_content[0], 0, 3);
-
-            switch ($banco) {
-                case BoletoContract::COD_BANCO_BB:
-                    break;
-                case BoletoContract::COD_BANCO_SANTANDER:
-                    $instancia = new Cnab240\Banco\Santander($file_content);
-                    break;
-                case BoletoContract::COD_BANCO_CEF:
-                    break;
-                case BoletoContract::COD_BANCO_BRADESCO:
-                    break;
-                case BoletoContract::COD_BANCO_ITAU:
-                    break;
-                case BoletoContract::COD_BANCO_HSBC:
-                    break;
-                case BoletoContract::COD_BANCO_SICREDI:
-                    break;
-                default:
-                    throw new \Exception("Banco: $banco, inválido");
-            }
-
+        if (!Util::isHeaderRetorno($file_content[0])) {
+            throw new \Exception("Arquivo: $file, não é um arquivo de retorno");
         }
 
+        $instancia = self::getBancoClass($file_content);
         return $instancia->processar();
+    }
 
+    /**
+     * @param $file_content
+     *
+     * @return mixed
+     * @throws \Exception
+     */
+    private static function getBancoClass($file_content) 
+    {
+
+        $banco = '';
+        $namespace = '';
+        if (Util::isCnab400($file_content)) {
+            $banco = substr($file_content[0], 76, 3);
+            $namespace = __NAMESPACE__ . '\\Cnab400\\';
+        } elseif (Util::isCnab240($file_content)) {
+            $banco = substr($file_content[0], 0, 3);
+            $namespace = __NAMESPACE__ . '\\Cnab240\\';
+        }
+
+        $aBancos = [
+            BoletoContract::COD_BANCO_BB => 'Banco\\Bb',
+            BoletoContract::COD_BANCO_SANTANDER => 'Banco\\Santander',
+            BoletoContract::COD_BANCO_CEF => 'Banco\\Caixa',
+            BoletoContract::COD_BANCO_BRADESCO => 'Banco\\Bradesco',
+            BoletoContract::COD_BANCO_ITAU => 'Banco\\Itau',
+            BoletoContract::COD_BANCO_HSBC => 'Banco\\Hsbc',
+            BoletoContract::COD_BANCO_SICREDI => 'Banco\\Sicredi',
+            BoletoContract::COD_BANCO_BANRISUL => 'Banco\\Banrisul',
+        ];
+
+        if (array_key_exists($banco, $aBancos)) {
+            $bancoClass = $namespace . $aBancos[$banco];
+            return new $bancoClass($file_content);
+        }
+
+        throw new \Exception("Banco: $banco, inválido");
     }
 }

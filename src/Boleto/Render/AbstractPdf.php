@@ -8,7 +8,7 @@ abstract class AbstractPdf extends FPDF
     // INCLUDE JS
     protected $javascript;
     protected $n_js;
-    protected $angle=0;
+    protected $angle = 0;
 
     protected function IncludeJS($script)
     {
@@ -48,14 +48,14 @@ abstract class AbstractPdf extends FPDF
     }
 
     // PAGE GROUP
-    protected $NewPageGroup;   // variable indicating whether a new group was requested
-    protected $PageGroups;     // variable containing the number of pages of the groups
-    protected $CurrPageGroup;  // variable containing the alias of the current page group
+    protected $NewPageGroup; // variable indicating whether a new group was requested
+    protected $PageGroups; // variable containing the number of pages of the groups
+    protected $CurrPageGroup; // variable containing the alias of the current page group
 
     // create a new page group; call this before calling AddPage()
     public function StartPageGroup()
     {
-        $this->NewPageGroup=true;
+        $this->NewPageGroup = true;
     }
 
     // current page in the group
@@ -73,37 +73,36 @@ abstract class AbstractPdf extends FPDF
     public function _beginpage($orientation, $size)
     {
         parent::_beginpage($orientation, $size);
-        if($this->NewPageGroup)
-        {
+        if ($this->NewPageGroup) {
             // start a new group
-            $n = sizeof($this->PageGroups)+1;
-            $alias = '{'.$n.'}';
+            $n = sizeof($this->PageGroups) + 1;
+            $alias = '{' . $n . '}';
             $this->PageGroups[$alias] = 1;
             $this->CurrPageGroup = $alias;
-            $this->NewPageGroup=false;
+            $this->NewPageGroup = false;
+        } elseif ($this->CurrPageGroup) {
+                    $this->PageGroups[$this->CurrPageGroup]++;
         }
-        elseif($this->CurrPageGroup)
-            $this->PageGroups[$this->CurrPageGroup]++;
     }
 
     public function _putpages()
     {
         $nb = $this->page;
-        if (!empty($this->PageGroups))
-        {
+        if (!empty($this->PageGroups)) {
             // do page number replacement
             foreach ($this->PageGroups as $k => $v)
             {
                 for ($n = 1; $n <= $nb; $n++)
                 {
-                    $this->pages[$n]=str_replace($k, $v, $this->pages[$n]);
+                    $this->pages[$n] = str_replace($k, $v, $this->pages[$n]);
                 }
             }
         }
         parent::_putpages();
     }
 
-    protected function _() {
+    protected function _() 
+    {
         $args = func_get_args();
         $var  = utf8_decode(array_shift($args));
         $s    = vsprintf($var, $args);
@@ -117,12 +116,13 @@ abstract class AbstractPdf extends FPDF
      * @param $border
      * @param $ln
      * @param $align
-     * @param float $dec
+     * @param float  $dec
      */
-    protected function textFitCell($w, $h, $txt, $border, $ln, $align,$dec = 0.1 ) {
+    protected function textFitCell($w, $h, $txt, $border, $ln, $align, $dec = 0.1) 
+    {
         $fsize = $this->FontSizePt;
         $size = $fsize;
-        while($this->GetStringWidth($txt) > ($w-2)) {
+        while ($this->GetStringWidth($txt) > ($w - 2)) {
             $this->SetFontSize($size -= $dec);
         }
         $this->Cell($w, $h, $txt, $border, $ln, $align);
@@ -131,22 +131,26 @@ abstract class AbstractPdf extends FPDF
 
     /**
      * @param $angle
-     * @param int $x
-     * @param int $y
+     * @param int   $x
+     * @param int   $y
      */
-    protected function rotate($angle, $x = -1, $y = -1) {
-        if ($x == -1)
-            $x = $this->x;
-        if ($y == -1)
-            $y = $this->y;
-        if ($this->angle != 0)
-            $this->_out('Q');
+    protected function rotate($angle, $x = -1, $y = -1) 
+    {
+        if ($x == -1) {
+                    $x = $this->x;
+        }
+        if ($y == -1) {
+                    $y = $this->y;
+        }
+        if ($this->angle != 0) {
+                    $this->_out('Q');
+        }
         if ($angle != 0) {
-            $angle*=M_PI / 180;
+            $angle *= M_PI/180;
             $c = cos($angle);
             $s = sin($angle);
-            $cx = $x * $this->k;
-            $cy = ($this->h - $y) * $this->k;
+            $cx = $x*$this->k;
+            $cy = ($this->h - $y)*$this->k;
 
             $this->_out(sprintf('q %.5f %.5f %.5f %.5f %.2f %.2f cm 1 0 0 1 %.2f %.2f cm', $c, $s, -$s, $c, $cx, $cy, -$cx, -$cy));
         }
@@ -159,37 +163,32 @@ abstract class AbstractPdf extends FPDF
      * @param $maxheight
      * @return array
      */
-    protected function calculateDimensions($width,$height,$maxwidth,$maxheight)
+    protected function calculateDimensions($width, $height, $maxwidth, $maxheight)
     {
-        if($width != $height)
-        {
-            if($width > $height)
-            {
+        if ($width != $height) {
+            if ($width > $height) {
                 $t_width = $maxwidth;
-                $t_height = (($t_width * $height)/$width);
+                $t_height = (($t_width*$height)/$width);
                 //fix height
-                if($t_height > $maxheight)
-                {
+                if ($t_height > $maxheight) {
                     $t_height = $maxheight;
-                    $t_width = (($width * $t_height)/$height);
+                    $t_width = (($width*$t_height)/$height);
                 }
-            }
-            else
+            } else
             {
                 $t_height = $maxheight;
-                $t_width = (($width * $t_height)/$height);
+                $t_width = (($width*$t_height)/$height);
                 //fix width
-                if($t_width > $maxwidth)
-                {
+                if ($t_width > $maxwidth) {
                     $t_width = $maxwidth;
-                    $t_height = (($t_width * $height)/$width);
+                    $t_height = (($t_width*$height)/$width);
                 }
             }
+        } else {
+                    $t_width = $t_height = min($maxheight, $maxwidth);
         }
-        else
-            $t_width = $t_height = min($maxheight,$maxwidth);
 
-        return array('width'=>(int)$t_width,'w'=>(int)$t_width,'height'=>(int)$t_height, 'h'=>(int)$t_height);
+        return array('width'=>(int) $t_width, 'w'=>(int) $t_width, 'height'=>(int) $t_height, 'h'=>(int) $t_height);
     }
 
     /**
@@ -198,23 +197,23 @@ abstract class AbstractPdf extends FPDF
      */
     protected function point2px($pt)
     {
-        return ceil($pt * 96 / 72);
+        return ceil($pt*96/72);
     }
 
     /**
      * BarCode
      *
-     * @param     $xpos
-     * @param     $ypos
-     * @param     $code
-     * @param int $basewidth
-     * @param int $height
+     * @param $xpos
+     * @param $ypos
+     * @param $code
+     * @param int  $basewidth
+     * @param int  $height
      */
     public function i25($xpos, $ypos, $code, $basewidth = 1, $height = 10)
     {
 
         $wide = $basewidth;
-        $narrow = $basewidth / 3;
+        $narrow = $basewidth/3;
 
         $barChar = array();
         // wide/narrow codes for the digits
@@ -232,7 +231,7 @@ abstract class AbstractPdf extends FPDF
         $barChar['Z'] = 'wn';
 
         // add leading zero if code-length is odd
-        if (strlen($code) % 2 != 0) {
+        if (strlen($code)%2 != 0) {
             $code = '0' . $code;
         }
 
@@ -247,18 +246,18 @@ abstract class AbstractPdf extends FPDF
             $charBar = $code[$i];
             $charSpace = $code[$i + 1];
             // check whether it is a valid digit
-            if (! isset($barChar[$charBar])) {
+            if (!isset($barChar[$charBar])) {
                 $this->Error('Invalid character in barcode: ' . $charBar);
             }
-            if (! isset($barChar[$charSpace])) {
+            if (!isset($barChar[$charSpace])) {
                 $this->Error('Invalid character in barcode: ' . $charSpace);
             }
             // create a wide/narrow-sequence (first digit=bars, second digit=spaces)
             $seq = '';
-            for ($s = 0; $s < strlen($barChar[$charBar]); $s ++) {
+            for ($s = 0; $s < strlen($barChar[$charBar]); $s++) {
                 $seq .= $barChar[$charBar][$s] . $barChar[$charSpace][$s];
             }
-            for ($bar = 0; $bar < strlen($seq); $bar ++) {
+            for ($bar = 0; $bar < strlen($seq); $bar++) {
                 // set lineWidth depending on value
                 if ($seq[$bar] == 'n') {
                     $lineWidth = $narrow;
@@ -266,7 +265,7 @@ abstract class AbstractPdf extends FPDF
                     $lineWidth = $wide;
                 }
                 // draw every second value, because the second digit of the pair is represented by the spaces
-                if ($bar % 2 == 0) {
+                if ($bar%2 == 0) {
                     $this->Rect($xpos, $ypos, $lineWidth, $height, 'F');
                 }
                 $xpos += $lineWidth;
@@ -292,7 +291,7 @@ abstract class AbstractPdf extends FPDF
      * D: send to the browser and force download.<br>
      * F: save to a local<br>
      * S: return as a string. name is ignored.
-     * @param bool $print 1 imprime 0 nao imprime
+     * @param bool   $print 1 imprime 0 nao imprime
      * @return string|void
      */
     public function Output($name = '', $dest = 'I', $print = false)

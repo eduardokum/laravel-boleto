@@ -2,8 +2,73 @@
 
 namespace Cnab400\Tests;
 
+use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco\Bradesco;
+use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Detalhe;
+use Illuminate\Support\Collection;
+
 class RetornoCnab400Test extends \PHPUnit_Framework_TestCase
 {
+
+    /**
+     * @expectedException     \Exception
+     */
+    public function testRetornoInvalido(){
+        new Bradesco([]);
+    }
+
+    /**
+     * @expectedException     \Exception
+     */
+    public function testRetornoBancoInvalido(){
+        new Bradesco(__DIR__ . '/files/cnab400/retorno_banco_fake.ret');
+    }
+
+    /**
+     * @expectedException     \Exception
+     */
+    public function testRetornoServicoInvalido(){
+        new Bradesco(__DIR__ . '/files/cnab400/retorno_banco_fake_2.ret');
+    }
+
+    public function testRetornoSeekableIterator(){
+        $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make(__DIR__ . '/files/cnab400/bradesco.ret');
+        $retorno->processar();
+        $retorno->rewind();
+        $this->assertEquals(1, $retorno->key());
+        $this->assertInstanceOf(Detalhe::class, $retorno->current());
+        $retorno->seek(2);
+        $this->assertEquals(2, $retorno->key());
+        $this->assertInstanceOf(Detalhe::class, $retorno->current());
+        $retorno->next();
+        $this->assertEquals(3, $retorno->key());
+        $this->assertInstanceOf(Detalhe::class, $retorno->current());
+
+        $this->setExpectedException(\Exception::class);
+        $retorno->seek(100);
+    }
+
+    public function testRetornoToArray(){
+        $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make(__DIR__ . '/files/cnab400/bradesco.ret');
+        $retorno->processar();
+
+        $array = $retorno->toArray();
+
+        $this->assertArrayHasKey('header', $array);
+        $this->assertArrayHasKey('trailer', $array);
+        $this->assertArrayHasKey('detalhes', $array);
+    }
+
+    public function testRetornoOcorrencia(){
+        $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make(__DIR__ . '/files/cnab400/bradesco.ret');
+        $retorno->processar();
+
+        $detalhe = $retorno->current();
+
+        $this->assertTrue($detalhe->hasOcorrencia());
+        $this->assertTrue($detalhe->hasOcorrencia('02'));
+        $this->assertTrue($detalhe->hasOcorrencia(['02']));
+    }
+
     public function testRetornoBradescoCnab400()
     {
         $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make(__DIR__ . '/files/cnab400/bradesco.ret');
@@ -18,6 +83,14 @@ class RetornoCnab400Test extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('0', $retorno->getTrailer()->avisos);
         $this->assertEquals('6', $retorno->getTrailer()->quantidadeLiquidados);
+
+        $this->assertInstanceOf(Collection::class, $retorno->getDetalhes());
+        $this->assertInstanceOf(Detalhe::class, $retorno->getDetalhe(1));
+
+        foreach ($retorno->getDetalhes() as $detalhe) {
+            $this->assertInstanceOf(Detalhe::class, $detalhe);
+            $this->assertArrayHasKey('numeroDocumento', $detalhe->toArray());
+        }
     }
 
     public function testRetornoBancoBrasilCnab400()
@@ -34,6 +107,14 @@ class RetornoCnab400Test extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('0', $retorno->getTrailer()->avisos);
         $this->assertEquals('1', $retorno->getTrailer()->quantidadeLiquidados);
+
+        $this->assertInstanceOf(Collection::class, $retorno->getDetalhes());
+        $this->assertInstanceOf(Detalhe::class, $retorno->getDetalhe(1));
+
+        foreach ($retorno->getDetalhes() as $detalhe) {
+            $this->assertInstanceOf(Detalhe::class, $detalhe);
+            $this->assertArrayHasKey('numeroDocumento', $detalhe->toArray());
+        }
     }
 
     public function testRetornoItauCnab400()
@@ -51,6 +132,14 @@ class RetornoCnab400Test extends \PHPUnit_Framework_TestCase
         $this->assertEquals('0', $retorno->getTrailer()->avisos);
         $this->assertEquals('3', $retorno->getTrailer()->quantidadeLiquidados);
 
+        $this->assertInstanceOf(Collection::class, $retorno->getDetalhes());
+        $this->assertInstanceOf(Detalhe::class, $retorno->getDetalhe(1));
+
+        foreach ($retorno->getDetalhes() as $detalhe) {
+            $this->assertInstanceOf(Detalhe::class, $detalhe);
+            $this->assertArrayHasKey('numeroDocumento', $detalhe->toArray());
+        }
+
     }
 
     public function testRetornoCefCnab400()
@@ -64,6 +153,14 @@ class RetornoCnab400Test extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('Caixa Econômica Federal', $retorno->getBancoNome());
         $this->assertEquals('104', $retorno->getCodigoBanco());
+
+        $this->assertInstanceOf(Collection::class, $retorno->getDetalhes());
+        $this->assertInstanceOf(Detalhe::class, $retorno->getDetalhe(1));
+
+        foreach ($retorno->getDetalhes() as $detalhe) {
+            $this->assertInstanceOf(Detalhe::class, $detalhe);
+            $this->assertArrayHasKey('numeroDocumento', $detalhe->toArray());
+        }
     }
 
     public function testRetornoHsbcCnab400()
@@ -77,6 +174,14 @@ class RetornoCnab400Test extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('HSBC Bank Brasil S.A.', $retorno->getBancoNome());
         $this->assertEquals('399', $retorno->getCodigoBanco());
+
+        $this->assertInstanceOf(Collection::class, $retorno->getDetalhes());
+        $this->assertInstanceOf(Detalhe::class, $retorno->getDetalhe(1));
+
+        foreach ($retorno->getDetalhes() as $detalhe) {
+            $this->assertInstanceOf(Detalhe::class, $detalhe);
+            $this->assertArrayHasKey('numeroDocumento', $detalhe->toArray());
+        }
     }
 
     public function testRetornoSantanderCnab400()
@@ -90,6 +195,14 @@ class RetornoCnab400Test extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('Banco Santander (Brasil) S.A.', $retorno->getBancoNome());
         $this->assertEquals('033', $retorno->getCodigoBanco());
+
+        $this->assertInstanceOf(Collection::class, $retorno->getDetalhes());
+        $this->assertInstanceOf(Detalhe::class, $retorno->getDetalhe(1));
+
+        foreach ($retorno->getDetalhes() as $detalhe) {
+            $this->assertInstanceOf(Detalhe::class, $detalhe);
+            $this->assertArrayHasKey('numeroDocumento', $detalhe->toArray());
+        }
     }
 
     public function testRetornoSicrediCnab400()
@@ -103,6 +216,14 @@ class RetornoCnab400Test extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('Banco Cooperativo Sicredi S.A.', $retorno->getBancoNome());
         $this->assertEquals('748', $retorno->getCodigoBanco());
+
+        $this->assertInstanceOf(Collection::class, $retorno->getDetalhes());
+        $this->assertInstanceOf(Detalhe::class, $retorno->getDetalhe(1));
+
+        foreach ($retorno->getDetalhes() as $detalhe) {
+            $this->assertInstanceOf(Detalhe::class, $detalhe);
+            $this->assertArrayHasKey('numeroDocumento', $detalhe->toArray());
+        }
     }
 
 }

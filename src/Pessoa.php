@@ -1,8 +1,8 @@
 <?php
-namespace Eduardokum\LaravelBoleto\Boleto;
+namespace Eduardokum\LaravelBoleto;
 
-use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
+use Eduardokum\LaravelBoleto\Util;
 
 class Pessoa implements PessoaContract
 {
@@ -38,12 +38,12 @@ class Pessoa implements PessoaContract
     /**
      * Cria a pessoa passando os parametros.
      *
-     * @param      $nome
-     * @param      $documento
-     * @param null $endereco
-     * @param null $cep
-     * @param null $cidade
-     * @param null $uf
+     * @param $nome
+     * @param $documento
+     * @param null      $endereco
+     * @param null      $cep
+     * @param null      $cidade
+     * @param null      $uf
      *
      * @return Pessoa
      */
@@ -117,6 +117,9 @@ class Pessoa implements PessoaContract
      */
     public function setDocumento($documento)
     {
+        if(!in_array(strlen(Util::onlyNumbers($documento)), [11,14,0])) {
+            throw new \Exception('Documento inválido');
+        }
         $this->documento = $documento;
     }
     /**
@@ -126,15 +129,10 @@ class Pessoa implements PessoaContract
      */
     public function getDocumento()
     {
-        if($this->getTipoDocumento() == 'CPF')
-        {
+        if ($this->getTipoDocumento() == 'CPF') {
             return Util::maskString(Util::onlyNumbers($this->documento), '###.###.###-##');
         }
-        if($this->getTipoDocumento() == 'CNPJ')
-        {
-            return Util::maskString(Util::onlyNumbers($this->documento), '##.###.###/####-##');
-        }
-        return $this->documento;
+        return Util::maskString(Util::onlyNumbers($this->documento), '##.###.###/####-##');
     }
     /**
      * Define o endereço
@@ -215,7 +213,7 @@ class Pessoa implements PessoaContract
      */
     public function getNomeDocumento()
     {
-        if(!$this->getDocumento()) {
+        if (!$this->getDocumento()) {
             return $this->getNome();
         } else {
             return $this->getNome() . ' / ' . $this->getTipoDocumento() . ': ' . $this->getDocumento();
@@ -231,10 +229,8 @@ class Pessoa implements PessoaContract
         $cpf_cnpj = Util::onlyNumbers($this->documento);
         if (strlen($cpf_cnpj) == 11) {
             return 'CPF';
-        } else if (strlen($cpf_cnpj) == 14) {
-            return 'CNPJ';
         }
-        return 'Documento';
+        return 'CNPJ';
     }
     /**
      * Retorna o endereço formatado para a linha 2 de endereço

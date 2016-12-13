@@ -299,7 +299,7 @@ final class Util
     /**
      * Função para limpar acentos de uma string
      *
-     * @param string $string
+     * @param  string $string
      * @return string
      */
     public static function normalizeChars($string)
@@ -323,9 +323,10 @@ final class Util
 
     /**
      * Mostra o Valor no float Formatado
-     * @param string $number
-     * @param integer $decimals
-     * @param boolean $showThousands
+     *
+     * @param  string  $number
+     * @param  integer $decimals
+     * @param  boolean $showThousands
      * @return string
      */
     public static function nFloat($number, $decimals = 2, $showThousands = false)
@@ -350,10 +351,11 @@ final class Util
 
     /**
      * Mostra o Valor no real Formatado
-     * @param float $number
-     * @param boolean $fixed
-     * @param boolean $symbol
-     * @param integer $decimals
+     *
+     * @param  float   $number
+     * @param  boolean $fixed
+     * @param  boolean $symbol
+     * @param  integer $decimals
      * @return string
      */
     public static function nReal($number, $decimals = 2, $symbol = true, $fixed = true)
@@ -383,95 +385,25 @@ final class Util
     }
 
     /**
-     * Mostra um numero por extenso.
-     *
-     * @param $value
-     *
-     * @param $uppercase 1 - UPPER; 2 - Upper; false - tudo minusculo;
-     * @return string
-     */
-    public static function nRealExtenso($value, $uppercase)
-    {
-        $value = self::nFloat($value, 2);
-
-        $singular = ["centavo", "real", "mil", "milhão", "bilhão", "trilhão", "quatrilhão"];
-        $plural = ["centavos", "reais", "mil", "milhões", "bilhões", "trilhões", "quatrilhões"];
-
-        $c = ["", "cem", "duzentos", "trezentos", "quatrocentos", "quinhentos", "seiscentos", "setecentos", "oitocentos", "novecentos"];
-        $d = ["", "dez", "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa"];
-        $d10 = ["dez", "onze", "doze", "treze", "quatorze", "quinze", "dezesseis", "dezesete", "dezoito", "dezenove"];
-        $u = ["", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove"];
-
-        $z = 0;
-
-        $value = number_format($value, 2, ".", ".");
-        $integer = explode(".", $value);
-        $cont = count($integer);
-        for ($i = 0; $i < $cont; $i++) {
-            for ($ii = strlen($integer[$i]); $ii < 3; $ii++) {
-                $integer[$i] = "0" . $integer[$i];
-            }
-        }
-
-        $fim = $cont - ($integer[$cont - 1] > 0 ? 1 : 2);
-        $rt = '';
-        for ($i = 0; $i < $cont; $i++) {
-            $value = $integer[$i];
-            $rc = (($value > 100) && ($value < 200)) ? "cento" : $c[$value[0]];
-            $rd = ($value[1] < 2) ? "" : $d[$value[1]];
-            $ru = ($value > 0) ? (($value[1] == 1) ? $d10[$value[2]] : $u[$value[2]]) : "";
-
-            $r = $rc . (($rc && ($rd || $ru)) ? " e " : "") . $rd . (($rd &&
-                    $ru) ? " e " : "") . $ru;
-            $t = $cont - 1 - $i;
-            $r .= $r ? " " . ($value > 1 ? $plural[$t] : $singular[$t]) : "";
-            if ($value == "000"
-            ) {
-                $z++;
-            } elseif ($z > 0) {
-                $z--;
-            }
-
-            if (($t == 1) && ($z > 0) && ($integer[0] > 0)) {
-                $r .= (($z > 1) ? " de " : "") . $plural[$t];
-            }
-
-            if ($r) {
-                $rt = $rt . ((($i > 0) && ($i <= $fim) &&
-                        ($integer[0] > 0) && ($z < 1)) ? (($i < $fim) ? ", " : " e ") : " ") . $r;
-            }
-
-        }
-
-        if (!$uppercase) {
-            return trim($rt ? $rt : "zero");
-        } elseif ($uppercase == "2") {
-            return trim(strtoupper($rt) ? strtoupper(strtoupper($rt)) : "Zero");
-        } else {
-            return trim(ucwords($rt) ? ucwords($rt) : "Zero");
-        }
-    }
-
-    /**
      * Return percent x of y;
      *
-     * @param     $big
-     * @param     $small
-     * @param int $defaultOnZero
+     * @param $big
+     * @param $small
+     * @param int   $defaultOnZero
      *
      * @return string
      */
     public static function percentOf($big, $small, $defaultOnZero = 0)
     {
-        $result = $big > 0.01 ? (($small * 100) / $big) : $defaultOnZero;
+        $result = $big > 0.01 ? (($small*100)/$big) : $defaultOnZero;
         return self::nFloat($result);
     }
 
     /**
      * Return percentage of value;
      *
-     * @param     $big
-     * @param     $percent
+     * @param $big
+     * @param $percent
      *
      * @return string
      */
@@ -480,7 +412,7 @@ final class Util
         if ($percent < 0.01) {
             return 0;
         }
-        return self::nFloat($big * ($percent / 100));
+        return self::nFloat($big*($percent/100));
     }
 
     /**
@@ -517,33 +449,8 @@ final class Util
     }
 
     /**
-     *
-     * @param string $date
-     *
-     * @return string
-     */
-    public static function dateBrToUs($date)
-    {
-        if (empty($date)) {
-            return false;
-        }
-        $numbersOnly = self::numbersOnly($date);
-        if (self::maskString($numbersOnly, '##/##/####') == $date) {
-            $date_time = \Carbon\Carbon::createFromFormat('d/m/Y', $date);
-        } elseif (self::maskString($numbersOnly, '##/##/##') == $date) {
-            $date_time = \Carbon\Carbon::createFromFormat('d/m/y', $date);
-        } elseif (self::maskString($numbersOnly, '####-##-##') == $date) {
-            $date_time = \Carbon\Carbon::createFromFormat('Y-m-d', $date);
-        } else {
-            return false;
-        }
-
-        return $date_time;
-    }
-
-    /**
      * @param $n
-     * @param $loop
+     * @param integer $loop
      * @param $insert
      *
      * @return string
@@ -556,80 +463,42 @@ final class Util
     }
 
     /**
-     * @param $n
-     * @param $loop
-     * @param $insert
-     *
-     * @return string
-     */
-    public static function numberFormatValue($n, $loop, $insert)
-    {
-        return str_pad(self::onlyNumbers(number_format((float)$n, '2', ',', '.')), $loop, $insert, STR_PAD_LEFT);
-    }
-
-    /**
-     * @param $n
-     * @param $loop
-     * @param $insert
-     *
-     * @return string
-     */
-    public static function numberFormatConvenio($n, $loop, $insert)
-    {
-        return str_pad(self::onlyNumbers($n), $loop, $insert, STR_PAD_RIGHT);
-    }
-
-    /**
      * @param        $tipo
      * @param        $valor
-     * @param        $tamanho
-     * @param int $dec
-     * @param string $sFill
+     * @param        integer $tamanho
+     * @param int     $dec
+     * @param string  $sFill
      *
      * @return string
      * @throws \Exception
      */
     public static function formatCnab($tipo, $valor, $tamanho, $dec = 0, $sFill = '')
     {
-        $string = $valor;
-        if (in_array(strtoupper($tipo), array('9', 9, 'N', '9L', 'NL'))) {
-            if (strtoupper($tipo) == '9L' || strtoupper($tipo) == 'NL') {
-                $string = self::onlyNumbers($string);
+        $tipo = self::upper($tipo);
+        if (in_array($tipo, array('9', 9, 'N', '9L', 'NL'))) {
+            if ($tipo == '9L' || $tipo == 'NL') {
+                $valor = self::onlyNumbers($valor);
             }
             $left = '';
             $sFill = 0;
             $type = 's';
-            $string = ($dec > 0) ? sprintf("%.{$dec}f", $string) : $string;
-            $string = str_replace(array(',', '.'), '', $string);
-        } else if (in_array(strtoupper($tipo), array('A', 'X'))) {
+            $valor = ($dec > 0) ? sprintf("%.{$dec}f", $valor) : $valor;
+            $valor = str_replace(array(',', '.'), '', $valor);
+        } else if (in_array($tipo, array('A', 'X'))) {
             $left = '-';
             $type = 's';
-            $string = strtoupper(self::normalizeChars($string));
-        } else if (in_array(strtoupper($tipo), array('AM', 'XM'))) {
-            $left = '-';
-            $type = 's';
-            $string = (self::normalizeChars($string));
-        } else if (strtoupper($tipo) == 'L') {
-            $left = '-';
-            $type = 's';
-            $string = self::normalizeChars($string);
-        } else if (strtoupper($tipo) == 'D') {
-            $tamanho = 6;
-            $left = '-';
-            $type = 's';
-            $string = $string->format('dmy');
+            $valor = strtoupper(self::normalizeChars($valor));
         } else {
             throw new \Exception('Tipo inválido');
         }
-        $string = substr($string, 0, $tamanho);
-        return sprintf("%{$left}{$sFill}{$tamanho}{$type}", $string);
+        return sprintf("%{$left}{$sFill}{$tamanho}{$type}", substr($valor, 0, $tamanho));
     }
 
     /**
-     * @param        $date
+     * @param        Carbon $date
      * @param string $format
      *
-     * @return float
+     * @return integer
      */
     public static function fatorVencimento($date, $format = 'Y-m-d')
     {
@@ -650,36 +519,6 @@ final class Util
     }
 
     /**
-     * Conversão para as datas no formato ddmmyyyy para ddmmyy
-     * @param $data
-     */
-    public static function convertDateToSingleYear($date)
-    {
-        $day = substr($date, 0, 2);
-        $month = substr($date, 2, 2);
-        $year = substr($date, 6, 2);
-        return $day . $month . $year;
-    }
-
-    /**
-     * Conversão da data no formato 'XXXXXX' para Carbon
-     * @param $date
-     * @return Carbon
-     */
-    public static function convertSingleStringDate($date)
-    {
-        if ($date == '000000') {
-            return $date;
-        }
-
-        $day = substr($date, 0, 2);
-        $month = substr($date, 2, 2);
-        $year = '20' . substr($date, 4, 2);
-
-        return Carbon::createFromDate($year, $month, $day)->format('d/m/Y');
-    }
-
-    /**
      * @param        $date
      * @param string $format
      *
@@ -694,62 +533,33 @@ final class Util
 
     /**
      * @param     $n
-     * @param int $factor
-     * @param int $base
-     * @param int|bool $rest
-     * @param int $whenTen
+     * @param int     $factor
+     * @param int     $base
+     * @param integer $rest
+     * @param int     $whenTen
      *
      * @return int
      */
-    public static function modulo11($n, $factor = 2, $base = 9, $rest = 0, $whenTen = 0)
+    public static function modulo11($n, $factor = 2, $base = 9, $x10 = 0, $resto10 = 0)
     {
         $sum = 0;
         for ($i = strlen($n); $i > 0; $i--) {
-            $ns[$i] = substr($n, $i - 1, 1);
-            $partial[$i] = $ns[$i] * $factor;
-            $sum += $partial[$i];
+            $sum += substr($n, $i - 1, 1)*$factor;
             if ($factor == $base) {
                 $factor = 1;
             }
             $factor++;
         }
 
-        if ($rest == 0) {
+        if ($x10 == 0) {
             $sum *= 10;
-            $digito = $sum % 11;
-            if ($digito == 10) {
-                $digito = $whenTen;
+            $digito = $sum%11;
+            if ($digito >= 10) {
+                $digito = $resto10;
             }
             return $digito;
         }
-        return $sum % 11;
-    }
-
-    /**
-     * @param     $n
-     * @param int $earlyFactor
-     * @param int $lastFactor
-     *
-     * @return int
-     */
-    public static function modulo11Reverso($n, $earlyFactor = 2, $lastFactor = 9)
-    {
-        $factor = $lastFactor;
-        $sum = 0;
-        for ($i = strlen($n); $i > 0; $i--) {
-            $sum += substr($n, $i - 1, 1) * $factor;
-            if (--$factor < $earlyFactor) {
-                $factor = $lastFactor;
-            }
-
-        }
-
-        $module = $sum % 11;
-        if ($module > 9) {
-            return 0;
-        }
-
-        return $module;
+        return $sum%11;
     }
 
     /**
@@ -762,28 +572,13 @@ final class Util
         $chars = array_reverse(str_split($n, 1));
         $odd = array_intersect_key($chars, array_fill_keys(range(1, count($chars), 2), null));
         $even = array_intersect_key($chars, array_fill_keys(range(0, count($chars), 2), null));
-        $even = array_map(function ($n) {
-            return ($n >= 5) ? 2 * $n - 9 : 2 * $n;
-        }, $even);
+        $even = array_map(
+            function ($n) {
+                return ($n >= 5) ? 2*$n - 9 : 2*$n;
+            }, $even
+        );
         $total = array_sum($odd) + array_sum($even);
-        return ((floor($total / 10) + 1) * 10 - $total) % 10;
-    }
-
-    /**
-     * @param $n
-     *
-     * @return int
-     */
-    public static function dvSatander($n)
-    {
-        $chars = array_reverse(str_split($n, 1));
-        $sums = array_reverse(str_split('97310097131973', 1));
-        $sum = 0;
-        foreach ($chars as $i => $char) {
-            $sum += substr($char * $sums[$i], -1);
-        }
-        $unidade = substr($sum, -1);
-        return $unidade == 0 ? $unidade : 10 - $unidade;
+        return ((floor($total/10) + 1)*10 - $total)%10;
     }
 
     /**
@@ -832,11 +627,12 @@ final class Util
     /**
      * Pela remessa cria um retorno fake para testes.
      *
-     * @param        $file Remessa
-     * @param string $ocorrencia
+     * @param $file Remessa
+     * @param string       $ocorrencia
      *
      * @return string
      * @throws \Exception
+     * @codeCoverageIgnore
      */
     public static function criarRetornoFake($file, $ocorrencia = '02')
     {
@@ -847,48 +643,52 @@ final class Util
         // header
         self::adiciona($retorno[0], 1, 9, '02RETORNO');
         switch ($banco) {
-            case Contracts\Boleto\Boleto::COD_BANCO_BB:
-                self::adiciona($retorno[0], 27, 30, self::remove(27, 30, $remessa[0]));
-                self::adiciona($retorno[0], 31, 31, self::remove(31, 31, $remessa[0]));
-                self::adiciona($retorno[0], 32, 39, self::remove(32, 39, $remessa[0]));
-                self::adiciona($retorno[0], 40, 40, self::remove(40, 40, $remessa[0]));
-                self::adiciona($retorno[0], 150, 156, self::remove(130, 136, $remessa[0]));
-                break;
-            case Contracts\Boleto\Boleto::COD_BANCO_SANTANDER:
-                self::adiciona($retorno[0], 27, 30, self::remove(27, 30, $remessa[0]));
-                self::adiciona($retorno[0], 39, 46, '0' . self::remove(40, 46, $remessa[0]));
-                break;
-            case Contracts\Boleto\Boleto::COD_BANCO_CEF:
-                self::adiciona($retorno[0], 27, 30, self::remove(27, 30, $remessa[0]));
-                self::adiciona($retorno[0], 31, 36, self::remove(31, 36, $remessa[0]));
-                break;
-            case Contracts\Boleto\Boleto::COD_BANCO_BRADESCO:
-                self::adiciona($retorno[0], 27, 46, self::remove(27, 46, $remessa[0]));
-                break;
-            case Contracts\Boleto\Boleto::COD_BANCO_ITAU:
-                self::adiciona($retorno[0], 27, 30, self::remove(27, 30, $remessa[0]));
-                self::adiciona($retorno[0], 33, 37, self::remove(33, 37, $remessa[0]));
-                self::adiciona($retorno[0], 38, 38, self::remove(38, 38, $remessa[0]));
-                break;
-            case Contracts\Boleto\Boleto::COD_BANCO_HSBC:
-                self::adiciona($retorno[0], 28, 31, self::remove(28, 31, $remessa[0]));
-                self::adiciona($retorno[0], 38, 43, self::remove(38, 43, $remessa[0]));
-                self::adiciona($retorno[0], 44, 44, self::remove(44, 44, $remessa[0]));
-                break;
-            case Contracts\Boleto\Boleto::COD_BANCO_SICREDI:
-                self::adiciona($retorno[0], 27, 31, self::remove(27, 31, $remessa[0]));
-                self::adiciona($retorno[0], 32, 45, self::remove(32, 45, $remessa[0]));
-                self::adiciona($retorno[0], 111, 117, self::remove(111, 117, $remessa[0]));
-                break;
-            default:
-                throw new \Exception("Banco: $banco, inválido");
+        case Contracts\Boleto\Boleto::COD_BANCO_BB:
+            self::adiciona($retorno[0], 27, 30, self::remove(27, 30, $remessa[0]));
+            self::adiciona($retorno[0], 31, 31, self::remove(31, 31, $remessa[0]));
+            self::adiciona($retorno[0], 32, 39, self::remove(32, 39, $remessa[0]));
+            self::adiciona($retorno[0], 40, 40, self::remove(40, 40, $remessa[0]));
+            self::adiciona($retorno[0], 150, 156, self::remove(130, 136, $remessa[0]));
+            break;
+        case Contracts\Boleto\Boleto::COD_BANCO_SANTANDER:
+            self::adiciona($retorno[0], 27, 30, self::remove(27, 30, $remessa[0]));
+            self::adiciona($retorno[0], 39, 46, '0' . self::remove(40, 46, $remessa[0]));
+            break;
+        case Contracts\Boleto\Boleto::COD_BANCO_CEF:
+            self::adiciona($retorno[0], 27, 30, self::remove(27, 30, $remessa[0]));
+            self::adiciona($retorno[0], 31, 36, self::remove(31, 36, $remessa[0]));
+            break;
+        case Contracts\Boleto\Boleto::COD_BANCO_BRADESCO:
+            self::adiciona($retorno[0], 27, 46, self::remove(27, 46, $remessa[0]));
+            break;
+        case Contracts\Boleto\Boleto::COD_BANCO_ITAU:
+            self::adiciona($retorno[0], 27, 30, self::remove(27, 30, $remessa[0]));
+            self::adiciona($retorno[0], 33, 37, self::remove(33, 37, $remessa[0]));
+            self::adiciona($retorno[0], 38, 38, self::remove(38, 38, $remessa[0]));
+            break;
+        case Contracts\Boleto\Boleto::COD_BANCO_HSBC:
+            self::adiciona($retorno[0], 28, 31, self::remove(28, 31, $remessa[0]));
+            self::adiciona($retorno[0], 38, 43, self::remove(38, 43, $remessa[0]));
+            self::adiciona($retorno[0], 44, 44, self::remove(44, 44, $remessa[0]));
+            break;
+        case Contracts\Boleto\Boleto::COD_BANCO_SICREDI:
+            self::adiciona($retorno[0], 27, 31, self::remove(27, 31, $remessa[0]));
+            self::adiciona($retorno[0], 32, 45, self::remove(32, 45, $remessa[0]));
+            self::adiciona($retorno[0], 111, 117, self::remove(111, 117, $remessa[0]));
+            break;
+        case Contracts\Boleto\Boleto::COD_BANCO_BANRISUL:
+            self::adiciona($retorno[0], 27, 39, self::remove(18, 30, $remessa[0]));
+            self::adiciona($retorno[0], 47, 76, self::remove(47, 76, $remessa[0]));
+            break;
+        default:
+            throw new \Exception("Banco: $banco, inválido");
         }
         self::adiciona($retorno[0], 77, 79, $banco);
         self::adiciona($retorno[0], 95, 100, date('dmy'));
         self::adiciona($retorno[0], 395, 400, sprintf('%06s', count($retorno)));
 
-        $remessa_h = array_shift($remessa); // removo o header
-        $remessa_t = array_pop($remessa); // remove o trailer
+        array_shift($remessa); // removo o header
+        array_pop($remessa); // remove o trailer
 
         foreach ($remessa as $detalhe) {
             $i = count($retorno);
@@ -902,38 +702,43 @@ final class Util
             self::adiciona($retorno[$i], 117, 126, self::remove(111, 120, $detalhe));
             self::adiciona($retorno[$i], 395, 400, sprintf('%06s', count($retorno)));
             switch ($banco) {
-                case Contracts\Boleto\Boleto::COD_BANCO_BB:
-                    if (self::remove(1, 1, $detalhe) != 7) {
-                        unset($retorno[$i]);
-                        continue;
-                    }
-                    self::adiciona($retorno[$i], 1, 1, '7');
-                    self::adiciona($retorno[$i], 64, 80, self::remove(64, 80, $detalhe));
-                    break;
-                case Contracts\Boleto\Boleto::COD_BANCO_SANTANDER:
-                    self::adiciona($retorno[$i], 63, 71, self::remove(63, 71, $detalhe));
-                    self::adiciona($retorno[$i], 384, 385, self::remove(384, 385, $detalhe));
-                    break;
-                case Contracts\Boleto\Boleto::COD_BANCO_CEF:
-                    self::adiciona($retorno[$i], 57, 73, self::remove(57, 73, $detalhe));
-                    break;
-                case Contracts\Boleto\Boleto::COD_BANCO_BRADESCO:
-                    self::adiciona($retorno[$i], 25, 29, self::remove(25, 29, $detalhe));
-                    self::adiciona($retorno[$i], 30, 36, self::remove(30, 36, $detalhe));
-                    self::adiciona($retorno[$i], 37, 37, self::remove(37, 37, $detalhe));
-                    self::adiciona($retorno[$i], 71, 82, self::remove(71, 82, $detalhe));
-                    break;
-                case Contracts\Boleto\Boleto::COD_BANCO_ITAU:
-                    self::adiciona($retorno[$i], 86, 94, self::remove(63, 70, $detalhe));
-                    break;
-                case Contracts\Boleto\Boleto::COD_BANCO_HSBC:
-                    self::adiciona($retorno[$i], 63, 73, self::remove(63, 73, $detalhe));
-                    break;
-                case Contracts\Boleto\Boleto::COD_BANCO_SICREDI:
-                    self::adiciona($retorno[$i], 48, 62, '00000' . self::remove(48, 56, $detalhe));
-                    break;
-                default:
-                    throw new \Exception("Banco: $banco, inválido");
+            case Contracts\Boleto\Boleto::COD_BANCO_BB:
+                if (self::remove(1, 1, $detalhe) != 7) {
+                    unset($retorno[$i]);
+                    continue;
+                }
+                self::adiciona($retorno[$i], 1, 1, '7');
+                self::adiciona($retorno[$i], 64, 80, self::remove(64, 80, $detalhe));
+                break;
+            case Contracts\Boleto\Boleto::COD_BANCO_SANTANDER:
+                self::adiciona($retorno[$i], 63, 71, self::remove(63, 71, $detalhe));
+                self::adiciona($retorno[$i], 384, 385, self::remove(384, 385, $detalhe));
+                break;
+            case Contracts\Boleto\Boleto::COD_BANCO_CEF:
+                self::adiciona($retorno[$i], 57, 73, self::remove(57, 73, $detalhe));
+                break;
+            case Contracts\Boleto\Boleto::COD_BANCO_BRADESCO:
+                self::adiciona($retorno[$i], 25, 29, self::remove(25, 29, $detalhe));
+                self::adiciona($retorno[$i], 30, 36, self::remove(30, 36, $detalhe));
+                self::adiciona($retorno[$i], 37, 37, self::remove(37, 37, $detalhe));
+                self::adiciona($retorno[$i], 71, 82, self::remove(71, 82, $detalhe));
+                break;
+            case Contracts\Boleto\Boleto::COD_BANCO_ITAU:
+                self::adiciona($retorno[$i], 86, 94, self::remove(63, 70, $detalhe));
+                break;
+            case Contracts\Boleto\Boleto::COD_BANCO_HSBC:
+                self::adiciona($retorno[$i], 63, 73, self::remove(63, 73, $detalhe));
+                break;
+            case Contracts\Boleto\Boleto::COD_BANCO_SICREDI:
+                self::adiciona($retorno[$i], 48, 62, '00000' . self::remove(48, 56, $detalhe));
+                break;
+            case Contracts\Boleto\Boleto::COD_BANCO_BANRISUL:
+                self::adiciona($retorno[$i], 38, 62, self::remove(38, 62, $detalhe));
+                self::adiciona($retorno[$i], 63, 72, self::remove(111, 120, $detalhe));
+                self::adiciona($retorno[$i], 18, 30, self::remove(18, 30, $detalhe));
+                break;
+            default:
+                throw new \Exception("Banco: $banco, inválido");
             }
         }
 
@@ -942,9 +747,11 @@ final class Util
         self::adiciona($retorno[$i], 1, 1, '9');
         self::adiciona($retorno[$i], 395, 400, sprintf('%06s', count($retorno)));
 
-        $retorno = array_map(function ($a) {
-            return implode('', $a);
-        }, $retorno);
+        $retorno = array_map(
+            function ($a) {
+                return implode('', $a);
+            }, $retorno
+        );
 
         return implode("\r\n", $retorno);
     }
@@ -986,8 +793,8 @@ final class Util
      * Função para add valor a linha nas posições informadas.
      *
      * @param $line
-     * @param $i
-     * @param $f
+     * @param integer $i
+     * @param integer $f
      * @param $value
      *
      * @return array
@@ -1019,21 +826,67 @@ final class Util
 
     /**
      * Validação para o tipo de cnab 240
-     * @param $content
+     *
+     * @param  $content
      * @return bool
      */
     public static function isCnab240($content)
     {
-        return strlen(rtrim($content[0], "\r\n")) == 240 ? true : false;
+        $content = is_array($content) ? $content[0] : $content;
+        return strlen(rtrim($content, "\r\n")) == 240 ? true : false;
     }
 
     /**
      * Validação para o tipo de cnab 400
-     * @param $content
+     *
+     * @param  $content
      * @return bool
      */
     public static function isCnab400($content)
     {
-        return strlen(rtrim($content[0], "\r\n")) == 400 ? true : false;
+        $content = is_array($content) ? $content[0] : $content;
+        return strlen(rtrim($content, "\r\n")) == 400 ? true : false;
+    }
+
+    /**
+     * @param $file
+     *
+     * @return array|bool
+     */
+    public static function file2array($file) {
+        if (is_array($file) && isset($file[0]) && is_string($file[0])) {
+            return $file;
+        } elseif (is_string($file) && is_file($file) && file_exists($file)) {
+            return file($file);
+        } elseif (is_string($file) && strstr($file, PHP_EOL) !== false) {
+            $file_content = explode(PHP_EOL, $file);
+            if (empty(end($file_content))) {
+                array_pop($file_content);
+            }
+            reset($file_content);
+            return $file_content;
+        }
+        return false;
+    }
+
+    /**
+     * Valida se o header é de um arquivo retorno valido, 240 ou 400 posicoes
+     *
+     * @param $header
+     *
+     * @return bool
+     */
+    public static function isHeaderRetorno($header) 
+    {
+        if (!self::isCnab240($header) && !self::isCnab400($header)) {
+            return false;
+        }
+        if (self::isCnab400($header) && substr($header, 0, 9) != '02RETORNO') {
+            return false;
+        }
+        if (self::isCnab240($header) && substr($header, 142, 1) != '2') {
+            return false;
+        }
+        return true;
     }
 }

@@ -284,7 +284,7 @@ class Header implements HeaderContract
     {
         $vars = array_keys(get_class_vars(self::class));
         $aRet = [];
-        foreach($vars as $var)
+        foreach ($vars as $var)
         {
             $methodName = 'get' . ucfirst($var);
             $aRet[$var] = method_exists($this, $methodName)
@@ -302,8 +302,7 @@ class Header implements HeaderContract
      */
     public function __set($name, $value)
     {
-        if(property_exists($this, $name))
-        {
+        if (property_exists($this, $name)) {
             $this->$name = $value;
         }
     }
@@ -315,8 +314,7 @@ class Header implements HeaderContract
      */
     public function __get($name)
     {
-        if(property_exists($this, $name))
-        {
+        if (property_exists($this, $name)) {
             $method = 'get' . ucwords($name);
             return $this->{$method}();
         }
@@ -325,7 +323,7 @@ class Header implements HeaderContract
     /**
      * Determine if an attribute exists on the header.
      *
-     * @param  string  $key
+     * @param  string $key
      * @return bool
      */
     public function __isset($key)

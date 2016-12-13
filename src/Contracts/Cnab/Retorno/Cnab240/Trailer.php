@@ -3,7 +3,7 @@
 namespace Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240;
 
 
-interface TrailerArquivo
+interface Trailer
 {
 
     /**
@@ -25,4 +25,10 @@ interface TrailerArquivo
      * @return mixed
      */
     public function getQtdRegistroArquivo();
+
+    /**
+     * @return array
+     */
+    public function toArray();
+
 }

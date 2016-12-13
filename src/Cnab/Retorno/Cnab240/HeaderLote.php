@@ -68,7 +68,7 @@ class HeaderLote implements HeaderLoteContract
     protected $numeroRetorno;
 
     /**
-     * @var string
+     * @var Carbon
      */
     protected $dataGravacao;
 
@@ -98,7 +98,7 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @param string $codigoBanco
      *
-     * @return Header
+     * @return HeaderLote
      */
     public function setCodigoBanco($codigoBanco)
     {
@@ -118,7 +118,7 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @param string $tipoRegistro
      *
-     * @return Header
+     * @return HeaderLote
      */
     public function setTipoRegistro($tipoRegistro)
     {
@@ -172,9 +172,9 @@ class HeaderLote implements HeaderLoteContract
     }
 
     /**
-     * @param string $tipoRegistro
      *
-     * @return Header
+     * @param string $tipoOperacao
+     * @return HeaderLote
      */
     public function setTipoOperacao($tipoOperacao)
     {
@@ -195,7 +195,7 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @param string $tipoServico
      *
-     * @return Header
+     * @return HeaderLote
      */
     public function setTipoServico($tipoServico)
     {
@@ -216,7 +216,7 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @param string $versaoLayoutLote
      *
-     * @return Header
+     * @return HeaderLote
      */
     public function setVersaoLayoutLote($versaoLayoutLote)
     {
@@ -235,9 +235,8 @@ class HeaderLote implements HeaderLoteContract
     }
 
     /**
-     * @param string $versaoLayoutLote
      *
-     * @return Header
+     * @return HeaderLote
      */
     public function setCodigoInscricao($codigoInscricao)
     {
@@ -258,7 +257,7 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @param string $numeroInscricao
      *
-     * @return Header
+     * @return HeaderLote
      */
     public function setNumeroInscricao($numeroInscricao)
     {
@@ -278,7 +277,7 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @param string $codigoCedente
      *
-     * @return Header
+     * @return HeaderLote
      */
     public function setCodigoCedente($codigoCedente)
     {
@@ -298,7 +297,7 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @param string $nomeEmpresa
      *
-     * @return Header
+     * @return HeaderLote
      */
     public function setNomeEmpresa($nomeEmpresa)
     {
@@ -331,11 +330,11 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @param string $dataGravacao
      *
-     * @return Header
+     * @return HeaderLote
      */
-    public function setDataGravacao($dataGravacao)
+    public function setDataGravacao($dataGravacao, $format = 'dmY')
     {
-        $this->dataGravacao = trim($dataGravacao, '0 ') ? Carbon::createFromFormat('dmy', $dataGravacao) : null;
+        $this->dataGravacao = trim($dataGravacao, '0 ') ? Carbon::createFromFormat($format, $dataGravacao) : null;
 
         return $this;
     }
@@ -351,7 +350,7 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @param string $agencia
      *
-     * @return Header
+     * @return HeaderLote
      */
     public function setAgencia($agencia)
     {
@@ -372,7 +371,7 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @param string $agenciaDigito
      *
-     * @return Header
+     * @return HeaderLote
      */
     public function setAgenciaDigito($agenciaDigito)
     {
@@ -392,7 +391,7 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @param string $conta
      *
-     * @return Header
+     * @return HeaderLote
      */
     public function setConta($conta)
     {
@@ -430,7 +429,7 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @param string $contaDigito
      *
-     * @return Header
+     * @return HeaderLote
      */
     public function setContaDigito($contaDigito)
     {

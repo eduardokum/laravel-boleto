@@ -10,21 +10,25 @@ class Sicredi extends AbstractBoleto implements BoletoContract
 
     /**
      * Local de pagamento
+     *
      * @var string
      */
     protected $localPagamento = 'Pagável preferencialmente nas cooperativas de crédito do sicredi';
     /**
      * Código do banco
+     *
      * @var string
      */
     protected $codigoBanco = self::COD_BANCO_SICREDI;
     /**
      * Define as carteiras disponíveis para este banco
+     *
      * @var array
      */
-    protected $carteiras = ['1','2','3'];
+    protected $carteiras = ['1', '2', '3'];
     /**
      * Espécie do documento, coódigo para remessa
+     *
      * @var string
      */
     protected $especiesCodigo = [
@@ -42,23 +46,26 @@ class Sicredi extends AbstractBoleto implements BoletoContract
     ];
     /**
      * Se possui registro o boleto (tipo = 1 com registro e 3 sem registro)
+     *
      * @var bool
      */
     protected $registro = true;
     /**
      * Código do posto do cliente no banco.
+     *
      * @var int
      */
     protected $posto;
     /**
      * Byte que compoe o nosso número.
+     *
      * @var int
      */
     protected $byte = 2;
     /**
      * Define se possui ou não registro
      *
-     * @param int $posto
+     * @param  bool $registro
      * @return $this
      */
     public function setComRegistro(bool $registro)
@@ -69,8 +76,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
     /**
      * Retorna se é com registro.
      *
-     * @param int $posto
-     * @return $this
+     * @return bool
      */
     public function isComRegistro()
     {
@@ -79,7 +85,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
     /**
      * Define o posto do cliente
      *
-     * @param int $posto
+     * @param  int $posto
      * @return $this
      */
     public function setPosto($posto)
@@ -99,13 +105,12 @@ class Sicredi extends AbstractBoleto implements BoletoContract
     /**
      * Define o byte
      *
-     * @param int $byte
+     * @param  int $byte
      * @return $this
      */
     public function setByte($byte)
     {
-        if($byte > 9)
-        {
+        if ($byte > 9) {
             throw new \Exception('O byte deve ser compreendido entre 1 e 9');
         }
         $this->byte = $byte;
@@ -125,15 +130,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
      */
     public function isValid()
     {
-        if(
-            $this->numero == '' ||
-            $this->agencia == '' ||
-            $this->conta == '' ||
-            $this->carteira == '' ||
-            $this->byte == '' ||
-            $this->posto == ''
-        )
-        {
+        if ($this->byte == '' || $this->posto == '' || !parent::isValid()) {
             return false;
         }
         return true;
@@ -159,7 +156,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
         $conta = Util::numberFormatGeral($this->getConta(), 5);
         $ano = $this->getDataDocumento()->format('y');
         $byte = $this->getByte();
-        $numero = Util::numberFormatGeral($this->getNumero(), 5);
+        $numero = Util::numberFormatGeral($this->getNumeroDocumento(), 5);
         $dv = $agencia . $posto . $conta . $ano . $byte . $numero;
         $nossoNumero = $ano . $byte . $numero . Util::modulo11($dv);
         return $nossoNumero;
@@ -188,11 +185,12 @@ class Sicredi extends AbstractBoleto implements BoletoContract
         $tipo_cobranca = $this->isComRegistro() ? '1' : '3';
         $carteira = Util::numberFormatGeral($this->getCarteira(), 1);
         $nosso_numero = $this->getNossoNumero();
-        $agencia = Util::numberFormatGeral($this->getCarteira(), 4);
+        $agencia = Util::numberFormatGeral($this->getAgencia(), 4);
         $posto = Util::numberFormatGeral($this->getPosto(), 2);
         $conta = Util::numberFormatGeral($this->getConta(), 5);
         $possui_valor = $this->getValor() > 0 ? '1' : '0';
 
-        return $this->campoLivre = $tipo_cobranca . $carteira . $nosso_numero . $agencia . $posto . $conta . $possui_valor . '0';
+        $campo_livre = $tipo_cobranca . $carteira . $nosso_numero . $agencia . $posto . $conta . $possui_valor . '0';
+        return $this->campoLivre = $campo_livre . Util::modulo11($campo_livre);
     }
 }

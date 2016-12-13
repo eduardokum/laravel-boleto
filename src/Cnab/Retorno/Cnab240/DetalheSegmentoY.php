@@ -2,9 +2,9 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\DetalheSegmentoY as SegmentoY;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\DetalheSegmentoY as DetalheSegmentoYContract;
 
-class DetalheSegmentoY implements SegmentoY
+class DetalheSegmentoY implements DetalheSegmentoYContract
 {
     /**
      * @var string
@@ -101,7 +101,7 @@ class DetalheSegmentoY implements SegmentoY
     }
 
     /**
-     * @return array
+     * @return string
      */
     public function getIdentificacaoCheque()
     {
@@ -109,7 +109,7 @@ class DetalheSegmentoY implements SegmentoY
     }
 
     /**
-     * @param array $identificacaoCheque
+     * @param string $identificacaoCheque
      */
     public function setIdentificacaoCheque($identificacaoCheque)
     {

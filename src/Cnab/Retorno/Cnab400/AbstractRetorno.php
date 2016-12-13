@@ -2,183 +2,34 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400;
 
 use Eduardokum\LaravelBoleto\Util;
+use \Eduardokum\LaravelBoleto\Cnab\Retorno\AbstractRetorno as AbstractRetornoGeneric;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Header as HeaderContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Detalhe as DetalheContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Trailer as TrailerContract;
 use Illuminate\Support\Collection;
 
-abstract class AbstractRetorno implements \Countable, \SeekableIterator
+/**
+ * Class AbstractRetorno
+ *
+ * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Detalhe getDetalhe()
+ * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Header getHeader()
+ * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Trailer getTrailer()
+ * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Detalhe detalheAtual()
+ * @package Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400
+ */
+abstract class AbstractRetorno extends AbstractRetornoGeneric
 {
     /**
-     * Código do banco
-     * @var string
-     */
-    protected $codigoBanco;
-
-    /**
-     * Incremeto de detalhes
-     *
-     * @var int
-     */
-    private $increment = 0;
-
-    /**
-     * Arquivo transformado em array por linha.
-     *
-     * @var array
-     */
-    protected $file;
-
-    /**
-     * @var int
-     */
-    private $_position = 0;
-
-    /**
-     * @var HeaderContract
-     */
-    private $header;
-
-    /**
-     * @var TrailerContract
-     */
-    private $trailer;
-
-    /**
-     * @var DetalheContract[]
-     */
-    private $detalhe = [];
-
-    /**
-     * Helper de totais.
-     *
-     * @var array
-     */
-    protected $totais = [];
-
-    /**
-     *
      * @param String $file
      * @throws \Exception
      */
-    public function __construct($file) {
+    public function __construct($file) 
+    {
 
-        $this->_position = 0;
-        if(is_array($file) && is_string($file[0]) && strlen(rtrim($file[0], "\r\n")) == 400)
-        {
-            $this->file = $file;
-        }
-        elseif(is_array($file) && is_array($file[0]) && count($file[0]) == 400)
-        {
-            $this->file = $file;
-        }
-        elseif(is_file($file) && file_exists($file))
-        {
-            $this->file = file($file);
-        }
-        elseif(is_string($file))
-        {
-            $this->file = preg_split('/\r\n|\r|\n/', $file);
-            if(empty(end($this->file)))
-            {
-                array_pop($this->file);
-            }
-            reset($this->file);
-        }
-        else
-        {
-            throw new \Exception("Arquivo: não existe");
-        }
-
-        $r = new \ReflectionClass('\Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto');
-        $constantNames = $r->getConstants();
-        $bancosDisponiveis = [];
-        foreach($constantNames as $constantName => $codigoBanco)
-        {
-            if(preg_match('/^COD_BANCO.*/', $constantName))
-            {
-                $bancosDisponiveis[] = $codigoBanco;
-            }
-        }
-
-        if(substr($this->file[0], 0, 9) != '02RETORNO')
-        {
-            throw new \Exception(sprintf("Arquivo de retorno inválido"));
-        }
-
-        if(!in_array(substr($this->file[0], 76, 3), $bancosDisponiveis))
-        {
-            throw new \Exception(sprintf("Banco: %s, inválido", substr($this->file[0], 76, 3)));
-        }
+        parent::__construct($file);
 
         $this->header = new Header();
         $this->trailer = new Trailer();
-    }
-
-    /**
-     * Retorna o código do banco
-     *
-     * @return string
-     */
-    public function getCodigoBanco()
-    {
-        return $this->codigoBanco;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getBancoNome() {
-        return Util::$bancos[$this->codigoBanco];
-    }
-
-    /**
-     * @return Collection
-     */
-    public function getDetalhes() {
-        return new Collection($this->detalhe);
-    }
-
-    /**
-     * @param $i
-     *
-     * @return Detalhe
-     */
-    public function getDetalhe($i) {
-        return array_key_exists($i, $this->detalhe) ? $this->detalhe[$i] : null;
-    }
-
-    /**
-     * @return Header
-     */
-    public function getHeader() {
-        return $this->header;
-    }
-
-    /**
-     * @return Trailer
-     */
-    public function getTrailer() {
-        return $this->trailer;
-    }
-
-    /**
-     * Incrementa o detalhe.
-     */
-    protected function incrementDetalhe()
-    {
-        $this->increment ++;
-        $this->detalhe[$this->increment] = new Detalhe();
-    }
-
-    /**
-     * Retorna o detalhe atual.
-     *
-     * @return Detalhe
-     */
-    protected function detalheAtual()
-    {
-        return $this->detalhe[$this->increment];
     }
 
     /**
@@ -186,52 +37,68 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
      *
      * @return boolean
      */
-    protected abstract function processarHeader(array $header);
+    abstract protected function processarHeader(array $header);
 
     /**
      * @param array $detalhe
      *
      * @return boolean
      */
-    protected abstract function processarDetalhe(array $detalhe);
+    abstract protected function processarDetalhe(array $detalhe);
 
     /**
      * @param array $trailer
      *
      * @return boolean
      */
-    protected abstract function processarTrailer(array $trailer);
+    abstract protected function processarTrailer(array $trailer);
+
+    /**
+     * Incrementa o detalhe.
+     */
+    protected function incrementDetalhe()
+    {
+        $this->increment++;
+        $this->detalhe[$this->increment] = new Detalhe();
+    }
 
     /**
      * Processa o arquivo
      *
      * @return $this
      */
-    public function processar() {
+    public function processar() 
+    {
 
-        if(method_exists($this, 'init')) {
-            $this->init();
+        if ($this->isProcessado()) {
+            return $this;
         }
-        foreach($this->file as $linha) {
+
+        if (method_exists($this, 'init')) {
+            call_user_func([$this, 'init']);
+        }
+
+        foreach ($this->file as $linha) {
+
             $inicio = $this->rem(1, 1, $linha);
-            if( $inicio == '0' ) {
+
+            if ($inicio == '0') {
                 $this->processarHeader($linha);
-            } else if( $inicio == '9' ) {
+            } else if ($inicio == '9') {
                 $this->processarTrailer($linha);
             } else {
                 $this->incrementDetalhe();
-                if($this->processarDetalhe($linha) === false)
-                {
+                if ($this->processarDetalhe($linha) === false) {
                     unset($this->detalhe[$this->increment]);
                     $this->increment--;
                 }
             }
         }
-        if(method_exists($this, 'finalize')) {
-            $this->finalize();
+        if (method_exists($this, 'finalize')) {
+            call_user_func([$this, 'finalize']);
         }
 
-        return $this;
+        return $this->setProcessado();
     }
 
     /**
@@ -246,56 +113,10 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
             'trailer' => $this->trailer->toArray(),
             'detalhes' => new Collection()
         ];
-        foreach($this->detalhe as $detalhe)
+        foreach ($this->detalhe as $detalhe)
         {
-            $array['detalhes']->add($detalhe->toArray());
+            $array['detalhes']->push($detalhe->toArray());
         }
         return $array;
-    }
-
-    /**
-     * Remove trecho do array.
-     *
-     * @param $i
-     * @param $f
-     * @param $array
-     *
-     * @return string
-     * @throws \Exception
-     */
-    protected function rem($i, $f, &$array)
-    {
-        return Util::remove($i, $f, $array);
-    }
-
-    public function current() {
-        return $this->detalhe[$this->_position];
-    }
-
-    public function next() {
-        ++$this->_position;
-    }
-
-    public function key() {
-        return $this->_position;
-    }
-
-    public function valid() {
-        return isset($this->detalhe[$this->_position]);
-    }
-
-    public function rewind() {
-        $this->_position = 0;
-    }
-
-    public function count() {
-        return count($this->detalhe);
-    }
-
-    public function seek($position) {
-        $this->_position = $position;
-        if (!$this->valid()) {
-            throw new \OutOfBoundsException('"Posição inválida "$position"');
-        }
     }
 }

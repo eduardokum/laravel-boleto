@@ -77,7 +77,7 @@ class Detalhe implements DetalheContract
     private $error;
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getNossoNumero()
     {
@@ -85,7 +85,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @param mixed $nossoNumero
+     * @param string $nossoNumero
      *
      * @return Detalhe
      */
@@ -97,7 +97,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getNumeroDocumento()
     {
@@ -105,7 +105,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @param mixed $numeroDocumento
+     * @param string $numeroDocumento
      *
      * @return Detalhe
      */
@@ -123,7 +123,7 @@ class Detalhe implements DetalheContract
     {
         $ocorrencias = func_get_args();
 
-        if (count($ocorrencias) == 0 && empty($this->getOcorrencia())) {
+        if (count($ocorrencias) == 0 && !empty($this->getOcorrencia())) {
             return true;
         }
 
@@ -139,7 +139,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getOcorrencia()
     {
@@ -147,7 +147,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @param mixed $ocorrencia
+     * @param string $ocorrencia
      *
      * @return Detalhe
      */
@@ -211,7 +211,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @param mixed $dataOcorrencia
+     * @param string $dataOcorrencia
      *
      * @return Detalhe
      */
@@ -235,7 +235,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @param mixed $dataVencimento
+     * @param string $dataVencimento
      *
      * @return Detalhe
      */
@@ -259,7 +259,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @param mixed $dataCredito
+     * @param string $dataCredito
      *
      * @return Detalhe
      */
@@ -271,7 +271,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getValor()
     {
@@ -279,7 +279,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @param mixed $valor
+     * @param string $valor
      *
      * @return Detalhe
      */
@@ -291,7 +291,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getValorTarifa()
     {
@@ -299,7 +299,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @param mixed $valorTarifa
+     * @param string $valorTarifa
      *
      * @return Detalhe
      */
@@ -311,7 +311,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getValorIOF()
     {
@@ -319,7 +319,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @param mixed $valorIOF
+     * @param string $valorIOF
      *
      * @return Detalhe
      */
@@ -331,7 +331,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getValorAbatimento()
     {
@@ -339,7 +339,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @param mixed $valorAbatimento
+     * @param string $valorAbatimento
      *
      * @return Detalhe
      */
@@ -351,7 +351,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getValorDesconto()
     {
@@ -359,7 +359,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @param mixed $valorDesconto
+     * @param string $valorDesconto
      *
      * @return Detalhe
      */
@@ -371,7 +371,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getValorRecebido()
     {
@@ -379,7 +379,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @param mixed $valorRecebido
+     * @param string $valorRecebido
      *
      * @return Detalhe
      */
@@ -391,7 +391,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getValorMora()
     {
@@ -399,7 +399,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @param mixed $valorMora
+     * @param string $valorMora
      *
      * @return Detalhe
      */
@@ -411,7 +411,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getValorMulta()
     {
@@ -419,7 +419,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @param mixed $valorMulta
+     * @param string $valorMulta
      *
      * @return Detalhe
      */
@@ -506,7 +506,7 @@ class Detalhe implements DetalheContract
     /**
      * Determine if an attribute exists on the detalhe.
      *
-     * @param  string  $key
+     * @param  string $key
      * @return bool
      */
     public function __isset($key)

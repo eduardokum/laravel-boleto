@@ -2,8 +2,9 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
+use \Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\TrailerLote as TrailerLoteContract;
 
-class TrailerLote
+class TrailerLote implements TrailerLoteContract
 {
     private $loteServico;
     private $TipoRegistro;

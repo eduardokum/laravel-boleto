@@ -33,6 +33,11 @@ class Header implements HeaderContract
     protected $tipoRegistro;
 
     /**
+     * @var Carbon
+     */
+    protected $data;
+
+    /**
      * @var string
      */
     protected $tipoInscricao;
@@ -228,8 +233,8 @@ class Header implements HeaderContract
     }
 
     /**
-     * @param string $horaGeracao
      *
+     * @param string $numeroSequencialArquivo
      * @return Header
      */
     public function setNumeroSequencialArquivo($numeroSequencialArquivo)
@@ -356,9 +361,9 @@ class Header implements HeaderContract
      *
      * @return Header
      */
-    public function setData($data)
+    public function setData($data, $format = 'dmY')
     {
-        $this->data = trim($data, '0 ') ? Carbon::createFromFormat('dmy', $data) : null;
+        $this->data = trim($data, '0 ') ? Carbon::createFromFormat($format, $data) : null;
 
         return $this;
     }

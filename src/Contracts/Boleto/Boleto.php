@@ -21,7 +21,7 @@ interface Boleto
     /**
      * Render PDF.
      *
-     * @param bool   $print
+     * @param bool $print
      *
      * @return mixed
      */
@@ -137,9 +137,18 @@ interface Boleto
     public function getJurosApos();
 
     /**
+     * @param int $default
+     *
      * @return mixed
      */
-    public function getDiasProtesto();
+    public function getDiasProtesto($default = 0);
+
+    /**
+     * @param int $default
+     *
+     * @return mixed
+     */
+    public function getDiasBaixaAutomatica($default = 0);
 
     /**
      * @return mixed
@@ -185,11 +194,6 @@ interface Boleto
      * @return mixed
      */
     public function getNumero();
-
-    /**
-     * @return mixed
-     */
-    public function getCip();
 
     /**
      * @return mixed

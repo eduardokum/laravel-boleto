@@ -3,10 +3,21 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
 use Carbon\Carbon;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\DetalheSegmentoT as SegmentoT;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\DetalheSegmentoT as DetalheSegmentoTContract;
 
-class DetalheSegmentoT implements SegmentoT
+class DetalheSegmentoT implements DetalheSegmentoTContract
 {
+
+    /**
+     * @var int
+     */
+    protected $numeroDocumento;
+
+    /**
+     * @var string
+     */
+    protected $identificador;
+
     /**
      * @var string
      */
@@ -68,7 +79,7 @@ class DetalheSegmentoT implements SegmentoT
     private $seuNumero;
 
     /**
-     * @var string
+     * @var Carbon
      */
     private $dataVencimento;
 
@@ -133,7 +144,7 @@ class DetalheSegmentoT implements SegmentoT
     private $valorPagoSacado;
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getCodigoBancoCompensacao()
     {
@@ -142,6 +153,8 @@ class DetalheSegmentoT implements SegmentoT
 
     /**
      * @param mixed $codigoBancoCompensacao
+     *
+     * @return $this
      */
     public function setCodigoBancoCompensacao($codigoBancoCompensacao)
     {
@@ -151,7 +164,7 @@ class DetalheSegmentoT implements SegmentoT
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getNumeroLoteRetorno()
     {
@@ -160,6 +173,8 @@ class DetalheSegmentoT implements SegmentoT
 
     /**
      * @param mixed $numeroLoteRetorno
+     *
+     * @return $this
      */
     public function setNumeroLoteRetorno($numeroLoteRetorno)
     {
@@ -169,7 +184,7 @@ class DetalheSegmentoT implements SegmentoT
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getTipoRegistro()
     {
@@ -178,6 +193,8 @@ class DetalheSegmentoT implements SegmentoT
 
     /**
      * @param mixed $tipoRegistro
+     *
+     * @return $this
      */
     public function setTipoRegistro($tipoRegistro)
     {
@@ -187,7 +204,7 @@ class DetalheSegmentoT implements SegmentoT
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getNumeroSequencialRegistroLote()
     {
@@ -196,6 +213,8 @@ class DetalheSegmentoT implements SegmentoT
 
     /**
      * @param mixed $numeroSequencialRegistroLote
+     *
+     * @return $this
      */
     public function setNumeroSequencialRegistroLote($numeroSequencialRegistroLote)
     {
@@ -205,7 +224,7 @@ class DetalheSegmentoT implements SegmentoT
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getCodigoSegmentoRegistroDetalhe()
     {
@@ -214,6 +233,8 @@ class DetalheSegmentoT implements SegmentoT
 
     /**
      * @param mixed $codigoSegmentoRegistroDetalhe
+     *
+     * @return $this
      */
     public function setCodigoSegmentoRegistroDetalhe($codigoSegmentoRegistroDetalhe)
     {
@@ -223,7 +244,7 @@ class DetalheSegmentoT implements SegmentoT
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getDigitoAgenciaCedente()
     {
@@ -232,6 +253,8 @@ class DetalheSegmentoT implements SegmentoT
 
     /**
      * @param mixed $digitoAgenciaCedente
+     *
+     * @return $this
      */
     public function setDigitoAgenciaCedente($digitoAgenciaCedente)
     {
@@ -241,7 +264,7 @@ class DetalheSegmentoT implements SegmentoT
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getAgenciaCedente()
     {
@@ -250,6 +273,8 @@ class DetalheSegmentoT implements SegmentoT
 
     /**
      * @param mixed $agenciaCedente
+     *
+     * @return $this
      */
     public function setAgenciaCedente($agenciaCedente)
     {
@@ -259,7 +284,7 @@ class DetalheSegmentoT implements SegmentoT
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getAgenciaCedenteDigito()
     {
@@ -268,6 +293,8 @@ class DetalheSegmentoT implements SegmentoT
 
     /**
      * @param mixed $agenciaCedenteDigito
+     *
+     * @return $this
      */
     public function setAgenciaCedenteDigito($agenciaCedenteDigito)
     {
@@ -277,7 +304,7 @@ class DetalheSegmentoT implements SegmentoT
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getContaCorrente()
     {
@@ -286,6 +313,8 @@ class DetalheSegmentoT implements SegmentoT
 
     /**
      * @param mixed $contaCorrente
+     *
+     * @return $this
      */
     public function setContaCorrente($contaCorrente)
     {
@@ -295,7 +324,7 @@ class DetalheSegmentoT implements SegmentoT
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getContaDigito()
     {
@@ -304,6 +333,8 @@ class DetalheSegmentoT implements SegmentoT
 
     /**
      * @param mixed $contaDigito
+     *
+     * @return $this
      */
     public function setContaDigito($contaDigito)
     {
@@ -313,7 +344,7 @@ class DetalheSegmentoT implements SegmentoT
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getNossoNumero()
     {
@@ -322,6 +353,8 @@ class DetalheSegmentoT implements SegmentoT
 
     /**
      * @param mixed $nossoNumero
+     *
+     * @return $this
      */
     public function setNossoNumero($nossoNumero)
     {
@@ -331,7 +364,7 @@ class DetalheSegmentoT implements SegmentoT
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getCodigoCarteira()
     {
@@ -340,6 +373,8 @@ class DetalheSegmentoT implements SegmentoT
 
     /**
      * @param mixed $codigoCarteira
+     *
+     * @return $this
      */
     public function setCodigoCarteira($codigoCarteira)
     {
@@ -349,7 +384,7 @@ class DetalheSegmentoT implements SegmentoT
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getSeuNumero()
     {
@@ -358,6 +393,8 @@ class DetalheSegmentoT implements SegmentoT
 
     /**
      * @param mixed $seuNumero
+     *
+     * @return $this
      */
     public function setSeuNumero($seuNumero)
     {
@@ -378,8 +415,10 @@ class DetalheSegmentoT implements SegmentoT
 
     /**
      * @param mixed $dataVencimento
+     *
+     * @return $this
      */
-    public function setDataVencimento($dataVencimento, $format = 'dmy')
+    public function setDataVencimento($dataVencimento, $format = 'dmY')
     {
         $this->dataVencimento = trim($dataVencimento, '0 ') ? Carbon::createFromFormat($format, $dataVencimento) : null;
 
@@ -387,7 +426,7 @@ class DetalheSegmentoT implements SegmentoT
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getValorTitulo()
     {
@@ -396,6 +435,8 @@ class DetalheSegmentoT implements SegmentoT
 
     /**
      * @param mixed $valorTitulo
+     *
+     * @return $this
      */
     public function setValorTitulo($valorTitulo)
     {
@@ -405,7 +446,7 @@ class DetalheSegmentoT implements SegmentoT
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getNumeroBancoCobradorRecebedor()
     {
@@ -414,6 +455,8 @@ class DetalheSegmentoT implements SegmentoT
 
     /**
      * @param mixed $numeroBancoCobradorRecebedor
+     *
+     * @return $this
      */
     public function setNumeroBancoCobradorRecebedor($numeroBancoCobradorRecebedor)
     {
@@ -423,7 +466,7 @@ class DetalheSegmentoT implements SegmentoT
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getAgenciaCobradoraRecebedora()
     {
@@ -432,6 +475,8 @@ class DetalheSegmentoT implements SegmentoT
 
     /**
      * @param mixed $agenciaCobradoraRecebedora
+     *
+     * @return $this
      */
     public function setAgenciaCobradoraRecebedora($agenciaCobradoraRecebedora)
     {
@@ -441,7 +486,7 @@ class DetalheSegmentoT implements SegmentoT
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getCodigoMoeda()
     {
@@ -450,6 +495,8 @@ class DetalheSegmentoT implements SegmentoT
 
     /**
      * @param mixed $codigoMoeda
+     *
+     * @return $this
      */
     public function setCodigoMoeda($codigoMoeda)
     {
@@ -459,7 +506,7 @@ class DetalheSegmentoT implements SegmentoT
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getTipoInscriçãoSacado()
     {
@@ -468,6 +515,8 @@ class DetalheSegmentoT implements SegmentoT
 
     /**
      * @param mixed $tipoInscriçãoSacado
+     *
+     * @return $this
      */
     public function setTipoInscriçãoSacado($tipoInscriçãoSacado)
     {
@@ -477,7 +526,7 @@ class DetalheSegmentoT implements SegmentoT
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getNumeroInscricaoSacado()
     {
@@ -486,6 +535,8 @@ class DetalheSegmentoT implements SegmentoT
 
     /**
      * @param mixed $numeroInscricaoSacado
+     *
+     * @return $this
      */
     public function setNumeroInscricaoSacado($numeroInscricaoSacado)
     {
@@ -495,7 +546,7 @@ class DetalheSegmentoT implements SegmentoT
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getNomeSacado()
     {
@@ -504,6 +555,8 @@ class DetalheSegmentoT implements SegmentoT
 
     /**
      * @param mixed $nomeSacado
+     *
+     * @return $this
      */
     public function setNomeSacado($nomeSacado)
     {
@@ -513,7 +566,7 @@ class DetalheSegmentoT implements SegmentoT
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getContaCobranca()
     {
@@ -522,6 +575,8 @@ class DetalheSegmentoT implements SegmentoT
 
     /**
      * @param mixed $contaCobranca
+     *
+     * @return $this
      */
     public function setContaCobranca($contaCobranca)
     {
@@ -531,7 +586,7 @@ class DetalheSegmentoT implements SegmentoT
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getValorTarifa()
     {
@@ -540,6 +595,8 @@ class DetalheSegmentoT implements SegmentoT
 
     /**
      * @param mixed $valorTarifa
+     *
+     * @return $this
      */
     public function setValorTarifa($valorTarifa)
     {
@@ -549,7 +606,7 @@ class DetalheSegmentoT implements SegmentoT
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getIdentificacaoRejeicao()
     {
@@ -558,6 +615,8 @@ class DetalheSegmentoT implements SegmentoT
 
     /**
      * @param mixed $identificacaoRejeicao
+     *
+     * @return $this
      */
     public function setIdentificacaoRejeicao($identificacaoRejeicao)
     {
@@ -576,6 +635,8 @@ class DetalheSegmentoT implements SegmentoT
 
     /**
      * @param mixed $identificador
+     *
+     * @return $this
      */
     public function setIdentificador($identificador)
     {
@@ -595,7 +656,7 @@ class DetalheSegmentoT implements SegmentoT
     /**
      * @param mixed $numeroDocumento
      *
-     * @return Detalhe
+     * @return DetalheSegmentoT
      */
     public function setNumeroDocumento($numeroDocumento)
     {
@@ -605,7 +666,7 @@ class DetalheSegmentoT implements SegmentoT
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getValorPagoSacado()
     {
@@ -614,6 +675,8 @@ class DetalheSegmentoT implements SegmentoT
 
     /**
      * @param mixed $valorPagoSacado
+     *
+     * @return $this
      */
     public function setValorPagoSacado($valorPagoSacado)
     {
