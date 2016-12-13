@@ -71,7 +71,6 @@ class Pdf extends AbstractPdf implements PdfContract
         $this->Cell(0, $this->cell, $this->_(Util::nReal($this->boleto[$i]->getValor())));
         $this->SetFont($this->PadraoFont, '', $this->fcel);
 
-        $this->Ln(5);
         $this->traco('Recibo do Pagador', 4);
 
         return $this;
@@ -180,9 +179,7 @@ class Pdf extends AbstractPdf implements PdfContract
             $pulaLinha = $this->listaLinhas($this->boleto[$i]->getDescricaoDemonstrativo(), $pulaLinha);
         }
 
-        $this->traco('Corte na linha pontilhada', $pulaLinha, 5);
-        
-        $this->Ln(10);
+        $this->traco('Corte na linha pontilhada', $pulaLinha, 10);
 
         return $this;
 
@@ -351,7 +348,7 @@ class Pdf extends AbstractPdf implements PdfContract
      */
     protected function traco($texto, $ln = null, $ln2 = null) 
     {
-        if ($ln == 1 || $ln === true) {
+        if ($ln == 1 || $ln) {
             $this->Ln($ln);
         }
         $this->SetFont($this->PadraoFont, '', $this->fdes);
@@ -359,19 +356,9 @@ class Pdf extends AbstractPdf implements PdfContract
             $this->Cell(0, 2, $this->_($texto), 0, 1, 'R');
         }
         $this->Cell(0, 2, str_pad('-', '261', ' -', STR_PAD_RIGHT), 0, 1);
-        if ($ln2 == 1 || $ln2 === true) {
+        if ($ln2 == 1 || $ln2) {
             $this->Ln($ln2);
         }
-    }
-
-    /**
-     *
-     */
-    protected function risco() 
-    {
-        $this->SetLineWidth($this->large);
-        $this->Line(20.3, $this->GetY(), 189.7, $this->GetY());
-        $this->SetLineWidth($this->small);
     }
 
     /**
@@ -391,6 +378,8 @@ class Pdf extends AbstractPdf implements PdfContract
      */
     public function addBoletos(array $boletos) 
     {
+        $this->StartPageGroup();
+
         foreach ($boletos as $boleto) {
             $this->addBoleto($boleto);
         }

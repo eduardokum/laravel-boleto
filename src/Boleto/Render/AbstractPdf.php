@@ -15,6 +15,14 @@ abstract class AbstractPdf extends FPDF
         $this->javascript = $script;
     }
 
+    function Footer()
+    {
+        $this->SetY(-20);
+        if(count($this->PageGroups)) {
+            $this->Cell(0, 6, 'Boleto '.$this->GroupPageNo().'/'.$this->PageGroupAlias(), 0, 0, 'C');
+        }
+    }
+
     protected function _putjavascript()
     {
         $this->_newobj();
@@ -130,77 +138,6 @@ abstract class AbstractPdf extends FPDF
     }
 
     /**
-     * @param $angle
-     * @param int   $x
-     * @param int   $y
-     */
-    protected function rotate($angle, $x = -1, $y = -1) 
-    {
-        if ($x == -1) {
-                    $x = $this->x;
-        }
-        if ($y == -1) {
-                    $y = $this->y;
-        }
-        if ($this->angle != 0) {
-                    $this->_out('Q');
-        }
-        if ($angle != 0) {
-            $angle *= M_PI/180;
-            $c = cos($angle);
-            $s = sin($angle);
-            $cx = $x*$this->k;
-            $cy = ($this->h - $y)*$this->k;
-
-            $this->_out(sprintf('q %.5f %.5f %.5f %.5f %.2f %.2f cm 1 0 0 1 %.2f %.2f cm', $c, $s, -$s, $c, $cx, $cy, -$cx, -$cy));
-        }
-    }
-
-    /**
-     * @param $width
-     * @param $height
-     * @param $maxwidth
-     * @param $maxheight
-     * @return array
-     */
-    protected function calculateDimensions($width, $height, $maxwidth, $maxheight)
-    {
-        if ($width != $height) {
-            if ($width > $height) {
-                $t_width = $maxwidth;
-                $t_height = (($t_width*$height)/$width);
-                //fix height
-                if ($t_height > $maxheight) {
-                    $t_height = $maxheight;
-                    $t_width = (($width*$t_height)/$height);
-                }
-            } else
-            {
-                $t_height = $maxheight;
-                $t_width = (($width*$t_height)/$height);
-                //fix width
-                if ($t_width > $maxwidth) {
-                    $t_width = $maxwidth;
-                    $t_height = (($t_width*$height)/$width);
-                }
-            }
-        } else {
-                    $t_width = $t_height = min($maxheight, $maxwidth);
-        }
-
-        return array('width'=>(int) $t_width, 'w'=>(int) $t_width, 'height'=>(int) $t_height, 'h'=>(int) $t_height);
-    }
-
-    /**
-     * @param $pt
-     * @return float
-     */
-    protected function point2px($pt)
-    {
-        return ceil($pt*96/72);
-    }
-
-    /**
      * BarCode
      *
      * @param $xpos
@@ -211,7 +148,7 @@ abstract class AbstractPdf extends FPDF
      */
     public function i25($xpos, $ypos, $code, $basewidth = 1, $height = 10)
     {
-
+        $code = (strlen($code)%2 != 0 ? '0' : '') . $code;
         $wide = $basewidth;
         $narrow = $basewidth/3;
 
@@ -229,11 +166,6 @@ abstract class AbstractPdf extends FPDF
         $barChar['9'] = 'nwnwn';
         $barChar['A'] = 'nn';
         $barChar['Z'] = 'wn';
-
-        // add leading zero if code-length is odd
-        if (strlen($code)%2 != 0) {
-            $code = '0' . $code;
-        }
 
         $this->SetFont('Arial', '', 10);
         $this->SetFillColor(0);

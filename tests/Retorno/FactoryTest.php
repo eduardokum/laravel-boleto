@@ -1,11 +1,12 @@
 <?php
 
-namespace Tests\Retorno;
+namespace Eduardokum\LaravelBoleto\Tests\Retorno;
 
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Detalhe;
+use Eduardokum\LaravelBoleto\Tests\TestCase;
 use Illuminate\Support\Collection;
 
-class FactoryTest extends \PHPUnit_Framework_TestCase
+class FactoryTest extends TestCase
 {
     /**
      * @expectedException     \Exception

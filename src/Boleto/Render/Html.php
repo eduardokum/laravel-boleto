@@ -43,6 +43,7 @@ class Html implements HtmlContract
      */
     public function getImagemCodigoDeBarras($codigo_barras)
     {
+        $codigo_barras = (strlen($codigo_barras)%2 != 0 ? '0' : '') . $codigo_barras;
         $barcodes = ['00110', '10001', '01001', '11000', '00101', '10100', '01100', '00011', '10010', '01010'];
         for ($f1 = 9; $f1 >= 0; $f1--) {
             for ($f2 = 9; $f2 >= 0; $f2--) {
@@ -54,16 +55,13 @@ class Html implements HtmlContract
                 $barcodes[$f] = $texto;
             }
         }
-
+        
         // Guarda inicial
         $retorno = '<div class="barcode">' .
             '<div class="black thin"></div>' .
             '<div class="white thin"></div>' .
             '<div class="black thin"></div>' .
             '<div class="white thin"></div>';
-        if (strlen($codigo_barras)%2 != 0) {
-            $codigo_barras = "0" . $codigo_barras;
-        }
 
         // Draw dos dados
         while (strlen($codigo_barras) > 0) {

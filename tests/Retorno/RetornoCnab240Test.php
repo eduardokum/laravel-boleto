@@ -1,14 +1,15 @@
 <?php
 
-namespace Tests\Retorno;
+namespace Eduardokum\LaravelBoleto\Tests\Retorno;
 
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Detalhe;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\DetalheSegmentoT;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\DetalheSegmentoU;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\DetalheSegmentoY;
+use Eduardokum\LaravelBoleto\Tests\TestCase;
 use Illuminate\Support\Collection;
 
-class RetornoCnab240Test extends \PHPUnit_Framework_TestCase
+class RetornoCnab240Test extends TestCase
 {
     public function testRetornoSantanderCnab240()
     {

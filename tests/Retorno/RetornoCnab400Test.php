@@ -1,12 +1,13 @@
 <?php
 
-namespace Tests\Retorno;
+namespace Eduardokum\LaravelBoleto\Tests\Retorno;
 
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco\Bradesco;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Detalhe;
+use Eduardokum\LaravelBoleto\Tests\TestCase;
 use Illuminate\Support\Collection;
 
-class RetornoCnab400Test extends \PHPUnit_Framework_TestCase
+class RetornoCnab400Test extends TestCase
 {
 
     /**

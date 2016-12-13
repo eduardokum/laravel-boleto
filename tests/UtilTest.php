@@ -1,11 +1,11 @@
 <?php
 
-namespace Tests;
+namespace Eduardokum\LaravelBoleto\Tests;
 
 use Eduardokum\LaravelBoleto\Pessoa;
 use Eduardokum\LaravelBoleto\Util;
 
-class UtilTest extends \PHPUnit_Framework_TestCase
+class UtilTest extends TestCase
 {
 
     public function testIsHeaderRetorno(){

@@ -1,12 +1,13 @@
 <?php
 
-namespace Tests\Remessa;
+namespace Eduardokum\LaravelBoleto\Tests\Remessa;
 
 use Eduardokum\LaravelBoleto\Boleto\Banco as Boleto;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco as Remessa;
 use Eduardokum\LaravelBoleto\Pessoa;
+use Eduardokum\LaravelBoleto\Tests\TestCase;
 
-class RemessaCnab240Test extends \PHPUnit_Framework_TestCase
+class RemessaCnab240Test extends TestCase
 {
 
     protected static $pagador;
