@@ -1,13 +1,12 @@
 <?php
 
-namespace Boleto\Tests;
+namespace Tests\Boleto;
 
 use Eduardokum\LaravelBoleto\Boleto\Banco as Boleto;
 use Eduardokum\LaravelBoleto\Pessoa;
 
-class BoletoTest extends \TestCase
+class BoletoTest extends \PHPUnit_Framework_TestCase
 {
-
     protected static $pagador;
     protected static $beneficiario;
 
@@ -72,7 +71,7 @@ class BoletoTest extends \TestCase
                 'especieDoc' => 'DM',
             ]
         );
-        $this->assertNotNull($boleto->renderHTML());
+        $this->assertInternalType('array', $boleto->toArray());
         $this->assertNotNull($boleto->renderPDF());
     }
 
@@ -97,7 +96,7 @@ class BoletoTest extends \TestCase
                 'especieDoc' => 'DM',
             ]
         );
-        $this->assertNotNull($boleto->renderHTML());
+        $this->assertInternalType('array', $boleto->toArray());
         $this->assertNotNull($boleto->renderPDF());
     }
 
@@ -124,7 +123,7 @@ class BoletoTest extends \TestCase
                 'especieDoc' => 'DM',
             ]
         );
-        $this->assertNotNull($boleto->renderHTML());
+        $this->assertInternalType('array', $boleto->toArray());
         $this->assertNotNull($boleto->renderPDF());
     }
 
@@ -152,7 +151,7 @@ class BoletoTest extends \TestCase
                 'especieDoc' => 'DM',
             ]
         );
-        $this->assertNotNull($boleto->renderHTML());
+        $this->assertInternalType('array', $boleto->toArray());
         $this->assertNotNull($boleto->renderPDF());
     }
 
@@ -180,7 +179,7 @@ class BoletoTest extends \TestCase
                 'especieDoc' => 'DM',
             ]
         );
-        $this->assertNotNull($boleto->renderHTML());
+        $this->assertInternalType('array', $boleto->toArray());
         $this->assertNotNull($boleto->renderPDF());
     }
 
@@ -207,7 +206,7 @@ class BoletoTest extends \TestCase
                 'especieDoc' => 'DM',
             ]
         );
-        $this->assertNotNull($boleto->renderHTML());
+        $this->assertInternalType('array', $boleto->toArray());
         $this->assertNotNull($boleto->renderPDF());
     }
 
@@ -234,7 +233,7 @@ class BoletoTest extends \TestCase
                 'especieDoc' => 'DM',
             ]
         );
-        $this->assertNotNull($boleto->renderHTML());
+        $this->assertInternalType('array', $boleto->toArray());
         $this->assertNotNull($boleto->renderPDF());
     }
 
@@ -262,7 +261,7 @@ class BoletoTest extends \TestCase
                 'especieDoc'             => 'DM',
             ]
         );
-        $this->assertNotNull($boleto->renderHTML());
+        $this->assertInternalType('array', $boleto->toArray());
         $this->assertNotNull($boleto->renderPDF());
     }
 }
