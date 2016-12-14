@@ -1192,11 +1192,8 @@ abstract class AbstractBoleto
      */
     public function getLogoBase64()
     {
-        static $logoData;
-        $logoData or $logoData = 'data:image/' . pathinfo($this->getLogo(), PATHINFO_EXTENSION) .
+        return 'data:image/' . pathinfo($this->getLogo(), PATHINFO_EXTENSION) .
             ';base64,' . base64_encode(file_get_contents($this->getLogo()));
-
-        return $logoData;
     }
 
     /**
