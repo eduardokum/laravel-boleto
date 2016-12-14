@@ -97,8 +97,6 @@ class Itau extends AbstractRemessa implements RemessaContract
     const INSTRUCAO_VALOR_PRORATA_10 = '78';
     const INSTRUCAO_JUROS_VENC_15 = '79';
     const INSTRUCAO_PAGTO_CHEQUE = '80';
-    const INSTRUCAO_PROTESTAR_VENC_XX_2 = '81';
-    const INSTRUCAO_PROTESTAR_VENC_XX_UTEIS_2 = '82';
     const INSTRUCAO_OPERACAO_VENDOR = '83';
     const INSTRUCAO_AG_CEDENTE_APOS_VENC = '84';
     const INSTRUCAO_ANTES_VENC_APOS_15_SEDE = '86';
