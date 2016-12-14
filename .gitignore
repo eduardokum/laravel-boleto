@@ -1,6 +1,5 @@
 /vendor
 .DS_Store
 /.idea
-.idea
 .composer.lock
 /tests/_reports/
