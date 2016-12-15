@@ -66,6 +66,10 @@ class Pdf extends AbstractPdf implements PdfContract
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
         $this->Cell(0, $this->cell, $this->_($this->boleto[$i]->getLinhaDigitavel()), 0, 1);
         $this->SetFont($this->PadraoFont, '', $this->fcel);
+        $this->Cell(25, $this->cell, $this->_('Número: '), 0, 0);
+        $this->SetFont($this->PadraoFont, 'B', $this->fcel);
+        $this->Cell(0, $this->cell, $this->_(Util::nReal($this->boleto[$i]->getNumero())));
+        $this->SetFont($this->PadraoFont, '', $this->fcel);
         $this->Cell(25, $this->cell, $this->_('Valor: '), 0, 0);
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
         $this->Cell(0, $this->cell, $this->_(Util::nReal($this->boleto[$i]->getValor())));
