@@ -86,10 +86,21 @@ class Banrisul extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        $nossoNumero = Util::numberFormatGeral($this->getNumeroDocumento(), 8) . '-' . $this->duploDigitoBanrisul(Util::numberFormatGeral($this->getNumeroDocumento(), 8));
+        $numero_boleto = $this->getNumero();
+        $nossoNumero = Util::numberFormatGeral($numero_boleto, 8)
+            . $this->duploDigitoBanrisul(Util::numberFormatGeral($numero_boleto, 8));
         return $nossoNumero;
     }
-
+    /**
+     * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
+     *
+     * @return string
+     */
+    public function getNossoNumeroBoleto()
+    {
+        $nn = $this->getNossoNumero();
+        return substr($nn, 0, -2) . '-' . substr($nn, -2);
+    }
     /**
      * Método para gerar o código da posição de 20 a 44
      *
@@ -115,7 +126,7 @@ class Banrisul extends AbstractBoleto implements BoletoContract
         $this->campoLivre .= $this->getConta();
 
         // Nosso numero => 33 a 40 | Valor: dinâmico(00000000) ´8´
-        $this->campoLivre .= Util::numberFormatGeral($this->getNumeroDocumento(), 8);
+        $this->campoLivre .= Util::numberFormatGeral($this->getNumero(), 8);
 
         // Constante    => 41 - 42 | Valor: 40(Constante)
         $this->campoLivre .= '40';

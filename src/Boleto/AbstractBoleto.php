@@ -1344,7 +1344,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function isValid()
     {
-        if ($this->numeroDocumento == ''
+        if ($this->numero == ''
             || $this->agencia == ''
             || $this->conta == ''
             || $this->carteira == ''

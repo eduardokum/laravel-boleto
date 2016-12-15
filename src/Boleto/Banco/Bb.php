@@ -92,10 +92,7 @@ class Bb extends AbstractBoleto implements BoletoContract
      */
     public function isValid()
     {
-        if ($this->numeroDocumento == '' 
-            || $this->convenio == '' 
-            || $this->carteira == ''
-        ) {
+        if ($this->numeroDocumento == '' || $this->convenio == '' || $this->carteira == '') {
             return false;
         }
         return true;
@@ -109,7 +106,7 @@ class Bb extends AbstractBoleto implements BoletoContract
     protected function gerarNossoNumero()
     {
         $convenio = $this->getConvenio();
-        $numero_boleto = $this->getNumeroDocumento();
+        $numero_boleto = $this->getNumero();
         switch (strlen($convenio)) {
         case 4:
             $numero = Util::numberFormatGeral($convenio, 4) . Util::numberFormatGeral($numero_boleto, 7);

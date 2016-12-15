@@ -39,7 +39,7 @@ class Caixa  extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        $numero = $this->getNumeroDocumento();
+        $numero_boleto = $this->getNumero();
         $composicao = '1';
         if ($this->getCarteira() == 'SR') {
             $composicao = '2';
@@ -48,7 +48,7 @@ class Caixa  extends AbstractBoleto implements BoletoContract
         $carteira = $composicao . '4';
         // As 15 próximas posições no nosso número são a critério do beneficiário, utilizando o sequencial
         // Depois, calcula-se o código verificador por módulo 11
-        $numero = $carteira . Util::numberFormatGeral($numero, 15);
+        $numero = $carteira . Util::numberFormatGeral($numero_boleto, 15);
         return $numero;
     }
     /**
