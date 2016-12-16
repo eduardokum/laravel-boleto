@@ -152,7 +152,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
         $this->add(13, 19, '');
         $this->add(20, 20, '');
         $this->add(21, 37, Util::formatCnab('X', $beneficiario_id, 17));
-        $this->add(38, 62, Util::formatCnab('X', $boleto->getNumero(), 25)); // numero de controle
+        $this->add(38, 62, Util::formatCnab('X', $boleto->getNumeroControle(), 25)); // numero de controle
         $this->add(63, 65, $this->getCodigoBanco());
         $this->add(66, 66, $boleto->getMulta() > 0 ? '2' : '0');
         $this->add(67, 70, Util::formatCnab('9', $boleto->getMulta() > 0 ? $boleto->getMulta() : '0', 4, 2));

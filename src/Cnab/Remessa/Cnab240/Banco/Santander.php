@@ -148,7 +148,7 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(61, 61, ''); // Reservado (Uso Banco)
         $this->add(62, 62, ''); // Reservado (Uso Banco)
         //
-        $this->add(63, 77, Util::formatCnab(9, $boleto->getNumero(), 15)); // Seu Número
+        $this->add(63, 77, Util::formatCnab(9, $boleto->getNumeroControle(), 15)); // Seu Número
         $this->add(78, 85, $boleto->getDataVencimento()->format('dmY')); // Data de vencimento do título
         $this->add(86, 100, Util::formatCnab(9, $boleto->getValor(), 15, 2)); // Valor nominal do título
         $this->add(101, 104, Util::formatCnab(9, 0, 4)); //Agência encarregada da cobrança

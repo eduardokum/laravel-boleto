@@ -203,6 +203,11 @@ interface Boleto
     /**
      * @return mixed
      */
+    public function getNumeroControle();
+
+    /**
+     * @return mixed
+     */
     public function getAgenciaCodigoBeneficiario();
 
     /**

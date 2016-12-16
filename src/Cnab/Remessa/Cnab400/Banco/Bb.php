@@ -221,7 +221,7 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(23, 30, Util::formatCnab('9', $this->getConta(), 8));
         $this->add(31, 31, Util::modulo11($this->getConta()));
         $this->add(32, 38, Util::formatCnab('9', $this->getConvenio(), 7));
-        $this->add(39, 63, Util::formatCnab('X', $boleto->getNumero(), 25)); // numero de controle
+        $this->add(39, 63, Util::formatCnab('X', $boleto->getNumeroControle(), 25)); // numero de controle
         $this->add(64, 80, $boleto->getNossoNumero());
         $this->add(81, 82, '00');
         $this->add(83, 84, '00');
