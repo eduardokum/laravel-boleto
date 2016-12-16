@@ -11,10 +11,10 @@ use Illuminate\Support\Collection;
 /**
  * Class AbstractRetorno
  *
- * @method \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Detalhe getDetalhe()
- * @method \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Header getHeader()
- * @method \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Trailer getTrailer()
- * @method \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Detalhe detalheAtual()
+ * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Detalhe getDetalhe()
+ * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Header getHeader()
+ * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Trailer getTrailer()
+ * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Detalhe detalheAtual()
  * @package Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400
  */
 abstract class AbstractRetorno extends AbstractRetornoGeneric
@@ -23,7 +23,8 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
      * @param String $file
      * @throws \Exception
      */
-    public function __construct($file) {
+    public function __construct($file) 
+    {
 
         parent::__construct($file);
 
@@ -36,21 +37,21 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
      *
      * @return boolean
      */
-    protected abstract function processarHeader(array $header);
+    abstract protected function processarHeader(array $header);
 
     /**
      * @param array $detalhe
      *
      * @return boolean
      */
-    protected abstract function processarDetalhe(array $detalhe);
+    abstract protected function processarDetalhe(array $detalhe);
 
     /**
      * @param array $trailer
      *
      * @return boolean
      */
-    protected abstract function processarTrailer(array $trailer);
+    abstract protected function processarTrailer(array $trailer);
 
     /**
      * Incrementa o detalhe.
@@ -66,35 +67,34 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
      *
      * @return $this
      */
-    public function processar() {
+    public function processar() 
+    {
 
-        if($this->isProcessado())
-        {
+        if ($this->isProcessado()) {
             return $this;
         }
 
-        if(method_exists($this, 'init')) {
+        if (method_exists($this, 'init')) {
             call_user_func([$this, 'init']);
         }
 
-        foreach($this->file as $linha) {
+        foreach ($this->file as $linha) {
 
             $inicio = $this->rem(1, 1, $linha);
 
-            if( $inicio == '0' ) {
+            if ($inicio == '0') {
                 $this->processarHeader($linha);
-            } else if( $inicio == '9' ) {
+            } else if ($inicio == '9') {
                 $this->processarTrailer($linha);
             } else {
                 $this->incrementDetalhe();
-                if($this->processarDetalhe($linha) === false)
-                {
+                if ($this->processarDetalhe($linha) === false) {
                     unset($this->detalhe[$this->increment]);
                     $this->increment--;
                 }
             }
         }
-        if(method_exists($this, 'finalize')) {
+        if (method_exists($this, 'finalize')) {
             call_user_func([$this, 'finalize']);
         }
 
@@ -115,7 +115,7 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
         ];
         foreach ($this->detalhe as $detalhe)
         {
-            $array['detalhes']->add($detalhe->toArray());
+            $array['detalhes']->push($detalhe->toArray());
         }
         return $array;
     }

@@ -9,10 +9,10 @@ use Illuminate\Support\Collection;
 /**
  * Class AbstractRetorno
  *
- * @method \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Detalhe getDetalhe()
- * @method \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Header getHeader()
- * @method \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Trailer getTrailer()
- * @method \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Detalhe detalheAtual()
+ * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Detalhe getDetalhe()
+ * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Header getHeader()
+ * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Trailer getTrailer()
+ * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Detalhe detalheAtual()
  * @package Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240
  */
 abstract class AbstractRetorno extends AbstractRetornoGeneric
@@ -31,7 +31,8 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
      * @param String $file
      * @throws \Exception
      */
-    public function __construct($file) {
+    public function __construct($file) 
+    {
         parent::__construct($file);
 
         $this->header = new Header();
@@ -61,35 +62,35 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
      *
      * @return boolean
      */
-    protected abstract function processarHeader(array $header);
+    abstract protected function processarHeader(array $header);
 
     /**
      * @param array $headerLote
      *
      * @return boolean
      */
-    protected abstract function processarHeaderLote(array $headerLote);
+    abstract protected function processarHeaderLote(array $headerLote);
 
     /**
      * @param array $detalhe
      *
      * @return boolean
      */
-    protected abstract function processarDetalhe(array $detalhe);
+    abstract protected function processarDetalhe(array $detalhe);
 
     /**
      * @param array $trailer
      *
      * @return boolean
      */
-    protected abstract function processarTrailerLote(array $trailer);
+    abstract protected function processarTrailerLote(array $trailer);
 
     /**
      * @param array $trailer
      *
      * @return boolean
      */
-    protected abstract function processarTrailer(array $trailer);
+    abstract protected function processarTrailer(array $trailer);
 
     /**
      * Incrementa o detalhe.
@@ -111,8 +112,7 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
      */
     public function processar()
     {
-        if ($this->isProcessado())
-        {
+        if ($this->isProcessado()) {
             return $this;
         }
 
@@ -186,7 +186,7 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
                 ];
             }
 
-            $array['detalhes']->add($arr);
+            $array['detalhes']->push($arr);
         }
         return $array;
     }

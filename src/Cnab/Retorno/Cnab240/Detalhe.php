@@ -291,6 +291,10 @@ class Detalhe implements DetalheContract
             $aRet[$var] = method_exists($this, $methodName)
                 ? $this->$methodName()
                 : $this->$var;
+
+            if( is_object($aRet[$var]) && method_exists($aRet[$var], 'toArray') ) {
+                $aRet[$var] = $aRet[$var]->toArray();
+            }
         }
         return $aRet;
     }

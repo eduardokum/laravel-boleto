@@ -123,7 +123,7 @@ class Detalhe implements DetalheContract
     {
         $ocorrencias = func_get_args();
 
-        if (count($ocorrencias) == 0 && empty($this->getOcorrencia())) {
+        if (count($ocorrencias) == 0 && !empty($this->getOcorrencia())) {
             return true;
         }
 
@@ -506,7 +506,7 @@ class Detalhe implements DetalheContract
     /**
      * Determine if an attribute exists on the detalhe.
      *
-     * @param  string  $key
+     * @param  string $key
      * @return bool
      */
     public function __isset($key)

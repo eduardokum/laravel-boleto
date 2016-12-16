@@ -10,6 +10,7 @@ class Banrisul extends AbstractBoleto implements BoletoContract
 {
     /**
      * Código do banco
+     *
      * @var string
      */
     protected $codigoBanco = self::COD_BANCO_BANRISUL;
@@ -42,10 +43,12 @@ class Banrisul extends AbstractBoleto implements BoletoContract
 
     /**
      * Gera o Duplo digito do nosso npumero
-     * @param $nossoNumero
+     *
+     * @param  $nossoNumero
      * @return int
      */
-    private function duploDigitoBanrisul($nossoNumero) {
+    private function duploDigitoBanrisul($nossoNumero) 
+    {
         $dv1 = Util::modulo10($nossoNumero);
         $dv2 = Util::modulo11($nossoNumero . $dv1, 2, 7, 0, 10);
         if ($dv2 == 10) {
@@ -59,7 +62,26 @@ class Banrisul extends AbstractBoleto implements BoletoContract
     }
 
     /**
+     * Seta dias para baixa automática
+     *
+     * @param int $baixaAutomatica
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    public function setDiasBaixaAutomatica($baixaAutomatica)
+    {
+        if($this->getDiasProtesto() > 0) {
+            throw new \Exception('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
+        }
+        $baixaAutomatica = (int) $baixaAutomatica;
+        $this->diasBaixaAutomatica = $baixaAutomatica > 0 ? $baixaAutomatica : 0;
+        return $this;
+    }
+
+    /**
      * Gerar nosso número
+     *
      * @return string
      */
     protected function gerarNossoNumero()

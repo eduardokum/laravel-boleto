@@ -28,6 +28,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
 
     /**
      * Código do banco
+     *
      * @var string
      */
     protected $codigoBanco;
@@ -71,39 +72,19 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
     /**
      * @var int
      */
-    private $_position = 0;
+    private $_position = 1;
 
     /**
      *
      * @param String $file
      * @throws \Exception
      */
-    public function __construct($file) {
+    public function __construct($file) 
+    {
 
-        $this->_position = 0;
+        $this->_position = 1;
 
-        if (is_array($file) && is_string($file[0]))
-        {
-            $this->file = $file;
-        }
-        elseif (is_array($file) && is_array($file[0]) && count($file[0]) == 400)
-        {
-            $this->file = $file;
-        }
-        elseif (is_file($file) && file_exists($file))
-        {
-            $this->file = file($file);
-        }
-        elseif (is_string($file))
-        {
-            $this->file = preg_split('/\r\n|\r|\n/', $file);
-            if (empty(end($this->file)))
-            {
-                array_pop($this->file);
-            }
-            reset($this->file);
-        } else
-        {
+        if (!$this->file = Util::file2array($file)) {
             throw new \Exception("Arquivo: não existe");
         }
 
@@ -112,20 +93,17 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
         $bancosDisponiveis = [];
         foreach ($constantNames as $constantName => $codigoBanco)
         {
-            if (preg_match('/^COD_BANCO.*/', $constantName))
-            {
+            if (preg_match('/^COD_BANCO.*/', $constantName)) {
                 $bancosDisponiveis[] = $codigoBanco;
             }
         }
 
-        if (!Util::isHeaderRetorno($this->file[0]))
-        {
+        if (!Util::isHeaderRetorno($this->file[0])) {
             throw new \Exception(sprintf("Arquivo de retorno inválido"));
         }
 
         $banco = Util::isCnab400($this->file[0]) ? substr($this->file[0], 76, 3) : substr($this->file[0], 0, 3);
-        if (!in_array($banco, $bancosDisponiveis))
-        {
+        if (!in_array($banco, $bancosDisponiveis)) {
             throw new \Exception(sprintf("Banco: %s, inválido", $banco));
         }
     }
@@ -184,6 +162,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
 
     /**
      * Retorna o detalhe atual.
+     *
      * @return Detalhe240Contract|Detalhe400Contract
      */
     protected function detalheAtual()
@@ -246,31 +225,38 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
     }
 
 
-    public function current() {
+    public function current() 
+    {
         return $this->detalhe[$this->_position];
     }
 
-    public function next() {
+    public function next() 
+    {
         ++$this->_position;
     }
 
-    public function key() {
+    public function key() 
+    {
         return $this->_position;
     }
 
-    public function valid() {
+    public function valid() 
+    {
         return isset($this->detalhe[$this->_position]);
     }
 
-    public function rewind() {
-        $this->_position = 0;
+    public function rewind() 
+    {
+        $this->_position = 1;
     }
 
-    public function count() {
+    public function count() 
+    {
         return count($this->detalhe);
     }
 
-    public function seek($position) {
+    public function seek($position) 
+    {
         $this->_position = $position;
         if (!$this->valid()) {
             throw new \OutOfBoundsException('"Posição inválida "$position"');

@@ -9,11 +9,13 @@ class Itau extends AbstractBoleto implements BoletoContract
 {
     /**
      * Código do banco
+     *
      * @var string
      */
     protected $codigoBanco = self::COD_BANCO_ITAU;
     /**
      * Variáveis adicionais.
+     *
      * @var array
      */
     public $variaveis_adicionais = [
@@ -21,11 +23,13 @@ class Itau extends AbstractBoleto implements BoletoContract
     ];
     /**
      * Define as carteiras disponíveis para este banco
+     *
      * @var array
      */
     protected $carteiras = ['112', '115', '188', '109', '121', '180', '175'];
     /**
      * Espécie do documento, coódigo para remessa
+     *
      * @var string
      */
     protected $especiesCodigo = [
@@ -34,28 +38,30 @@ class Itau extends AbstractBoleto implements BoletoContract
         'NS' => '03',
         'REC' => '05',
         'CT' => '06',
-        'NS' => '07',
+        'CS' => '07',
         'DS' => '08',
         'LC' => '09',
         'ND' => '13',
         'CDA' => '15',
         'EC' => '16',
-        'DS' => '17',
+        'CPS' => '17',
     ];
     /**
      * Campo obrigatório para emissão de boletos com carteira 198 fornecido pelo Banco com 5 dígitos
+     *
      * @var int
      */
     protected $codigoCliente;
     /**
      * Dígito verificador da carteira/nosso número para impressão no boleto
+     *
      * @var int
      */
     protected $carteiraDv;
     /**
      * Define o código do cliente
      *
-     * @param int $codigoCliente
+     * @param  int $codigoCliente
      * @return $this
      */
     public function setCodigoCliente($codigoCliente)
@@ -63,6 +69,25 @@ class Itau extends AbstractBoleto implements BoletoContract
         $this->codigoCliente = $codigoCliente;
         return $this;
     }
+
+    /**
+     * Seta dias para baixa automática
+     *
+     * @param int $baixaAutomatica
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    public function setDiasBaixaAutomatica($baixaAutomatica)
+    {
+        if($this->getDiasProtesto() > 0) {
+            throw new \Exception('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
+        }
+        $baixaAutomatica = (int) $baixaAutomatica;
+        $this->diasBaixaAutomatica = $baixaAutomatica > 0 ? $baixaAutomatica : 0;
+        return $this;
+    }
+
     /**
      * Retorna o código do cliente
      *
@@ -77,8 +102,7 @@ class Itau extends AbstractBoleto implements BoletoContract
      */
     public function isValid()
     {
-        if ((in_array($this->getCarteira(), ['107', '122', '142', '143', '196', '198']) && $this->codigoCliente == '') || !parent::isValid())
-        {
+        if ((in_array($this->getCarteira(), ['107', '122', '142', '143', '196', '198']) && $this->codigoCliente == '') || !parent::isValid()) {
             return false;
         }
         return true;

@@ -10,6 +10,7 @@ class Itau extends AbstractRetorno implements RetornoCnab400
 {
     /**
      * Código do banco
+     *
      * @var string
      */
     protected $codigoBanco = BoletoContract::COD_BANCO_ITAU;
@@ -111,7 +112,6 @@ class Itau extends AbstractRetorno implements RetornoCnab400
 
     protected function processarDetalhe(array $detalhe)
     {
-
         $d = $this->detalheAtual();
 
         $d->setNossoNumero($this->rem(86, 94, $detalhe))
@@ -130,39 +130,25 @@ class Itau extends AbstractRetorno implements RetornoCnab400
             ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe)/100, 2, false))
             ->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe)/100, 2, false));
 
-        if ($d->hasOcorrencia('06', '07', '08', '10', '59'))
-        {
+        if ($d->hasOcorrencia('06', '07', '08', '10', '59')) {
             $this->totais['liquidados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
-        }
-        elseif ($d->hasOcorrencia('02', '64', '71', '73'))
-        {
+        } elseif ($d->hasOcorrencia('02', '64', '71', '73')) {
             $this->totais['entradas']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_ENTRADA);
-        }
-        elseif ($d->hasOcorrencia('05', '09', '47', '72'))
-        {
+        } elseif ($d->hasOcorrencia('05', '09', '47', '72')) {
             $this->totais['baixados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_BAIXADA);
-        }
-        elseif ($d->hasOcorrencia('32'))
-        {
+        } elseif ($d->hasOcorrencia('32')) {
             $this->totais['protestados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_PROTESTADA);
-        }
-        elseif ($d->hasOcorrencia('14'))
-        {
+        } elseif ($d->hasOcorrencia('14')) {
             $this->totais['alterados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
-        }
-
-        elseif ($d->hasOcorrencia('03', '15', '16', '60', '03'))
-        {
+        } elseif ($d->hasOcorrencia('03', '15', '16', '60', '03')) {
             $this->totais['erros']++;
             $d->setError('Consulte seu Internet Banking');
-        }
-        else
-        {
+        } else {
             $d->setOcorrenciaTipo($d::OCORRENCIA_OUTROS);
         }
 

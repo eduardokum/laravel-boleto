@@ -7,6 +7,17 @@ use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\DetalheSegmentoT as 
 
 class DetalheSegmentoT implements DetalheSegmentoTContract
 {
+
+    /**
+     * @var int
+     */
+    protected $numeroDocumento;
+
+    /**
+     * @var string
+     */
+    protected $identificador;
+
     /**
      * @var string
      */
@@ -142,6 +153,8 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
 
     /**
      * @param mixed $codigoBancoCompensacao
+     *
+     * @return $this
      */
     public function setCodigoBancoCompensacao($codigoBancoCompensacao)
     {
@@ -160,6 +173,8 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
 
     /**
      * @param mixed $numeroLoteRetorno
+     *
+     * @return $this
      */
     public function setNumeroLoteRetorno($numeroLoteRetorno)
     {
@@ -178,6 +193,8 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
 
     /**
      * @param mixed $tipoRegistro
+     *
+     * @return $this
      */
     public function setTipoRegistro($tipoRegistro)
     {
@@ -196,6 +213,8 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
 
     /**
      * @param mixed $numeroSequencialRegistroLote
+     *
+     * @return $this
      */
     public function setNumeroSequencialRegistroLote($numeroSequencialRegistroLote)
     {
@@ -214,6 +233,8 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
 
     /**
      * @param mixed $codigoSegmentoRegistroDetalhe
+     *
+     * @return $this
      */
     public function setCodigoSegmentoRegistroDetalhe($codigoSegmentoRegistroDetalhe)
     {
@@ -232,6 +253,8 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
 
     /**
      * @param mixed $digitoAgenciaCedente
+     *
+     * @return $this
      */
     public function setDigitoAgenciaCedente($digitoAgenciaCedente)
     {
@@ -250,6 +273,8 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
 
     /**
      * @param mixed $agenciaCedente
+     *
+     * @return $this
      */
     public function setAgenciaCedente($agenciaCedente)
     {
@@ -268,6 +293,8 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
 
     /**
      * @param mixed $agenciaCedenteDigito
+     *
+     * @return $this
      */
     public function setAgenciaCedenteDigito($agenciaCedenteDigito)
     {
@@ -286,6 +313,8 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
 
     /**
      * @param mixed $contaCorrente
+     *
+     * @return $this
      */
     public function setContaCorrente($contaCorrente)
     {
@@ -304,6 +333,8 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
 
     /**
      * @param mixed $contaDigito
+     *
+     * @return $this
      */
     public function setContaDigito($contaDigito)
     {
@@ -322,6 +353,8 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
 
     /**
      * @param mixed $nossoNumero
+     *
+     * @return $this
      */
     public function setNossoNumero($nossoNumero)
     {
@@ -340,6 +373,8 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
 
     /**
      * @param mixed $codigoCarteira
+     *
+     * @return $this
      */
     public function setCodigoCarteira($codigoCarteira)
     {
@@ -358,6 +393,8 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
 
     /**
      * @param mixed $seuNumero
+     *
+     * @return $this
      */
     public function setSeuNumero($seuNumero)
     {
@@ -378,6 +415,8 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
 
     /**
      * @param mixed $dataVencimento
+     *
+     * @return $this
      */
     public function setDataVencimento($dataVencimento, $format = 'dmY')
     {
@@ -396,6 +435,8 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
 
     /**
      * @param mixed $valorTitulo
+     *
+     * @return $this
      */
     public function setValorTitulo($valorTitulo)
     {
@@ -414,6 +455,8 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
 
     /**
      * @param mixed $numeroBancoCobradorRecebedor
+     *
+     * @return $this
      */
     public function setNumeroBancoCobradorRecebedor($numeroBancoCobradorRecebedor)
     {
@@ -432,6 +475,8 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
 
     /**
      * @param mixed $agenciaCobradoraRecebedora
+     *
+     * @return $this
      */
     public function setAgenciaCobradoraRecebedora($agenciaCobradoraRecebedora)
     {
@@ -450,6 +495,8 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
 
     /**
      * @param mixed $codigoMoeda
+     *
+     * @return $this
      */
     public function setCodigoMoeda($codigoMoeda)
     {
@@ -468,6 +515,8 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
 
     /**
      * @param mixed $tipoInscriçãoSacado
+     *
+     * @return $this
      */
     public function setTipoInscriçãoSacado($tipoInscriçãoSacado)
     {
@@ -486,6 +535,8 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
 
     /**
      * @param mixed $numeroInscricaoSacado
+     *
+     * @return $this
      */
     public function setNumeroInscricaoSacado($numeroInscricaoSacado)
     {
@@ -504,6 +555,8 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
 
     /**
      * @param mixed $nomeSacado
+     *
+     * @return $this
      */
     public function setNomeSacado($nomeSacado)
     {
@@ -522,6 +575,8 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
 
     /**
      * @param mixed $contaCobranca
+     *
+     * @return $this
      */
     public function setContaCobranca($contaCobranca)
     {
@@ -540,6 +595,8 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
 
     /**
      * @param mixed $valorTarifa
+     *
+     * @return $this
      */
     public function setValorTarifa($valorTarifa)
     {
@@ -558,6 +615,8 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
 
     /**
      * @param mixed $identificacaoRejeicao
+     *
+     * @return $this
      */
     public function setIdentificacaoRejeicao($identificacaoRejeicao)
     {
@@ -576,6 +635,8 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
 
     /**
      * @param mixed $identificador
+     *
+     * @return $this
      */
     public function setIdentificador($identificador)
     {
@@ -614,6 +675,8 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
 
     /**
      * @param mixed $valorPagoSacado
+     *
+     * @return $this
      */
     public function setValorPagoSacado($valorPagoSacado)
     {

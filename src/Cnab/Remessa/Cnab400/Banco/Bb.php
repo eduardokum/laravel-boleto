@@ -1,7 +1,7 @@
 <?php
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
-use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa;
+use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
@@ -70,12 +70,14 @@ class Bb extends AbstractRemessa implements RemessaContract
 
     /**
      * Código do banco
+     *
      * @var string
      */
     protected $codigoBanco = BoletoContract::COD_BANCO_BB;
 
     /**
      * Define as carteiras disponíveis para cada banco
+     *
      * @var array
      */
     protected $carteiras = [11, 12, 17, 31, 51];
@@ -232,12 +234,10 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(102, 106, '');
         $this->add(107, 108, $this->getCarteiraNumero());
         $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
-        if ($boleto->getStatus() == $boleto::STATUS_BAIXA)
-        {
+        if ($boleto->getStatus() == $boleto::STATUS_BAIXA) {
             $this->add(109, 110, self::OCORRENCIA_PEDIDO_BAIXA); // BAIXA
         }
-        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO)
-        {
+        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
             $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO); // ALTERAR VENCIMENTO
         }
         $this->add(111, 120, Util::formatCnab('X', $boleto->getNumeroDocumento(), 10));
@@ -249,23 +249,23 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(148, 149, $boleto->getEspecieDocCodigo());
         $this->add(150, 150, $boleto->getAceite());
         $this->add(151, 156, $boleto->getDataDocumento()->format('dmy'));
-        $this->add(157, 158, self::INSTRUCAO_SEM);
+        $this->add(157, 158, $boleto->getStatus() == $boleto::STATUS_BAIXA ? self::INSTRUCAO_BAIXAR : self::INSTRUCAO_SEM);
         $this->add(159, 160, self::INSTRUCAO_SEM);
         $diasProtesto = '00';
         $const = sprintf('self::INSTRUCAO_PROTESTAR_VENC_%02s', $boleto->getDiasProtesto());
-        if (defined($const))
-        {
-            $this->add(157, 158, constant($const));
-        }
-        else
-        {
-            $this->add(157, 158, self::INSTRUCAO_PROTESTAR_VENC_XX);
-            $diasProtesto = Util::formatCnab('9', $boleto->getDiasProtesto(), 2, 0);
-        }
-        $juros = 0;
-        if ($boleto->getJuros() > 0)
-        {
-            $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
+        if($boleto->getStatus() != $boleto::STATUS_BAIXA) {
+            if (defined($const)) {
+                $this->add(157, 158, constant($const));
+            }
+            else
+            {
+                $this->add(157, 158, self::INSTRUCAO_PROTESTAR_VENC_XX);
+                $diasProtesto = Util::formatCnab('9', $boleto->getDiasProtesto(), 2, 0);
+            }
+            $juros = 0;
+            if ($boleto->getJuros() > 0) {
+                $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
+            }
         }
         $this->add(161, 173, Util::formatCnab('9', $juros, 13, 2));
         $this->add(174, 179, '000000');
@@ -286,8 +286,7 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(394, 394, '');
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
 
-        if ($boleto->getMulta() > 0)
-        {
+        if ($boleto->getMulta() > 0) {
             $this->iniciaDetalhe();
 
             $this->add(1, 1, 5);
@@ -315,8 +314,7 @@ class Bb extends AbstractRemessa implements RemessaContract
 
     public function isValid()
     {
-        if ($this->getConvenio() == '' || $this->getConvenioLider() == '' || !parent::isValid())
-        {
+        if ($this->getConvenio() == '' || $this->getConvenioLider() == '' || !parent::isValid()) {
             return false;
         }
 

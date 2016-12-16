@@ -11,6 +11,7 @@ class Bb extends AbstractRetorno implements RetornoCnab400
 {
     /**
      * Código do banco
+     *
      * @var string
      */
     protected $codigoBanco = BoletoContract::COD_BANCO_BB;
@@ -189,8 +190,7 @@ class Bb extends AbstractRetorno implements RetornoCnab400
 
     protected function processarDetalhe(array $detalhe)
     {
-        if ($this->rem(1, 1, $detalhe) != '7')
-        {
+        if ($this->rem(1, 1, $detalhe) != '7') {
             return false;
         }
 
@@ -212,38 +212,25 @@ class Bb extends AbstractRetorno implements RetornoCnab400
             ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe)/100, 2, false))
             ->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe)/100, 2, false));
 
-        if ($d->hasOcorrencia('05', '06', '07', '08', '15'))
-        {
+        if ($d->hasOcorrencia('05', '06', '07', '08', '15')) {
             $this->totais['liquidados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
-        }
-        elseif ($d->hasOcorrencia('02'))
-        {
+        } elseif ($d->hasOcorrencia('02')) {
             $this->totais['entradas']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_ENTRADA);
-        }
-        elseif ($d->hasOcorrencia('09'))
-        {
+        } elseif ($d->hasOcorrencia('09')) {
             $this->totais['baixados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_BAIXADA);
-        }
-        elseif ($d->hasOcorrencia('61'))
-        {
+        } elseif ($d->hasOcorrencia('61')) {
             $this->totais['protestados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_PROTESTADA);
-        }
-        elseif ($d->hasOcorrencia('14'))
-        {
+        } elseif ($d->hasOcorrencia('14')) {
             $this->totais['alterados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
-        }
-        elseif ($d->hasOcorrencia('03'))
-        {
+        } elseif ($d->hasOcorrencia('03')) {
             $this->totais['erros']++;
             $d->setError(array_get($this->rejeicoes, $d->getOcorrencia(), 'Consulte seu Internet Banking'));
-        }
-        else
-        {
+        } else {
             $d->setOcorrenciaTipo($d::OCORRENCIA_OUTROS);
         }
 

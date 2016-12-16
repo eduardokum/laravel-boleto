@@ -3,7 +3,7 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
-use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa;
+use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
@@ -54,6 +54,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
 
     /**
      * Código do banco
+     *
      * @var string
      */
     protected $codigoBanco = BoletoContract::COD_BANCO_BANRISUL;
@@ -121,7 +122,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     /**
      * Define se é teste
      *
-     * @param bool $teste
+     * @param  bool $teste
      * @return $this
      */
 
@@ -196,8 +197,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $cod_servico = '';
         $tipo_processamento = '';
         $cod_cliente = '';
-        if ($this->isCarteiraRSX())
-        {
+        if ($this->isCarteiraRSX()) {
             $cod_servico = $this->isTeste() ? '8808' : '0808';
             $tipo_processamento = $this->isTeste() ? 'X' : 'P';
             $cod_cliente = $this->getCodigoClienteOfficeBanking();
@@ -243,14 +243,12 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(63, 72, Util::formatCnab('9L', $boleto->getNossoNumero(), 10));
         $this->add(73, 104, '');
         $this->add(105, 107, '');
-        $this->add(108, 108, Util::formatCnab('X', $boleto->getCarteira(), 1));
+        $this->add(108, 108, Util::formatCnab('X', $this->getCarteiraNumero(), 1));
         $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
-        if ($boleto->getStatus() == $boleto::STATUS_BAIXA)
-        {
+        if ($boleto->getStatus() == $boleto::STATUS_BAIXA) {
             $this->add(109, 110, self::OCORRENCIA_PEDIDO_BAIXA); // BAIXA
         }
-        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO)
-        {
+        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
             $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO); // ALTERAR VENCIMENTO
         }
         $this->add(111, 120, Util::formatCnab('X', $boleto->getNumeroDocumento(), 10));
@@ -263,17 +261,16 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(151, 156, $boleto->getDataDocumento()->format('dmy'));
         $this->add(157, 158, self::INSTRUCAO_SEM);
         $this->add(159, 160, self::INSTRUCAO_SEM);
-        if ($boleto->getDiasProtesto() > 0)
-        {
+        if ($boleto->getDiasProtesto() > 0) {
             $this->add(157, 158, self::INSTRUCAO_PROTESTAR_XX);
+        } elseif($boleto->getDiasBaixaAutomatica() > 0) {
+            $this->add(157, 158, self::INSTRUCAO_DEVOLVER_XX);
         }
-        if ($boleto->getMulta() > 0)
-        {
+        if ($boleto->getMulta() > 0) {
             $this->add(159, 160, self::INSTRUCAO_MULTA_XX);
         }
         $juros = 0;
-        if ($boleto->getJuros() > 0)
-        {
+        if ($boleto->getJuros() > 0) {
             $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
         }
         $this->add(161, 161, '0');
@@ -296,7 +293,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(352, 355, Util::formatCnab('9', 0, 3));
         $this->add(356, 357, '');
         $this->add(358, 369, '00');
-        $this->add(370, 371, Util::formatCnab('9', $boleto->getDiasProtesto(), 2));
+        $this->add(370, 371, Util::formatCnab('9', $boleto->getDiasProtesto($boleto->getDiasBaixaAutomatica()), 2));
         $this->add(372, 394, '');
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
 
@@ -307,6 +304,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
 
     /**
      * @return $this
+     * @throws \Exception
      */
     protected function trailer()
     {
@@ -328,8 +326,8 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     {
         if ($this->getCodigoCliente() == ''
             || ($this->isCarteiraRSX() && $this->getCodigoCliente() == '')
-            || !parent::isValid())
-        {
+            || !parent::isValid()
+        ) {
             return false;
         }
 
@@ -344,7 +342,8 @@ class Banrisul extends AbstractRemessa implements RemessaContract
      *
      * @return bool
      */
-    private function isCarteiraRSX(array $adicional = []) {
+    private function isCarteiraRSX(array $adicional = []) 
+    {
         return in_array(Util::upper($this->getCarteira()), array_merge(['R', 'S', 'X'], $adicional));
     }
 

@@ -11,6 +11,7 @@ class Santander extends AbstractRetorno implements RetornoCnab240
 {
     /**
      * Código do banco
+     *
      * @var string
      */
     protected $codigoBanco = BoletoContract::COD_BANCO_SANTANDER;
@@ -222,7 +223,7 @@ class Santander extends AbstractRetorno implements RetornoCnab240
                     ->setCodigoCarteira($this->rem(54, 54, $detalhe))
                     ->setSeuNumero($this->rem(55, 69, $detalhe))
                     ->setDataVencimento($this->rem(70, 77, $detalhe))
-                    ->setValorTitulo(Util::nFloat($this->rem(78, 92, $detalhe) / 100, 2, false))
+                    ->setValorTitulo(Util::nFloat($this->rem(78, 92, $detalhe)/100, 2, false))
                     ->setNumeroBancoCobradorRecebedor($this->rem(93, 95, $detalhe))
                     ->setAgenciaCobradoraRecebedora($this->rem(96, 99, $detalhe))
                     ->setDigitoAgenciaCedente($this->rem(100, 100, $detalhe))
@@ -236,7 +237,9 @@ class Santander extends AbstractRetorno implements RetornoCnab240
                     ->setIdentificacaoRejeicao($this->rem(209, 218, $detalhe))
                     ->setNumeroDocumento($this->rem(55, 69, $detalhe));
 
-                /** ocorrencias  */
+                /**
+                 * ocorrencias
+                */
                 if ($d->hasOcorrencia('06', '09', '17')) {
                     $this->totais['liquidados']++;
                     $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
@@ -275,19 +278,19 @@ class Santander extends AbstractRetorno implements RetornoCnab240
                     ->setTipoRegistro($this->rem(8, 8, $detalhe))
                     ->setNumeroSequencialRegistroLote($this->rem(9, 13, $detalhe))
                     ->setCodigoSegmentoRegistroDetalhe($this->rem(14, 14, $detalhe))
-                    ->setJurosMultaEncargos(Util::nFloat($this->rem(18, 32, $detalhe) / 100, 2, false))
-                    ->setValorDescontoConcedido(Util::nFloat($this->rem(33, 47, $detalhe) / 100, 2, false))
-                    ->setValorAbatimentoConcedidoCancelado(Util::nFloat($this->rem(48, 62, $detalhe) / 100, 2, false))
-                    ->setValorIOF(Util::nFloat($this->rem(63, 77, $detalhe) / 100, 2, false))
-                    ->setValorPagoSacado(Util::nFloat($this->rem(78, 92, $detalhe) / 100, 2, false))
-                    ->setValorLiquidoCreditado(Util::nFloat($this->rem(93, 107, $detalhe) / 100, 2, false))
-                    ->setValorOutrasDespesas(Util::nFloat($this->rem(108, 122, $detalhe) / 100, 2, false))
-                    ->setValorOutrosCreditos(Util::nFloat($this->rem(123, 137, $detalhe) / 100, 2, false))
+                    ->setJurosMultaEncargos(Util::nFloat($this->rem(18, 32, $detalhe)/100, 2, false))
+                    ->setValorDescontoConcedido(Util::nFloat($this->rem(33, 47, $detalhe)/100, 2, false))
+                    ->setValorAbatimentoConcedidoCancelado(Util::nFloat($this->rem(48, 62, $detalhe)/100, 2, false))
+                    ->setValorIOF(Util::nFloat($this->rem(63, 77, $detalhe)/100, 2, false))
+                    ->setValorPagoSacado(Util::nFloat($this->rem(78, 92, $detalhe)/100, 2, false))
+                    ->setValorLiquidoCreditado(Util::nFloat($this->rem(93, 107, $detalhe)/100, 2, false))
+                    ->setValorOutrasDespesas(Util::nFloat($this->rem(108, 122, $detalhe)/100, 2, false))
+                    ->setValorOutrosCreditos(Util::nFloat($this->rem(123, 137, $detalhe)/100, 2, false))
                     ->setDataOcorrencia($this->rem(138, 145, $detalhe))
                     ->setDataCredito($this->rem(146, 153, $detalhe))
                     ->setCodigoOcorrenciaSacado($this->rem(154, 157, $detalhe))
                     ->setDataOcorrenciaSacado($this->rem(158, 165, $detalhe))
-                    ->setValorOcorrenciaSacado(Util::nFloat($this->rem(166, 180, $detalhe) / 100, 2, false))
+                    ->setValorOcorrenciaSacado(Util::nFloat($this->rem(166, 180, $detalhe)/100, 2, false))
                     ->setComplementoOcorrenciaSacado($this->rem(181, 210, $detalhe))
                     ->setCodigoBancoCorrespondenteCompensacao($this->rem(211, 213, $detalhe));
 
@@ -302,14 +305,16 @@ class Santander extends AbstractRetorno implements RetornoCnab240
                     ->setCodigoSegmentoRegistroDetalhe($this->rem(14, 14, $detalhe))
                     ->setCodigoOcorrencia($this->rem(16, 17, $detalhe))
                     ->setIdentificacaoRegistroOpcional($this->rem(18, 19, $detalhe))
-                    ->setIdentificacaoCheque(array(
+                    ->setIdentificacaoCheque(
+                        array(
                         '1' => $this->rem(20, 53, $detalhe),
                         '2' => $this->rem(44, 87, $detalhe),
                         '3' => $this->rem(88, 121, $detalhe),
                         '4' => $this->rem(122, 155, $detalhe),
                         '5' => $this->rem(156, 189, $detalhe),
                         '6' => $this->rem(190, 223, $detalhe),
-                    ));
+                        )
+                    );
 
             }
             return true;

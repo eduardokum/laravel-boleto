@@ -1,7 +1,7 @@
 <?php
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
-use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa;
+use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
@@ -37,7 +37,9 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     const OCORRENCIA_ACERTO_RATEIO_CREDITO = '68';
     const OCORRENCIA_CANC_RATEIO_CREDITO = '69';
 
+
     const INSTRUCAO_SEM = '00';
+    const INSTRUCAO_PROTESTAR_FAMILIAR_XX = '05';
     const INSTRUCAO_PROTESTAR_XX = '06';
     const INSTRUCAO_NAO_COBRAR_JUROS = '08';
     const INSTRUCAO_NAO_RECEBER_APOS_VENC = '09';
@@ -47,15 +49,18 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     const INSTRUCAO_COBRAR_ENCAR_APOS_10 = '13';
     const INSTRUCAO_COBRAR_ENCAR_APOS_15 = '14';
     const INSTRUCAO_CENCEDER_DESC_APOS_VENC = '15';
+    const INSTRUCAO_DEVOLVER_XX = '18';
 
     /**
      * Código do banco
+     *
      * @var string
      */
     protected $codigoBanco = BoletoContract::COD_BANCO_BRADESCO;
 
     /**
      * Define as carteiras disponíveis para cada banco
+     *
      * @var array
      */
     protected $carteiras = ['09', '28'];
@@ -161,12 +166,10 @@ class Bradesco extends AbstractRemessa implements RemessaContract
         $this->add(106, 106, '2'); // 1 = emite aviso, e assume o endereço do Pagador constante do Arquivo-Remessa; 2 = não emite aviso;
         $this->add(107, 108, '');
         $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
-        if ($boleto->getStatus() == $boleto::STATUS_BAIXA)
-        {
+        if ($boleto->getStatus() == $boleto::STATUS_BAIXA) {
             $this->add(109, 110, self::OCORRENCIA_PEDIDO_BAIXA); // BAIXA
         }
-        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO)
-        {
+        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
             $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO); // ALTERAR VENCIMENTO
         }
         $this->add(111, 120, Util::formatCnab('X', $boleto->getNumeroDocumento(), 10));
@@ -179,14 +182,15 @@ class Bradesco extends AbstractRemessa implements RemessaContract
         $this->add(151, 156, $boleto->getDataDocumento()->format('dmy'));
         $this->add(157, 158, self::INSTRUCAO_SEM);
         $this->add(159, 160, self::INSTRUCAO_SEM);
-        if ($boleto->getDiasProtesto() > 0)
-        {
+        if ($boleto->getDiasProtesto() > 0) {
             $this->add(157, 158, self::INSTRUCAO_PROTESTAR_XX);
             $this->add(159, 160, Util::formatCnab('9', $boleto->getDiasProtesto(), 2));
+        } elseif($boleto->getDiasBaixaAutomatica() > 0) {
+            $this->add(157, 158, self::INSTRUCAO_DEVOLVER_XX);
+            $this->add(159, 160, Util::formatCnab('9', $boleto->getDiasBaixaAutomatica(), 2));
         }
         $juros = 0;
-        if ($boleto->getJuros() > 0)
-        {
+        if ($boleto->getJuros() > 0) {
             $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
         }
         $this->add(161, 173, Util::formatCnab('9', $juros, 13, 2));
@@ -219,8 +223,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
 
     public function isValid()
     {
-        if ($this->getCodigoCliente() == '' || $this->getContaDv() == '' || $this->getIdremessa() == '' || !parent::isValid())
-        {
+        if ($this->getCodigoCliente() == '' || $this->getContaDv() == '' || $this->getIdremessa() == '' || !parent::isValid()) {
             return false;
         }
 

@@ -3,9 +3,10 @@
 [![Packagist](https://img.shields.io/packagist/l/eduardokum/laravel-boleto.svg?style=flat-square)](https://github.com/eduardokum/laravel-boleto)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/eduardokum/laravel-boleto/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/eduardokum/laravel-boleto/?branch=master)
 [![Build Status](https://scrutinizer-ci.com/g/eduardokum/laravel-boleto/badges/build.png?b=master)](https://scrutinizer-ci.com/g/eduardokum/laravel-boleto/build-status/master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/eduardokum/laravel-boleto/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/eduardokum/laravel-boleto/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/eduardokum/laravel-boleto/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/eduardokum/laravel-boleto/?branch=master)
 [![Build Status](https://travis-ci.org/eduardokum/laravel-boleto.svg?branch=master)](https://travis-ci.org/eduardokum/laravel-boleto)
-[![GitHub forks](https://img.shields.io/github/forks/eduardokum/laravel-boleto.svg?style=social&label=Fork)](https://github.com/eduardokum/
-laravel-boleto)
+[![GitHub forks](https://img.shields.io/github/forks/eduardokum/laravel-boleto.svg?style=social&label=Fork)](https://github.com/eduardokum/laravel-boleto)
 
 # laravel-boleto
 Pacote para gerar boletos e remessas
@@ -19,8 +20,8 @@ Pacote para gerar boletos e remessas
 - Hsbc
 - Itau
 - Santander
-- Sicredi ** em processo de homologação **
-- Banrisul ** necessita homologação **
+- Sicredi **em processo de homologação**
+- Banrisul **necessita homologação**
 
 **Remessa**
 - Banco do Brasil [400]
@@ -28,9 +29,9 @@ Pacote para gerar boletos e remessas
 - Caixa [400]
 - Hsbc [400]
 - Itau [400]
-- Santander [400
-- Sicredi [400]  ** em processo de homologação **
-- Banrisul [400] ** necessita homologação e complemento **
+- Santander [400, 240 **necessita testes**		]
+- Sicredi [400]  **em processo de homologação**
+- Banrisul [400] **necessita homologação e complemento**
 
 **Retorno**
 - Banco do Brasil  [400]
@@ -39,7 +40,7 @@ Pacote para gerar boletos e remessas
 - Hsbc [400]
 - Itau [400]
 - Santander [400, 240]
-- Sicredi [400] ** em testes **
+- Sicredi [400] **em testes**
 
 ## Instalação
 Via composer:
@@ -57,7 +58,7 @@ Gerando somente 1
 ### Criando o beneficiário ou pagador
 
 ```php
-$beneficiario = new \Eduardokum\LaravelBoleto\Boleto\Pessoa([
+$beneficiario = new \Eduardokum\LaravelBoleto\Pessoa([
     'nome' => 'ACME',
     'endereco' => 'Rua um, 123',
     'cep' => '99999-999',
@@ -66,7 +67,7 @@ $beneficiario = new \Eduardokum\LaravelBoleto\Boleto\Pessoa([
     'documento' => '99.999.999/9999-99',
 ]);
 
-$pagador = new \Eduardokum\LaravelBoleto\Boleto\Pessoa([
+$pagador = new \Eduardokum\LaravelBoleto\Pessoa([
     'nome' => 'Cliente',
     'endereco' => 'Rua um, 123',
     'bairro' => 'Bairro',

@@ -3,3 +3,4 @@
 /.idea
 .idea
 .composer.lock
+/tests/_reports/

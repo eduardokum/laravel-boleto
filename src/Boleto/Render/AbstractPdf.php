@@ -73,15 +73,14 @@ abstract class AbstractPdf extends FPDF
     public function _beginpage($orientation, $size)
     {
         parent::_beginpage($orientation, $size);
-        if($this->NewPageGroup)
-        {
+        if ($this->NewPageGroup) {
             // start a new group
-            $n = sizeof($this->PageGroups)+1;
-            $alias = '{'.$n.'}';
+            $n = sizeof($this->PageGroups) + 1;
+            $alias = '{' . $n . '}';
             $this->PageGroups[$alias] = 1;
             $this->CurrPageGroup = $alias;
-            $this->NewPageGroup=false;
-        } elseif($this->CurrPageGroup) {
+            $this->NewPageGroup = false;
+        } elseif ($this->CurrPageGroup) {
                     $this->PageGroups[$this->CurrPageGroup]++;
         }
     }
@@ -89,8 +88,7 @@ abstract class AbstractPdf extends FPDF
     public function _putpages()
     {
         $nb = $this->page;
-        if (!empty($this->PageGroups))
-        {
+        if (!empty($this->PageGroups)) {
             // do page number replacement
             foreach ($this->PageGroups as $k => $v)
             {
@@ -103,7 +101,8 @@ abstract class AbstractPdf extends FPDF
         parent::_putpages();
     }
 
-    protected function _() {
+    protected function _() 
+    {
         $args = func_get_args();
         $var  = utf8_decode(array_shift($args));
         $s    = vsprintf($var, $args);
@@ -117,9 +116,10 @@ abstract class AbstractPdf extends FPDF
      * @param $border
      * @param $ln
      * @param $align
-     * @param float $dec
+     * @param float  $dec
      */
-    protected function textFitCell($w, $h, $txt, $border, $ln, $align, $dec = 0.1) {
+    protected function textFitCell($w, $h, $txt, $border, $ln, $align, $dec = 0.1) 
+    {
         $fsize = $this->FontSizePt;
         $size = $fsize;
         while ($this->GetStringWidth($txt) > ($w - 2)) {
@@ -131,10 +131,11 @@ abstract class AbstractPdf extends FPDF
 
     /**
      * @param $angle
-     * @param int $x
-     * @param int $y
+     * @param int   $x
+     * @param int   $y
      */
-    protected function rotate($angle, $x = -1, $y = -1) {
+    protected function rotate($angle, $x = -1, $y = -1) 
+    {
         if ($x == -1) {
                     $x = $this->x;
         }
@@ -162,36 +163,32 @@ abstract class AbstractPdf extends FPDF
      * @param $maxheight
      * @return array
      */
-    protected function calculateDimensions($width,$height,$maxwidth,$maxheight)
+    protected function calculateDimensions($width, $height, $maxwidth, $maxheight)
     {
-        if($width != $height)
-        {
-            if($width > $height)
-            {
+        if ($width != $height) {
+            if ($width > $height) {
                 $t_width = $maxwidth;
-                $t_height = (($t_width * $height)/$width);
+                $t_height = (($t_width*$height)/$width);
                 //fix height
-                if($t_height > $maxheight)
-                {
+                if ($t_height > $maxheight) {
                     $t_height = $maxheight;
-                    $t_width = (($width * $t_height)/$height);
+                    $t_width = (($width*$t_height)/$height);
                 }
             } else
             {
                 $t_height = $maxheight;
-                $t_width = (($width * $t_height)/$height);
+                $t_width = (($width*$t_height)/$height);
                 //fix width
-                if($t_width > $maxwidth)
-                {
+                if ($t_width > $maxwidth) {
                     $t_width = $maxwidth;
-                    $t_height = (($t_width * $height)/$width);
+                    $t_height = (($t_width*$height)/$width);
                 }
             }
         } else {
-                    $t_width = $t_height = min($maxheight,$maxwidth);
+                    $t_width = $t_height = min($maxheight, $maxwidth);
         }
 
-        return array('width'=>(int)$t_width,'w'=>(int)$t_width,'height'=>(int)$t_height, 'h'=>(int)$t_height);
+        return array('width'=>(int) $t_width, 'w'=>(int) $t_width, 'height'=>(int) $t_height, 'h'=>(int) $t_height);
     }
 
     /**
@@ -206,11 +203,11 @@ abstract class AbstractPdf extends FPDF
     /**
      * BarCode
      *
-     * @param     $xpos
-     * @param     $ypos
-     * @param     $code
-     * @param int $basewidth
-     * @param int $height
+     * @param $xpos
+     * @param $ypos
+     * @param $code
+     * @param int  $basewidth
+     * @param int  $height
      */
     public function i25($xpos, $ypos, $code, $basewidth = 1, $height = 10)
     {
@@ -294,7 +291,7 @@ abstract class AbstractPdf extends FPDF
      * D: send to the browser and force download.<br>
      * F: save to a local<br>
      * S: return as a string. name is ignored.
-     * @param bool $print 1 imprime 0 nao imprime
+     * @param bool   $print 1 imprime 0 nao imprime
      * @return string|void
      */
     public function Output($name = '', $dest = 'I', $print = false)

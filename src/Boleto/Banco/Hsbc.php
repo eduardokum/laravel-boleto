@@ -10,16 +10,19 @@ class Hsbc  extends AbstractBoleto implements BoletoContract
 
     /**
      * Código do banco
+     *
      * @var string
      */
     protected $codigoBanco = self::COD_BANCO_HSBC;
     /**
      * Define as carteiras disponíveis para este banco
+     *
      * @var array
      */
     protected $carteiras = ['CSB'];
     /**
      * Espécie do documento, coódigo para remessa
+     *
      * @var string
      */
     protected $especiesCodigo = [
@@ -28,16 +31,18 @@ class Hsbc  extends AbstractBoleto implements BoletoContract
         'NS' => '03',
         'REC' => '05',
         'CE' => '09',
-        'NS' => '10',
+        'DS' => '10',
         'PD' => '98',
     ];
     /**
      * Código de range de composição do nosso numero.
+     *
      * @var string
      */
     protected $range;
     /**
      * Espécie do documento, geralmente DM (Duplicata Mercantil)
+     *
      * @var string
      */
     protected $especieDoc = 'PD';
@@ -62,7 +67,7 @@ class Hsbc  extends AbstractBoleto implements BoletoContract
     /**
      * Define o campo Espécie Doc, HSBC sempre PD
      *
-     * @param string $especieDoc
+     * @param  string $especieDoc
      * @return AbstractBoleto
      */
     public function setEspecieDoc($especieDoc)
@@ -79,15 +84,11 @@ class Hsbc  extends AbstractBoleto implements BoletoContract
     {
         $agencia = $this->getAgenciaDv() !== null ? $this->getAgencia() . '-' . $this->getAgenciaDv() : $this->getAgencia();
 
-        if($this->getContaDv() !== null && strlen($this->getContaDv()) == 1)
-        {
+        if($this->getContaDv() !== null && strlen($this->getContaDv()) == 1) {
                 $conta = substr($this->getConta(), 0, -1) . '-' .substr($this->getConta(), -1).$this->getContaDv();
-        }
-        elseif($this->getContaDv() !== null && strlen($this->getContaDv()) == 2)
-        {
+        } elseif($this->getContaDv() !== null && strlen($this->getContaDv()) == 2) {
             $conta = substr($this->getConta(), 0, -1) . '-' .substr($this->getConta(), -1).$this->getContaDv();
-        }
-        else
+        } else
         {
             $conta = $this->getConta();
         }
@@ -99,8 +100,7 @@ class Hsbc  extends AbstractBoleto implements BoletoContract
      */
     public function isValid()
     {
-        if ($this->range == '' || $this->contaDv == '' || !parent::isValid())
-        {
+        if ($this->range == '' || $this->contaDv == '' || !parent::isValid()) {
             return false;
         }
         return true;

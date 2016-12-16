@@ -2,7 +2,7 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
 use Carbon\Carbon;
-use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa;
+use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 use Eduardokum\LaravelBoleto\Util;
@@ -33,17 +33,39 @@ class Sicredi extends AbstractRemessa implements RemessaContract
     const INSTRUCAO_SEM = '00';
     const INSTRUCAO_PROTESTO = '06';
 
+    public function __construct(array $params)
+    {
+        parent::__construct($params);
+        $this->setCarteira('A'); //Carteira Simples 'A'
+    }
+
+    /**
+     * Define o código da carteira (Com ou sem registro)
+     *
+     * @param string $carteira
+     *
+     * @return AbstractRemessa
+     * @throws \Exception
+     */
+    public function setCarteira($carteira)
+    {
+        $this->carteira = 'A';
+        return $this;
+    }
+
     /**
      * Código do banco
+     *
      * @var string
      */
     protected $codigoBanco = BoletoContract::COD_BANCO_SICREDI;
 
     /**
      * Define as carteiras disponíveis para cada banco
+     *
      * @var array
      */
-    protected $carteiras = ['1', '2', '3'];
+    protected $carteiras = ['A'];
 
     /**
      * Caracter de fim de linha
@@ -73,7 +95,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(46, 76, '');
         $this->add(77, 79, $this->getCodigoBanco());
         $this->add(80, 94, Util::formatCnab('X', 'Sicredi', 15));
-        $this->add(95, 102, date('dmY'));
+        $this->add(95, 102, date('Ymd'));
         $this->add(103, 110, '');
         $this->add(111, 117, Util::formatCnab('9', $this->getIdremessa(), 7));
         $this->add(118, 390, '');
@@ -93,7 +115,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
 
         $this->add(1, 1, '1');
         $this->add(2, 2, 'A');
-        $this->add(3, 3, 'A');
+        $this->add(3, 3, $this->getCarteiraNumero());
         $this->add(4, 4, 'A');
         $this->add(5, 16, '');
         $this->add(17, 17, 'A');
@@ -114,12 +136,10 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(93, 96, Util::formatCnab('9', $boleto->getMulta(), 4, 2));
         $this->add(97, 108, '');
         $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
-        if ($boleto->getStatus() == $boleto::STATUS_BAIXA)
-        {
+        if ($boleto->getStatus() == $boleto::STATUS_BAIXA) {
             $this->add(109, 110, self::OCORRENCIA_BAIXA); // BAIXA
         }
-        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO)
-        {
+        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
             $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO); // ALTERAR VENCIMENTO
         }
         $this->add(111, 120, Util::formatCnab('X', $boleto->getNumeroDocumento(), 10));
@@ -131,8 +151,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(151, 156, $boleto->getDataDocumento()->format('dmy'));
         $this->add(157, 158, self::INSTRUCAO_SEM);
         $this->add(159, 160, self::INSTRUCAO_SEM);
-        if ($boleto->getDiasProtesto() > 0)
-        {
+        if ($boleto->getDiasProtesto() > 0) {
             $this->add(157, 158, self::INSTRUCAO_PROTESTO);
             $this->add(159, 160, Util::formatCnab('9', $boleto->getDiasProtesto(), 2));
         }
@@ -154,8 +173,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(354, 394, Util::formatCnab('X', $boleto->getSacadorAvalista() ? $boleto->getSacadorAvalista()->getNome() : '', 41));
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
 
-        if ($boleto->getByte() == 1)
-        {
+        if ($boleto->getByte() == 1) {
             $this->iniciaDetalhe();
 
             $this->add(1, 1, '2');
@@ -189,8 +207,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
 
     public function isValid()
     {
-        if ($this->getIdremessa() == '' || !parent::isValid())
-        {
+        if ($this->getIdremessa() == '' || !parent::isValid()) {
             return false;
         }
 

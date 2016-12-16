@@ -10,12 +10,14 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
 {
     /**
      * Código do banco
+     *
      * @var string
      */
     protected $codigoBanco = Boleto::COD_BANCO_BRADESCO;
-   /**
+    /**
      * Define as carteiras disponíveis para este banco
      * '09' => Com registro | '06' => Sem Registro | '21' => Com Registro - Pagável somente no Bradesco | '22' => Sem Registro - Pagável somente no Bradesco | '25' => Sem Registro - Emissão na Internet | '26' => Com Registro - Emissão na Internet
+     *
      * @var array
      */
     protected $carteiras = ['09', '06', '21', '22', '25', '26'];
@@ -38,6 +40,7 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
     ];
     /**
      * Espécie do documento, coódigo para remessa
+     *
      * @var string
      */
     protected $especiesCodigo = [
@@ -59,6 +62,25 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
     {
         return Util::numberFormatGeral($this->getNumeroDocumento(), 11);
     }
+
+    /**
+     * Seta dias para baixa automática
+     *
+     * @param int $baixaAutomatica
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    public function setDiasBaixaAutomatica($baixaAutomatica)
+    {
+        if($this->getDiasProtesto() > 0) {
+            throw new \Exception('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
+        }
+        $baixaAutomatica = (int) $baixaAutomatica;
+        $this->diasBaixaAutomatica = $baixaAutomatica > 0 ? $baixaAutomatica : 0;
+        return $this;
+    }
+
     /**
      * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
      *
@@ -89,7 +111,7 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
     /**
      * Define o campo CIP do boleto
      *
-     * @param int $cip
+     * @param  int $cip
      * @return Bradesco
      */
     public function setCip($cip)

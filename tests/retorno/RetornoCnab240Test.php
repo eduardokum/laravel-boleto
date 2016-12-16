@@ -2,6 +2,12 @@
 
 namespace Cnab240\Tests;
 
+use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Detalhe;
+use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\DetalheSegmentoT;
+use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\DetalheSegmentoU;
+use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\DetalheSegmentoY;
+use Illuminate\Support\Collection;
+
 class RetornoCnab240Test extends \PHPUnit_Framework_TestCase
 {
     public function testRetornoSantanderCnab240()
@@ -17,6 +23,18 @@ class RetornoCnab240Test extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('Banco Santander (Brasil) S.A.', $retorno->getBancoNome());
         $this->assertEquals('033', $retorno->getCodigoBanco());
+
+        $this->assertInstanceOf(Collection::class, $retorno->getDetalhes());
+
+        $this->assertInstanceOf(Detalhe::class, $retorno->getDetalhe(1));
+
+        foreach ($retorno->getDetalhes() as $detalhe) {
+            $this->assertInstanceOf(Detalhe::class, $detalhe);
+            $this->assertInstanceOf(DetalheSegmentoT::class, $detalhe->getSegmentoT());
+            $this->assertInstanceOf(DetalheSegmentoY::class, $detalhe->getSegmentoY());
+            $this->assertInstanceOf(DetalheSegmentoU::class, $detalhe->getSegmentoU());
+            $this->assertArrayHasKey('numeroDocumento', $detalhe->getSegmentoT()->toArray());
+        }
     }
 
 }

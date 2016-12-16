@@ -11,6 +11,7 @@ class Banrisul extends AbstractRetorno implements RetornoCnab400
 
     /**
      * Código do banco
+     *
      * @var string
      */
     protected $codigoBanco = BoletoContract::COD_BANCO_BANRISUL;
