@@ -1,4 +1,25 @@
 <?php
+/**
+ *   Copyright (c) 2016 Eduardo Gusmão
+ *
+ *   Permission is hereby granted, free of charge, to any person obtaining a
+ *   copy of this software and associated documentation files (the "Software"),
+ *   to deal in the Software without restriction, including without limitation
+ *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ *   and/or sell copies of the Software, and to permit persons to whom the
+ *   Software is furnished to do so, subject to the following conditions:
+ *
+ *   The above copyright notice and this permission notice shall be included in all
+ *   copies or substantial portions of the Software.
+ *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ *   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ *   PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ *   COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ *   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
+ *   IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
@@ -28,35 +49,10 @@ class Bancoob extends AbstractBoleto implements BoletoContract
         'DS' => '12',
     ];
     /**
-     * Define o número do convênio (4, 6 ou 7 caracteres)
-     * @var string
-     */
-    protected $convenio;
-    /**
      * Defgine o numero da variação da carteira.
      * @var string
      */
     protected $variacao_carteira;
-    /**
-     * Define o número do convênio. Sempre use string pois a quantidade de caracteres é validada.
-     *
-     * @param string $convenio
-     * @return BancoDoBrasil
-     */
-    public function setConvenio($convenio)
-    {
-        $this->convenio = $convenio;
-        return $this;
-    }
-    /**
-     * Retorna o número do convênio
-     *
-     * @return string
-     */
-    public function getConvenio()
-    {
-        return $this->convenio;
-    }
     /**
      * Define o número da variação da carteira, para saber quando utilizar o nosso numero de 17 posições.
      *
@@ -84,7 +80,6 @@ class Bancoob extends AbstractBoleto implements BoletoContract
     {
         if(
             empty($this->numero) ||
-            empty($this->convenio) ||
             empty($this->carteira)
         )
         {
@@ -147,26 +142,7 @@ class Bancoob extends AbstractBoleto implements BoletoContract
         if ($this->campoLivre) {
             return $this->campoLivre;
         }
-        $length = strlen($this->getConvenio());
-        $nossoNumero = $this->gerarNossoNumero();
-        // Apenas para convênio com 6 dígitos, modalidade sem registro - carteira 16 e 18 (definida para 21)
-        if (strlen($this->getNumero()) > 10) {
-            if ($length == 6 and in_array($this->getCarteira(),['16','18']) and Util::numberFormatGeral($this->getVariacaoCarteira(), 3) == '017') {
-                // Convênio (6) + Nosso número (17) + Carteira (2)
-                return $this->campoLivre = Util::numberFormatGeral($this->getConvenio(), 6) . $nossoNumero . '21';
-            } else {
-                throw new \Exception('Só é possível criar um boleto com mais de 10 dígitos no nosso número quando a carteira é 21 e o convênio possuir 6 dígitos.');
-            }
-        }
-        switch ($length) {
-            case 4:
-            case 6:
-                // Nosso número (11) + Agencia (4) + Conta (8) + Carteira (2)
-                return $this->campoLivre =  $nossoNumero . Util::numberFormatGeral($this->getAgencia(), 4) . Util::numberFormatGeral($this->getConta(), 8) . Util::numberFormatGeral($this->getCarteira(), 2);
-            case 7:
-                // Zeros (6) + Nosso número (17) + Carteira (2)
-                return $this->campoLivre =  '000000' . $nossoNumero . Util::numberFormatGeral($this->getCarteira(), 2);
-        }
-        throw new \Exception('O código do convênio precisa ter 4, 6 ou 7 dígitos!');
+
+        return $this->gerarNossoNumero();
     }
 }
