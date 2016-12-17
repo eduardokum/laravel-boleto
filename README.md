@@ -20,6 +20,7 @@ Pacote para gerar boletos e remessas
 - Hsbc
 - Itau
 - Santander
+- Bancoob (Sicoob) **em processo de homologação**
 - Sicredi **em processo de homologação**
 - Banrisul **necessita homologação**
 
