@@ -28,42 +28,46 @@ class Bancoob extends AbstractBoleto implements BoletoContract
         'DS' => '12',
     ];
     /**
-     * Defgine o numero da variação da carteira.
+     * Define o número do convênio (4, 6 ou 7 caracteres)
+     *
      * @var string
      */
-    protected $variacao_carteira;
+    protected $convenio;
     /**
-     * Define o número da variação da carteira, para saber quando utilizar o nosso numero de 17 posições.
+     * Define o número do convênio. Sempre use string pois a quantidade de caracteres é validada.
      *
-     * @param string $variacao_carteira
-     * @return BancoDoBrasil
+     * @param  string $convenio
+     * @return Bancoob
      */
-    public function setVariacaoCarteira($variacao_carteira)
+    public function setConvenio($convenio)
     {
-        $this->variacao_carteira = (int) $variacao_carteira;
+        $this->convenio = $convenio;
         return $this;
     }
     /**
-     * Retorna o número da variacao de carteira
+     * Retorna o número do convênio
      *
      * @return string
      */
-    public function getVariacaoCarteira()
+    public function getConvenio()
     {
-        return $this->variacao_carteira;
+        return $this->convenio;
     }
+
     /**
      * Método que valida se o banco tem todos os campos obrigadotorios preenchidos
      */
     public function isValid()
     {
-        if(
-            empty($this->numero) ||
-            empty($this->carteira)
-        )
-        {
+        if ($this->numeroDocumento == ''
+            || $this->agencia == ''
+            || $this->conta == ''
+            || $this->convenio == ''
+            || $this->carteira == ''
+        ) {
             return false;
         }
+
         return true;
     }
     /**
@@ -122,6 +126,15 @@ class Bancoob extends AbstractBoleto implements BoletoContract
             return $this->campoLivre;
         }
 
-        return $this->gerarNossoNumero();
+        $nossoNumero = $this->gerarNossoNumero();
+
+        $campoLivre = Util::numberFormatGeral($this->getCarteira(), 1);
+        $campoLivre .= Util::numberFormatGeral($this->getAgencia(), 4);
+        $campoLivre .= Util::numberFormatGeral($this->getCarteira(), 2);
+        $campoLivre .= Util::numberFormatGeral($this->getConvenio(), 7);
+        $campoLivre .= Util::numberFormatGeral($nossoNumero, 8);
+        $campoLivre .= Util::numberFormatGeral(1, 3); //Numero da parcela - Não implementado
+
+        return $this->campoLivre = $campoLivre;
     }
 }
