@@ -39,15 +39,15 @@ class BoletoTest extends TestCase
 
     public static function tearDownAfterClass()
     {
-//        $aFiles = [
-//            __DIR__,
-//            'files',
-//        ];
-//        $files = glob(implode(DIRECTORY_SEPARATOR, $aFiles) . '/*'); // get all file names
-//        foreach($files as $file){
-//            if(is_file($file))
-//                @unlink($file);
-//        }
+        $aFiles = [
+            __DIR__,
+            'files',
+        ];
+        $files = glob(implode(DIRECTORY_SEPARATOR, $aFiles) . '/*'); // get all file names
+        foreach($files as $file){
+            if(is_file($file))
+                @unlink($file);
+        }
     }
 
     public function testAddBoletos()

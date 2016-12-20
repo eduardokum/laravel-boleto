@@ -50,7 +50,7 @@ class Itau extends AbstractRemessa implements RemessaContract
     const INSTRUCAO_DEVOL_VENC_10 = '06';
     const INSTRUCAO_DEVOL_VENC_15 = '07';
     const INSTRUCAO_DEVOL_VENC_20 = '08';
-    const INSTRUCAO_PROTESTAR_VENC_XX_CARTORIO_5 = '09';
+    const INSTRUCAO_PROTESTAR_VENC_XX = '09';
     const INSTRUCAO_NAO_PROTESTAR = '10';
     const INSTRUCAO_DEVOL_VENC_25 = '11';
     const INSTRUCAO_DEVOL_VENC_35 = '12';
@@ -75,8 +75,8 @@ class Itau extends AbstractRemessa implements RemessaContract
     const INSTRUCAO_NAO_RECEBER_VENC_60 = '31';
     const INSTRUCAO_NAO_RECEBER_VENC_90 = '32';
     const INSTRUCAO_CONCEDER_ABATIMENTO_VENCIDO = '33';
-    const INSTRUCAO_PROTESTAR_VENC_XX = '34';
-    const INSTRUCAO_PROTESTAR_VENC_XX_UTEIS = '35';
+    const INSTRUCAO_PROTESTAR_VENC_XX_S_AVISO = '34';
+    const INSTRUCAO_PROTESTAR_VENC_XX_UTEIS_S_AVISO = '35';
     const INSTRUCAO_RECEBER_ULT_DIA_MES_VENC = '37';
     const INSTRUCAO_CONCEDER_DESC_VENC = '38';
     const INSTRUCAO_NAO_RECEBER_VENC = '39';
@@ -97,8 +97,6 @@ class Itau extends AbstractRemessa implements RemessaContract
     const INSTRUCAO_VALOR_PRORATA_10 = '78';
     const INSTRUCAO_JUROS_VENC_15 = '79';
     const INSTRUCAO_PAGTO_CHEQUE = '80';
-    const INSTRUCAO_PROTESTAR_VENC_XX_2 = '81';
-    const INSTRUCAO_PROTESTAR_VENC_XX_UTEIS_2 = '82';
     const INSTRUCAO_OPERACAO_VENDOR = '83';
     const INSTRUCAO_AG_CEDENTE_APOS_VENC = '84';
     const INSTRUCAO_ANTES_VENC_APOS_15_SEDE = '86';

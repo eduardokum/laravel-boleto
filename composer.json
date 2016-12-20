@@ -14,7 +14,7 @@
         }
     ],
     "require": {
-        "php" : ">=5.6.0",
+        "php" : ">=5.3.0",
         "ext-intl": "*",
         "itbz/fpdf": "^1.7",
         "nesbot/carbon": "~1.20",
