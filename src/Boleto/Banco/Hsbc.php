@@ -8,6 +8,12 @@ use Eduardokum\LaravelBoleto\Util;
 class Hsbc  extends AbstractBoleto implements BoletoContract
 {
 
+    public function __construct(array $params = [])
+    {
+        parent::__construct($params);
+        $this->addCampoObrigatorio('range', 'contaDv');
+    }
+
     /**
      * Código do banco
      *
@@ -94,16 +100,6 @@ class Hsbc  extends AbstractBoleto implements BoletoContract
         }
 
         return $agencia . ' / ' . $conta;
-    }
-    /**
-     * Método que valida se o banco tem todos os campos obrigadotorios preenchidos
-     */
-    public function isValid()
-    {
-        if ($this->range == '' || $this->contaDv == '' || !parent::isValid()) {
-            return false;
-        }
-        return true;
     }
     /**
      * Gera o Nosso Número.

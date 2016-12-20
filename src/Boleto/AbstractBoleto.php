@@ -17,6 +17,18 @@ abstract class AbstractBoleto implements BoletoContract
 {
 
     /**
+     * Campos que são necessários para o boleto
+     *
+     * @var array
+     */
+    private $camposObrigatorios = [
+        'numero',
+        'agencia',
+        'conta',
+        'carteira',
+    ];
+
+    /**
      * Código do banco
      *
      * @var string
@@ -310,6 +322,33 @@ abstract class AbstractBoleto implements BoletoContract
         }
     }
 
+    /**
+     * Seta os campos obrigatórios
+     *
+     * @return $this
+     */
+    protected function setCamposObrigatorios() {
+        $args = func_get_args();
+        $this->camposObrigatorios = [];
+        foreach ($args as $arg) {
+            $this->addCampoObrigatorio($arg);
+        }
+        return $this;
+    }
+
+    /**
+     * Adiciona os campos obrigatórios
+     *
+     * @return $this
+     */
+    protected function addCampoObrigatorio() {
+        $args = func_get_args();
+        foreach ($args as $arg) {
+            !is_array($arg) || call_user_func_array([$this, __FUNCTION__], $arg);
+            !is_string($arg) || array_push($this->camposObrigatorios, $arg);
+        }
+        return $this;
+    }
     /**
      * Define a agência
      *
@@ -1344,14 +1383,11 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function isValid()
     {
-        if ($this->numero == ''
-            || $this->agencia == ''
-            || $this->conta == ''
-            || $this->carteira == ''
-        ) {
-            return false;
+        foreach ($this->camposObrigatorios as $campo) {
+            if(call_user_func([$this, 'get' . ucwords($campo)]) == '') {
+                return false;
+            }
         }
-
         return true;
     }
 
@@ -1548,5 +1584,4 @@ abstract class AbstractBoleto implements BoletoContract
             ], $this->variaveis_adicionais
         );
     }
-
 }

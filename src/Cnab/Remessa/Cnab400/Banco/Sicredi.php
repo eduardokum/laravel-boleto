@@ -37,6 +37,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
     {
         parent::__construct($params);
         $this->setCarteira('A'); //Carteira Simples 'A'
+        $this->addCampoObrigatorio('idremessa');
     }
 
     /**
@@ -203,14 +204,5 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(395, 400, Util::formatCnab('9', $this->getCount(), 6));
 
         return $this;
-    }
-
-    public function isValid()
-    {
-        if ($this->getIdremessa() == '' || !parent::isValid()) {
-            return false;
-        }
-
-        return true;
     }
 }

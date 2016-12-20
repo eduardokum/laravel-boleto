@@ -16,6 +16,18 @@ abstract class AbstractRemessa
     protected $tamanho_linha = false;
 
     /**
+     * Campos que são necessários para a remessa
+     *
+     * @var array
+     */
+    private $camposObrigatorios = [
+        'carteira',
+        'agencia',
+        'conta',
+        'beneficiario',
+    ];
+
+    /**
      * Código do banco
      *
      * @var string
@@ -118,6 +130,34 @@ abstract class AbstractRemessa
                 $this->{'set' . ucwords($param)}($value);
             }
         }
+    }
+
+    /**
+     * Seta os campos obrigatórios
+     *
+     * @return $this
+     */
+    protected function setCamposObrigatorios() {
+        $args = func_get_args();
+        $this->camposObrigatorios = [];
+        foreach ($args as $arg) {
+            $this->addCampoObrigatorio($arg);
+        }
+        return $this;
+    }
+
+    /**
+     * Adiciona os campos obrigatórios
+     *
+     * @return $this
+     */
+    protected function addCampoObrigatorio() {
+        $args = func_get_args();
+        foreach ($args as $arg) {
+            !is_array($arg) || call_user_func_array([$this, __FUNCTION__], $arg);
+            !is_string($arg) || array_push($this->camposObrigatorios, $arg);
+        }
+        return $this;
     }
 
     /**
@@ -278,8 +318,10 @@ abstract class AbstractRemessa
      */
     public function isValid() 
     {
-        if ($this->carteira == '' || $this->agencia == '' || $this->conta == '' || !$this->beneficiario instanceof PessoaContract) {
-            return false;
+        foreach ($this->camposObrigatorios as $campo) {
+            if(call_user_func([$this, 'get' . ucwords($campo)]) == '') {
+                return false;
+            }
         }
         return true;
     }

@@ -33,6 +33,13 @@ class Caixa  extends AbstractRemessa implements RemessaContract
     const INSTRUCAO_PROTESTAR_VENC_XX = '01';
     const INSTRUCAO_DEVOLVER_VENC_XX = '02';
 
+    public function __construct(array $params = [])
+    {
+        parent::__construct($params);
+        $this->addCampoObrigatorio('codigoCliente', 'idremessa');
+    }
+
+
     /**
      * Código do banco
      *
@@ -205,14 +212,5 @@ class Caixa  extends AbstractRemessa implements RemessaContract
         $this->add(395, 400, Util::formatCnab('9', $this->getCount(), 6));
 
         return $this;
-    }
-
-    public function isValid()
-    {
-        if ($this->getCodigoCliente() == '' || $this->getIdremessa() == '' || !parent::isValid()) {
-            return false;
-        }
-
-        return true;
     }
 }

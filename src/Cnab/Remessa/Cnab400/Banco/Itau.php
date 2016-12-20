@@ -107,6 +107,13 @@ class Itau extends AbstractRemessa implements RemessaContract
     const INSTRUCAO_MSG_30_POS = '93';
     const INSTRUCAO_MSG_40_POS = '94';
 
+    public function __construct(array $params = [])
+    {
+        parent::__construct($params);
+        $this->addCampoObrigatorio('contaDv');
+    }
+
+
     /**
      * Código do banco
      *
@@ -238,15 +245,4 @@ class Itau extends AbstractRemessa implements RemessaContract
 
         return $this;
     }
-
-    public function isValid()
-    {
-        if ($this->getContaDv() == '' || !parent::isValid()) {
-            return false;
-        }
-
-        return true;
-    }
-
-
 }

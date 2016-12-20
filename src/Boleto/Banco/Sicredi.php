@@ -8,6 +8,12 @@ use Eduardokum\LaravelBoleto\Util;
 class Sicredi extends AbstractBoleto implements BoletoContract
 {
 
+    public function __construct(array $params = [])
+    {
+        parent::__construct($params);
+        $this->addCampoObrigatorio('byte', 'posto');
+    }
+
     /**
      * Local de pagamento
      *
@@ -127,16 +133,6 @@ class Sicredi extends AbstractBoleto implements BoletoContract
     public function getByte()
     {
         return $this->byte;
-    }
-    /**
-     * Método que valida se o banco tem todos os campos obrigadotorios preenchidos
-     */
-    public function isValid()
-    {
-        if ($this->byte == '' || $this->posto == '' || !parent::isValid()) {
-            return false;
-        }
-        return true;
     }
     /**
      * Retorna o campo Agência/Beneficiário do boleto

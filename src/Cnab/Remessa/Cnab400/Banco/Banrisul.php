@@ -11,13 +11,6 @@ use Eduardokum\LaravelBoleto\Util;
 class Banrisul extends AbstractRemessa implements RemessaContract
 {
 
-    /**
-     * Valor total dos titulos
-     *
-     * @var int
-     */
-    private $valorTotal = 0;
-
     const TIPO_COBRANCA_DIRETA = '04';
     const TIPO_COBRANCA_ESCRITURAL = '06';
     const TIPO_COBRANCA_CREDENCIADA = '08';
@@ -51,6 +44,19 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     const OCORRENCIA_ALT_PAGADOR_CEP = '21';
     const OCORRENCIA_ACERTO_RATEIO_CREDITO = '68';
     const OCORRENCIA_CANC_RATEIO_CREDITO = '69';
+
+    public function __construct(array $params = [])
+    {
+        parent::__construct($params);
+        $this->addCampoObrigatorio('codigoCliente');
+    }
+
+    /**
+     * Valor total dos titulos
+     *
+     * @var int
+     */
+    private $valorTotal = 0;
 
     /**
      * Código do banco
@@ -321,22 +327,6 @@ class Banrisul extends AbstractRemessa implements RemessaContract
 
         return $this;
     }
-
-    /**
-     * @return bool
-     */
-    public function isValid()
-    {
-        if ($this->getCodigoCliente() == ''
-            || ($this->isCarteiraRSX() && $this->getCodigoCliente() == '')
-            || !parent::isValid()
-        ) {
-            return false;
-        }
-
-        return true;
-    }
-
 
     /**
      * Verifica se a carteira é uma das seguintes : R, S, X ou alguma a mais passada por parametro

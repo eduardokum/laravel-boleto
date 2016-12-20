@@ -346,7 +346,7 @@ final class Util
             }
         }
 
-        return number_format($formater->parse($number, \NumberFormatter::TYPE_DOUBLE), $decimals, '.', ($showThousands) ? ',' : '');
+        return number_format($formater->parse($number, \NumberFormatter::TYPE_DOUBLE), $decimals, '.', ($showThousands ? ',' : '') );
     }
 
     /**
@@ -495,7 +495,7 @@ final class Util
     }
 
     /**
-     * @param        Carbon $date
+     * @param        Carbon|string $date
      * @param string $format
      *
      * @return integer
@@ -589,7 +589,7 @@ final class Util
      */
     public static function array2Controle(array $a)
     {
-        if (preg_match('/[0-9]/', array_keys($a))) {
+        if (preg_match('/[0-9]/', implode('', array_keys($a)))) {
             throw new \Exception('Somente chave alfanumérica no array, para separar o controle pela chave');
         }
 
@@ -614,10 +614,10 @@ final class Util
     {
         $matches = '';
         $matches_founded = '';
-        preg_match_all('/(([A-Za-zÀ-Úà-ú]{1,1})([0-9]*))/', $controle, $matches, PREG_SET_ORDER);
+        preg_match_all('/(([A-Za-zÀ-Úà-ú]+)([0-9]*))/', $controle, $matches, PREG_SET_ORDER);
         if ($matches) {
             foreach ($matches as $match) {
-                $matches_founded[$match[2]] = $match[3];
+                $matches_founded[$match[2]] = (int) $match[3];
             }
             return $matches_founded;
         }

@@ -51,6 +51,13 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     const INSTRUCAO_CENCEDER_DESC_APOS_VENC = '15';
     const INSTRUCAO_DEVOLVER_XX = '18';
 
+    public function __construct(array $params = [])
+    {
+        parent::__construct($params);
+        $this->addCampoObrigatorio('codigoCliente', 'contaDv', 'idremessa');
+    }
+
+
     /**
      * Código do banco
      *
@@ -220,15 +227,4 @@ class Bradesco extends AbstractRemessa implements RemessaContract
 
         return $this;
     }
-
-    public function isValid()
-    {
-        if ($this->getCodigoCliente() == '' || $this->getContaDv() == '' || $this->getIdremessa() == '' || !parent::isValid()) {
-            return false;
-        }
-
-        return true;
-    }
-
-
 }

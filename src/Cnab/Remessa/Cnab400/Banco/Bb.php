@@ -68,6 +68,13 @@ class Bb extends AbstractRemessa implements RemessaContract
     const INSTRUCAO_BAIXAR = '44';
     const INSTRUCAO_ENTREGAR_SACADO_PAGAMENTO = '46';
 
+    public function __construct(array $params = [])
+    {
+        parent::__construct($params);
+        $this->addCampoObrigatorio('convenio', 'convenioLider');
+    }
+
+
     /**
      * Código do banco
      *
@@ -310,14 +317,4 @@ class Bb extends AbstractRemessa implements RemessaContract
 
         return $this;
     }
-
-    public function isValid()
-    {
-        if ($this->getConvenio() == '' || $this->getConvenioLider() == '' || !parent::isValid()) {
-            return false;
-        }
-
-        return true;
-    }
-
 }
