@@ -94,6 +94,7 @@ class Bancoob extends AbstractBoleto implements BoletoContract
     public function getNossoNumeroBoleto()
     {
         $numero = $this->getNossoNumero();
+
         $constante = str_repeat(self::BANCOBB_CONST_NOSSO_NUMERO, 6);
         $soma = 0;
 
@@ -126,7 +127,7 @@ class Bancoob extends AbstractBoleto implements BoletoContract
             return $this->campoLivre;
         }
 
-        $nossoNumero = $this->gerarNossoNumero();
+        $nossoNumero = $this->getNossoNumeroBoleto();
 
         $campoLivre = Util::numberFormatGeral($this->getCarteira(), 1);
         $campoLivre .= Util::numberFormatGeral($this->getAgencia(), 4);
@@ -134,7 +135,7 @@ class Bancoob extends AbstractBoleto implements BoletoContract
         $campoLivre .= Util::numberFormatGeral($this->getConvenio(), 7);
         $campoLivre .= Util::numberFormatGeral($nossoNumero, 8);
         $campoLivre .= Util::numberFormatGeral(1, 3); //Numero da parcela - Não implementado
-
+        
         return $this->campoLivre = $campoLivre;
     }
 }
