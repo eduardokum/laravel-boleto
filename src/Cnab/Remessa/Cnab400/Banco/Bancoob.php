@@ -159,7 +159,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(2, 2, '1');
         $this->add(3, 9, 'REMESSA');
         $this->add(10, 11, '01');
-        $this->add(12, 19, Util::formatCnab('X', 'COBRANCA', 8));
+        $this->add(12, 19, Util::formatCnab('X', 'COBRANÇA', 8));
         $this->add(20, 26, '');
         $this->add(27, 30, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(31, 31, Util::modulo11($this->getAgencia()));
@@ -183,7 +183,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
     {
         $this->iniciaDetalhe();
 
-        $this->add(1, 1, 7);
+        $this->add(1, 1, 1);
 
         $this->add(2, 3, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? '02' : '01');
         $this->add(4, 17, Util::formatCnab('9L', $this->getBeneficiario()->getDocumento(), 14));
