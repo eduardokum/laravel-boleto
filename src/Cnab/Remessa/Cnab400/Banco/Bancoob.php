@@ -98,7 +98,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
     /**
      * @param mixed $convenio
      *
-     * @return Bb
+     * @return Bancoob
      */
     public function setConvenio($convenio)
     {
@@ -118,7 +118,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
     /**
      * @param mixed $convenioLider
      *
-     * @return Bb
+     * @return Bancoob
      */
     public function setConvenioLider($convenioLider)
     {
@@ -142,7 +142,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
      *
      * @param string $variacaoCarteira
      *
-     * @return Bb
+     * @return Bancoob
      */
     public function setVariacaoCarteira($variacaoCarteira)
     {
