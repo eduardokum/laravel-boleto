@@ -159,15 +159,15 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(2, 2, '1');
         $this->add(3, 9, 'REMESSA');
         $this->add(10, 11, '01');
-        $this->add(12, 19, 'CORBANÇA');
-        $this->add(20, 26, '');
+        $this->add(12, 26, Util::formatCnab('X', 'COBRANCA', 15));
         $this->add(27, 30, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(31, 31, Util::modulo11($this->getAgencia()));
         $this->add(32, 39, Util::formatCnab('9', $this->getConta(), 8));
         $this->add(40, 40, Util::modulo11($this->getConta()));
         $this->add(41, 46, '');
         $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
-        $this->add(77, 94, Util::formatCnab('X', '756BANCOOBCED', 15));
+        $this->add(77, 79, $this->getCodigoBanco());
+        $this->add(80, 94, Util::formatCnab('X', 'BANCOOBCED', 15));
         $this->add(95, 100, date('dmy'));
         $this->add(101, 107, Util::formatCnab('9', $this->getIdremessa(), 7));
         $this->add(108, 394, '');
@@ -181,7 +181,6 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->iniciaDetalhe();
 
         $this->add(1, 1, 1);
-
         $this->add(2, 3, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? '02' : '01');
         $this->add(4, 17, Util::formatCnab('9L', $this->getBeneficiario()->getDocumento(), 14));
         $this->add(18, 21, Util::formatCnab('9', $this->getAgencia(), 4));
@@ -244,7 +243,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(174, 179, '000000');
         $this->add(180, 192, Util::formatCnab('9', 0, 13, 2));
         $this->add(193, 193, '9');
-        $this->add(194, 205, Util::formatCnab('9', 0, 13, 2));
+        $this->add(194, 205, Util::formatCnab('9', 0, 12, 2));
         $this->add(206, 218, Util::formatCnab('9', $boleto->getDescontosAbatimentos(), 13, 2));
         $this->add(219, 220, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? '02' : '01');
         $this->add(221, 234, Util::formatCnab('9L', $boleto->getPagador()->getDocumento(), 14));
@@ -281,4 +280,13 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         return true;
     }
 
+    public function gerar()
+    {
+        //Feito isso porque o Header do Sicoob exige o campo Identificação por Extenso do Tipo de Serviço: "COBRANÇA" (com cedilha).
+        //Assim dava problema na validação pois o strlen retorna 2 caracteres neste caso, então vai acabar estrapolando os 400 caracteres e dando exceção, quando não é totalmente verdade.
+        //Optei por não mudar a validação da classe abstrata pois este é o unico banco até o momento com essa particularidade
+
+        $remessa = parent::gerar();
+        return str_replace_first('COBRANCA','COBRANÇA',$remessa);
+    }
 }
