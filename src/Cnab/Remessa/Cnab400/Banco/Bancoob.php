@@ -184,7 +184,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(143, 146, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(147, 147, Util::modulo11($this->getAgencia()));
         $this->add(148, 149, $boleto->getEspecieDocCodigo());
-        $this->add(150, 150, $boleto->getAceite());
+        $this->add(150, 150, ($boleto->getAceite() == 'N' ? '0' : '1'));
         $this->add(151, 156, $boleto->getDataDocumento()->format('dmy'));
         $this->add(157, 158, $boleto->getStatus() == $boleto::STATUS_BAIXA ? self::OCORRENCIA_BAIXAR : self::INSTRUCAO_SEM);
         $this->add(159, 160, self::INSTRUCAO_SEM);
