@@ -74,13 +74,6 @@ class Bancoob extends AbstractRemessa implements RemessaContract
     protected $convenio;
 
     /**
-     * Convenio lider com o banco
-     *
-     * @var string
-     */
-    protected $convenioLider;
-
-    /**
      * @return mixed
      */
     public function getConvenio()
@@ -96,26 +89,6 @@ class Bancoob extends AbstractRemessa implements RemessaContract
     public function setConvenio($convenio)
     {
         $this->convenio = ltrim($convenio, 0);
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getConvenioLider()
-    {
-        return $this->convenioLider ? $this->convenioLider : $this->getConvenio();
-    }
-
-    /**
-     * @param mixed $convenioLider
-     *
-     * @return Bancoob
-     */
-    public function setConvenioLider($convenioLider)
-    {
-        $this->convenioLider = $convenioLider;
 
         return $this;
     }
@@ -242,7 +215,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
 
     public function isValid()
     {
-        if ($this->getConvenio() == '' || $this->getConvenioLider() == '' || !parent::isValid()) {
+        if ($this->getConvenio() == '' || !parent::isValid()) {
             return false;
         }
 
