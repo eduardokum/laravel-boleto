@@ -157,8 +157,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(31, 31, Util::modulo11($this->getConta()));
         $this->add(32, 37, '000000');
         $this->add(38, 62, Util::formatCnab('X', '', 25)); // numero de controle
-        $this->add(63, 73, Util::formatCnab('9', $boleto->getNumero(), 11));
-        $this->add(74, 74, Util::modulo11($boleto->getNumero()));
+        $this->add(63, 74, Util::formatCnab('9', str_replace('-','',$boleto->getNossoNumeroBoleto()), 12));
         $this->add(75, 76, '01'); //Numero da parcela - Não implementado
         $this->add(77, 78, '00'); //Grupo de valor
         $this->add(82, 82, '');
@@ -184,6 +183,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(143, 146, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(147, 147, Util::modulo11($this->getAgencia()));
         $this->add(148, 149, $boleto->getEspecieDocCodigo());
+
         $this->add(150, 150, ($boleto->getAceite() == 'N' ? '0' : '1'));
         $this->add(151, 156, $boleto->getDataDocumento()->format('dmy'));
         $this->add(157, 158, $boleto->getStatus() == $boleto::STATUS_BAIXA ? self::OCORRENCIA_BAIXAR : self::INSTRUCAO_SEM);
