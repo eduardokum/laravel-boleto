@@ -64,7 +64,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
      *
      * @var null
      */
-    protected $fimArquivo = "\r\n";
+    protected $fimArquivo = "";
 
     /**
      * Convenio com o banco
@@ -79,13 +79,6 @@ class Bancoob extends AbstractRemessa implements RemessaContract
      * @var string
      */
     protected $convenioLider;
-
-    /**
-     * Variação da carteira
-     *
-     * @var string
-     */
-    protected $variacaoCarteira;
 
     /**
      * @return mixed
@@ -127,30 +120,6 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         return $this;
     }
 
-    /**
-     * Retorna variação da carteira
-     *
-     * @return string
-     */
-    public function getVariacaoCarteira()
-    {
-        return $this->variacaoCarteira;
-    }
-
-    /**
-     * Seta a variação da carteira
-     *
-     * @param string $variacaoCarteira
-     *
-     * @return Bancoob
-     */
-    public function setVariacaoCarteira($variacaoCarteira)
-    {
-        $this->variacaoCarteira = $variacaoCarteira;
-
-        return $this;
-    }
-
     protected function header()
     {
         $this->iniciaHeader();
@@ -162,8 +131,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(12, 26, Util::formatCnab('X', 'COBRANCA', 15));
         $this->add(27, 30, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(31, 31, Util::modulo11($this->getAgencia()));
-        $this->add(32, 39, Util::formatCnab('9', $this->getConta(), 8));
-        $this->add(40, 40, Util::modulo11($this->getConta()));
+        $this->add(32, 40, Util::formatCnab('9', $this->getConvenio(), 9));
         $this->add(41, 46, '');
         $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(77, 79, $this->getCodigoBanco());
@@ -185,11 +153,12 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(4, 17, Util::formatCnab('9L', $this->getBeneficiario()->getDocumento(), 14));
         $this->add(18, 21, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(22, 22, Util::modulo11($this->getAgencia()));
-        $this->add(23, 31, Util::formatCnab('9', $this->getConvenio(), 9));
+        $this->add(23, 30, Util::formatCnab('9', $this->getConta(), 8));
+        $this->add(31, 31, Util::modulo11($this->getConta()));
         $this->add(32, 37, '000000');
         $this->add(38, 62, Util::formatCnab('X', '', 25)); // numero de controle
-        $this->add(63, 73, Util::formatCnab('9', $boleto->getNossoNumeroBoleto(), 11));
-        $this->add(74, 74, Util::modulo11($boleto->getNossoNumeroBoleto()));
+        $this->add(63, 73, Util::formatCnab('9', $boleto->getNumero(), 11));
+        $this->add(74, 74, Util::modulo11($boleto->getNumero()));
         $this->add(75, 76, '01'); //Numero da parcela - Não implementado
         $this->add(77, 78, '00'); //Grupo de valor
         $this->add(82, 82, '');
@@ -287,6 +256,8 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         //Optei por não mudar a validação da classe abstrata pois este é o unico banco até o momento com essa particularidade
 
         $remessa = parent::gerar();
-        return str_replace_first('COBRANCA','COBRANÇA',$remessa);
+        $remessa = str_replace_first('COBRANCA','COBRANÇA',$remessa);
+
+        return $remessa;
     }
 }
