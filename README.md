@@ -11,6 +11,15 @@
 # laravel-boleto
 Pacote para gerar boletos e remessas
 
+# ATENÇÃO
+**Havera uma mudança na forma em que se gera o número dos boletos.**
+Hoje o atributo **nossoNumero** é gerado a partir do atributo **numeroDocumento**, porém esse número pode ser um alfanumérico, o que eu não tinha atentado no início do projeto. A grande mudança será que o atributo **numero** que antes era utilizado somente como um número de controle, hoje será usado para gerar o atributo **nossoNumero**, o atributo **numeroDocumento** continuará aparecendo no boleto no campo designado a ele, e será adicionado um novo campo que será utilizado para o número de controle, que será o atributo **numeroControle**.
+
+
+Essas mudanças seram comitadas no branch **develop** e será definido uma data para o merge no **master**
+
+----------
+
 ## Bancos suportados
 
 **Boleto**
@@ -20,6 +29,7 @@ Pacote para gerar boletos e remessas
 - Hsbc
 - Itau
 - Santander
+- Bancoob (Sicoob)
 - Sicredi **em processo de homologação**
 - Banrisul **necessita homologação**
 
@@ -29,6 +39,7 @@ Pacote para gerar boletos e remessas
 - Caixa [400]
 - Hsbc [400]
 - Itau [400]
+- Bancoob (Sicoob) [400]
 - Santander [400, 240 **necessita testes**		]
 - Sicredi [400]  **em processo de homologação**
 - Banrisul [400] **necessita homologação e complemento**
