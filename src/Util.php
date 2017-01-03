@@ -519,19 +519,6 @@ final class Util
     }
 
     /**
-     * @param        $date
-     * @param string $format
-     *
-     * @return string
-     */
-    public static function dataJuliano($date, $format = 'Y-m-d')
-    {
-        $date = ($date instanceof Carbon) ? $date : Carbon::createFromFormat($format, $date);
-        $dateDiff = Carbon::create(null, 12, 31)->subYear(1)->diffInDays($date);
-        return $dateDiff . substr($date->year, -1);
-    }
-
-    /**
      * @param     $n
      * @param int     $factor
      * @param int     $base
