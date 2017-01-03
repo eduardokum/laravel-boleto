@@ -38,6 +38,12 @@ class Bancoob extends AbstractRemessa implements RemessaContract
     const INSTRUCAO_DEVOLVER_APOS_15 = '42';
     const INSTRUCAO_DEVOLVER_APOS_30 = '43';
 
+    public function __construct(array $params = [])
+    {
+        parent::__construct($params);
+        $this->addCampoObrigatorio('convenio');
+    }
+
     /**
      * Código do banco
      *
@@ -101,7 +107,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(2, 2, '1');
         $this->add(3, 9, 'REMESSA');
         $this->add(10, 11, '01');
-        $this->add(12, 26, Util::formatCnab('X', 'COBRANCA', 15));
+        $this->add(12, 26, '      COBRANÇA');
         $this->add(27, 30, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(31, 31, Util::modulo11($this->getAgencia()));
         $this->add(32, 40, Util::formatCnab('9', $this->getConvenio(), 9));
@@ -211,26 +217,5 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(395, 400, Util::formatCnab('9', $this->getCount(), 6));
 
         return $this;
-    }
-
-    public function isValid()
-    {
-        if ($this->getConvenio() == '' || !parent::isValid()) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public function gerar()
-    {
-        //Feito isso porque o Header do Sicoob exige o campo Identificação por Extenso do Tipo de Serviço: "COBRANÇA" (com cedilha).
-        //Assim dava problema na validação pois o strlen retorna 2 caracteres neste caso, então vai acabar estrapolando os 400 caracteres e dando exceção, quando não é totalmente verdade.
-        //Optei por não mudar a validação da classe abstrata pois este é o unico banco até o momento com essa particularidade
-
-        $remessa = parent::gerar();
-        $remessa = str_replace_first('COBRANCA','COBRANÇA',$remessa);
-
-        return $remessa;
     }
 }

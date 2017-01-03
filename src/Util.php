@@ -815,7 +815,7 @@ final class Util
         $t = $f - $i;
 
         if (strlen($value) > $t) {
-            throw new \Exception('String $valor maior que o tamanho definido em $ini e $fim: $valor= ' . strlen($value) . ' e tamanho é de: ' . $t);
+            throw new \Exception(sprintf('String $valor maior que o tamanho definido em $ini e $fim: $valor=%s e tamanho é de: %s', strlen($value), $t));
         }
 
         $value = sprintf("%{$t}s", $value);

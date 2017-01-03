@@ -8,6 +8,13 @@ use Eduardokum\LaravelBoleto\Util;
 class Bancoob extends AbstractBoleto implements BoletoContract
 {
     const BANCOBB_CONST_NOSSO_NUMERO = "3197";
+
+    public function __construct(array $params = [])
+    {
+        parent::__construct($params);
+        $this->addCampoObrigatorio('convenio');
+    }
+
     /**
      * Código do banco
      * @var string
@@ -17,7 +24,7 @@ class Bancoob extends AbstractBoleto implements BoletoContract
      * Define as carteiras disponíveis para este banco
      * @var array
      */
-    protected $carteiras = array('1','3');
+    protected $carteiras = ['1','3'];
     /**
      * Espécie do documento, coódigo para remessa
      * @var string
@@ -52,23 +59,6 @@ class Bancoob extends AbstractBoleto implements BoletoContract
     public function getConvenio()
     {
         return $this->convenio;
-    }
-
-    /**
-     * Método que valida se o banco tem todos os campos obrigadotorios preenchidos
-     */
-    public function isValid()
-    {
-        if ($this->numeroDocumento == ''
-            || $this->agencia == ''
-            || $this->conta == ''
-            || $this->convenio == ''
-            || $this->carteira == ''
-        ) {
-            return false;
-        }
-
-        return true;
     }
     /**
      * Gera o Nosso Número.
