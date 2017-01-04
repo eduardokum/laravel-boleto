@@ -107,13 +107,18 @@ class Itau extends AbstractBoleto implements BoletoContract
         }
         return true;
     }
+
     /**
      * Gera o Nosso Número.
      *
      * @return string
+     * @throws \Exception
      */
     protected function gerarNossoNumero()
     {
+        if(in_array($this->getCarteira(), [112, 188])) {
+            return Util::numberFormatGeral(0, 9);
+        }
         $this->getCampoLivre(); // Força o calculo do DV.
         return Util::numberFormatGeral($this->getNumeroDocumento(), 8) . $this->carteiraDv;
     }
