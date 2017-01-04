@@ -527,7 +527,7 @@ final class Util
     public static function dataJuliano($date, $format = 'Y-m-d')
     {
         $date = ($date instanceof Carbon) ? $date : Carbon::createFromFormat($format, $date);
-        $dateDiff = Carbon::create(null, 12, 31)->subYear(1)->diffInDays($date);
+        $dateDiff = $date->copy()->day(31)->month(12)->subYear(1)->diffInDays($date);
         return $dateDiff . substr($date->year, -1);
     }
 
