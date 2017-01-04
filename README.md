@@ -29,6 +29,7 @@ Essas mudanças seram comitadas no branch **develop** e será definido uma data 
 - Hsbc
 - Itau
 - Santander
+- Bancoob (Sicoob)
 - Sicredi **em processo de homologação**
 - Banrisul **necessita homologação**
 
@@ -38,6 +39,7 @@ Essas mudanças seram comitadas no branch **develop** e será definido uma data 
 - Caixa [400]
 - Hsbc [400]
 - Itau [400]
+- Bancoob (Sicoob) [400]
 - Santander [400, 240 **necessita testes**		]
 - Sicredi [400]  **em processo de homologação**
 - Banrisul [400] **necessita homologação e complemento**
