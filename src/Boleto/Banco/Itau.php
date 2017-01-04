@@ -61,11 +61,11 @@ class Itau extends AbstractBoleto implements BoletoContract
     }
 
     /**
-     * @param int $carteiraDv
+     * @param integer $carteiraDv
      *
      * @return $this
      */
-    public function setCarteiraDv(int $carteiraDv)
+    public function setCarteiraDv($carteiraDv)
     {
         $this->carteiraDv = $carteiraDv;
         return $this;
