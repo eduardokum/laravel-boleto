@@ -507,6 +507,19 @@ final class Util
     }
 
     /**
+     * @param        $date
+     * @param string $format
+     *
+     * @return string
+     */
+    public static function dataJuliano($date, $format = 'Y-m-d')
+    {
+        $date = ($date instanceof Carbon) ? $date : Carbon::createFromFormat($format, $date);
+        $dateDiff = $date->copy()->day(31)->month(12)->subYear(1)->diffInDays($date);
+        return $dateDiff . substr($date->year, -1);
+    }
+
+    /**
      * @param        $factor
      * @param string $format
      *
@@ -520,12 +533,13 @@ final class Util
 
     /**
      * @param     $n
-     * @param int     $factor
-     * @param int     $base
-     * @param integer $rest
-     * @param int     $whenTen
+     * @param int $factor
+     * @param int $base
+     * @param int $x10
+     * @param int $resto10
      *
      * @return int
+     *
      */
     public static function modulo11($n, $factor = 2, $base = 9, $x10 = 0, $resto10 = 0)
     {
