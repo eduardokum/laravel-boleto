@@ -53,6 +53,24 @@ class Itau extends AbstractBoleto implements BoletoContract
      */
     protected $carteiraDv;
     /**
+     * @return int
+     */
+    public function getCarteiraDv()
+    {
+        return $this->carteiraDv;
+    }
+
+    /**
+     * @param int $carteiraDv
+     *
+     * @return $this
+     */
+    public function setCarteiraDv(int $carteiraDv)
+    {
+        $this->carteiraDv = $carteiraDv;
+        return $this;
+    }
+    /**
      * Seta dias para baixa automática
      *
      * @param int $baixaAutomatica
@@ -78,9 +96,12 @@ class Itau extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
+        if(in_array($this->getCarteira(), [112, 188])) {
+            return Util::numberFormatGeral(0, 9);
+        }
         $this->getCampoLivre(); // Força o calculo do DV.
         $numero_boleto = $this->getNumero();
-        return Util::numberFormatGeral($numero_boleto, 8) . $this->carteiraDv;
+        return Util::numberFormatGeral($numero_boleto, 8) . $this->getCarteiraDv();
     }
     /**
      * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
@@ -104,9 +125,10 @@ class Itau extends AbstractBoleto implements BoletoContract
         }
         $numero_boleto = Util::numberFormatGeral($this->getNumero(), 8);
         $carteira = Util::numberFormatGeral($this->getCarteira(), 3);
+        $dvAgContaCarteira = Util::modulo10($carteira . $numero_boleto);
+        $this->setCarteiraDv($dvAgContaCarteira);
         $agencia = Util::numberFormatGeral($this->getAgencia(), 4);
         $conta = Util::numberFormatGeral($this->getConta(), 5);
-        $this->carteiraDv = $dvAgContaCarteira = Util::modulo10($carteira . $numero_boleto);
         // Módulo 10 Agência/Conta
         $dvAgConta = Util::modulo10($agencia . $conta);
         return $this->campoLivre = $carteira . $numero_boleto . $dvAgContaCarteira . $agencia . $conta . $dvAgConta . '000';
