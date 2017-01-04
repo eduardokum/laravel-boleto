@@ -144,7 +144,7 @@ class Itau extends AbstractBoleto implements BoletoContract
         }
         $numero_boleto = Util::numberFormatGeral($this->getNumeroDocumento(), 8);
         $carteira = Util::numberFormatGeral($this->getCarteira(), 3);
-        $this->carteiraDv = $dvAgContaCarteira = Util::modulo10($carteira . $numero);
+        $this->carteiraDv = $dvAgContaCarteira = Util::modulo10($carteira . $numero_boleto);
         $agencia = Util::numberFormatGeral($this->getAgencia(), 4);
         $conta = Util::numberFormatGeral($this->getConta(), 5);
         // Módulo 10 Agência/Conta
