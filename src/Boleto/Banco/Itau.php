@@ -142,30 +142,13 @@ class Itau extends AbstractBoleto implements BoletoContract
         if ($this->campoLivre) {
             return $this->campoLivre;
         }
-
-        $numero = Util::numberFormatGeral($this->getNumeroDocumento(), 8);
+        $numero_boleto = Util::numberFormatGeral($this->getNumeroDocumento(), 8);
         $carteira = Util::numberFormatGeral($this->getCarteira(), 3);
+        $this->carteiraDv = $dvAgContaCarteira = Util::modulo10($carteira . $numero);
         $agencia = Util::numberFormatGeral($this->getAgencia(), 4);
         $conta = Util::numberFormatGeral($this->getConta(), 5);
-        // Carteira 198 - (Nosso Número com 15 posições) - Anexo 5 do manual
-        if (in_array($this->getCarteira(), ['107', '122', '142', '143', '196', '198'])) {
-            $codigo = $carteira . $numero .
-                Util::numberFormatGeral($this->getNumeroDocumento(), 7) .
-                Util::numberFormatGeral($this->getCodigoCliente(), 5);
-            // Define o DV da carteira para a view
-            $this->carteiraDv = $modulo = Util::modulo10($codigo);
-            return $this->campoLivre = $codigo . $modulo . '0';
-        }
-        // Geração do DAC - Anexo 4 do manual
-        if (!in_array($this->getCarteira(), ['126', '131', '146', '150', '168'])) {
-            // Define o DV da carteira para a view
-            $this->carteiraDv = $dvAgContaCarteira = Util::modulo10($agencia . $conta . $carteira . $numero);
-        } else {
-            // Define o DV da carteira para a view
-            $this->carteiraDv = $dvAgContaCarteira = Util::modulo10($carteira . $numero);
-        }
         // Módulo 10 Agência/Conta
         $dvAgConta = Util::modulo10($agencia . $conta);
-        return $this->campoLivre = $carteira . $numero . $dvAgContaCarteira . $agencia . $conta . $dvAgConta . '000';
+        return $this->campoLivre = $carteira . $numero_boleto . $dvAgContaCarteira . $agencia . $conta . $dvAgConta . '000';
     }
 }
