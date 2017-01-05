@@ -105,10 +105,13 @@ class Pessoa implements PessoaContract
     {
         return $this->cidade;
     }
+
     /**
      * Define o documento (CPF ou CNPJ)
      *
      * @param string $documento
+     *
+     * @throws \Exception
      */
     public function setDocumento($documento)
     {
@@ -238,5 +241,22 @@ class Pessoa implements PessoaContract
     {
         $dados = array_filter(array($this->getCep(), $this->getCidade(), $this->getUf()));
         return implode(' - ', $dados);
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray() {
+        return [
+            'nome' => $this->getNome(),
+            'endereco' => $this->getEndereco(),
+            'bairro' => $this->getBairro(),
+            'cep' => $this->getCep(),
+            'uf' => $this->getUf(),
+            'cidade' => $this->getCidade(),
+            'documento' => $this->getDocumento(),
+            'nome_documento' => $this->getNomeDocumento(),
+            'endereco2' => $this->getCepCidadeUf(),
+        ];
     }
 }

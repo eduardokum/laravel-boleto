@@ -13,5 +13,5 @@ interface Pessoa
     public function getCep();
     public function getCidade();
     public function getUf();
-
+    public function toArray();
 }
