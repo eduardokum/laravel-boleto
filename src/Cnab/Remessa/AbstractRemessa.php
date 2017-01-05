@@ -124,12 +124,7 @@ abstract class AbstractRemessa
      */
     public function __construct($params = array())
     {
-        foreach ($params as $param => $value)
-        {
-            if (method_exists($this, 'set' . ucwords($param))) {
-                $this->{'set' . ucwords($param)}($value);
-            }
-        }
+        Util::fillClass($this, $params);
     }
 
     /**

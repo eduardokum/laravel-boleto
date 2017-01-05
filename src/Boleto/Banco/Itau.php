@@ -19,7 +19,7 @@ class Itau extends AbstractBoleto implements BoletoContract
      * @var array
      */
     public $variaveis_adicionais = [
-        'carteira' => '',
+        'carteira_nome' => '',
     ];
     /**
      * Define as carteiras disponíveis para este banco
@@ -96,9 +96,6 @@ class Itau extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        if(in_array($this->getCarteira(), [112, 188])) {
-            return Util::numberFormatGeral(0, 9);
-        }
         $this->getCampoLivre(); // Força o calculo do DV.
         $numero_boleto = $this->getNumero();
         return Util::numberFormatGeral($numero_boleto, 8) . $this->getCarteiraDv();

@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>{{ $beneficiario }}</title>
+    <title>{{ $beneficiario['nome'] }}</title>
     <style type="text/css">
         {!! $css !!}
     </style>
@@ -33,10 +33,10 @@
         </div>
         @endif
         <div style="display: inline-block; vertical-align: super;">
-            <div><strong>{{ $beneficiario }}</strong></div>
-            <div>{{ $beneficiario_cpf_cnpj }}</div>
-            <div>{{ $beneficiario_endereco1 }}</div>
-            <div>{{ $beneficiario_endereco2 }}</div>
+            <div><strong>{{ $beneficiario['nome'] }}</strong></div>
+            <div>{{ $beneficiario['documento'] }}</div>
+            <div>{{ $beneficiario['endereco'] }}</div>
+            <div>{{ $beneficiario['endereco2'] }}</div>
         </div>
     </div>
     <br>
@@ -57,11 +57,11 @@
         <tr>
             <td colspan="2" width="250" class="top-2">
                 <div class="titulo">Beneficiário</div>
-                <div class="conteudo">{{ $beneficiario }}</div>
+                <div class="conteudo">{{ $beneficiario['nome'] }}</div>
             </td>
             <td class="top-2">
                 <div class="titulo">CPF/CNPJ</div>
-                <div class="conteudo">{{ $beneficiario_cpf_cnpj }}</div>
+                <div class="conteudo">{{ $beneficiario['documento'] }}</div>
             </td>
             <td width="120" class="top-2">
                 <div class="titulo">Ag/Cod. Beneficiário</div>
@@ -75,11 +75,11 @@
         <tr>
             <td colspan="3">
                 <div class="titulo">Pagador</div>
-                <div class="conteudo">{{ $pagador_nome_documento }} </div>
+                <div class="conteudo">{{ $pagador['nome_documento'] }} </div>
             </td>
             <td>
                 <div class="titulo">Nº documento</div>
-                <div class="conteudo rtl">{{ $numero_documento }}</div>
+                <div class="conteudo rtl">{{ $numero['documento'] }}</div>
             </td>
             <td>
                 <div class="titulo">Nosso número</div>

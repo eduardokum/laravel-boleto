@@ -890,4 +890,21 @@ final class Util
         }
         return true;
     }
+
+    /**
+     * @param object $obj
+     * @param array  $params
+     */
+    public static function fillClass(&$obj, array $params) {
+        foreach ($params as $param => $value)
+        {
+            $param = str_replace(' ', '', ucwords(str_replace('_', ' ', $param)));
+            if(method_exists($obj, 'getProtectedFields') && in_array(lcfirst($param), $obj->getProtectedFields())) {
+                continue;
+            }
+            if (method_exists($obj, 'set' . ucwords($param))) {
+                $obj->{'set' . ucwords($param)}($value);
+            }
+        }
+    }
 }

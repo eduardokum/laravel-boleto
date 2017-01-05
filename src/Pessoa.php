@@ -67,12 +67,7 @@ class Pessoa implements PessoaContract
      */
     public function __construct($params = [])
     {
-        foreach ($params as $param => $value)
-        {
-            if (method_exists($this, 'set' . ucwords($param))) {
-                $this->{'set' . ucwords($param)}($value);
-            }
-        }
+        Util::fillClass($this, $params);
     }
     /**
      * Define o CEP
