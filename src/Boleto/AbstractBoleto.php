@@ -1579,7 +1579,7 @@ abstract class AbstractBoleto implements BoletoContract
                 'data_vencimento'             => $this->getDataVencimento(),
                 'data_processamento'          => $this->getDataProcessamento(),
                 'data_documento'              => $this->getDataDocumento(),
-                'valor_documento'             => Util::nReal($this->getValor(), 2, false),
+                'valor'                       => Util::nReal($this->getValor(), 2, false),
                 'desconto_abatimento'         => Util::nReal($this->getDescontosAbatimentos(), 2, false),
                 'outras_deducoes'             => Util::nReal($this->getOutrasDeducoes(), 2, false),
                 'multa'                       => Util::nReal($this->getMulta(), 2, false),

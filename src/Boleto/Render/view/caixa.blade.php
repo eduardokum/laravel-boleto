@@ -21,7 +21,7 @@
         </ul>
         <span class="header">Linha Digitável: {{ $linha_digitavel }}</span>
         <span class="header">Número: {{ $numero }}</span>
-        {!! $valor_documento ? '<span class="header">Valor: R$ ' . $valor_documento . '</span>' : '' !!}
+        {!! $valor ? '<span class="header">Valor: R$ ' . $valor . '</span>' : '' !!}
         <br>
         <div class="linha-pontilhada" style="margin-bottom: 20px;">Recibo do sacado</div>
     </div>
@@ -87,7 +87,7 @@
             </td>
             <td width="130" class="caixa-gray-bg">
                 <div class="titulo">Valor do Documento</div>
-                <div class="conteudo rtl">{{ $valor_documento }}</div>
+                <div class="conteudo rtl">{{ $valor }}</div>
             </td>
         </tr>
         <tr>

@@ -51,7 +51,7 @@
             <tr>
                 <td>
                     <div class="titulo">(=) Valor Documento</div>
-                    <div class="conteudo">{{ $valor_documento }}</div>
+                    <div class="conteudo">{{ $valor }}</div>
                 </td>
             </tr>
             <tr>

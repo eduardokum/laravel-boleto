@@ -90,7 +90,7 @@
         </td>
         <td>
             <div class="titulo">(=) Valor do Documento</div>
-            <div class="conteudo rtl">{{ $valor_documento }}</div>
+            <div class="conteudo rtl">{{ $valor }}</div>
         </td>
     </tr>
     <tr>
