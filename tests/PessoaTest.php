@@ -54,6 +54,12 @@ class PessoaTest extends TestCase
         $pessoa->setDocumento($documento);
         $this->assertEquals(Util::maskString($documento, '##.###.###/####-##'), $pessoa->getDocumento());
         $this->assertEquals('CNPJ', $pessoa->getTipoDocumento());
+
+        $documento = '9999999999';
+        $pessoa->setDocumento($documento);
+        $this->assertEquals(Util::maskString($documento, '##.#####.#-##'), $pessoa->getDocumento());
+        $this->assertEquals('CEI', $pessoa->getTipoDocumento());
+
     }
 
     /**

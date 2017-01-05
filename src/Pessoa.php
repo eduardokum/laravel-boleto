@@ -107,7 +107,7 @@ class Pessoa implements PessoaContract
     }
 
     /**
-     * Define o documento (CPF ou CNPJ)
+     * Define o documento (CPF, CNPJ ou CEI)
      *
      * @param string $documento
      *
@@ -115,7 +115,7 @@ class Pessoa implements PessoaContract
      */
     public function setDocumento($documento)
     {
-        if(!in_array(strlen(Util::onlyNumbers($documento)), [11,14,0])) {
+        if(!in_array(strlen(Util::onlyNumbers($documento)), [10,11,14,0])) {
             throw new \Exception('Documento inválido');
         }
         $this->documento = $documento;
@@ -129,6 +129,8 @@ class Pessoa implements PessoaContract
     {
         if ($this->getTipoDocumento() == 'CPF') {
             return Util::maskString(Util::onlyNumbers($this->documento), '###.###.###-##');
+        } elseif ($this->getTipoDocumento() == 'CEI') {
+            return Util::maskString(Util::onlyNumbers($this->documento), '##.#####.#-##');
         }
         return Util::maskString(Util::onlyNumbers($this->documento), '##.###.###/####-##');
     }
@@ -224,10 +226,14 @@ class Pessoa implements PessoaContract
      */
     public function getTipoDocumento()
     {
-        $cpf_cnpj = Util::onlyNumbers($this->documento);
-        if (strlen($cpf_cnpj) == 11) {
+        $cpf_cnpj_cei = Util::onlyNumbers($this->documento);
+
+        if (strlen($cpf_cnpj_cei) == 11) {
             return 'CPF';
+        } elseif (strlen($cpf_cnpj_cei) == 10) {
+            return 'CEI';
         }
+        
         return 'CNPJ';
     }
     /**
