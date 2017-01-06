@@ -24,28 +24,29 @@ Essas mudanças seram comitadas no branch **develop** e será definido uma data 
 
 **Boleto**
 - Banco do Brasil
+- Bancoob (Sicoob)
+- Banrisul **necessita homologação**
 - Bradesco
 - Caixa
 - Hsbc
 - Itau
 - Santander
-- Bancoob (Sicoob)
 - Sicredi **em processo de homologação**
-- Banrisul **necessita homologação**
 
 **Remessa**
 - Banco do Brasil [400]
+- Bancoob (Sicoob) [400]
+- Banrisul [400] **necessita homologação e complemento**
 - Bradesco [400]
 - Caixa [400]
 - Hsbc [400]
 - Itau [400]
-- Bancoob (Sicoob) [400]
-- Santander [400, 240 **necessita testes**		]
+- Santander [400, 240 **necessita testes**]
 - Sicredi [400]  **em processo de homologação**
-- Banrisul [400] **necessita homologação e complemento**
 
 **Retorno**
 - Banco do Brasil  [400]
+- Bancoob (Sicoob) [240] **necessita homologação**
 - Bradesco [400]
 - Caixa [400]
 - Hsbc [400]

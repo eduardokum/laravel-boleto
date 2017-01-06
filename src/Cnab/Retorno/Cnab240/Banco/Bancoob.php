@@ -195,6 +195,21 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
     ];
 
     /**
+     * Roda antes dos metodos de processar
+     */
+    protected function init()
+    {
+        $this->totais = [
+            'liquidados' => 0,
+            'entradas' => 0,
+            'baixados' => 0,
+            'protestados' => 0,
+            'erros' => 0,
+            'alterados' => 0,
+        ];
+    }
+
+    /**
      * @param array $header
      *
      * @return bool
