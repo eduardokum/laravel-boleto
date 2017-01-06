@@ -194,14 +194,14 @@ abstract class AbstractRemessa
     }
 
     /**
-     * @param PessoaContract $beneficiario
+     * @param $beneficiario
      *
      * @return AbstractRemessa
+     * @throws \Exception
      */
-    public function setBeneficiario(PessoaContract $beneficiario)
+    public function setBeneficiario( $beneficiario)
     {
-        $this->beneficiario = $beneficiario;
-
+        Util::addPessoa($this->beneficiario, $beneficiario);
         return $this;
     }
     /**

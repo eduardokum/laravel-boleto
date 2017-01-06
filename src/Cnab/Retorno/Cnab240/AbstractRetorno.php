@@ -99,9 +99,6 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
     {
         $this->increment++;
         $detalhe = new Detalhe();
-        $detalhe->setSegmentoT(new DetalheSegmentoT());
-        $detalhe->setSegmentoU(new DetalheSegmentoU());
-        $detalhe->setSegmentoY(new DetalheSegmentoY());
         $this->detalhe[$this->increment] = $detalhe;
     }
 
@@ -195,10 +192,5 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
     protected function getSegmentType($line)
     {
         return strtoupper($this->rem(14, 14, $line));
-    }
-
-    protected function getServiceType($line)
-    {
-        return $this->rem(8, 8, $line);
     }
 }

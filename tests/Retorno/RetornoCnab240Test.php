@@ -31,10 +31,7 @@ class RetornoCnab240Test extends TestCase
 
         foreach ($retorno->getDetalhes() as $detalhe) {
             $this->assertInstanceOf(Detalhe::class, $detalhe);
-            $this->assertInstanceOf(DetalheSegmentoT::class, $detalhe->getSegmentoT());
-            $this->assertInstanceOf(DetalheSegmentoY::class, $detalhe->getSegmentoY());
-            $this->assertInstanceOf(DetalheSegmentoU::class, $detalhe->getSegmentoU());
-            $this->assertArrayHasKey('numeroDocumento', $detalhe->getSegmentoT()->toArray());
+            $this->assertArrayHasKey('numeroDocumento', $detalhe->toArray());
         }
     }
 

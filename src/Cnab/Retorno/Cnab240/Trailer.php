@@ -3,6 +3,7 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
 use \Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Trailer as TrailerContract;
+use Eduardokum\LaravelBoleto\MagicTrait;
 
 class Trailer implements TrailerContract
 {
@@ -10,7 +11,7 @@ class Trailer implements TrailerContract
     /**
      * @var integer
      */
-    protected $numeroLoteRemessa;
+    protected $numeroLote;
 
     /**
      * @var integer
@@ -36,13 +37,13 @@ class Trailer implements TrailerContract
     }
 
     /**
-     * @param mixed $numeroLoteRemessa
+     * @param mixed $numeroLote
      *
      * @return $this
      */
-    public function setNumeroLoteRemessa($numeroLoteRemessa)
+    public function setNumeroLote($numeroLote)
     {
-        $this->numeroLoteRemessa = $numeroLoteRemessa;
+        $this->numeroLote = $numeroLote;
 
         return $this;
     }
@@ -52,7 +53,7 @@ class Trailer implements TrailerContract
      */
     public function getNumeroLoteRemessa()
     {
-        return $this->numeroLoteRemessa;
+        return $this->numeroLote;
     }
 
     /**

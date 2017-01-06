@@ -907,4 +907,23 @@ final class Util
             }
         }
     }
+
+    /**
+     * @param $property
+     * @param $obj
+     *
+     * @return Pessoa
+     * @throws \Exception
+     */
+    public static function addPessoa(&$property, $obj) {
+        if($obj instanceof Pessoa) {
+            $property = $obj;
+            return $obj;
+        } elseif(is_array($obj)) {
+            $obj = new Pessoa($obj);
+            $property = $obj;
+            return $obj;
+        }
+        throw new \Exception('Objeto inválido, somente Pessoa e Array');
+    }
 }

@@ -444,24 +444,6 @@ abstract class AbstractBoleto implements BoletoContract
     }
 
     /**
-     * @param $tipo
-     * @param $obj
-     *
-     * @return $this
-     * @throws \Exception
-     */
-    private function setPessoa($tipo, $obj) {
-        if($obj instanceof PessoaContract) {
-            $this->$tipo = $obj;
-            return $this;
-        } elseif(is_array($obj)) {
-            $this->$tipo = new Pessoa($obj);
-            return $this;
-        }
-        throw new \Exception('Objeto inválido, somente Pessoa e Array');
-    }
-
-    /**
      * Define a entidade beneficiario
      *
      * @param $beneficiario
@@ -471,7 +453,8 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setBeneficiario($beneficiario)
     {
-        return $this->setPessoa('beneficiario', $beneficiario);
+        Util::addPessoa($this->beneficiario, $beneficiario);
+        return $this;
     }
 
     /**
@@ -922,7 +905,8 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setPagador($pagador)
     {
-        return $this->setPessoa('pagador', $pagador);
+        Util::addPessoa($this->pagador, $pagador);
+        return $this;
     }
 
     /**
@@ -945,7 +929,8 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setSacadorAvalista($sacadorAvalista)
     {
-        return $this->setPessoa('sacadorAvalista', $sacadorAvalista);
+        Util::addPessoa($this->sacadorAvalista, $sacadorAvalista);
+        return $this;
     }
 
     /**

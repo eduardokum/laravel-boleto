@@ -109,6 +109,11 @@ interface Detalhe
     public function hasError();
 
     /**
+     * @return boolean
+     */
+    public function hasOcorrencia();
+
+    /**
      * @return array
      */
     public function toArray();

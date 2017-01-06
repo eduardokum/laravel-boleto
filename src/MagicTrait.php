@@ -6,7 +6,7 @@
  * Time: 16:49
  */
 
-namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
+namespace Eduardokum\LaravelBoleto;
 
 
 trait MagicTrait
