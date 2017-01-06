@@ -3,61 +3,62 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Detalhe as DetalheContract;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\DetalheSegmentoT as DetalheSegmentoTContract;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\DetalheSegmentoU as DetalheSegmentoUContract;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\DetalheSegmentoY as DetalheSegmentoYContract;
+use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\DetalheSegmentoT as DetalheSegmentoTContract;
+use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\DetalheSegmentoU as DetalheSegmentoUContract;
+use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\DetalheSegmentoY as DetalheSegmentoYContract;
 
 class Detalhe implements DetalheContract
 {
+    use MagicTrait;
     /**
      * @var DetalheSegmentoTContract
      */
-    private $segmentoT;
+    protected $segmentoT;
 
     /**
      * @var DetalheSegmentoUContract
      */
-    private $segmentoU;
+    protected $segmentoU;
 
     /**
      * @var DetalheSegmentoYContract
      */
-    private $segmentoY;
+    protected $segmentoY;
 
     /**
      * @var string
      */
-    private $valorPagoSacado;
+    protected $valorPagoSacado;
 
     /**
      * @var string
      */
-    private $ocorrenciaTipo;
+    protected $ocorrenciaTipo;
 
     /**
      * @var string
      */
-    private $ocorrenciaDescricao;
+    protected $ocorrenciaDescricao;
 
     /**
      * @var string
      */
-    private $ocorrencia;
+    protected $ocorrencia;
 
     /**
      * @var string
      */
-    private $codigoOcorrencia;
+    protected $codigoOcorrencia;
 
     /**
      * @var string
      */
-    private $error;
+    protected $error;
 
     /**
      * @var string
      */
-    private $errorCode;
+    protected $errorCode;
 
     /**
      * @return DetalheSegmentoTContract
@@ -69,6 +70,8 @@ class Detalhe implements DetalheContract
 
     /**
      * @param DetalheSegmentoTContract $segmentoT
+     *
+     * @return $this
      */
     public function setSegmentoT(DetalheSegmentoTContract $segmentoT)
     {
@@ -87,6 +90,8 @@ class Detalhe implements DetalheContract
 
     /**
      * @param DetalheSegmentoUContract $segmentoU
+     *
+     * @return $this
      */
     public function setSegmentoU(DetalheSegmentoUContract $segmentoU)
     {
@@ -105,6 +110,8 @@ class Detalhe implements DetalheContract
 
     /**
      * @param DetalheSegmentoYContract $segmentoY
+     *
+     * @return $this
      */
     public function setSegmentoY(DetalheSegmentoYContract $segmentoY)
     {
@@ -123,6 +130,8 @@ class Detalhe implements DetalheContract
 
     /**
      * @param mixed $valorPagoSacado
+     *
+     * @return $this
      */
     public function setValorPagoSacado($valorPagoSacado)
     {
@@ -164,7 +173,7 @@ class Detalhe implements DetalheContract
     /**
      * @param string $ocorrenciaDescricao
      *
-     * @return Detalhe
+     * @return $this
      */
     public function setOcorrenciaDescricao($ocorrenciaDescricao)
     {
@@ -184,7 +193,7 @@ class Detalhe implements DetalheContract
     /**
      * @param string $ocorrenciaTipo
      *
-     * @return Detalhe
+     * @return $this
      */
     public function setOcorrenciaTipo($ocorrenciaTipo)
     {
@@ -203,6 +212,8 @@ class Detalhe implements DetalheContract
 
     /**
      * @param mixed $codigoOcorrencia
+     *
+     * @return $this
      */
     public function setCodigoOcorrencia($codigoOcorrencia)
     {
@@ -223,7 +234,7 @@ class Detalhe implements DetalheContract
     /**
      * @param string $ocorrencia
      *
-     * @return Detalhe
+     * @return $this
      */
     public function setOcorrencia($ocorrencia)
     {
@@ -253,7 +264,7 @@ class Detalhe implements DetalheContract
     /**
      * @param string $error
      *
-     * @return Detalhe
+     * @return $this
      */
     public function setError($error)
     {
@@ -277,62 +288,5 @@ class Detalhe implements DetalheContract
     public function setErrorCode($errorCode)
     {
         $this->errorCode = $errorCode;
-    }
-
-    /**
-     * @return array
-     */
-    public function toArray()
-    {
-        $vars = array_keys(get_class_vars(self::class));
-        $aRet = [];
-        foreach ($vars as $var) {
-            $methodName = 'get' . ucfirst($var);
-            $aRet[$var] = method_exists($this, $methodName)
-                ? $this->$methodName()
-                : $this->$var;
-
-            if( is_object($aRet[$var]) && method_exists($aRet[$var], 'toArray') ) {
-                $aRet[$var] = $aRet[$var]->toArray();
-            }
-        }
-        return $aRet;
-    }
-
-    /**
-     * Fast set method.
-     *
-     * @param $name
-     * @param $value
-     */
-    public function __set($name, $value)
-    {
-        if (property_exists($this, $name)) {
-            $this->$name = $value;
-        }
-    }
-
-    /**
-     * Fast get method.
-     *
-     * @param $name
-     */
-    public function __get($name)
-    {
-        if (property_exists($this, $name)) {
-            $method = 'get' . ucwords($name);
-            return $this->{$method}();
-        }
-    }
-
-    /**
-     * Determine if an attribute exists on the detalhe.
-     *
-     * @param  string $key
-     * @return bool
-     */
-    public function __isset($key)
-    {
-        return isset($this->$key);
     }
 }

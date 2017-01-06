@@ -2,9 +2,6 @@
 
 namespace Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240;
 
-use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\SegmentoT;
-use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\SegmentoU;
-use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\SegmentoY;
 
 interface Detalhe
 {
@@ -18,17 +15,17 @@ interface Detalhe
     const OCORRENCIA_ERRO = 9;
 
     /**
-     * @return SegmentoT
+     * @return DetalheSegmentoT
      */
     public function getSegmentoT();
 
     /**
-     * @return SegmentoU
+     * @return DetalheSegmentoU
      */
     public function getSegmentoU();
 
     /**
-     * @return SegmentoY
+     * @return DetalheSegmentoY
      */
     public function getSegmentoY();
 

@@ -3,112 +3,110 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\DetalheSegmentoU as DetalheSegmentoUContract;
-use Eduardokum\LaravelBoleto\Util;
 use Carbon\Carbon;
 
 class DetalheSegmentoU implements DetalheSegmentoUContract
 {
-
+    use MagicTrait;
+    /**
+     * @var string
+     */
+    protected $codigoBancoCompensacao;
 
     /**
      * @var string
      */
-    private $codigoBancoCompensacao;
+    protected $tipoRegistro;
 
     /**
      * @var string
      */
-    private $tipoRegistro;
+    protected $numeroSequencialRegistroLote;
 
     /**
      * @var string
      */
-    private $numeroSequencialRegistroLote;
+    protected $codigoSegmentoRegistroDetalhe;
 
     /**
      * @var string
      */
-    private $codigoSegmentoRegistroDetalhe;
+    protected $loteServico;
 
     /**
      * @var string
      */
-    private $loteServico;
+    protected $jurosMultaEncargos;
 
     /**
      * @var string
      */
-    private $jurosMultaEncargos;
+    protected $valorDescontoConcedido;
 
     /**
      * @var string
      */
-    private $valorDescontoConcedido;
+    protected $valorAbatimentoConcedidoCancelado;
 
     /**
      * @var string
      */
-    private $valorAbatimentoConcedidoCancelado;
+    protected $valorIOF;
 
     /**
      * @var string
      */
-    private $valorIOF;
+    protected $valorPagoSacado;
 
     /**
      * @var string
      */
-    private $valorPagoSacado;
+    protected $valorLiquidoCreditado;
 
     /**
      * @var string
      */
-    private $valorLiquidoCreditado;
+    protected $valorOutrasDespesas;
 
     /**
      * @var string
      */
-    private $valorOutrasDespesas;
-
-    /**
-     * @var string
-     */
-    private $valorOutrosCreditos;
+    protected $valorOutrosCreditos;
 
     /**
      * @var Carbon
      */
-    private $dataOcorrencia;
+    protected $dataOcorrencia;
 
     /**
      * @var Carbon
      */
-    private $dataCredito;
+    protected $dataCredito;
 
     /**
      * @var string
      */
-    private $codigoOcorrenciaSacado;
+    protected $codigoOcorrenciaSacado;
 
     /**
      * @var Carbon
      */
-    private $dataOcorrenciaSacado;
+    protected $dataOcorrenciaSacado;
 
     /**
      * @var string
      */
-    private $valorOcorrenciaSacado;
+    protected $valorOcorrenciaSacado;
 
     /**
      * @var string
      */
-    private $complementoOcorrenciaSacado;
+    protected $complementoOcorrenciaSacado;
 
     /**
      * @var string
      */
-    private $codigoBancoCorrespondenteCompensacao;
+    protected $codigoBancoCorrespondenteCompensacao;
 
     /**
      * @return mixed
@@ -120,6 +118,8 @@ class DetalheSegmentoU implements DetalheSegmentoUContract
 
     /**
      * @param mixed $codigoBancoCompensacao
+     *
+     * @return $this
      */
     public function setCodigoBancoCompensacao($codigoBancoCompensacao)
     {
@@ -138,6 +138,8 @@ class DetalheSegmentoU implements DetalheSegmentoUContract
 
     /**
      * @param mixed $tipoRegistro
+     *
+     * @return $this
      */
     public function setTipoRegistro($tipoRegistro)
     {
@@ -156,6 +158,8 @@ class DetalheSegmentoU implements DetalheSegmentoUContract
 
     /**
      * @param mixed $numeroSequencialRegistroLote
+     *
+     * @return $this
      */
     public function setNumeroSequencialRegistroLote($numeroSequencialRegistroLote)
     {
@@ -174,6 +178,8 @@ class DetalheSegmentoU implements DetalheSegmentoUContract
 
     /**
      * @param mixed $codigoSegmentoRegistroDetalhe
+     *
+     * @return $this
      */
     public function setCodigoSegmentoRegistroDetalhe($codigoSegmentoRegistroDetalhe)
     {
@@ -192,6 +198,8 @@ class DetalheSegmentoU implements DetalheSegmentoUContract
 
     /**
      * @param mixed $loteServico
+     *
+     * @return $this
      */
     public function setLoteServico($loteServico)
     {
@@ -210,6 +218,8 @@ class DetalheSegmentoU implements DetalheSegmentoUContract
 
     /**
      * @param mixed $jurosMultaEncargos
+     *
+     * @return $this
      */
     public function setJurosMultaEncargos($jurosMultaEncargos)
     {
@@ -228,6 +238,8 @@ class DetalheSegmentoU implements DetalheSegmentoUContract
 
     /**
      * @param mixed $valorDescontoConcedido
+     *
+     * @return $this
      */
     public function setValorDescontoConcedido($valorDescontoConcedido)
     {
@@ -246,6 +258,8 @@ class DetalheSegmentoU implements DetalheSegmentoUContract
 
     /**
      * @param mixed $valorAbatimentoConcedidoCancelado
+     *
+     * @return $this
      */
     public function setValorAbatimentoConcedidoCancelado($valorAbatimentoConcedidoCancelado)
     {
@@ -264,6 +278,8 @@ class DetalheSegmentoU implements DetalheSegmentoUContract
 
     /**
      * @param mixed $valorIOF
+     *
+     * @return $this
      */
     public function setValorIOF($valorIOF)
     {
@@ -282,6 +298,8 @@ class DetalheSegmentoU implements DetalheSegmentoUContract
 
     /**
      * @param mixed $valorPagoSacado
+     *
+     * @return $this
      */
     public function setValorPagoSacado($valorPagoSacado)
     {
@@ -300,6 +318,8 @@ class DetalheSegmentoU implements DetalheSegmentoUContract
 
     /**
      * @param mixed $valorLiquidoCreditado
+     *
+     * @return $this
      */
     public function setValorLiquidoCreditado($valorLiquidoCreditado)
     {
@@ -318,6 +338,8 @@ class DetalheSegmentoU implements DetalheSegmentoUContract
 
     /**
      * @param mixed $valorOutrasDespesas
+     *
+     * @return $this
      */
     public function setValorOutrasDespesas($valorOutrasDespesas)
     {
@@ -336,6 +358,8 @@ class DetalheSegmentoU implements DetalheSegmentoUContract
 
     /**
      * @param mixed $valorOutrosCreditos
+     *
+     * @return $this
      */
     public function setValorOutrosCreditos($valorOutrosCreditos)
     {
@@ -345,6 +369,8 @@ class DetalheSegmentoU implements DetalheSegmentoUContract
     }
 
     /**
+     * @param string $format
+     *
      * @return mixed
      */
     public function getDataOcorrencia($format = 'd/m/Y')
@@ -355,7 +381,11 @@ class DetalheSegmentoU implements DetalheSegmentoUContract
     }
 
     /**
-     * @param mixed $dataOcorrencia
+     * @param mixed  $dataOcorrencia
+     *
+     * @param string $format
+     *
+     * @return $this
      */
     public function setDataOcorrencia($dataOcorrencia, $format = 'dmY')
     {
@@ -365,6 +395,8 @@ class DetalheSegmentoU implements DetalheSegmentoUContract
     }
 
     /**
+     * @param string $format
+     *
      * @return mixed
      */
     public function getDataCredito($format = 'd/m/Y')
@@ -375,7 +407,11 @@ class DetalheSegmentoU implements DetalheSegmentoUContract
     }
 
     /**
-     * @param mixed $dataCredito
+     * @param mixed  $dataCredito
+     *
+     * @param string $format
+     *
+     * @return $this
      */
     public function setDataCredito($dataCredito, $format = 'dmY')
     {
@@ -394,6 +430,8 @@ class DetalheSegmentoU implements DetalheSegmentoUContract
 
     /**
      * @param mixed $codigoOcorrenciaSacado
+     *
+     * @return $this
      */
     public function setCodigoOcorrenciaSacado($codigoOcorrenciaSacado)
     {
@@ -403,6 +441,8 @@ class DetalheSegmentoU implements DetalheSegmentoUContract
     }
 
     /**
+     * @param string $format
+     *
      * @return mixed
      */
     public function getDataOcorrenciaSacado($format = 'd/m/Y')
@@ -413,7 +453,11 @@ class DetalheSegmentoU implements DetalheSegmentoUContract
     }
 
     /**
-     * @param mixed $dataOcorrenciaSacado
+     * @param mixed  $dataOcorrenciaSacado
+     *
+     * @param string $format
+     *
+     * @return $this
      */
     public function setDataOcorrenciaSacado($dataOcorrenciaSacado, $format = 'dmY')
     {
@@ -432,6 +476,8 @@ class DetalheSegmentoU implements DetalheSegmentoUContract
 
     /**
      * @param mixed $valorOcorrenciaSacado
+     *
+     * @return $this
      */
     public function setValorOcorrenciaSacado($valorOcorrenciaSacado)
     {
@@ -450,6 +496,8 @@ class DetalheSegmentoU implements DetalheSegmentoUContract
 
     /**
      * @param mixed $complementoOcorrenciaSacado
+     *
+     * @return $this
      */
     public function setComplementoOcorrenciaSacado($complementoOcorrenciaSacado)
     {
@@ -468,6 +516,8 @@ class DetalheSegmentoU implements DetalheSegmentoUContract
 
     /**
      * @param mixed $codigoBancoCorrespondenteCompensacao
+     *
+     * @return $this
      */
     public function setCodigoBancoCorrespondenteCompensacao($codigoBancoCorrespondenteCompensacao)
     {
@@ -475,58 +525,4 @@ class DetalheSegmentoU implements DetalheSegmentoUContract
 
         return $this;
     }
-
-    /**
-     * @return array
-     */
-    public function toArray()
-    {
-        $vars = array_keys(get_class_vars(self::class));
-        $aRet = [];
-        foreach ($vars as $var) {
-            $methodName = 'get' . ucfirst($var);
-            $aRet[$var] = method_exists($this, $methodName)
-                ? $this->$methodName()
-                : $this->$var;
-        }
-        return $aRet;
-    }
-
-    /**
-     * Fast set method.
-     *
-     * @param $name
-     * @param $value
-     */
-    public function __set($name, $value)
-    {
-        if (property_exists($this, $name)) {
-            $this->$name = $value;
-        }
-    }
-
-    /**
-     * Fast get method.
-     *
-     * @param $name
-     */
-    public function __get($name)
-    {
-        if (property_exists($this, $name)) {
-            $method = 'get' . ucwords($name);
-            return $this->{$method}();
-        }
-    }
-
-    /**
-     * Determine if an attribute exists.
-     *
-     * @param  string $key
-     * @return bool
-     */
-    public function __isset($key)
-    {
-        return isset($this->$key);
-    }
-
 }

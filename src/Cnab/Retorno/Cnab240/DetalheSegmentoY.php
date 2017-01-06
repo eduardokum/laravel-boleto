@@ -6,45 +6,46 @@ use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\DetalheSegmentoY as 
 
 class DetalheSegmentoY implements DetalheSegmentoYContract
 {
+    use MagicTrait;
     /**
      * @var string
      */
-    private $codigoBancoCompensacao;
+    protected $codigoBancoCompensacao;
 
     /**
      * @var string
      */
-    private $loteServico;
+    protected $loteServico;
 
     /**
      * @var string
      */
-    private $tipoRegistro;
+    protected $tipoRegistro;
 
     /**
      * @var string
      */
-    private $numeroSequencialRegistroLote;
+    protected $numeroSequencialRegistroLote;
 
     /**
      * @var string
      */
-    private $codigoSegmentoRegistroDetalhe;
+    protected $codigoSegmentoRegistroDetalhe;
 
     /**
      * @var string
      */
-    private $codigoOcorrencia;
+    protected $codigoOcorrencia;
 
     /**
      * @var string
      */
-    private $identificacaoRegistroOpcional;
+    protected $identificacaoRegistroOpcional;
 
     /**
      * @var string
      */
-    private $identificacaoCheque;
+    protected $identificacaoCheque;
 
     /**
      * @return mixed
@@ -56,6 +57,8 @@ class DetalheSegmentoY implements DetalheSegmentoYContract
 
     /**
      * @param mixed $codigoBancoCompensacao
+     *
+     * @return $this
      */
     public function setCodigoBancoCompensacao($codigoBancoCompensacao)
     {
@@ -74,6 +77,8 @@ class DetalheSegmentoY implements DetalheSegmentoYContract
 
     /**
      * @param mixed $codigoOcorrencia
+     *
+     * @return $this
      */
     public function setCodigoOcorrencia($codigoOcorrencia)
     {
@@ -92,6 +97,8 @@ class DetalheSegmentoY implements DetalheSegmentoYContract
 
     /**
      * @param mixed $codigoSegmentoRegistroDetalhe
+     *
+     * @return $this
      */
     public function setCodigoSegmentoRegistroDetalhe($codigoSegmentoRegistroDetalhe)
     {
@@ -110,6 +117,8 @@ class DetalheSegmentoY implements DetalheSegmentoYContract
 
     /**
      * @param string $identificacaoCheque
+     *
+     * @return $this
      */
     public function setIdentificacaoCheque($identificacaoCheque)
     {
@@ -128,6 +137,8 @@ class DetalheSegmentoY implements DetalheSegmentoYContract
 
     /**
      * @param mixed $identificacaoRegistroOpcional
+     *
+     * @return $this
      */
     public function setIdentificacaoRegistroOpcional($identificacaoRegistroOpcional)
     {
@@ -146,6 +157,8 @@ class DetalheSegmentoY implements DetalheSegmentoYContract
 
     /**
      * @param mixed $loteServico
+     *
+     * @return $this
      */
     public function setLoteServico($loteServico)
     {
@@ -164,6 +177,8 @@ class DetalheSegmentoY implements DetalheSegmentoYContract
 
     /**
      * @param mixed $numeroSequencialRegistroLote
+     *
+     * @return $this
      */
     public function setNumeroSequencialRegistroLote($numeroSequencialRegistroLote)
     {
@@ -182,6 +197,8 @@ class DetalheSegmentoY implements DetalheSegmentoYContract
 
     /**
      * @param mixed $tipoRegistro
+     *
+     * @return $this
      */
     public function setTipoRegistro($tipoRegistro)
     {
@@ -189,58 +206,4 @@ class DetalheSegmentoY implements DetalheSegmentoYContract
 
         return $this;
     }
-
-    /**
-     * @return array
-     */
-    public function toArray()
-    {
-        $vars = array_keys(get_class_vars(self::class));
-        $aRet = [];
-        foreach ($vars as $var) {
-            $methodName = 'get' . ucfirst($var);
-            $aRet[$var] = method_exists($this, $methodName)
-                ? $this->$methodName()
-                : $this->$var;
-        }
-        return $aRet;
-    }
-
-    /**
-     * Fast set method.
-     *
-     * @param $name
-     * @param $value
-     */
-    public function __set($name, $value)
-    {
-        if (property_exists($this, $name)) {
-            $this->$name = $value;
-        }
-    }
-
-    /**
-     * Fast get method.
-     *
-     * @param $name
-     */
-    public function __get($name)
-    {
-        if (property_exists($this, $name)) {
-            $method = 'get' . ucwords($name);
-            return $this->{$method}();
-        }
-    }
-
-    /**
-     * Determine if an attribute exists.
-     *
-     * @param  string $key
-     * @return bool
-     */
-    public function __isset($key)
-    {
-        return isset($this->$key);
-    }
-
 }

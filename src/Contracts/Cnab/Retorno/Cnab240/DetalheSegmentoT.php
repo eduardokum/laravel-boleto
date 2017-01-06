@@ -68,11 +68,6 @@ interface DetalheSegmentoT
     /**
      * @return mixed
      */
-    public function getIdentificador();
-
-    /**
-     * @return mixed
-     */
     public function getSeuNumero();
 
     /**
@@ -103,7 +98,7 @@ interface DetalheSegmentoT
     /**
      * @return mixed
      */
-    public function getTipoInscriçãoSacado();
+    public function getTipoInscricaoSacado();
 
     /**
      * @return mixed

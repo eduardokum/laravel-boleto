@@ -7,6 +7,7 @@ use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\DetalheSegmentoT as 
 
 class DetalheSegmentoT implements DetalheSegmentoTContract
 {
+    use MagicTrait;
 
     /**
      * @var int
@@ -16,132 +17,127 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     /**
      * @var string
      */
-    protected $identificador;
+    protected $codigoBancoCompensacao;
 
     /**
      * @var string
      */
-    private $codigoBancoCompensacao;
+    protected $numeroLoteRetorno;
 
     /**
      * @var string
      */
-    private $numeroLoteRetorno;
+    protected $tipoRegistro;
 
     /**
      * @var string
      */
-    private $tipoRegistro;
+    protected $numeroSequencialRegistroLote;
 
     /**
      * @var string
      */
-    private $numeroSequencialRegistroLote;
+    protected $codigoSegmentoRegistroDetalhe;
 
     /**
      * @var string
      */
-    private $codigoSegmentoRegistroDetalhe;
+    protected $agenciaCedente;
 
     /**
      * @var string
      */
-    private $agenciaCedente;
+    protected $agenciaCedenteDigito;
 
     /**
      * @var string
      */
-    private $agenciaCedenteDigito;
+    protected $contaCorrente;
 
     /**
      * @var string
      */
-    private $contaCorrente;
+    protected $contaDigito;
 
     /**
      * @var string
      */
-    private $contaDigito;
+    protected $nossoNumero;
 
     /**
      * @var string
      */
-    private $nossoNumero;
+    protected $codigoCarteira;
 
     /**
      * @var string
      */
-    private $codigoCarteira;
-
-    /**
-     * @var string
-     */
-    private $seuNumero;
+    protected $seuNumero;
 
     /**
      * @var Carbon
      */
-    private $dataVencimento;
+    protected $dataVencimento;
 
     /**
      * @var string
      */
-    private $valorTitulo;
+    protected $valorTitulo;
 
     /**
      * @var string
      */
-    private $numeroBancoCobradorRecebedor;
+    protected $numeroBancoCobradorRecebedor;
 
     /**
      * @var string
      */
-    private $agenciaCobradoraRecebedora;
+    protected $agenciaCobradoraRecebedora;
 
     /**
      * @var string
      */
-    private $codigoMoeda;
+    protected $codigoMoeda;
 
     /**
      * @var string
      */
-    private $tipoInscriçãoSacado;
+    protected $tipoInscriçãoSacado;
 
     /**
      * @var string
      */
-    private $numeroInscricaoSacado;
+    protected $numeroInscricaoSacado;
 
     /**
      * @var string
      */
-    private $nomeSacado;
+    protected $nomeSacado;
 
     /**
      * @var string
      */
-    private $contaCobranca;
+    protected $contaCobranca;
 
     /**
      * @var string
      */
-    private $valorTarifa;
+    protected $valorTarifa;
 
     /**
      * @var string
      */
-    private $identificacaoRejeicao;
+    protected $identificacaoRejeicao;
 
     /**
      * @var string
      */
-    private $digitoAgenciaCedente;
+    protected $digitoAgenciaCedente;
 
     /**
      * @var string
      */
-    private $valorPagoSacado;
+    protected $valorPagoSacado;
 
     /**
      * @return string
@@ -404,6 +400,8 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     }
 
     /**
+     * @param string $format
+     *
      * @return mixed
      */
     public function getDataVencimento($format = 'd/m/Y')
@@ -414,7 +412,9 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     }
 
     /**
-     * @param mixed $dataVencimento
+     * @param mixed  $dataVencimento
+     *
+     * @param string $format
      *
      * @return $this
      */
@@ -508,7 +508,7 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     /**
      * @return string
      */
-    public function getTipoInscriçãoSacado()
+    public function getTipoInscricaoSacado()
     {
         return $this->tipoInscriçãoSacado;
     }
@@ -518,7 +518,7 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
      *
      * @return $this
      */
-    public function setTipoInscriçãoSacado($tipoInscriçãoSacado)
+    public function setTipoInscricaoSacado($tipoInscriçãoSacado)
     {
         $this->tipoInscriçãoSacado = $tipoInscriçãoSacado;
 
@@ -628,26 +628,6 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     /**
      * @return mixed
      */
-    public function getIdentificador()
-    {
-        return $this->identificador;
-    }
-
-    /**
-     * @param mixed $identificador
-     *
-     * @return $this
-     */
-    public function setIdentificador($identificador)
-    {
-        $this->identificador = $identificador;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
     public function getNumeroDocumento()
     {
         return $this->numeroDocumento;
@@ -656,7 +636,7 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
     /**
      * @param mixed $numeroDocumento
      *
-     * @return DetalheSegmentoT
+     * @return $this
      */
     public function setNumeroDocumento($numeroDocumento)
     {
@@ -683,58 +663,5 @@ class DetalheSegmentoT implements DetalheSegmentoTContract
         $this->valorPagoSacado = $valorPagoSacado;
 
         return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function toArray()
-    {
-        $vars = array_keys(get_class_vars(self::class));
-        $aRet = [];
-        foreach ($vars as $var) {
-            $methodName = 'get' . ucfirst($var);
-            $aRet[$var] = method_exists($this, $methodName)
-                ? $this->$methodName()
-                : $this->$var;
-        }
-        return $aRet;
-    }
-
-    /**
-     * Fast set method.
-     *
-     * @param $name
-     * @param $value
-     */
-    public function __set($name, $value)
-    {
-        if (property_exists($this, $name)) {
-            $this->$name = $value;
-        }
-    }
-
-    /**
-     * Fast get method.
-     *
-     * @param $name
-     */
-    public function __get($name)
-    {
-        if (property_exists($this, $name)) {
-            $method = 'get' . ucwords($name);
-            return $this->{$method}();
-        }
-    }
-
-    /**
-     * Determine if an attribute exists.
-     *
-     * @param  string $key
-     * @return bool
-     */
-    public function __isset($key)
-    {
-        return isset($this->$key);
     }
 }

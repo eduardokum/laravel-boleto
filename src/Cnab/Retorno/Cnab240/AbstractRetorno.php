@@ -109,6 +109,7 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
      * Processa o arquivo
      *
      * @return $this
+     * @throws \Exception
      */
     public function processar()
     {
