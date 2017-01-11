@@ -190,5 +190,5 @@ $retorno->getDetalhes();
 
 $retorno->getHeader();
 
-$retorno->getTrailer());
+$retorno->getTrailer();
 ```
