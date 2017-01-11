@@ -1,7 +1,7 @@
 <?php
 namespace Eduardokum\LaravelBoleto\Boleto\Render;
 
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoInterface;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Render\Pdf as PdfContract;
 use Eduardokum\LaravelBoleto\Util;
 
@@ -15,7 +15,7 @@ class Pdf extends AbstractPdf implements PdfContract
 
     private $PadraoFont = 'Arial';
     /**
-     * @var BoletoInterface[]
+     * @var BoletoContract[]
      */
     private $boleto = array();
 
@@ -24,7 +24,6 @@ class Pdf extends AbstractPdf implements PdfContract
     private $fdes  = 6; // tamanho fonte descrição
     private $fcel  = 8; // tamanho fonte célula
     private $small = 0.2; // tamanho barra fina
-    private $large = 0.6; // tamanho barra larga
     private $totalBoletos = 0;
 
     function __construct() 
@@ -379,6 +378,8 @@ class Pdf extends AbstractPdf implements PdfContract
      * Addiciona o boletos
      *
      * @param array $boletos
+     *
+     * @return $this
      */
     public function addBoletos(array $boletos) 
     {
@@ -394,9 +395,11 @@ class Pdf extends AbstractPdf implements PdfContract
     /**
      * Addiciona o boleto
      *
-     * @param BoletoInterface $boleto
+     * @param BoletoContract $boleto
+     *
+     * @return $this
      */
-    public function addBoleto(BoletoInterface $boleto) 
+    public function addBoleto(BoletoContract $boleto)
     {
         $this->totalBoletos += 1;
         $this->boleto[] = $boleto;
@@ -433,7 +436,7 @@ class Pdf extends AbstractPdf implements PdfContract
     }
 
     /**
-     * @param $i
+     * @param $lista
      * @param integer $pulaLinha
      *
      * @return int

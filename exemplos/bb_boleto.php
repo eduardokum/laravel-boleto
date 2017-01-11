@@ -36,23 +36,8 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Bb(
         'beneficiario'           => $beneficiario,
         'carteira'               => 11,
         'convenio'               => 1234567,
-        'descricaoDemonstrativo' => [
-            'demonstrativo 1',
-            'demonstrativo 2',
-            'demonstrativo 3',
-            'demonstrativo 1',
-            'demonstrativo 2'
-        ],
-        'instrucoes'             => [
-            'instrucao 1',
-            'instrucao 2',
-            'instrucao 3',
-            'instrucao 1',
-            'instrucao 2',
-            'instrucao 3',
-            'instrucao 1',
-            'instrucao 2'
-        ],
+        'descricaoDemonstrativo' => ['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'],
+        'instrucoes'             => ['instrucao 1', 'instrucao 2', 'instrucao 3'],
         'aceite'                 => 'S',
         'especieDoc'             => 'DM',
     ]
