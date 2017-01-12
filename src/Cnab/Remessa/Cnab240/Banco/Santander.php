@@ -176,7 +176,7 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(143, 150, Util::formatCnab(9, $boleto->getDataVencimento()->format('dmY'), 8)); //Data de desconto 1
         $this->add(151, 165, Util::formatCnab(9, 0, 15, 2)); //Valor ou Percentual do desconto concedido //TODO
         $this->add(166, 180, Util::formatCnab(9, 0, 15, 2)); //Valor do IOF a ser recolhido
-        $this->add(181, 195, Util::formatCnab(9, $boleto->getDescontosAbatimentos(), 15, 2)); //Valor do abatimento
+        $this->add(181, 195, Util::formatCnab(9, 0, 15, 2)); //Valor do abatimento
         $this->add(196, 220, ''); //Identificação do título na empresa
         $this->add(221, 221, Util::formatCnab(9, 0, 1)); //Código para protesto
         $this->add(222, 223, Util::formatCnab(9, 0, 2)); //Número de dias para protesto

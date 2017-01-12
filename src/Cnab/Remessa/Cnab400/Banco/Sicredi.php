@@ -158,9 +158,9 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         }
         $this->add(161, 173, Util::formatCnab('9', $boleto->getJuros(), 13, 2));
         $this->add(174, 179, $boleto->getDataVencimento()->format('dmy'));
-        $this->add(180, 192, Util::formatCnab('9', $boleto->getDescontosAbatimentos(), 13, 2));
+        $this->add(180, 192, Util::formatCnab('9', 0, 13, 2));
         $this->add(193, 205, Util::formatCnab('9', 0, 13, 2));
-        $this->add(206, 218, Util::formatCnab('9', $boleto->getDescontosAbatimentos(), 13, 2));
+        $this->add(206, 218, Util::formatCnab('9', 0, 13, 2));
         $this->add(219, 220, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? '20' : '10');
         $this->add(221, 234, Util::formatCnab('9L', $boleto->getPagador()->getDocumento(), 14));
         $this->add(235, 274, Util::formatCnab('X', $boleto->getPagador()->getNome(), 40));

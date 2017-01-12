@@ -88,11 +88,6 @@ interface Boleto
     public function getMoeda();
 
     /**
-     * @return mixed
-     */
-    public function getQuantidade();
-
-    /**
      * @return \Carbon\Carbon
      */
     public function getDataVencimento();
@@ -111,16 +106,6 @@ interface Boleto
      * @return mixed
      */
     public function getValor();
-
-    /**
-     * @return mixed
-     */
-    public function getDescontosAbatimentos();
-
-    /**
-     * @return mixed
-     */
-    public function getOutrasDeducoes();
 
     /**
      * @return mixed
@@ -150,21 +135,6 @@ interface Boleto
      * @return mixed
      */
     public function getDiasBaixaAutomatica($default = 0);
-
-    /**
-     * @return mixed
-     */
-    public function getOutrosAcrescimos();
-
-    /**
-     * @return mixed
-     */
-    public function getValorCobrado();
-
-    /**
-     * @return mixed
-     */
-    public function getValorUnitario();
 
     /**
      * @return PessoaContract
