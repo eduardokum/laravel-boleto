@@ -916,7 +916,7 @@ final class Util
      * @throws \Exception
      */
     public static function addPessoa(&$property, $obj) {
-        if($obj instanceof Pessoa) {
+        if(is_subclass_of($obj, 'Eduardokum\\LaravelBoleto\\Contracts\\Pessoa')) {
             $property = $obj;
             return $obj;
         } elseif(is_array($obj)) {
