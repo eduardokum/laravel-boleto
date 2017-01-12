@@ -69,7 +69,7 @@
             </td>
             <td width="120" class="top-2">
                 <div class="titulo">Vencimento</div>
-                <div class="conteudo rtl">{{ $data_vencimento }}</div>
+                <div class="conteudo rtl">{{ $data_vencimento->format('d/m/Y') }}</div>
             </td>
         </tr>
         <tr>
