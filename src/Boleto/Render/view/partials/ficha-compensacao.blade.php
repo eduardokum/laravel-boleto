@@ -82,11 +82,11 @@
         </td>
         <td colspan="2">
             <div class="titulo">Quantidade</div>
-            <div class="conteudo">{{ $quantidade }}</div>
+            <div class="conteudo"></div>
         </td>
         <td width="110">
             <div class="titulo">Valor</div>
-            <div class="conteudo">{{ $valor_unitario }}</div>
+            <div class="conteudo"></div>
         </td>
         <td>
             <div class="titulo">(=) Valor do Documento</div>

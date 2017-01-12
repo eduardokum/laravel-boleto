@@ -93,15 +93,15 @@
             </td>
             <td>
                 <div class="titulo">Quantidade</div>
-                <div class="conteudo rtl">{{ $quantidade }}</div>
+                <div class="conteudo rtl"></div>
             </td>
             <td>
                 <div class="titulo">Valor</div>
-                <div class="conteudo rtl">{{ $valor_unitario }}</div>
+                <div class="conteudo rtl"></div>
             </td>
             <td>
                 <div class="titulo">(-) Descontos / Abatimentos</div>
-                <div class="conteudo rtl">{{ $desconto_abatimento }}</div>
+                <div class="conteudo rtl"></div>
             </td>
             <td>
                 <div class="titulo">(=) Valor Documento</div>
@@ -115,15 +115,15 @@
             </td>
             <td>
                 <div class="titulo">(-) Outras deduções</div>
-                <div class="conteudo">{{ $outras_deducoes }}</div>
+                <div class="conteudo"></div>
             </td>
             <td>
                 <div class="titulo">(+) Outros acréscimos</div>
-                <div class="conteudo rtl">{{ $outros_acrescimos }}</div>
+                <div class="conteudo rtl"></div>
             </td>
             <td>
                 <div class="titulo">(=) Valor cobrado</div>
-                <div class="conteudo rtl">{{ $valor_cobrado }}</div>
+                <div class="conteudo rtl"></div>
             </td>
         </tr>
         <tr>

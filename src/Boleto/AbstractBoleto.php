@@ -52,18 +52,6 @@ abstract class AbstractBoleto implements BoletoContract
      */
     protected $valor;
     /**
-     * Valor de descontos e abatimentos
-     *
-     * @var float
-     */
-    protected $descontosAbatimentos;
-    /**
-     * Valor para outras deduções
-     *
-     * @var float
-     */
-    protected $outrasDeducoes;
-    /**
      * Valor para multa
      *
      * @var float
@@ -93,30 +81,6 @@ abstract class AbstractBoleto implements BoletoContract
      * @var integer
      */
     protected $diasBaixaAutomatica;
-    /**
-     * Valor para outros acréscimos
-     *
-     * @var float
-     */
-    protected $outrosAcrescimos;
-    /**
-     * Valor cobrado
-     *
-     * @var
-     */
-    protected $valorCobrado;
-    /**
-     * Campo valor do boleto
-     *
-     * @var
-     */
-    protected $valorUnitario;
-    /**
-     * Campo quantidade
-     *
-     * @var
-     */
-    protected $quantidade;
     /**
      * Data do documento
      *
@@ -966,31 +930,6 @@ abstract class AbstractBoleto implements BoletoContract
     {
         return Util::nFloat($this->valor, 2, false);
     }
-
-    /**
-     * Define o campo Descontos / Abatimentos
-     *
-     * @param  float $descontosAbatimentos
-     *
-     * @return AbstractBoleto
-     */
-    public function setDescontosAbatimentos($descontosAbatimentos)
-    {
-        $this->descontosAbatimentos = $descontosAbatimentos;
-
-        return $this;
-    }
-
-    /**
-     * Retorna o campo Descontos / Abatimentos
-     *
-     * @return string
-     */
-    public function getDescontosAbatimentos()
-    {
-        return Util::nFloat($this->descontosAbatimentos, 2, false);
-    }
-
     /**
      * Seta a % de multa
      *
@@ -1119,126 +1058,6 @@ abstract class AbstractBoleto implements BoletoContract
     public function getDiasBaixaAutomatica($default = 0)
     {
         return $this->diasBaixaAutomatica > 0 ? $this->diasBaixaAutomatica : $default;
-    }
-
-    /**
-     * Define o campo outras deduções do boleto
-     *
-     * @param  float $outrasDeducoes
-     *
-     * @return AbstractBoleto
-     */
-    public function setOutrasDeducoes($outrasDeducoes)
-    {
-        $this->outrasDeducoes = $outrasDeducoes;
-
-        return $this;
-    }
-
-    /**
-     * Retorna o campo outras deduções do boleto
-     *
-     * @return float
-     */
-    public function getOutrasDeducoes()
-    {
-        return $this->outrasDeducoes;
-    }
-
-    /**
-     * Define o campo outros acréscimos do boleto
-     *
-     * @param  float $outrosAcrescimos
-     *
-     * @return AbstractBoleto
-     */
-    public function setOutrosAcrescimos($outrosAcrescimos)
-    {
-        $this->outrosAcrescimos = $outrosAcrescimos;
-
-        return $this;
-    }
-
-    /**
-     * Retorna o campo outros acréscimos do boleto
-     *
-     * @return float
-     */
-    public function getOutrosAcrescimos()
-    {
-        return $this->outrosAcrescimos;
-    }
-
-    /**
-     * Define o campo quantidade do boleto
-     *
-     * @param  $quantidade
-     *
-     * @return AbstractBoleto
-     */
-    public function setQuantidade($quantidade)
-    {
-        $this->quantidade = $quantidade;
-
-        return $this;
-    }
-
-    /**
-     * Retorna o campo quantidade do boleto
-     *
-     * @return int
-     */
-    public function getQuantidade()
-    {
-        return $this->quantidade;
-    }
-
-    /**
-     * Define o campo valor cobrado do boleto
-     *
-     * @param  $valorCobrado
-     *
-     * @return AbstractBoleto
-     */
-    public function setValorCobrado($valorCobrado)
-    {
-        $this->valorCobrado = Util::nFloat($valorCobrado, 2, false);
-
-        return $this;
-    }
-
-    /**
-     * Retorna o campo valor cobrado do boleto
-     *
-     * @return string
-     */
-    public function getValorCobrado()
-    {
-        return Util::nFloat($this->valorCobrado, 2, false);
-    }
-
-    /**
-     * Define o campo "valor" do boleto
-     *
-     * @param  $valorUnitario
-     *
-     * @return AbstractBoleto
-     */
-    public function setValorUnitario($valorUnitario)
-    {
-        $this->valorUnitario = Util::nFloat($valorUnitario, 2, false);
-
-        return $this;
-    }
-
-    /**
-     * Retorna o campo "valor" do boleto
-     *
-     * @return string
-     */
-    public function getValorUnitario()
-    {
-        return Util::nFloat($this->valorUnitario, 2, false);
     }
 
     /**
@@ -1550,20 +1369,14 @@ abstract class AbstractBoleto implements BoletoContract
                 'logo_banco'                  => $this->getLogoBanco(),
                 'codigo_banco_com_dv'         => $this->getCodigoBancoComDv(),
                 'especie'                     => 'R$',
-                'quantidade'                  => $this->getQuantidade(),
                 'data_vencimento'             => $this->getDataVencimento(),
                 'data_processamento'          => $this->getDataProcessamento(),
                 'data_documento'              => $this->getDataDocumento(),
                 'valor'                       => Util::nReal($this->getValor(), 2, false),
-                'desconto_abatimento'         => Util::nReal($this->getDescontosAbatimentos(), 2, false),
-                'outras_deducoes'             => Util::nReal($this->getOutrasDeducoes(), 2, false),
                 'multa'                       => Util::nReal($this->getMulta(), 2, false),
                 'juros'                       => Util::nReal($this->getJuros(), 2, false),
                 'juros_apos'                  => $this->getJurosApos(),
                 'dias_protesto'               => $this->getDiasProtesto(),
-                'outros_acrescimos'           => Util::nReal($this->getOutrosAcrescimos(), 2, false),
-                'valor_cobrado'               => Util::nReal($this->getValorCobrado(), 2, false),
-                'valor_unitario'              => Util::nReal($this->getValorUnitario(), 2, false),
                 'sacador_avalista'            => $this->getSacadorAvalista() ? $this->getSacadorAvalista() ->toArray() : [],
                 'pagador'                     => $this->getPagador()->toArray(),
                 'demonstrativo'               => $this->getDescricaoDemonstrativo(),
