@@ -109,6 +109,7 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
     public function toArray()
     {
         $array = [
+            'codigoBanco' => $this->getCodigoBanco(),
             'header' => $this->header->toArray(),
             'trailer' => $this->trailer->toArray(),
             'detalhes' => new Collection()
