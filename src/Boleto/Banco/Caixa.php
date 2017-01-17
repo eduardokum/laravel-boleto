@@ -7,6 +7,12 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Caixa  extends AbstractBoleto implements BoletoContract
 {
+    public function __construct(array $params = [])
+    {
+        parent::__construct($params);
+        $this->setCamposObrigatorios('numero', 'agencia', 'carteira', 'codigoCliente');
+    }
+
     /**
      * Código do banco
      *
@@ -31,6 +37,35 @@ class Caixa  extends AbstractBoleto implements BoletoContract
         'NS' => '05',
         'LC' => '06',
     ];
+    /**
+     * Codigo do cliente junto ao banco.
+     *
+     * @var string
+     */
+    protected $codigoCliente;
+    /**
+     * Seta o codigo do cliente.
+     *
+     * @param mixed $codigoCliente
+     *
+     * @return $this
+     */
+    public function setCodigoCliente($codigoCliente)
+    {
+        $this->codigoCliente = $codigoCliente;
+
+        return $this;
+    }
+    /**
+     * Retorna o codigo do cliente.
+     *
+     * @return string
+     */
+    public function getCodigoCliente()
+    {
+        return $this->codigoCliente;
+    }
+
     /**
      * Gera o Nosso Número.
      *
@@ -83,7 +118,7 @@ class Caixa  extends AbstractBoleto implements BoletoContract
      * Método para gerar o código da posição de 20 a 44
      *
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     protected function getCampoLivre()
     {
@@ -91,7 +126,7 @@ class Caixa  extends AbstractBoleto implements BoletoContract
             return $this->campoLivre;
         }
         $nossoNumero = Util::numberFormatGeral($this->gerarNossoNumero(), 17);
-        $beneficiario = Util::numberFormatGeral($this->getConta(), 6);
+        $beneficiario = Util::numberFormatGeral($this->getCodigoCliente(), 6);
         // Código do beneficiário + DV]
         $campoLivre = $beneficiario . Util::modulo11($beneficiario);
         // Sequencia 1 (posições 3-5 NN) + Constante 1 (1 => registrada, 2 => sem registro)
