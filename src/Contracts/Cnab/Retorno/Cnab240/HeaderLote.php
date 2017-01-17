@@ -92,5 +92,4 @@ interface HeaderLote
      * @return array
      */
     public function toArray();
-
 }

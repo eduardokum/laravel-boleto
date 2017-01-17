@@ -16,7 +16,6 @@ use Eduardokum\LaravelBoleto\Util;
  */
 abstract class AbstractBoleto implements BoletoContract
 {
-
     /**
      * Campos que são necessários para o boleto
      *
@@ -306,7 +305,8 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * @return array
      */
-    public function getProtectedFields() {
+    public function getProtectedFields()
+    {
         return $this->protectedFields;
     }
 
@@ -315,7 +315,8 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @return $this
      */
-    protected function setCamposObrigatorios() {
+    protected function setCamposObrigatorios()
+    {
         $args = func_get_args();
         $this->camposObrigatorios = [];
         foreach ($args as $arg) {
@@ -329,7 +330,8 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @return $this
      */
-    protected function addCampoObrigatorio() {
+    protected function addCampoObrigatorio()
+    {
         $args = func_get_args();
         foreach ($args as $arg) {
             !is_array($arg) || call_user_func_array([$this, __FUNCTION__], $arg);
@@ -1217,7 +1219,7 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @throws \Exception
      */
-    public final function setNossoNumero()
+    final public function setNossoNumero()
     {
         throw new \Exception('Não é possível definir o nosso número diretamente. Utilize o método setNumero.');
     }
@@ -1275,7 +1277,7 @@ abstract class AbstractBoleto implements BoletoContract
     public function isValid()
     {
         foreach ($this->camposObrigatorios as $campo) {
-            if(call_user_func([$this, 'get' . ucwords($campo)]) == '') {
+            if (call_user_func([$this, 'get' . ucwords($campo)]) == '') {
                 return false;
             }
         }

@@ -97,7 +97,7 @@ class Bancoob extends AbstractBoleto implements BoletoContract
         $resto = $soma % 11;
         $digito_verificador = 0;
 
-        if (($resto != 0) && ($resto != 1)){
+        if (($resto != 0) && ($resto != 1)) {
             $digito_verificador = 11 - $resto;
         }
 
@@ -125,7 +125,7 @@ class Bancoob extends AbstractBoleto implements BoletoContract
         $campoLivre .= Util::numberFormatGeral($this->getConvenio(), 7);
         $campoLivre .= Util::numberFormatGeral($nossoNumero, 8);
         $campoLivre .= Util::numberFormatGeral(1, 3); //Numero da parcela - Não implementado
-        
+
         return $this->campoLivre = $campoLivre;
     }
 }

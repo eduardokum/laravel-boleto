@@ -7,7 +7,6 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Hsbc  extends AbstractBoleto implements BoletoContract
 {
-
     public function __construct(array $params = [])
     {
         parent::__construct($params);
@@ -90,12 +89,11 @@ class Hsbc  extends AbstractBoleto implements BoletoContract
     {
         $agencia = $this->getAgenciaDv() !== null ? $this->getAgencia() . '-' . $this->getAgenciaDv() : $this->getAgencia();
 
-        if($this->getContaDv() !== null && strlen($this->getContaDv()) == 1) {
-                $conta = substr($this->getConta(), 0, -1) . '-' .substr($this->getConta(), -1).$this->getContaDv();
-        } elseif($this->getContaDv() !== null && strlen($this->getContaDv()) == 2) {
+        if ($this->getContaDv() !== null && strlen($this->getContaDv()) == 1) {
             $conta = substr($this->getConta(), 0, -1) . '-' .substr($this->getConta(), -1).$this->getContaDv();
-        } else
-        {
+        } elseif ($this->getContaDv() !== null && strlen($this->getContaDv()) == 2) {
+            $conta = substr($this->getConta(), 0, -1) . '-' .substr($this->getConta(), -1).$this->getContaDv();
+        } else {
             $conta = $this->getConta();
         }
 

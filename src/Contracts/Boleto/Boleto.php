@@ -1,7 +1,7 @@
 <?php
 namespace Eduardokum\LaravelBoleto\Contracts\Boleto;
 
-Use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
+use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
 
 interface Boleto
 {
@@ -245,5 +245,4 @@ interface Boleto
      * @return mixed
      */
     public function baixarBoleto();
-
 }

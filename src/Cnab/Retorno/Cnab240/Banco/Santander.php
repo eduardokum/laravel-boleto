@@ -205,8 +205,6 @@ class Santander extends AbstractRetorno implements RetornoCnab240
     {
         $d = $this->detalheAtual();
         if ($this->getSegmentType($detalhe) == 'T') {
-
-
             $d->setOcorrencia($this->rem(16, 17, $detalhe))
                 ->setOcorrenciaDescricao(array_get($this->ocorrencias, $this->detalheAtual()->getOcorrencia(), 'Desconhecida'))
                 ->setNossoNumero($this->rem(41, 53, $detalhe))
@@ -251,11 +249,9 @@ class Santander extends AbstractRetorno implements RetornoCnab240
             } else {
                 $d->setOcorrenciaTipo($d::OCORRENCIA_OUTROS);
             }
-
         }
 
         if ($this->getSegmentType($detalhe) == 'U') {
-
             $d->setValorMulta(Util::nFloat($this->rem(18, 32, $detalhe)/100, 2, false))
                 ->setValorDesconto(Util::nFloat($this->rem(33, 47, $detalhe)/100, 2, false))
                 ->setValorAbatimento(Util::nFloat($this->rem(48, 62, $detalhe)/100, 2, false))

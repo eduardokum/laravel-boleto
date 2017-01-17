@@ -8,7 +8,6 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Caixa extends AbstractRetorno implements RetornoCnab400
 {
-
     /**
      * Código do banco
      *

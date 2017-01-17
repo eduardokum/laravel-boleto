@@ -116,7 +116,7 @@ class Pessoa implements PessoaContract
     public function setDocumento($documento)
     {
         $documento = substr($documento, -14);
-        if(!in_array(strlen(Util::onlyNumbers($documento)), [10,11,14,0])) {
+        if (!in_array(strlen(Util::onlyNumbers($documento)), [10, 11, 14, 0])) {
             throw new \Exception('Documento inválido');
         }
         $this->documento = $documento;
@@ -253,7 +253,8 @@ class Pessoa implements PessoaContract
     /**
      * @return array
      */
-    public function toArray() {
+    public function toArray()
+    {
         return [
             'nome' => $this->getNome(),
             'endereco' => $this->getEndereco(),

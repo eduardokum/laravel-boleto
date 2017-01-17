@@ -2,10 +2,8 @@
 
 namespace Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno;
 
-
 interface Detalhe
 {
-
     const OCORRENCIA_LIQUIDADA = 1;
     const OCORRENCIA_BAIXADA = 2;
     const OCORRENCIA_ENTRADA = 3;

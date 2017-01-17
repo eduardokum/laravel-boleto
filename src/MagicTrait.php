@@ -8,7 +8,6 @@
 
 namespace Eduardokum\LaravelBoleto;
 
-
 trait MagicTrait
 {
     /**
@@ -57,7 +56,6 @@ trait MagicTrait
      */
     public function toArray()
     {
-
         $vars = array_keys(get_class_vars(self::class));
         $aRet = [];
         foreach ($vars as $var) {
@@ -66,7 +64,7 @@ trait MagicTrait
                 ? $this->$methodName()
                 : $this->$var;
 
-            if( is_object($aRet[$var]) && method_exists($aRet[$var], 'toArray') ) {
+            if (is_object($aRet[$var]) && method_exists($aRet[$var], 'toArray')) {
                 $aRet[$var] = $aRet[$var]->toArray();
             }
         }

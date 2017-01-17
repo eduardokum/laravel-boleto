@@ -79,9 +79,8 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
      * @param String $file
      * @throws \Exception
      */
-    public function __construct($file) 
+    public function __construct($file)
     {
-
         $this->_position = 1;
 
         if (!$this->file = Util::file2array($file)) {
@@ -91,8 +90,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
         $r = new \ReflectionClass('\Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto');
         $constantNames = $r->getConstants();
         $bancosDisponiveis = [];
-        foreach ($constantNames as $constantName => $codigoBanco)
-        {
+        foreach ($constantNames as $constantName => $codigoBanco) {
             if (preg_match('/^COD_BANCO.*/', $constantName)) {
                 $bancosDisponiveis[] = $codigoBanco;
             }
@@ -225,37 +223,37 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
     }
 
 
-    public function current() 
+    public function current()
     {
         return $this->detalhe[$this->_position];
     }
 
-    public function next() 
+    public function next()
     {
         ++$this->_position;
     }
 
-    public function key() 
+    public function key()
     {
         return $this->_position;
     }
 
-    public function valid() 
+    public function valid()
     {
         return isset($this->detalhe[$this->_position]);
     }
 
-    public function rewind() 
+    public function rewind()
     {
         $this->_position = 1;
     }
 
-    public function count() 
+    public function count()
     {
         return count($this->detalhe);
     }
 
-    public function seek($position) 
+    public function seek($position)
     {
         $this->_position = $position;
         if (!$this->valid()) {

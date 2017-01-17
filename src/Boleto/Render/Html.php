@@ -5,7 +5,6 @@ use \Eduardokum\LaravelBoleto\Contracts\Boleto\Render\Html as HtmlContract;
 
 class Html implements HtmlContract
 {
-
     /**
      * Dados para passar pra view.
      *
@@ -66,7 +65,8 @@ class Html implements HtmlContract
         // Draw dos dados
         while (strlen($codigo_barras) > 0) {
             $i = round(substr($codigo_barras, 0, 2));
-            $codigo_barras = substr($codigo_barras, strlen($codigo_barras) - (strlen($codigo_barras) - 2), strlen($codigo_barras) - 2); ;
+            $codigo_barras = substr($codigo_barras, strlen($codigo_barras) - (strlen($codigo_barras) - 2), strlen($codigo_barras) - 2);
+            ;
             $f = $barcodes[$i];
             for ($i = 1; $i < 11; $i += 2) {
                 if (substr($f, ($i - 1), 1) == "0") {

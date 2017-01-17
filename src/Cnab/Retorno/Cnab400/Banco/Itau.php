@@ -158,7 +158,6 @@ class Itau extends AbstractRetorno implements RetornoCnab400
 
     protected function processarTrailer(array $trailer)
     {
-
         $this->getTrailer()
             ->setQuantidadeTitulos((int) $this->rem(18, 25, $trailer) + (int) $this->rem(58, 65, $trailer) + (int) $this->rem(178, 185, $trailer))
             ->setValorTitulos((float) Util::nFloat($this->rem(221, 234, $trailer)/100, 2, false))

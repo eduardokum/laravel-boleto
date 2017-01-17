@@ -260,12 +260,10 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(159, 160, self::INSTRUCAO_SEM);
         $diasProtesto = '00';
         $const = sprintf('self::INSTRUCAO_PROTESTAR_VENC_%02s', $boleto->getDiasProtesto());
-        if($boleto->getStatus() != $boleto::STATUS_BAIXA) {
+        if ($boleto->getStatus() != $boleto::STATUS_BAIXA) {
             if (defined($const)) {
                 $this->add(157, 158, constant($const));
-            }
-            else
-            {
+            } else {
                 $this->add(157, 158, self::INSTRUCAO_PROTESTAR_VENC_XX);
                 $diasProtesto = Util::formatCnab('9', $boleto->getDiasProtesto(), 2, 0);
             }
@@ -304,7 +302,6 @@ class Bb extends AbstractRemessa implements RemessaContract
             $this->add(23, 394, '');
             $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
         }
-
     }
 
     protected function trailer()

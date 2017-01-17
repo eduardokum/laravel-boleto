@@ -132,7 +132,8 @@ abstract class AbstractRemessa
      *
      * @return $this
      */
-    protected function setCamposObrigatorios() {
+    protected function setCamposObrigatorios()
+    {
         $args = func_get_args();
         $this->camposObrigatorios = [];
         foreach ($args as $arg) {
@@ -146,7 +147,8 @@ abstract class AbstractRemessa
      *
      * @return $this
      */
-    protected function addCampoObrigatorio() {
+    protected function addCampoObrigatorio()
+    {
         $args = func_get_args();
         foreach ($args as $arg) {
             !is_array($arg) || call_user_func_array([$this, __FUNCTION__], $arg);
@@ -199,7 +201,7 @@ abstract class AbstractRemessa
      * @return AbstractRemessa
      * @throws \Exception
      */
-    public function setBeneficiario( $beneficiario)
+    public function setBeneficiario($beneficiario)
     {
         Util::addPessoa($this->beneficiario, $beneficiario);
         return $this;
@@ -311,10 +313,10 @@ abstract class AbstractRemessa
      *
      * @return boolean
      */
-    public function isValid() 
+    public function isValid()
     {
         foreach ($this->camposObrigatorios as $campo) {
-            if(call_user_func([$this, 'get' . ucwords($campo)]) == '') {
+            if (call_user_func([$this, 'get' . ucwords($campo)]) == '') {
                 return false;
             }
         }
@@ -361,7 +363,7 @@ abstract class AbstractRemessa
      *
      * @return $this
      */
-    public function addBoletos(array $boletos) 
+    public function addBoletos(array $boletos)
     {
         foreach ($boletos as $boleto) {
             $this->addBoleto($boleto);
@@ -390,7 +392,7 @@ abstract class AbstractRemessa
      *
      * @return mixed
      */
-    protected function getHeader() 
+    protected function getHeader()
     {
         return $this->aRegistros[self::HEADER];
     }
@@ -400,7 +402,7 @@ abstract class AbstractRemessa
      *
      * @return \Illuminate\Support\Collection
      */
-    protected function getDetalhes() 
+    protected function getDetalhes()
     {
         return collect($this->aRegistros[self::DETALHE]);
     }
@@ -410,7 +412,7 @@ abstract class AbstractRemessa
      *
      * @return mixed
      */
-    protected function getTrailer() 
+    protected function getTrailer()
     {
         return $this->aRegistros[self::TRAILER];
     }
@@ -423,10 +425,9 @@ abstract class AbstractRemessa
      * @return string
      * @throws \Exception
      */
-    protected function valida(array $a) 
+    protected function valida(array $a)
     {
-        if($this->tamanho_linha === false)
-        {
+        if ($this->tamanho_linha === false) {
             throw new \Exception('Classe remessa deve informar o tamanho da linha');
         }
 

@@ -8,7 +8,6 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Banrisul extends AbstractRetorno implements RetornoCnab400
 {
-
     /**
      * Código do banco
      *

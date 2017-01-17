@@ -8,7 +8,6 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Hsbc extends AbstractRemessa implements RemessaContract
 {
-
     const ESPECIE_DUPLICATA = '01';
     const ESPECIE_NOTA_PROMISSORIA = '02';
     const ESPECIE_NOTA_SEGURO = '03';

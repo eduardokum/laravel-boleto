@@ -8,7 +8,6 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Caixa  extends AbstractRemessa implements RemessaContract
 {
-
     const ESPECIE_DUPLICATA = '01';
     const ESPECIE_NOTA_PROMISSORIA = '02';
     const ESPECIE_DUPLICATA_SERVICO = '03';
@@ -171,7 +170,7 @@ class Caixa  extends AbstractRemessa implements RemessaContract
         $this->add(159, 160, self::INSTRUCAO_SEM);
         if ($boleto->getDiasProtesto() > 0) {
             $this->add(157, 158, self::INSTRUCAO_PROTESTAR_VENC_XX);
-        } elseif($boleto->getDiasBaixaAutomatica() > 0) {
+        } elseif ($boleto->getDiasBaixaAutomatica() > 0) {
             $this->add(157, 158, self::INSTRUCAO_DEVOLVER_VENC_XX);
         }
         $juros = 0;

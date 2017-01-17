@@ -8,7 +8,6 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Itau extends AbstractRemessa implements RemessaContract
 {
-
     const ESPECIE_DUPLICATA = '01';
     const ESPECIE_NOTA_PROMISSORIA = '02';
     const ESPECIE_NOTA_SEGURO = '03';
@@ -204,7 +203,7 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(159, 160, self::INSTRUCAO_VALOR_SOMA_MORA);
         if ($boleto->getDiasProtesto() > 0) {
             $this->add(157, 158, self::INSTRUCAO_PROTESTAR_VENC_XX);
-        } elseif($boleto->getDiasBaixaAutomatica() > 0) {
+        } elseif ($boleto->getDiasBaixaAutomatica() > 0) {
             $this->add(157, 158, self::INSTRUCAO_DEVOL_VENC_XX);
         }
         $juros = 0;

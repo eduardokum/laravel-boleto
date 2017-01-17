@@ -15,7 +15,6 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Santander extends AbstractRemessa implements RemessaContract
 {
-
     const DM_DUPLICATA_MERCANTIL = 02;
     const DS_DUPLICATA_DE_SERVICO = 04;
     const LC_LETRA_DE_CÂMBIO_SOMENTE_PARA_BANCO_353 = 07;
@@ -224,7 +223,6 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(216, 218, Util::formatCnab(9, 0, 3)); // Quantidade total de parcelas
         $this->add(218, 221, Util::formatCnab(9, 0, 3)); // Número do plano
         $this->add(218, 240, ''); // Reservado (Uso Banco)
-
     }
 
     protected function header()
@@ -333,5 +331,4 @@ class Santander extends AbstractRemessa implements RemessaContract
 
         return $this;
     }
-
 }

@@ -9,7 +9,6 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Bradesco extends AbstractRemessa implements RemessaContract
 {
-
     const ESPECIE_DUPLICATA = '01';
     const ESPECIE_NOTA_PROMISSORIA = '02';
     const ESPECIE_NOTA_SEGURO = '03';
@@ -192,7 +191,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
         if ($boleto->getDiasProtesto() > 0) {
             $this->add(157, 158, self::INSTRUCAO_PROTESTAR_XX);
             $this->add(159, 160, Util::formatCnab('9', $boleto->getDiasProtesto(), 2));
-        } elseif($boleto->getDiasBaixaAutomatica() > 0) {
+        } elseif ($boleto->getDiasBaixaAutomatica() > 0) {
             $this->add(157, 158, self::INSTRUCAO_DEVOLVER_XX);
             $this->add(159, 160, Util::formatCnab('9', $boleto->getDiasBaixaAutomatica(), 2));
         }

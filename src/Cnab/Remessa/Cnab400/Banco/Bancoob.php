@@ -136,7 +136,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(31, 31, Util::modulo11($this->getConta()));
         $this->add(32, 37, '000000');
         $this->add(38, 62, Util::formatCnab('X', '', 25)); // numero de controle
-        $this->add(63, 74, Util::formatCnab('9', str_replace('-','',$boleto->getNossoNumeroBoleto()), 12));
+        $this->add(63, 74, Util::formatCnab('9', str_replace('-', '', $boleto->getNossoNumeroBoleto()), 12));
         $this->add(75, 76, '01'); //Numero da parcela - Não implementado
         $this->add(77, 78, '00'); //Grupo de valor
         $this->add(82, 82, '');
@@ -171,12 +171,12 @@ class Bancoob extends AbstractRemessa implements RemessaContract
 
         $juros = 0;
 
-        if(($boleto->getStatus() != $boleto::STATUS_BAIXA) && ($boleto->getDiasProtesto() > 0)) {
+        if (($boleto->getStatus() != $boleto::STATUS_BAIXA) && ($boleto->getDiasProtesto() > 0)) {
             $const = sprintf('self::INSTRUCAO_PROTESTAR_VENC_%02s', $boleto->getDiasProtesto());
 
             if (defined($const)) {
                 $this->add(157, 158, constant($const));
-            }else{
+            } else {
                 throw new \Exception("A instrução para protesto em ".$boleto->getDiasProtesto()." dias não existe no banco.");
             }
 

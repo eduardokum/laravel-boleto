@@ -3,7 +3,6 @@ namespace Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400;
 
 interface Header
 {
-
     /**
      * @return mixed
      */
@@ -65,5 +64,4 @@ interface Header
      * @return array
      */
     public function toArray();
-
 }

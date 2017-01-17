@@ -10,7 +10,6 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Banrisul extends AbstractRemessa implements RemessaContract
 {
-
     const TIPO_COBRANCA_DIRETA = '04';
     const TIPO_COBRANCA_ESCRITURAL = '06';
     const TIPO_COBRANCA_CREDENCIADA = '08';
@@ -241,7 +240,6 @@ class Banrisul extends AbstractRemessa implements RemessaContract
      */
     public function addBoleto(BoletoContract $boleto)
     {
-
         $this->iniciaDetalhe();
 
         $this->add(1, 1, 1);
@@ -272,7 +270,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(159, 160, self::INSTRUCAO_SEM);
         if ($boleto->getDiasProtesto() > 0) {
             $this->add(157, 158, self::INSTRUCAO_PROTESTAR_XX);
-        } elseif($boleto->getDiasBaixaAutomatica() > 0) {
+        } elseif ($boleto->getDiasBaixaAutomatica() > 0) {
             $this->add(157, 158, self::INSTRUCAO_DEVOLVER_XX);
         }
         if ($boleto->getMulta() > 0) {
@@ -335,9 +333,8 @@ class Banrisul extends AbstractRemessa implements RemessaContract
      *
      * @return bool
      */
-    private function isCarteiraRSX(array $adicional = []) 
+    private function isCarteiraRSX(array $adicional = [])
     {
         return in_array(Util::upper($this->getCarteira()), array_merge(['R', 'S', 'X'], $adicional));
     }
-
 }

@@ -8,7 +8,6 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Santander extends AbstractRetorno implements RetornoCnab400
 {
-
     /**
      * Código do banco
      *
@@ -263,7 +262,6 @@ class Santander extends AbstractRetorno implements RetornoCnab400
 
     protected function processarDetalhe(array $detalhe)
     {
-
         if ($this->count() == 1) {
             if (trim($this->rem(384, 385, $detalhe), '') != '') {
                 $this->getHeader()

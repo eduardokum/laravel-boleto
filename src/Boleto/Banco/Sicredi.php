@@ -7,7 +7,6 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Sicredi extends AbstractBoleto implements BoletoContract
 {
-
     public function __construct(array $params = [])
     {
         parent::__construct($params);

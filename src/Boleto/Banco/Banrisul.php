@@ -47,7 +47,7 @@ class Banrisul extends AbstractBoleto implements BoletoContract
      * @param  $nossoNumero
      * @return int
      */
-    private function duploDigitoBanrisul($nossoNumero) 
+    private function duploDigitoBanrisul($nossoNumero)
     {
         $dv1 = Util::modulo10($nossoNumero);
         $dv2 = Util::modulo11($nossoNumero . $dv1, 2, 7, 0, 10);
@@ -71,7 +71,7 @@ class Banrisul extends AbstractBoleto implements BoletoContract
      */
     public function setDiasBaixaAutomatica($baixaAutomatica)
     {
-        if($this->getDiasProtesto() > 0) {
+        if ($this->getDiasProtesto() > 0) {
             throw new \Exception('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
         }
         $baixaAutomatica = (int) $baixaAutomatica;

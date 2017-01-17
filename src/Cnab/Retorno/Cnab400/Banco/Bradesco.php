@@ -8,7 +8,6 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Bradesco extends AbstractRetorno implements RetornoCnab400
 {
-
     /**
      * Código do banco
      *
@@ -71,7 +70,6 @@ class Bradesco extends AbstractRetorno implements RetornoCnab400
 
     protected function processarHeader(array $header)
     {
-
         $this->getHeader()
             ->setOperacaoCodigo($this->rem(2, 2, $header))
             ->setOperacao($this->rem(3, 9, $header))
@@ -85,7 +83,6 @@ class Bradesco extends AbstractRetorno implements RetornoCnab400
 
     protected function processarDetalhe(array $detalhe)
     {
-
         if ($this->count() == 1) {
             $this->getHeader()
                 ->setAgencia($this->rem(25, 29, $detalhe))
@@ -138,7 +135,6 @@ class Bradesco extends AbstractRetorno implements RetornoCnab400
 
     protected function processarTrailer(array $trailer)
     {
-
         $this->getTrailer()
             ->setQuantidadeTitulos($this->rem(18, 25, $trailer))
             ->setValorTitulos(Util::nFloat($this->rem(26, 39, $trailer)/100, 2, false))

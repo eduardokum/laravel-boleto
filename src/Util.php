@@ -14,7 +14,6 @@ use Carbon\Carbon;
  */
 final class Util
 {
-
     public static $bancos = [
         '246' => 'Banco ABC Brasil S.A.',
         '025' => 'Banco Alfa S.A.',
@@ -304,7 +303,6 @@ final class Util
      */
     public static function normalizeChars($string)
     {
-
         $normalizeChars = array(
             'Á' => 'A', 'À' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Å' => 'A', 'Ä' => 'A', 'Æ' => 'AE', 'Ç' => 'C',
             'É' => 'E', 'È' => 'E', 'Ê' => 'E', 'Ë' => 'E', 'Í' => 'I', 'Ì' => 'I', 'Î' => 'I', 'Ï' => 'I', 'Ð' => 'Eth',
@@ -346,7 +344,7 @@ final class Util
             }
         }
 
-        return number_format($formater->parse($number, \NumberFormatter::TYPE_DOUBLE), $decimals, '.', ($showThousands ? ',' : '') );
+        return number_format($formater->parse($number, \NumberFormatter::TYPE_DOUBLE), $decimals, '.', ($showThousands ? ',' : ''));
     }
 
     /**
@@ -484,7 +482,7 @@ final class Util
             $type = 's';
             $valor = ($dec > 0) ? sprintf("%.{$dec}f", $valor) : $valor;
             $valor = str_replace(array(',', '.'), '', $valor);
-        } else if (in_array($tipo, array('A', 'X'))) {
+        } elseif (in_array($tipo, array('A', 'X'))) {
             $left = '-';
             $type = 's';
             $valor = strtoupper(self::normalizeChars($valor));
@@ -854,7 +852,8 @@ final class Util
      *
      * @return array|bool
      */
-    public static function file2array($file) {
+    public static function file2array($file)
+    {
         if (is_array($file) && isset($file[0]) && is_string($file[0])) {
             return $file;
         } elseif (is_string($file) && is_file($file) && file_exists($file)) {
@@ -877,7 +876,7 @@ final class Util
      *
      * @return bool
      */
-    public static function isHeaderRetorno($header) 
+    public static function isHeaderRetorno($header)
     {
         if (!self::isCnab240($header) && !self::isCnab400($header)) {
             return false;
@@ -895,11 +894,11 @@ final class Util
      * @param object $obj
      * @param array  $params
      */
-    public static function fillClass(&$obj, array $params) {
-        foreach ($params as $param => $value)
-        {
+    public static function fillClass(&$obj, array $params)
+    {
+        foreach ($params as $param => $value) {
             $param = str_replace(' ', '', ucwords(str_replace('_', ' ', $param)));
-            if(method_exists($obj, 'getProtectedFields') && in_array(lcfirst($param), $obj->getProtectedFields())) {
+            if (method_exists($obj, 'getProtectedFields') && in_array(lcfirst($param), $obj->getProtectedFields())) {
                 continue;
             }
             if (method_exists($obj, 'set' . ucwords($param))) {
@@ -915,11 +914,12 @@ final class Util
      * @return Pessoa
      * @throws \Exception
      */
-    public static function addPessoa(&$property, $obj) {
-        if(is_subclass_of($obj, 'Eduardokum\\LaravelBoleto\\Contracts\\Pessoa')) {
+    public static function addPessoa(&$property, $obj)
+    {
+        if (is_subclass_of($obj, 'Eduardokum\\LaravelBoleto\\Contracts\\Pessoa')) {
             $property = $obj;
             return $obj;
-        } elseif(is_array($obj)) {
+        } elseif (is_array($obj)) {
             $obj = new Pessoa($obj);
             $property = $obj;
             return $obj;
