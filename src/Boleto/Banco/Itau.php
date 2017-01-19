@@ -116,11 +116,8 @@ class Itau extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        if(in_array($this->getCarteira(), [112, 188])) {
-            return Util::numberFormatGeral(0, 9);
-        }
         $this->getCampoLivre(); // Força o calculo do DV.
-        return Util::numberFormatGeral($this->getNumeroDocumento(), 8) . $this->carteiraDv;
+        return Util::numberFormatGeral($this->getNumero(), 8) . $this->carteiraDv;
     }
     /**
      * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
@@ -142,7 +139,7 @@ class Itau extends AbstractBoleto implements BoletoContract
         if ($this->campoLivre) {
             return $this->campoLivre;
         }
-        $numero_boleto = Util::numberFormatGeral($this->getNumeroDocumento(), 8);
+        $numero_boleto = Util::numberFormatGeral($this->getNumero(), 8);
         $carteira = Util::numberFormatGeral($this->getCarteira(), 3);
         $this->carteiraDv = $dvAgContaCarteira = Util::modulo10($carteira . $numero_boleto);
         $agencia = Util::numberFormatGeral($this->getAgencia(), 4);
