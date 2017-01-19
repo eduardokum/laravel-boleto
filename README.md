@@ -24,37 +24,19 @@ Essas mudanças seram comitadas no branch **develop** e será definido uma data 
 
 ## Bancos suportados
 
-**Boleto**
-- Banco do Brasil
-- Bancoob (Sicoob)
-- Banrisul **necessita homologação**
-- Bradesco
-- Caixa
-- Hsbc
-- Itau
-- Santander
-- Sicredi **em processo de homologação**
+Banco | Boleto | Remessa 400 | Remessa 240 | Retorno 400 | Retorno 240
+----- | ------ | ----------- | ----------- | ----------- | ----------- |
+ Banco do Brasil | :white_check_mark: | :white_check_mark: | | :white_check_mark: | |
+ Bancoob (Sicoob) | :white_check_mark: * | :white_check_mark: | | | :white_check_mark: * |
+ Banrisul | :white_check_mark: | :white_check_mark: | | :white_check_mark: | |
+ Bradesco | :white_check_mark: | :white_check_mark: | | :white_check_mark: | |
+ Caixa | :white_check_mark: | :white_check_mark: | | :white_check_mark: | |
+ Hsbc | :white_check_mark: | :white_check_mark: | | :white_check_mark: | |
+ Itau | :white_check_mark: | :white_check_mark: | | :white_check_mark: | |
+ Santander | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+ Sicredi | :white_check_mark: | :white_check_mark: * | | :white_check_mark: * | |
 
-**Remessa**
-- Banco do Brasil [400]
-- Bancoob (Sicoob) [400]
-- Banrisul [400] **necessita homologação e complemento**
-- Bradesco [400]
-- Caixa [400]
-- Hsbc [400]
-- Itau [400]
-- Santander [400, 240 **necessita testes**]
-- Sicredi [400]  **em processo de homologação**
-
-**Retorno**
-- Banco do Brasil  [400]
-- Bancoob (Sicoob) [240] **necessita homologação**
-- Bradesco [400]
-- Caixa [400]
-- Hsbc [400]
-- Itau [400]
-- Santander [400, 240]
-- Sicredi [400] **em testes**
+**\* necessita de homologação**
 
 ## Instalação
 Via composer:
@@ -67,7 +49,6 @@ Ou adicione manualmente ao seu composer.json:
 
 ## Gerar boleto
 
-Gerando somente 1
 
 ### Criando o beneficiário ou pagador
 
@@ -91,6 +72,8 @@ $pagador = new \Eduardokum\LaravelBoleto\Pessoa([
     'documento' => '999.999.999-99',
 ]);
 ```
+
+### Criando o objeto boleto
 
 ```php
 $boletoArray = [
@@ -122,17 +105,23 @@ $boletoArray = [
 ];
 
 $boleto = new \Eduardokum\LaravelBoleto\Boleto\Banco\Bb($boletoArray);
+```
 
+### Gerando o boleto
+
+**Gerando o boleto a partir da instância do objeto (somente um boleto)**
+
+```php
 $boleto->renderPDF();
 // ou
 $boleto->renderHTML();
-
 ```
 
+**Gerando boleto a partir da instância do render (mais de um boleto para o PDF)**
 
-Gerando mais de 1, não chamar a função render() do boleto e usar: (SOMENTE PDF)
 
 ```php
+# Gerar em PDF
 $pdf = new Eduardokum\LaravelBoleto\Boleto\Render\Pdf();
 
 $pdf->addBoleto($boleto);
@@ -140,6 +129,12 @@ Ou para adicionar um array de boletos
 $pdf->addBoletos($boletos);
 
 $pdf->gerarBoleto();
+
+
+# Gerar em HTML 
+$html = new Eduardokum\LaravelBoleto\Boleto\Render\Html($boleto->toArray());
+
+$html->gerarBoleto();
 ```
 
 ## Gerar remessa
