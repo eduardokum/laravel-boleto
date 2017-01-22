@@ -191,4 +191,17 @@ class Sicredi extends AbstractBoleto implements BoletoContract
         $campo_livre = $tipo_cobranca . $carteira . $nosso_numero . $agencia . $posto . $conta . $possui_valor . '0';
         return $this->campoLivre = $campo_livre . Util::modulo11($campo_livre);
     }
+
+    /**
+     * Retorna o código do banco com o dígito verificador ('X') para o banco Sicredi
+     *
+     * @return string
+     */
+    public function getCodigoBancoComDv()
+    {
+        $codigoBanco = $this->getCodigoBanco();
+
+        return $codigoBanco . '-' . 'X';
+    }
+
 }
