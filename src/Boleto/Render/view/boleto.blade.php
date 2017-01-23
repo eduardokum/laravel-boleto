@@ -79,7 +79,7 @@
             </td>
             <td>
                 <div class="titulo">Nº documento</div>
-                <div class="conteudo rtl">{{ $numero['documento'] }}</div>
+                <div class="conteudo rtl">{{ $numero_documento }}</div>
             </td>
             <td>
                 <div class="titulo">Nosso número</div>
