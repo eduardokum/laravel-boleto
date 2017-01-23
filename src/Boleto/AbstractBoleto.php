@@ -1417,6 +1417,24 @@ abstract class AbstractBoleto implements BoletoContract
     }
 
     /**
+     * @return $this
+     */
+    public function copy() {
+        return clone $this;
+    }
+
+    /**
+     * On clone clean variables
+     */
+    function __clone()
+    {
+        $this->campoLivre = null;
+        $this->campoNossoNumero = null;
+        $this->campoLinhaDigitavel = null;
+        $this->campoCodigoBarras = null;
+    }
+
+    /**
      * Return Boleto Array.
      *
      * @return array

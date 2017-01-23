@@ -84,7 +84,7 @@ class Pdf extends AbstractPdf implements PdfContract
      */
     protected function logoEmpresa($i)
     {
-        $this->Ln(10);
+        $this->Ln(2);
         $this->SetFont($this->PadraoFont, '', $this->fdes);
 
         $logo = preg_replace('/\&.*/', '', $this->boleto[$i]->getLogo());
@@ -99,7 +99,7 @@ class Pdf extends AbstractPdf implements PdfContract
         $this->Cell(0, $this->desc, $this->_($this->boleto[$i]->getBeneficiario()->getEndereco()), 0, 1);
         $this->Cell(56);
         $this->Cell(0, $this->desc, $this->_($this->boleto[$i]->getBeneficiario()->getCepCidadeUf()), 0, 1);
-        $this->Ln(10);
+        $this->Ln(8);
 
         return $this;
     }
