@@ -1408,6 +1408,7 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @return string
      * @throws \Exception
+     * @throws \Throwable
      */
     public function renderHTML($print = false)
     {

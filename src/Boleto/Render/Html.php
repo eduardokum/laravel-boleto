@@ -97,12 +97,12 @@ class Html implements HtmlContract
      * @param bool $print
      *
      * @return string
+     * @throws \Throwable
      */
     public function gerarBoleto($print = false)
     {
-        $view = view();
         $this->dados['imprimir_carregamento'] = (bool) $print;
-        $view->addNamespace('BoletoHtmlRender', realpath(__DIR__ . '/view/'));
-        return $view->make('BoletoHtmlRender::boleto', $this->dados)->render();
+        view()->addNamespace('BoletoHtmlRender', realpath(__DIR__ . '/view/'));
+        return view('BoletoHtmlRender::boleto', $this->dados)->render();
     }
 }
