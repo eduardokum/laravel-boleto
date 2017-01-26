@@ -45,7 +45,7 @@ composer require eduardokum/laravel-boleto
 
 Ou adicione manualmente ao seu composer.json:
 
-"eduardokum/laravel-boleto": "dev-master"
+"eduardokum/laravel-boleto": "dev-develop"
 
 ## Gerar boleto
 
