@@ -7,6 +7,14 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Itau extends AbstractBoleto implements BoletoContract
 {
+
+    /**
+     * Local de pagamento
+     *
+     * @var string
+     */
+    protected $localPagamento = 'Até o vencimento, preferencialmente no Itaú';
+
     /**
      * Código do banco
      *
