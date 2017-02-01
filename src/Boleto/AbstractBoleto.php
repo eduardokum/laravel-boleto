@@ -1227,22 +1227,14 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Retorna o Nosso Número calculado.
      *
-     * @param  bool $incluirFormatacao Incluir formatação ou não (pontuação, espaços e barras)
-     *
      * @return string
      */
-    public function getNossoNumero($incluirFormatacao = true)
+    public function getNossoNumero()
     {
         if (empty($this->campoNossoNumero)) {
-            $this->campoNossoNumero = $this->gerarNossoNumero();
+            return $this->campoNossoNumero = $this->gerarNossoNumero();
         }
-        $numero = $this->campoNossoNumero;
-        // Remove a formatação, caso especificado
-        if (! $incluirFormatacao) {
-            return Util::onlyNumbers($numero);
-        }
-
-        return $numero;
+        return $this->campoNossoNumero;
     }
 
     /**
