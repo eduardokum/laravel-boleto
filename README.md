@@ -8,13 +8,16 @@
 [![Build Status](https://travis-ci.org/eduardokum/laravel-boleto.svg?branch=master)](https://travis-ci.org/eduardokum/laravel-boleto)
 [![GitHub forks](https://img.shields.io/github/forks/eduardokum/laravel-boleto.svg?style=social&label=Fork)](https://github.com/eduardokum/laravel-boleto)
 
-# laravel-boleto
-Pacote para gerar boletos e remessas
+# Laravel Boleto
+Pacote para gerar boletos, remessas e leitura de retorno.
+
+## Para dúvidas ou sugestões utilize o nosso grupo de discussão
 
 ----------
 
 ## Links
 - [Documentação da API](http://eduardokum.github.io/laravel-boleto/)
+- [Grupo de Discussão](https://groups.google.com/d/forum/laravel-boleto)
 
 ## Bancos suportados
 
