@@ -422,7 +422,7 @@ class Pdf extends AbstractPdf implements PdfContract
             $this->Output($save_path, $dest, $print);
             return $save_path;
         }
-        return $this->Output(rand(1, 9999) . '.pdf', $dest, $print);
+        return $this->Output(str_random(32) . '.pdf', $dest, $print);
     }
 
     /**
