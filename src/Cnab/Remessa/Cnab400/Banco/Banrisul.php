@@ -10,14 +10,6 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Banrisul extends AbstractRemessa implements RemessaContract
 {
-
-    /**
-     * Valor total dos titulos
-     *
-     * @var int
-     */
-    private $valorTotal = 0;
-
     const TIPO_COBRANCA_DIRETA = '04';
     const TIPO_COBRANCA_ESCRITURAL = '06';
     const TIPO_COBRANCA_CREDENCIADA = '08';
@@ -51,6 +43,19 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     const OCORRENCIA_ALT_PAGADOR_CEP = '21';
     const OCORRENCIA_ACERTO_RATEIO_CREDITO = '68';
     const OCORRENCIA_CANC_RATEIO_CREDITO = '69';
+
+    public function __construct(array $params = [])
+    {
+        parent::__construct($params);
+        $this->addCampoObrigatorio('codigoCliente');
+    }
+
+    /**
+     * Valor total dos titulos
+     *
+     * @var int
+     */
+    private $valorTotal = 0;
 
     /**
      * Código do banco
@@ -189,6 +194,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
 
     /**
      * @return $this
+     * @throws \Exception
      */
     protected function header()
     {
@@ -228,18 +234,19 @@ class Banrisul extends AbstractRemessa implements RemessaContract
 
     /**
      * @param BoletoContract $boleto
+     *
      * @return bool
+     * @throws \Exception
      */
     public function addBoleto(BoletoContract $boleto)
     {
-
         $this->iniciaDetalhe();
 
         $this->add(1, 1, 1);
         $this->add(2, 17, '');
         $this->add(18, 30, Util::formatCnab('9', $this->getCodigoCliente(), 13, '0'));
         $this->add(31, 37, '');
-        $this->add(38, 62, Util::formatCnab('X', $boleto->getNumero(), 25));
+        $this->add(38, 62, Util::formatCnab('X', $boleto->getNumeroControle(), 25));
         $this->add(63, 72, Util::formatCnab('9L', $boleto->getNossoNumero(), 10));
         $this->add(73, 104, '');
         $this->add(105, 107, '');
@@ -263,7 +270,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(159, 160, self::INSTRUCAO_SEM);
         if ($boleto->getDiasProtesto() > 0) {
             $this->add(157, 158, self::INSTRUCAO_PROTESTAR_XX);
-        } elseif($boleto->getDiasBaixaAutomatica() > 0) {
+        } elseif ($boleto->getDiasBaixaAutomatica() > 0) {
             $this->add(157, 158, self::INSTRUCAO_DEVOLVER_XX);
         }
         if ($boleto->getMulta() > 0) {
@@ -275,10 +282,10 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         }
         $this->add(161, 161, '0');
         $this->add(162, 173, Util::formatCnab('9', $juros, 12, 2));
-        $this->add(174, 179, '000000');
-        $this->add(180, 192, Util::formatCnab('9', 0, 13, 2));
+        $this->add(174, 179, $boleto->getDataDesconto()->format('dmy'));
+        $this->add(180, 192, Util::formatCnab('9', $boleto->getDesconto(), 13, 2));
         $this->add(193, 205, Util::formatCnab('9', 0, 13, 2));
-        $this->add(206, 218, Util::formatCnab('9', $boleto->getDescontosAbatimentos(), 13, 2));
+        $this->add(206, 218, Util::formatCnab('9', 0, 13, 2));
         $this->add(219, 220, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? '02' : '01');
         $this->add(221, 234, Util::formatCnab('9L', $boleto->getPagador()->getDocumento(), 14));
         $this->add(235, 269, Util::formatCnab('X', $boleto->getPagador()->getNome(), 35));
@@ -320,31 +327,14 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @return bool
-     */
-    public function isValid()
-    {
-        if ($this->getCodigoCliente() == ''
-            || ($this->isCarteiraRSX() && $this->getCodigoCliente() == '')
-            || !parent::isValid()
-        ) {
-            return false;
-        }
-
-        return true;
-    }
-
-
-    /**
      * Verifica se a carteira é uma das seguintes : R, S, X ou alguma a mais passada por parametro
      *
      * @param array $adicional
      *
      * @return bool
      */
-    private function isCarteiraRSX(array $adicional = []) 
+    private function isCarteiraRSX(array $adicional = [])
     {
         return in_array(Util::upper($this->getCarteira()), array_merge(['R', 'S', 'X'], $adicional));
     }
-
 }

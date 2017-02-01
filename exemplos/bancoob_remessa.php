@@ -23,9 +23,9 @@ $pagador = new \Eduardokum\LaravelBoleto\Pessoa(
     ]
 );
 
-$boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Bb(
+$boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Bancoob(
     [
-        'logo'                   => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '001.png',
+        'logo'                   => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '756.png',
         'dataVencimento'         => new \Carbon\Carbon(),
         'valor'                  => 100,
         'multa'                  => false,
@@ -34,8 +34,10 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Bb(
         'numeroDocumento'        => 1,
         'pagador'                => $pagador,
         'beneficiario'           => $beneficiario,
-        'carteira'               => 11,
-        'convenio'               => 1234567,
+        'carteira'               => 1,
+        'agencia'                => 1111,
+        'conta'                  => 22222,
+        'convenio'               => 123123,
         'descricaoDemonstrativo' => ['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'],
         'instrucoes'             => ['instrucao 1', 'instrucao 2', 'instrucao 3'],
         'aceite'                 => 'S',
@@ -43,15 +45,15 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Bb(
     ]
 );
 
-$remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Bb(
+$remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Bancoob(
     [
-        'agencia'      => 1111,
-        'carteira'     => 11,
-        'conta'        => 999999999,
-        'convenio'     => 1234567,
-        'beneficiario' => $beneficiario,
+        'agencia'       => 1111,
+        'conta'         => 22222,
+        'carteira'      => 1,
+        'convenio'      => 123123,
+        'beneficiario'  => $beneficiario,
     ]
 );
 $remessa->addBoleto($boleto);
 
-echo $remessa->save(__DIR__ . DIRECTORY_SEPARATOR . 'arquivos' . DIRECTORY_SEPARATOR . 'bb.txt');
+echo $remessa->save(__DIR__ . DIRECTORY_SEPARATOR . 'arquivos' . DIRECTORY_SEPARATOR . 'bancoob.txt');

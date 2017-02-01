@@ -14,7 +14,6 @@ use Carbon\Carbon;
  */
 final class Util
 {
-
     public static $bancos = [
         '246' => 'Banco ABC Brasil S.A.',
         '025' => 'Banco Alfa S.A.',
@@ -304,7 +303,6 @@ final class Util
      */
     public static function normalizeChars($string)
     {
-
         $normalizeChars = array(
             'Á' => 'A', 'À' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Å' => 'A', 'Ä' => 'A', 'Æ' => 'AE', 'Ç' => 'C',
             'É' => 'E', 'È' => 'E', 'Ê' => 'E', 'Ë' => 'E', 'Í' => 'I', 'Ì' => 'I', 'Î' => 'I', 'Ï' => 'I', 'Ð' => 'Eth',
@@ -346,7 +344,7 @@ final class Util
             }
         }
 
-        return number_format($formater->parse($number, \NumberFormatter::TYPE_DOUBLE), $decimals, '.', ($showThousands) ? ',' : '');
+        return number_format($formater->parse($number, \NumberFormatter::TYPE_DOUBLE), $decimals, '.', ($showThousands ? ',' : ''));
     }
 
     /**
@@ -484,7 +482,7 @@ final class Util
             $type = 's';
             $valor = ($dec > 0) ? sprintf("%.{$dec}f", $valor) : $valor;
             $valor = str_replace(array(',', '.'), '', $valor);
-        } else if (in_array($tipo, array('A', 'X'))) {
+        } elseif (in_array($tipo, array('A', 'X'))) {
             $left = '-';
             $type = 's';
             $valor = strtoupper(self::normalizeChars($valor));
@@ -495,7 +493,7 @@ final class Util
     }
 
     /**
-     * @param        Carbon $date
+     * @param        Carbon|string $date
      * @param string $format
      *
      * @return integer
@@ -504,18 +502,6 @@ final class Util
     {
         $date = ($date instanceof Carbon) ? $date : Carbon::createFromFormat($format, $date)->setTime(0, 0, 0);
         return (new Carbon('1997-10-07'))->diffInDays($date);
-    }
-
-    /**
-     * @param        $factor
-     * @param string $format
-     *
-     * @return bool|string
-     */
-    public static function fatorVencimentoBack($factor, $format = 'Y-m-d')
-    {
-        $date = Carbon::create(1997, 10, 7, 0, 0, 0)->addDay($factor);
-        return $format ? $date->format($format) : $date;
     }
 
     /**
@@ -532,13 +518,26 @@ final class Util
     }
 
     /**
+     * @param        $factor
+     * @param string $format
+     *
+     * @return bool|string
+     */
+    public static function fatorVencimentoBack($factor, $format = 'Y-m-d')
+    {
+        $date = Carbon::create(1997, 10, 7, 0, 0, 0)->addDay($factor);
+        return $format ? $date->format($format) : $date;
+    }
+
+    /**
      * @param     $n
-     * @param int     $factor
-     * @param int     $base
-     * @param integer $rest
-     * @param int     $whenTen
+     * @param int $factor
+     * @param int $base
+     * @param int $x10
+     * @param int $resto10
      *
      * @return int
+     *
      */
     public static function modulo11($n, $factor = 2, $base = 9, $x10 = 0, $resto10 = 0)
     {
@@ -589,7 +588,7 @@ final class Util
      */
     public static function array2Controle(array $a)
     {
-        if (preg_match('/[0-9]/', array_keys($a))) {
+        if (preg_match('/[0-9]/', implode('', array_keys($a)))) {
             throw new \Exception('Somente chave alfanumérica no array, para separar o controle pela chave');
         }
 
@@ -614,10 +613,10 @@ final class Util
     {
         $matches = '';
         $matches_founded = '';
-        preg_match_all('/(([A-Za-zÀ-Úà-ú]{1,1})([0-9]*))/', $controle, $matches, PREG_SET_ORDER);
+        preg_match_all('/(([A-Za-zÀ-Úà-ú]+)([0-9]*))/', $controle, $matches, PREG_SET_ORDER);
         if ($matches) {
             foreach ($matches as $match) {
-                $matches_founded[$match[2]] = $match[3];
+                $matches_founded[$match[2]] = (int) $match[3];
             }
             return $matches_founded;
         }
@@ -815,7 +814,7 @@ final class Util
         $t = $f - $i;
 
         if (strlen($value) > $t) {
-            throw new \Exception('String $valor maior que o tamanho definido em $ini e $fim: $valor= ' . strlen($value) . ' e tamanho é de: ' . $t);
+            throw new \Exception(sprintf('String $valor maior que o tamanho definido em $ini e $fim: $valor=%s e tamanho é de: %s', strlen($value), $t));
         }
 
         $value = sprintf("%{$t}s", $value);
@@ -853,7 +852,8 @@ final class Util
      *
      * @return array|bool
      */
-    public static function file2array($file) {
+    public static function file2array($file)
+    {
         if (is_array($file) && isset($file[0]) && is_string($file[0])) {
             return $file;
         } elseif (is_string($file) && is_file($file) && file_exists($file)) {
@@ -876,7 +876,7 @@ final class Util
      *
      * @return bool
      */
-    public static function isHeaderRetorno($header) 
+    public static function isHeaderRetorno($header)
     {
         if (!self::isCnab240($header) && !self::isCnab400($header)) {
             return false;
@@ -888,5 +888,42 @@ final class Util
             return false;
         }
         return true;
+    }
+
+    /**
+     * @param object $obj
+     * @param array  $params
+     */
+    public static function fillClass(&$obj, array $params)
+    {
+        foreach ($params as $param => $value) {
+            $param = str_replace(' ', '', ucwords(str_replace('_', ' ', $param)));
+            if (method_exists($obj, 'getProtectedFields') && in_array(lcfirst($param), $obj->getProtectedFields())) {
+                continue;
+            }
+            if (method_exists($obj, 'set' . ucwords($param))) {
+                $obj->{'set' . ucwords($param)}($value);
+            }
+        }
+    }
+
+    /**
+     * @param $property
+     * @param $obj
+     *
+     * @return Pessoa
+     * @throws \Exception
+     */
+    public static function addPessoa(&$property, $obj)
+    {
+        if (is_subclass_of($obj, 'Eduardokum\\LaravelBoleto\\Contracts\\Pessoa')) {
+            $property = $obj;
+            return $obj;
+        } elseif (is_array($obj)) {
+            $obj = new Pessoa($obj);
+            $property = $obj;
+            return $obj;
+        }
+        throw new \Exception('Objeto inválido, somente Pessoa e Array');
     }
 }

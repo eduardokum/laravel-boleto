@@ -496,4 +496,53 @@ class RemessaCnab400Test extends TestCase
         $this->assertFileExists($file);
         $this->assertEquals($file, $file2);
     }
+
+    public function testRemessaBancoobCnab400()
+    {
+        $boleto = new Boleto\Bancoob(
+            [
+                'logo'                   => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '748.png',
+                'dataVencimento'         => new \Carbon\Carbon(),
+                'valor'                  => 100,
+                'multa'                  => false,
+                'juros'                  => false,
+                'numero'                 => 1,
+                'numeroDocumento'        => 1,
+                'pagador'                => self::$pagador,
+                'beneficiario'           => self::$beneficiario,
+                'carteira'               => '1',
+                'byte'                   => 2,
+                'agencia'                => 1111,
+                'convenio'               => 123123,
+                'conta'                  => 11111,
+                'descricaoDemonstrativo' => ['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'],
+                'instrucoes'             => ['instrucao 1', 'instrucao 2', 'instrucao 3'],
+                'aceite'                 => 'S',
+                'especieDoc'             => 'DM',
+            ]
+        );
+
+        $remessa = new Remessa\Bancoob(
+            [
+                'agencia'      => 2606,
+                'carteira'     => '1',
+                'conta'        => 12510,
+                'convenio'     => 123123,
+                'beneficiario' => self::$beneficiario,
+            ]
+        );
+        $remessa->addBoleto($boleto);
+
+        $file = implode(DIRECTORY_SEPARATOR, [
+            __DIR__,
+            'files',
+            'cnab400',
+            'bancoob.txt'
+        ]);
+
+        $file2 = $remessa->save($file);
+
+        $this->assertFileExists($file);
+        $this->assertEquals($file, $file2);
+    }
 }

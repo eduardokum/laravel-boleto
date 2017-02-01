@@ -5,7 +5,6 @@ use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa as AbstractRemessaGene
 
 abstract class AbstractRemessa extends AbstractRemessaGeneric
 {
-
     protected $tamanho_linha = 400;
 
     /**
@@ -44,7 +43,6 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
      */
     public function gerar()
     {
-
         if (!$this->isValid()) {
             throw new \Exception('Campos requeridos pelo banco, aparentam estar ausentes');
         }
@@ -57,8 +55,7 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
         $this->header();
         $stringRemessa .= $this->valida($this->getHeader()) . $this->fimLinha;
 
-        foreach ($this->getDetalhes() as $i => $detalhe)
-        {
+        foreach ($this->getDetalhes() as $i => $detalhe) {
             $stringRemessa .= $this->valida($detalhe) . $this->fimLinha;
         }
 

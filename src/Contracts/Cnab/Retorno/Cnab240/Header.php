@@ -99,5 +99,4 @@ interface Header
      * @return array
      */
     public function toArray();
-
 }

@@ -3,5 +3,4 @@ namespace Eduardokum\LaravelBoleto\Contracts\Cnab;
 
 interface Cnab
 {
-
 }

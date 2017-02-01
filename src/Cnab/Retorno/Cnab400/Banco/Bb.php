@@ -6,7 +6,6 @@ use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
 use Eduardokum\LaravelBoleto\Util;
 
-
 class Bb extends AbstractRetorno implements RetornoCnab400
 {
     /**
@@ -172,7 +171,6 @@ class Bb extends AbstractRetorno implements RetornoCnab400
 
     protected function processarHeader(array $header)
     {
-
         $this->getHeader()
             ->setOperacaoCodigo($this->rem(2, 2, $header))
             ->setOperacao($this->rem(3, 9, $header))
@@ -198,6 +196,7 @@ class Bb extends AbstractRetorno implements RetornoCnab400
 
         $d->setNossoNumero($this->rem(64, 80, $detalhe))
             ->setNumeroDocumento($this->rem(117, 126, $detalhe))
+            ->setNumeroControle($this->rem(39, 63, $detalhe))
             ->setOcorrencia($this->rem(109, 110, $detalhe))
             ->setOcorrenciaDescricao(array_get($this->ocorrencias, $d->getOcorrencia(), 'Desconhecida'))
             ->setDataOcorrencia($this->rem(111, 116, $detalhe))
@@ -250,5 +249,4 @@ class Bb extends AbstractRetorno implements RetornoCnab400
 
         return true;
     }
-
 }

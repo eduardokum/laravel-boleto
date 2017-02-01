@@ -7,6 +7,14 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Itau extends AbstractBoleto implements BoletoContract
 {
+
+    /**
+     * Local de pagamento
+     *
+     * @var string
+     */
+    protected $localPagamento = 'Até o vencimento, preferencialmente no Itaú';
+
     /**
      * Código do banco
      *
@@ -19,7 +27,7 @@ class Itau extends AbstractBoleto implements BoletoContract
      * @var array
      */
     public $variaveis_adicionais = [
-        'carteira' => '',
+        'carteira_nome' => '',
     ];
     /**
      * Define as carteiras disponíveis para este banco
@@ -47,29 +55,29 @@ class Itau extends AbstractBoleto implements BoletoContract
         'CPS' => '17',
     ];
     /**
-     * Campo obrigatório para emissão de boletos com carteira 198 fornecido pelo Banco com 5 dígitos
-     *
-     * @var int
-     */
-    protected $codigoCliente;
-    /**
      * Dígito verificador da carteira/nosso número para impressão no boleto
      *
      * @var int
      */
     protected $carteiraDv;
     /**
-     * Define o código do cliente
-     *
-     * @param  int $codigoCliente
-     * @return $this
+     * @return int
      */
-    public function setCodigoCliente($codigoCliente)
+    public function getCarteiraDv()
     {
-        $this->codigoCliente = $codigoCliente;
-        return $this;
+        return $this->carteiraDv;
     }
 
+    /**
+     * @param integer $carteiraDv
+     *
+     * @return $this
+     */
+    public function setCarteiraDv($carteiraDv)
+    {
+        $this->carteiraDv = $carteiraDv;
+        return $this;
+    }
     /**
      * Seta dias para baixa automática
      *
@@ -80,32 +88,12 @@ class Itau extends AbstractBoleto implements BoletoContract
      */
     public function setDiasBaixaAutomatica($baixaAutomatica)
     {
-        if($this->getDiasProtesto() > 0) {
+        if ($this->getDiasProtesto() > 0) {
             throw new \Exception('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
         }
         $baixaAutomatica = (int) $baixaAutomatica;
         $this->diasBaixaAutomatica = $baixaAutomatica > 0 ? $baixaAutomatica : 0;
         return $this;
-    }
-
-    /**
-     * Retorna o código do cliente
-     *
-     * @return int
-     */
-    public function getCodigoCliente()
-    {
-        return $this->codigoCliente;
-    }
-    /**
-     * Método que valida se o banco tem todos os campos obrigadotorios preenchidos
-     */
-    public function isValid()
-    {
-        if ((in_array($this->getCarteira(), ['107', '122', '142', '143', '196', '198']) && $this->codigoCliente == '') || !parent::isValid()) {
-            return false;
-        }
-        return true;
     }
 
     /**
@@ -116,11 +104,9 @@ class Itau extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        if(in_array($this->getCarteira(), [112, 188])) {
-            return Util::numberFormatGeral(0, 9);
-        }
         $this->getCampoLivre(); // Força o calculo do DV.
-        return Util::numberFormatGeral($this->getNumeroDocumento(), 8) . $this->carteiraDv;
+        $numero_boleto = $this->getNumero();
+        return Util::numberFormatGeral($numero_boleto, 8) . $this->getCarteiraDv();
     }
     /**
      * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
@@ -142,11 +128,12 @@ class Itau extends AbstractBoleto implements BoletoContract
         if ($this->campoLivre) {
             return $this->campoLivre;
         }
-        $numero_boleto = Util::numberFormatGeral($this->getNumeroDocumento(), 8);
+        $numero_boleto = Util::numberFormatGeral($this->getNumero(), 8);
         $carteira = Util::numberFormatGeral($this->getCarteira(), 3);
-        $this->carteiraDv = $dvAgContaCarteira = Util::modulo10($carteira . $numero_boleto);
         $agencia = Util::numberFormatGeral($this->getAgencia(), 4);
         $conta = Util::numberFormatGeral($this->getConta(), 5);
+        $dvAgContaCarteira = Util::modulo10($agencia . $conta . $carteira . $numero_boleto);
+        $this->setCarteiraDv($dvAgContaCarteira);
         // Módulo 10 Agência/Conta
         $dvAgConta = Util::modulo10($agencia . $conta);
         return $this->campoLivre = $carteira . $numero_boleto . $dvAgContaCarteira . $agencia . $conta . $dvAgConta . '000';

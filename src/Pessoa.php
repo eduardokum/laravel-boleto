@@ -67,12 +67,7 @@ class Pessoa implements PessoaContract
      */
     public function __construct($params = [])
     {
-        foreach ($params as $param => $value)
-        {
-            if (method_exists($this, 'set' . ucwords($param))) {
-                $this->{'set' . ucwords($param)}($value);
-            }
-        }
+        Util::fillClass($this, $params);
     }
     /**
      * Define o CEP
@@ -110,14 +105,18 @@ class Pessoa implements PessoaContract
     {
         return $this->cidade;
     }
+
     /**
      * Define o documento (CPF, CNPJ ou CEI)
      *
      * @param string $documento
+     *
+     * @throws \Exception
      */
     public function setDocumento($documento)
     {
-        if(!in_array(strlen(Util::onlyNumbers($documento)), [10,11,14,0])) {
+        $documento = substr(Util::onlyNumbers($documento), -14);
+        if (!in_array(strlen($documento), [10, 11, 14, 0])) {
             throw new \Exception('Documento inválido');
         }
         $this->documento = $documento;
@@ -249,5 +248,23 @@ class Pessoa implements PessoaContract
     {
         $dados = array_filter(array($this->getCep(), $this->getCidade(), $this->getUf()));
         return implode(' - ', $dados);
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return [
+            'nome' => $this->getNome(),
+            'endereco' => $this->getEndereco(),
+            'bairro' => $this->getBairro(),
+            'cep' => $this->getCep(),
+            'uf' => $this->getUf(),
+            'cidade' => $this->getCidade(),
+            'documento' => $this->getDocumento(),
+            'nome_documento' => $this->getNomeDocumento(),
+            'endereco2' => $this->getCepCidadeUf(),
+        ];
     }
 }

@@ -8,7 +8,6 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Itau extends AbstractRemessa implements RemessaContract
 {
-
     const ESPECIE_DUPLICATA = '01';
     const ESPECIE_NOTA_PROMISSORIA = '02';
     const ESPECIE_NOTA_SEGURO = '03';
@@ -107,6 +106,13 @@ class Itau extends AbstractRemessa implements RemessaContract
     const INSTRUCAO_MSG_30_POS = '93';
     const INSTRUCAO_MSG_40_POS = '94';
 
+    public function __construct(array $params = [])
+    {
+        parent::__construct($params);
+        $this->addCampoObrigatorio('contaDv');
+    }
+
+
     /**
      * Código do banco
      *
@@ -172,7 +178,7 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(29, 29, $this->getContaDv());
         $this->add(30, 33, '');
         $this->add(34, 37, '0000');
-        $this->add(38, 62, Util::formatCnab('X', $boleto->getNumero(), 25)); // numero de controle
+        $this->add(38, 62, Util::formatCnab('X', $boleto->getNumeroControle(), 25)); // numero de controle
         $this->add(63, 70, Util::formatCnab('9', substr($boleto->getNossoNumero(), 0, -1), 8));
         $this->add(71, 83, Util::formatCnab('9', '0', 13, 2));
         $this->add(84, 86, Util::formatCnab('9', $this->getCarteiraNumero(), 3));
@@ -197,7 +203,7 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(159, 160, self::INSTRUCAO_VALOR_SOMA_MORA);
         if ($boleto->getDiasProtesto() > 0) {
             $this->add(157, 158, self::INSTRUCAO_PROTESTAR_VENC_XX);
-        } elseif($boleto->getDiasBaixaAutomatica() > 0) {
+        } elseif ($boleto->getDiasBaixaAutomatica() > 0) {
             $this->add(157, 158, self::INSTRUCAO_DEVOL_VENC_XX);
         }
         $juros = 0;
@@ -205,10 +211,10 @@ class Itau extends AbstractRemessa implements RemessaContract
             $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
         }
         $this->add(161, 173, Util::formatCnab('9', $juros, 13, 2));
-        $this->add(174, 179, $boleto->getDataVencimento()->format('dmy'));
-        $this->add(180, 192, Util::formatCnab('9', $boleto->getDescontosAbatimentos(), 13, 2));
+        $this->add(174, 179, $boleto->getDataDesconto()->format('dmy'));
+        $this->add(180, 192, Util::formatCnab('9', $boleto->getDesconto(), 13, 2));
         $this->add(193, 205, Util::formatCnab('9', 0, 13, 2));
-        $this->add(206, 218, Util::formatCnab('9', $boleto->getDescontosAbatimentos(), 13, 2));
+        $this->add(206, 218, Util::formatCnab('9', 0, 13, 2));
         $this->add(219, 220, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? '02' : '01');
         $this->add(221, 234, Util::formatCnab('9L', $boleto->getPagador()->getDocumento(), 14));
         $this->add(235, 264, Util::formatCnab('X', $boleto->getPagador()->getNome(), 30));
@@ -238,15 +244,4 @@ class Itau extends AbstractRemessa implements RemessaContract
 
         return $this;
     }
-
-    public function isValid()
-    {
-        if ($this->getContaDv() == '' || !parent::isValid()) {
-            return false;
-        }
-
-        return true;
-    }
-
-
 }

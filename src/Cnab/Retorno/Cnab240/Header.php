@@ -4,9 +4,11 @@ namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
 use Carbon\Carbon;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Header as HeaderContract;
+use Eduardokum\LaravelBoleto\MagicTrait;
 
 class Header implements HeaderContract
 {
+    use MagicTrait;
     /**
      * @var integer
      */
@@ -87,6 +89,16 @@ class Header implements HeaderContract
     protected $codigoCedente;
 
     /**
+     * @var string
+     */
+    protected $horaGeracao;
+
+    /**
+     * @var string
+     */
+    protected $convenio;
+
+    /**
      * @return string
      */
     public function getLoteServico()
@@ -97,7 +109,7 @@ class Header implements HeaderContract
     /**
      * @param string $loteServico
      *
-     * @return Header
+     * @return $this
      */
     public function setLoteServico($loteServico)
     {
@@ -117,7 +129,7 @@ class Header implements HeaderContract
     /**
      * @param string $tipoRegistro
      *
-     * @return Header
+     * @return $this
      */
     public function setTipoRegistro($tipoRegistro)
     {
@@ -136,6 +148,8 @@ class Header implements HeaderContract
 
     /**
      * @param string $tipoInscricao
+     *
+     * @return $this
      */
     public function setTipoInscricao($tipoInscricao)
     {
@@ -155,7 +169,7 @@ class Header implements HeaderContract
     /**
      * @param string $agencia
      *
-     * @return Header
+     * @return $this
      */
     public function setAgencia($agencia)
     {
@@ -175,7 +189,7 @@ class Header implements HeaderContract
     /**
      * @param string $agenciaDigito
      *
-     * @return Header
+     * @return $this
      */
     public function setAgenciaDigito($agenciaDigito)
     {
@@ -195,7 +209,7 @@ class Header implements HeaderContract
     /**
      * @param string $nomeEmpresa
      *
-     * @return Header
+     * @return $this
      */
     public function setNomeEmpresa($nomeEmpresa)
     {
@@ -215,7 +229,7 @@ class Header implements HeaderContract
     /**
      * @param string $horaGeracao
      *
-     * @return Header
+     * @return $this
      */
     public function setHoraGeracao($horaGeracao)
     {
@@ -235,7 +249,7 @@ class Header implements HeaderContract
     /**
      *
      * @param string $numeroSequencialArquivo
-     * @return Header
+     * @return $this
      */
     public function setNumeroSequencialArquivo($numeroSequencialArquivo)
     {
@@ -255,7 +269,7 @@ class Header implements HeaderContract
     /**
      * @param string $versaoLayoutArquivo
      *
-     * @return Header
+     * @return $this
      */
     public function setVersaoLayoutArquivo($versaoLayoutArquivo)
     {
@@ -275,7 +289,7 @@ class Header implements HeaderContract
     /**
      * @param string $numeroInscricao
      *
-     * @return Header
+     * @return $this
      */
     public function setNumeroInscricao($numeroInscricao)
     {
@@ -295,7 +309,7 @@ class Header implements HeaderContract
     /**
      * @param string $conta
      *
-     * @return Header
+     * @return $this
      */
     public function setConta($conta)
     {
@@ -315,7 +329,7 @@ class Header implements HeaderContract
     /**
      * @param string $contaDigito
      *
-     * @return Header
+     * @return $this
      */
     public function setContaDigito($contaDigito)
     {
@@ -335,7 +349,7 @@ class Header implements HeaderContract
     /**
      * @param string $codigoCedente
      *
-     * @return Header
+     * @return $this
      */
     public function setCodigoCedente($codigoCedente)
     {
@@ -359,7 +373,9 @@ class Header implements HeaderContract
     /**
      * @param string $data
      *
-     * @return Header
+     * @param string $format
+     *
+     * @return $this
      */
     public function setData($data, $format = 'dmY')
     {
@@ -379,7 +395,7 @@ class Header implements HeaderContract
     /**
      * @param string $convenio
      *
-     * @return Header
+     * @return $this
      */
     public function setConvenio($convenio)
     {
@@ -398,6 +414,8 @@ class Header implements HeaderContract
 
     /**
      * @param int $codBanco
+     *
+     * @return $this
      */
     public function setCodBanco($codBanco)
     {
@@ -416,6 +434,8 @@ class Header implements HeaderContract
 
     /**
      * @param int $codigoRemessaRetorno
+     *
+     * @return $this
      */
     public function setCodigoRemessaRetorno($codigoRemessaRetorno)
     {
@@ -434,64 +454,13 @@ class Header implements HeaderContract
 
     /**
      * @param string $nomeBanco
+     *
+     * @return $this
      */
     public function setNomeBanco($nomeBanco)
     {
         $this->nomeBanco = $nomeBanco;
 
         return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function toArray()
-    {
-        $vars = array_keys(get_class_vars(self::class));
-        $aRet = [];
-        foreach ($vars as $var) {
-            $methodName = 'get' . ucfirst($var);
-            $aRet[$var] = method_exists($this, $methodName)
-                ? $this->$methodName()
-                : $this->$var;
-        }
-        return $aRet;
-    }
-
-    /**
-     * Fast set method.
-     *
-     * @param $name
-     * @param $value
-     */
-    public function __set($name, $value)
-    {
-        if (property_exists($this, $name)) {
-            $this->$name = $value;
-        }
-    }
-
-    /**
-     * Fast get method.
-     *
-     * @param $name
-     */
-    public function __get($name)
-    {
-        if (property_exists($this, $name)) {
-            $method = 'get' . ucwords($name);
-            return $this->{$method}();
-        }
-    }
-
-    /**
-     * Determine if an attribute exists on the header.
-     *
-     * @param  string $key
-     * @return bool
-     */
-    public function __isset($key)
-    {
-        return isset($this->$key);
     }
 }

@@ -8,7 +8,6 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Caixa  extends AbstractRemessa implements RemessaContract
 {
-
     const ESPECIE_DUPLICATA = '01';
     const ESPECIE_NOTA_PROMISSORIA = '02';
     const ESPECIE_DUPLICATA_SERVICO = '03';
@@ -32,6 +31,13 @@ class Caixa  extends AbstractRemessa implements RemessaContract
     const INSTRUCAO_SEM = '00';
     const INSTRUCAO_PROTESTAR_VENC_XX = '01';
     const INSTRUCAO_DEVOLVER_VENC_XX = '02';
+
+    public function __construct(array $params = [])
+    {
+        parent::__construct($params);
+        $this->addCampoObrigatorio('codigoCliente', 'idremessa');
+    }
+
 
     /**
      * Código do banco
@@ -140,7 +146,7 @@ class Caixa  extends AbstractRemessa implements RemessaContract
         $this->add(28, 28, '2'); // ‘1’ = Banco Emite ‘2’ = Cliente Emite
         $this->add(29, 29, '0'); // ‘0’ = Postagem pelo Beneficiário ‘1’ = Pagador via Correio ‘2’ = Beneficiário via Agência CAIXA ‘3’ = Pagador via e-mail
         $this->add(30, 31, '00');
-        $this->add(32, 56, Util::formatCnab('X', $boleto->getNumero(), 25)); // numero de controle
+        $this->add(32, 56, Util::formatCnab('X', $boleto->getNumeroControle(), 25)); // numero de controle
         $this->add(57, 73, Util::formatCnab('9', $boleto->getNossoNumero(), 17));
         $this->add(74, 76, '');
         $this->add(77, 106, '');
@@ -164,7 +170,7 @@ class Caixa  extends AbstractRemessa implements RemessaContract
         $this->add(159, 160, self::INSTRUCAO_SEM);
         if ($boleto->getDiasProtesto() > 0) {
             $this->add(157, 158, self::INSTRUCAO_PROTESTAR_VENC_XX);
-        } elseif($boleto->getDiasBaixaAutomatica() > 0) {
+        } elseif ($boleto->getDiasBaixaAutomatica() > 0) {
             $this->add(157, 158, self::INSTRUCAO_DEVOLVER_VENC_XX);
         }
         $juros = 0;
@@ -172,10 +178,10 @@ class Caixa  extends AbstractRemessa implements RemessaContract
             $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
         }
         $this->add(161, 173, Util::formatCnab('9', $juros, 13, 2));
-        $this->add(174, 179, '000000');
-        $this->add(180, 192, Util::formatCnab('9', 0, 13, 2));
+        $this->add(174, 179, $boleto->getDataDesconto()->format('dmy'));
+        $this->add(180, 192, Util::formatCnab('9', $boleto->getDesconto(), 13, 2));
         $this->add(193, 205, Util::formatCnab('9', 0, 13, 2));
-        $this->add(206, 218, Util::formatCnab('9', $boleto->getDescontosAbatimentos(), 13, 2));
+        $this->add(206, 218, Util::formatCnab('9', 0, 13, 2));
         $this->add(219, 220, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? '02' : '01');
         $this->add(221, 234, Util::formatCnab('9L', $boleto->getPagador()->getDocumento(), 14));
         $this->add(235, 274, Util::formatCnab('X', $boleto->getPagador()->getNome(), 40));
@@ -205,14 +211,5 @@ class Caixa  extends AbstractRemessa implements RemessaContract
         $this->add(395, 400, Util::formatCnab('9', $this->getCount(), 6));
 
         return $this;
-    }
-
-    public function isValid()
-    {
-        if ($this->getCodigoCliente() == '' || $this->getIdremessa() == '' || !parent::isValid()) {
-            return false;
-        }
-
-        return true;
     }
 }

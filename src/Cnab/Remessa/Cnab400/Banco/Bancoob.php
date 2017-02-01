@@ -38,6 +38,12 @@ class Bancoob extends AbstractRemessa implements RemessaContract
     const INSTRUCAO_DEVOLVER_APOS_15 = '42';
     const INSTRUCAO_DEVOLVER_APOS_30 = '43';
 
+    public function __construct(array $params = [])
+    {
+        parent::__construct($params);
+        $this->addCampoObrigatorio('convenio');
+    }
+
     /**
      * Código do banco
      *
@@ -101,7 +107,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(2, 2, '1');
         $this->add(3, 9, 'REMESSA');
         $this->add(10, 11, '01');
-        $this->add(12, 26, Util::formatCnab('X', 'COBRANCA', 15));
+        $this->add(12, 26, '      COBRANÇA');
         $this->add(27, 30, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(31, 31, Util::modulo11($this->getAgencia()));
         $this->add(32, 40, Util::formatCnab('9', $this->getConvenio(), 9));
@@ -130,7 +136,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(31, 31, Util::modulo11($this->getConta()));
         $this->add(32, 37, '000000');
         $this->add(38, 62, Util::formatCnab('X', '', 25)); // numero de controle
-        $this->add(63, 74, Util::formatCnab('9', str_replace('-','',$boleto->getNossoNumeroBoleto()), 12));
+        $this->add(63, 74, Util::formatCnab('9', str_replace('-', '', $boleto->getNossoNumeroBoleto()), 12));
         $this->add(75, 76, '01'); //Numero da parcela - Não implementado
         $this->add(77, 78, '00'); //Grupo de valor
         $this->add(82, 82, '');
@@ -165,12 +171,12 @@ class Bancoob extends AbstractRemessa implements RemessaContract
 
         $juros = 0;
 
-        if(($boleto->getStatus() != $boleto::STATUS_BAIXA) && ($boleto->getDiasProtesto() > 0)) {
+        if (($boleto->getStatus() != $boleto::STATUS_BAIXA) && ($boleto->getDiasProtesto() > 0)) {
             $const = sprintf('self::INSTRUCAO_PROTESTAR_VENC_%02s', $boleto->getDiasProtesto());
 
             if (defined($const)) {
                 $this->add(157, 158, constant($const));
-            }else{
+            } else {
                 throw new \Exception("A instrução para protesto em ".$boleto->getDiasProtesto()." dias não existe no banco.");
             }
 
@@ -182,11 +188,11 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(161, 166, Util::formatCnab('9', 0, 6, 4));
         $this->add(167, 172, Util::formatCnab('9', $juros, 6, 4));
         $this->add(173, 173, '2'); //Tipo de distribuição: 1 - Cooperativa 2 - Cliente
-        $this->add(174, 179, '000000');
-        $this->add(180, 192, Util::formatCnab('9', 0, 13, 2));
+        $this->add(174, 179, $boleto->getDataDesconto()->format('dmy'));
+        $this->add(180, 192, Util::formatCnab('9', $boleto->getDesconto(), 13, 2));
         $this->add(193, 193, '9');
         $this->add(194, 205, Util::formatCnab('9', 0, 12, 2));
-        $this->add(206, 218, Util::formatCnab('9', $boleto->getDescontosAbatimentos(), 13, 2));
+        $this->add(206, 218, Util::formatCnab('9', 0, 13, 2));
         $this->add(219, 220, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? '02' : '01');
         $this->add(221, 234, Util::formatCnab('9L', $boleto->getPagador()->getDocumento(), 14));
         $this->add(235, 271, Util::formatCnab('X', $boleto->getPagador()->getNome(), 37));
@@ -211,26 +217,5 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(395, 400, Util::formatCnab('9', $this->getCount(), 6));
 
         return $this;
-    }
-
-    public function isValid()
-    {
-        if ($this->getConvenio() == '' || !parent::isValid()) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public function gerar()
-    {
-        //Feito isso porque o Header do Sicoob exige o campo Identificação por Extenso do Tipo de Serviço: "COBRANÇA" (com cedilha).
-        //Assim dava problema na validação pois o strlen retorna 2 caracteres neste caso, então vai acabar estrapolando os 400 caracteres e dando exceção, quando não é totalmente verdade.
-        //Optei por não mudar a validação da classe abstrata pois este é o unico banco até o momento com essa particularidade
-
-        $remessa = parent::gerar();
-        $remessa = str_replace_first('COBRANCA','COBRANÇA',$remessa);
-
-        return $remessa;
     }
 }

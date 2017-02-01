@@ -33,9 +33,8 @@ class Factory
      * @return mixed
      * @throws \Exception
      */
-    private static function getBancoClass($file_content) 
+    private static function getBancoClass($file_content)
     {
-
         $banco = '';
         $namespace = '';
         if (Util::isCnab400($file_content)) {

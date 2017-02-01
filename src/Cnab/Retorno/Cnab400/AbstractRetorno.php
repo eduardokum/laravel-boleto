@@ -23,9 +23,8 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
      * @param String $file
      * @throws \Exception
      */
-    public function __construct($file) 
+    public function __construct($file)
     {
-
         parent::__construct($file);
 
         $this->header = new Header();
@@ -67,9 +66,8 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
      *
      * @return $this
      */
-    public function processar() 
+    public function processar()
     {
-
         if ($this->isProcessado()) {
             return $this;
         }
@@ -79,12 +77,11 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
         }
 
         foreach ($this->file as $linha) {
-
             $inicio = $this->rem(1, 1, $linha);
 
             if ($inicio == '0') {
                 $this->processarHeader($linha);
-            } else if ($inicio == '9') {
+            } elseif ($inicio == '9') {
                 $this->processarTrailer($linha);
             } else {
                 $this->incrementDetalhe();
@@ -113,8 +110,7 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
             'trailer' => $this->trailer->toArray(),
             'detalhes' => new Collection()
         ];
-        foreach ($this->detalhe as $detalhe)
-        {
+        foreach ($this->detalhe as $detalhe) {
             $array['detalhes']->push($detalhe->toArray());
         }
         return $array;

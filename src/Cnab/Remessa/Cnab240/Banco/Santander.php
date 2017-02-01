@@ -15,7 +15,6 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Santander extends AbstractRemessa implements RemessaContract
 {
-
     const DM_DUPLICATA_MERCANTIL = 02;
     const DS_DUPLICATA_DE_SERVICO = 04;
     const LC_LETRA_DE_CÂMBIO_SOMENTE_PARA_BANCO_353 = 07;
@@ -26,6 +25,13 @@ class Santander extends AbstractRemessa implements RemessaContract
     const AP_APOLICE_DE_SEGURO = 20;
     const CH_CHEQUE = 97;
     const ND_NOTA_PROMISSORIA_DIRETA = 98;
+
+    public function __construct(array $params = [])
+    {
+        parent::__construct($params);
+        $this->addCampoObrigatorio('codigoCliente');
+    }
+
 
     /**
      * Código do banco
@@ -148,7 +154,7 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(61, 61, ''); // Reservado (Uso Banco)
         $this->add(62, 62, ''); // Reservado (Uso Banco)
         //
-        $this->add(63, 77, Util::formatCnab(9, $boleto->getNumero(), 15)); // Seu Número
+        $this->add(63, 77, Util::formatCnab(9, $boleto->getNumeroControle(), 15)); // Seu Número
         $this->add(78, 85, $boleto->getDataVencimento()->format('dmY')); // Data de vencimento do título
         $this->add(86, 100, Util::formatCnab(9, $boleto->getValor(), 15, 2)); // Valor nominal do título
         $this->add(101, 104, Util::formatCnab(9, 0, 4)); //Agência encarregada da cobrança
@@ -162,14 +168,14 @@ class Santander extends AbstractRemessa implements RemessaContract
         if ($boleto->getJuros() > 0) {
             $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
         }
-        $this->add(118, 118, Util::formatCnab(9, '', 1)); //Código do juros de mora
+        $this->add(118, 118, 1); //Código do juros de mora - 1 = Valor fixo ate a data informada – Informar o valor no campo “valor de desconto a ser concedido”.
         $this->add(119, 126, Util::formatCnab(9, $boleto->getDataVencimento()->format('dmY'), 8)); //Data do juros de mora / data de vencimento do titulo
         $this->add(127, 141, Util::formatCnab(9, $juros, 15, 2)); //Valor da mora/dia ou Taxa mensal
         $this->add(142, 142, Util::formatCnab(9, '', 1)); //Código do desconto 1
-        $this->add(143, 150, Util::formatCnab(9, $boleto->getDataVencimento()->format('dmY'), 8)); //Data de desconto 1
-        $this->add(151, 165, Util::formatCnab(9, 0, 15, 2)); //Valor ou Percentual do desconto concedido //TODO
+        $this->add(143, 150, Util::formatCnab(9, $boleto->getDataDesconto()->format('dmY'), 8)); //Data de desconto 1
+        $this->add(151, 165, Util::formatCnab(9, $boleto->getDesconto(), 15, 2)); //Valor ou Percentual do desconto concedido //TODO
         $this->add(166, 180, Util::formatCnab(9, 0, 15, 2)); //Valor do IOF a ser recolhido
-        $this->add(181, 195, Util::formatCnab(9, $boleto->getDescontosAbatimentos(), 15, 2)); //Valor do abatimento
+        $this->add(181, 195, Util::formatCnab(9, 0, 15, 2)); //Valor do abatimento
         $this->add(196, 220, ''); //Identificação do título na empresa
         $this->add(221, 221, Util::formatCnab(9, 0, 1)); //Código para protesto
         $this->add(222, 223, Util::formatCnab(9, 0, 2)); //Número de dias para protesto
@@ -217,16 +223,6 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(216, 218, Util::formatCnab(9, 0, 3)); // Quantidade total de parcelas
         $this->add(218, 221, Util::formatCnab(9, 0, 3)); // Número do plano
         $this->add(218, 240, ''); // Reservado (Uso Banco)
-
-    }
-
-    public function isValid()
-    {
-        if (empty($this->getCodigoCliente()) || !parent::isValid()) {
-            return false;
-        }
-
-        return true;
     }
 
     protected function header()
@@ -335,5 +331,4 @@ class Santander extends AbstractRemessa implements RemessaContract
 
         return $this;
     }
-
 }

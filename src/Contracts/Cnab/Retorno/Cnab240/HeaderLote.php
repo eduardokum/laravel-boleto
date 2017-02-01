@@ -27,7 +27,7 @@ interface HeaderLote
     /**
      * @return mixed
      */
-    public function getCodigoInscricao();
+    public function getTipoInscricao();
 
     /**
      * @return mixed
@@ -38,6 +38,11 @@ interface HeaderLote
      * @return mixed
      */
     public function getCodigoCedente();
+
+    /**
+     * @return mixed
+     */
+    public function getConvenio();
 
     /**
      * @return mixed
@@ -77,8 +82,14 @@ interface HeaderLote
     public function getDataGravacao($format = 'd/m/Y');
 
     /**
+     * @param string $format
+     *
+     * @return string
+     */
+    public function getDataCredito($format = 'd/m/Y');
+
+    /**
      * @return array
      */
     public function toArray();
-
 }

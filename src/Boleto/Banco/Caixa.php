@@ -7,6 +7,12 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Caixa  extends AbstractBoleto implements BoletoContract
 {
+    public function __construct(array $params = [])
+    {
+        parent::__construct($params);
+        $this->setCamposObrigatorios('numero', 'agencia', 'carteira', 'codigoCliente');
+    }
+
     /**
      * Código do banco
      *
@@ -32,6 +38,35 @@ class Caixa  extends AbstractBoleto implements BoletoContract
         'LC' => '06',
     ];
     /**
+     * Codigo do cliente junto ao banco.
+     *
+     * @var string
+     */
+    protected $codigoCliente;
+    /**
+     * Seta o codigo do cliente.
+     *
+     * @param mixed $codigoCliente
+     *
+     * @return $this
+     */
+    public function setCodigoCliente($codigoCliente)
+    {
+        $this->codigoCliente = $codigoCliente;
+
+        return $this;
+    }
+    /**
+     * Retorna o codigo do cliente.
+     *
+     * @return string
+     */
+    public function getCodigoCliente()
+    {
+        return $this->codigoCliente;
+    }
+
+    /**
      * Gera o Nosso Número.
      *
      * @throws Exception
@@ -39,7 +74,7 @@ class Caixa  extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        $numero = $this->getNumeroDocumento();
+        $numero_boleto = $this->getNumero();
         $composicao = '1';
         if ($this->getCarteira() == 'SR') {
             $composicao = '2';
@@ -48,7 +83,7 @@ class Caixa  extends AbstractBoleto implements BoletoContract
         $carteira = $composicao . '4';
         // As 15 próximas posições no nosso número são a critério do beneficiário, utilizando o sequencial
         // Depois, calcula-se o código verificador por módulo 11
-        $numero = $carteira . Util::numberFormatGeral($numero, 15);
+        $numero = $carteira . Util::numberFormatGeral($numero_boleto, 15);
         return $numero;
     }
     /**
@@ -71,7 +106,7 @@ class Caixa  extends AbstractBoleto implements BoletoContract
      */
     public function setDiasBaixaAutomatica($baixaAutomatica)
     {
-        if($this->getDiasProtesto() > 0) {
+        if ($this->getDiasProtesto() > 0) {
             throw new \Exception('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
         }
         $baixaAutomatica = (int) $baixaAutomatica;
@@ -83,7 +118,7 @@ class Caixa  extends AbstractBoleto implements BoletoContract
      * Método para gerar o código da posição de 20 a 44
      *
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     protected function getCampoLivre()
     {
@@ -91,7 +126,7 @@ class Caixa  extends AbstractBoleto implements BoletoContract
             return $this->campoLivre;
         }
         $nossoNumero = Util::numberFormatGeral($this->gerarNossoNumero(), 17);
-        $beneficiario = Util::numberFormatGeral($this->getConta(), 6);
+        $beneficiario = Util::numberFormatGeral($this->getCodigoCliente(), 6);
         // Código do beneficiário + DV]
         $campoLivre = $beneficiario . Util::modulo11($beneficiario);
         // Sequencia 1 (posições 3-5 NN) + Constante 1 (1 => registrada, 2 => sem registro)
