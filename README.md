@@ -69,7 +69,7 @@ $pagador = new \Eduardokum\LaravelBoleto\Pessoa([
 
 ### Criando o objeto boleto
 
-#### Campos númericos e suas funções*
+#### Campos númericos e suas funções
 - **numero**: campo numérico utilizado para a criação do nosso numero. (identificação do título no banco)*
 - **numeroControle**: campo de livre utilização. até 25 caracteres. *(identificação do título na empresa)*
 - **numeroDocumento**: campo utilizado para informar ao que o documento se referente *(duplicata, nf, np, ns, etc...)*
