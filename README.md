@@ -18,6 +18,7 @@ Pacote para gerar boletos, remessas e leitura de retorno.
 ## Links
 - [Documentação da API](http://eduardokum.github.io/laravel-boleto/)
 - [Grupo de Discussão](https://groups.google.com/d/forum/laravel-boleto)
+- [Grupo no Telegram](https://t.me/laravelBoleto)
 
 ## Bancos suportados
 
