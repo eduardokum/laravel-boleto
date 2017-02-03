@@ -69,10 +69,10 @@ class Bancoob extends AbstractBoleto implements BoletoContract
     protected function gerarNossoNumero()
     {
         $agencia = $this->getAgencia();
-        $conta = $this->getConta().$this->getContaDv();
+        $convenio = $this->getConvenio();
         $numero_boleto = $this->getNumero();
 
-        $numero = Util::numberFormatGeral($agencia, 4).Util::numberFormatGeral($conta, 10).Util::numberFormatGeral($numero_boleto, 7);
+        $numero = Util::numberFormatGeral($agencia, 4).Util::numberFormatGeral($convenio, 10).Util::numberFormatGeral($numero_boleto, 7);
 
         return $numero;
     }
