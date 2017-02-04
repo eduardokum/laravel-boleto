@@ -177,9 +177,9 @@ class Bb extends AbstractRetorno implements RetornoCnab400
             ->setServicoCodigo($this->rem(10, 11, $header))
             ->setServico($this->rem(12, 19, $header))
             ->setAgencia($this->rem(27, 30, $header))
-            ->setAgenciaDigito($this->rem(31, 31, $header))
+            ->setAgenciaDv($this->rem(31, 31, $header))
             ->setConta($this->rem(32, 39, $header))
-            ->setContaDigito($this->rem(40, 40, $header))
+            ->setContaDv($this->rem(40, 40, $header))
             ->setConvenio($this->rem(150, 156, $header))
             ->setData($this->rem(95, 100, $header));
 

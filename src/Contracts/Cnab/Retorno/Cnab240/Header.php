@@ -26,7 +26,7 @@ interface Header
     /**
      * @return string
      */
-    public function getAgenciaDigito();
+    public function getAgenciaDv();
 
     /**
      * @return string
@@ -61,7 +61,7 @@ interface Header
     /**
      * @return string
      */
-    public function getContaDigito();
+    public function getContaDv();
 
     /**
      * @return string
