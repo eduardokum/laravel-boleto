@@ -74,7 +74,19 @@ class Bancoob extends AbstractBoleto implements BoletoContract
 
         $numero = Util::numberFormatGeral($agencia, 4).Util::numberFormatGeral($convenio, 10).Util::numberFormatGeral($numero_boleto, 7);
 
-        return $numero;
+        $chars = str_split($numero, 1);
+        $sums = str_split('3197319731973197319731973197', 1);
+        $sum = 0;
+        foreach ($chars as $i => $char) {
+            $sum += $char*$sums[$i];
+        }
+        $resto = $sum % 11;
+        $digito_verificador = 0;
+
+        if (($resto != 0) && ($resto != 1)) {
+            $digito_verificador = 11 - $resto;
+        }
+        return $numero . $digito_verificador;
     }
     /**
      * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
@@ -83,27 +95,8 @@ class Bancoob extends AbstractBoleto implements BoletoContract
      */
     public function getNossoNumeroBoleto()
     {
-        $numero = $this->getNossoNumero();
-
-        $constante = str_repeat(self::BANCOBB_CONST_NOSSO_NUMERO, 6);
-        $soma = 0;
-
-        for ($i=0; $i < strlen($numero); $i++) {
-            if ((int)$numero[$i] > 0) {
-                $soma += ((int)$numero[$i] * (int)$constante[$i]);
-            }
-        }
-
-        $resto = $soma % 11;
-        $digito_verificador = 0;
-
-        if (($resto != 0) && ($resto != 1)) {
-            $digito_verificador = 11 - $resto;
-        }
-
-        $nosso_numero = $this->getNumero().'-'.$digito_verificador;
-
-        return $nosso_numero;
+        $nn = $this->getNossoNumero();
+        return substr($nn, 0, -1) . '-' . substr($nn, -1);
     }
     /**
      * Método para gerar o código da posição de 20 a 44
@@ -117,7 +110,7 @@ class Bancoob extends AbstractBoleto implements BoletoContract
             return $this->campoLivre;
         }
 
-        $nossoNumero = $this->getNossoNumeroBoleto();
+        $nossoNumero = $this->getNossoNumero();
 
         $campoLivre = Util::numberFormatGeral($this->getCarteira(), 1);
         $campoLivre .= Util::numberFormatGeral($this->getAgencia(), 4);
