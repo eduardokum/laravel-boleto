@@ -175,7 +175,7 @@ class Hsbc extends AbstractRetorno implements RetornoCnab400
             ->setServico($this->rem(12, 26, $header))
             ->setAgencia($this->rem(28, 31, $header))
             ->setConta($this->rem(38, 43, $header))
-            ->setContaDigito($this->rem(44, 44, $header))
+            ->setContaDv($this->rem(44, 44, $header))
             ->setData($this->rem(95, 100, $header));
 
         return true;

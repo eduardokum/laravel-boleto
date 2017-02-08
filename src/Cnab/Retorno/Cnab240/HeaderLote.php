@@ -52,7 +52,7 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @var string
      */
-    protected $agenciaDigito;
+    protected $agenciaDv;
 
     /**
      * @var string
@@ -87,7 +87,7 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @var string
      */
-    protected $contaDigito;
+    protected $contaDv;
 
     /**
      * @var string
@@ -438,19 +438,19 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @return string
      */
-    public function getAgenciaDigito()
+    public function getAgenciaDv()
     {
-        return $this->agenciaDigito;
+        return $this->agenciaDv;
     }
 
     /**
-     * @param string $agenciaDigito
+     * @param string $agenciaDv
      *
      * @return $this
      */
-    public function setAgenciaDigito($agenciaDigito)
+    public function setAgenciaDv($agenciaDv)
     {
-        $this->agenciaDigito = $agenciaDigito;
+        $this->agenciaDv = $agenciaDv;
 
         return $this;
     }
@@ -498,19 +498,19 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @return string
      */
-    public function getContaDigito()
+    public function getContaDv()
     {
-        return $this->contaDigito;
+        return $this->contaDv;
     }
 
     /**
-     * @param string $contaDigito
+     * @param string $contaDv
      *
      * @return $this
      */
-    public function setContaDigito($contaDigito)
+    public function setContaDv($contaDv)
     {
-        $this->contaDigito = $contaDigito;
+        $this->contaDv = $contaDv;
 
         return $this;
     }

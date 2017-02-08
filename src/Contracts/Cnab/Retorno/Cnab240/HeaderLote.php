@@ -57,7 +57,7 @@ interface HeaderLote
     /**
      * @return mixed
      */
-    public function getAgenciaDigito();
+    public function getAgenciaDv();
 
     /**
      * @return mixed
@@ -72,7 +72,7 @@ interface HeaderLote
     /**
      * @return mixed
      */
-    public function getContaDigito();
+    public function getContaDv();
 
     /**
      * @param string $format

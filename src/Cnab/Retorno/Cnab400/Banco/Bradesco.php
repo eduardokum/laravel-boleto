@@ -87,7 +87,7 @@ class Bradesco extends AbstractRetorno implements RetornoCnab400
             $this->getHeader()
                 ->setAgencia($this->rem(25, 29, $detalhe))
                 ->setConta($this->rem(30, 36, $detalhe))
-                ->setContaDigito($this->rem(37, 37, $detalhe));
+                ->setContaDv($this->rem(37, 37, $detalhe));
         }
 
         $d = $this->detalheAtual();
