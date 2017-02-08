@@ -13,12 +13,15 @@ Pacote para gerar boletos, remessas e leitura de retorno.
 
 ## Para dúvidas ou sugestões utilize o nosso grupo de discussão
 
-----------
+## Requerimentos
+- [PHP Extensão Intl](http://php.net/manual/pt_BR/book.intl.php)
+
 
 ## Links
 - [Documentação da API](http://eduardokum.github.io/laravel-boleto/)
 - [Grupo de Discussão](https://groups.google.com/d/forum/laravel-boleto)
 - [Grupo no Telegram](https://t.me/laravelBoleto)
+
 
 ## Bancos suportados
 
@@ -79,7 +82,6 @@ $pagador = new \Eduardokum\LaravelBoleto\Pessoa([
 - **numeroDocumento**: campo utilizado para informar ao que o documento se referente *(duplicata, nf, np, ns, etc...)*
 
 
-
 ```php
 $boletoArray = [
 	'logo' => 'path/para/o/logo', // Logo da empresa
@@ -124,6 +126,21 @@ $boleto->renderHTML();
 // Os dois métodos aceita como parâmetro um boleano que define se após renderizado irá mostrar a janela de impressão. O Valor default é false.
 //Ex:
 $boleto->renderPDF(true); // imostra a janela de impressão
+```
+```php
+/*
+ * O comportamento padrão para os métodos renderPDF e renderHTM é retornar uma string pura.
+ * Para gerar um retorno no controller do laravel utilize da seguinte forma:
+ */
+
+// PDF
+return response($boleto->renderPDF(), 200, [
+    'Content-Type' => 'application/pdf',
+    'Content-Disposition' => 'inline; boleto.pdf',
+]);
+
+// HTML
+return response($boleto->renderHTML());
 
 ```
 
@@ -138,6 +155,7 @@ $pdf->addBoleto($boleto);
 Ou para adicionar um array de boletos
 $pdf->addBoletos($boletos);
 
+// Quando não informado parâmetros ele se comportará como Pdf::OUTPUT_STANDARD, enviando o buffer do pdf com os headers apropriados.
 $pdf->gerarBoleto();
 
 // O método gerarBoleto da classe PDF aceita como parâmetro:
