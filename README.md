@@ -22,7 +22,6 @@ Pacote para gerar boletos, remessas e leitura de retorno.
 - [Grupo de Discussão](https://groups.google.com/d/forum/laravel-boleto)
 - [Grupo no Telegram](https://t.me/laravelBoleto)
 
-
 ## Bancos suportados
 
 Banco | Boleto | Remessa 400 | Remessa 240 | Retorno 400 | Retorno 240
