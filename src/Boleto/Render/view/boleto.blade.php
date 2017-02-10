@@ -23,8 +23,9 @@
         <span class="header">Número: {{ $numero }}</span>
         {!! $valor ? '<span class="header">Valor: R$' . $valor . '</span>' : '' !!}
         <br>
-        <div class="linha-pontilhada" style="margin-bottom: 20px;">Recibo do pagador</div>
     </div>
+    
+    <div class="linha-pontilhada" style="margin-bottom: 20px;">Recibo do pagador</div>
 
     <div class="info-empresa">
         @if ($logo)
