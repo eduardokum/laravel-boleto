@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>{{ $beneficiario['nome'] }}</title>
+    <title>{{ $beneficiario }}</title>
     <style type="text/css">
         {!! $css !!}
     </style>
@@ -20,11 +20,11 @@
             <li>Caso tenha problemas ao imprimir, copie a sequencia numérica abaixo e pague no caixa eletrônico ou no internet banking:</li>
         </ul>
         <span class="header">Linha Digitável: {{ $linha_digitavel }}</span>
-        <span class="header">Número: {{ $numero }}</span>
-        {!! $valor ? '<span class="header">Valor: R$' . $valor . '</span>' : '' !!}
+        {!! $valor_documento ? '<span class="header">Valor: R$' . $valor_documento . '</span>' : '' !!}
         <br>
-        <div class="linha-pontilhada" style="margin-bottom: 20px;">Recibo do pagador</div>
     </div>
+
+    <div class="linha-pontilhada" style="margin-bottom: 20px;">Recibo do pagador</div>
 
     <div class="info-empresa">
         @if ($logo)
@@ -33,10 +33,10 @@
         </div>
         @endif
         <div style="display: inline-block; vertical-align: super;">
-            <div><strong>{{ $beneficiario['nome'] }}</strong></div>
-            <div>{{ $beneficiario['documento'] }}</div>
-            <div>{{ $beneficiario['endereco'] }}</div>
-            <div>{{ $beneficiario['endereco2'] }}</div>
+            <div><strong>{{ $beneficiario }}</strong></div>
+            <div>{{ $beneficiario_cpf_cnpj }}</div>
+            <div>{{ $beneficiario_endereco1 }}</div>
+            <div>{{ $beneficiario_endereco2 }}</div>
         </div>
     </div>
     <br>
@@ -57,11 +57,11 @@
         <tr>
             <td colspan="2" width="250" class="top-2">
                 <div class="titulo">Beneficiário</div>
-                <div class="conteudo">{{ $beneficiario['nome'] }}</div>
+                <div class="conteudo">{{ $beneficiario }}</div>
             </td>
             <td class="top-2">
                 <div class="titulo">CPF/CNPJ</div>
-                <div class="conteudo">{{ $beneficiario['documento'] }}</div>
+                <div class="conteudo">{{ $beneficiario_cpf_cnpj }}</div>
             </td>
             <td width="120" class="top-2">
                 <div class="titulo">Ag/Cod. Beneficiário</div>
@@ -69,13 +69,13 @@
             </td>
             <td width="120" class="top-2">
                 <div class="titulo">Vencimento</div>
-                <div class="conteudo rtl">{{ $data_vencimento->format('d/m/Y') }}</div>
+                <div class="conteudo rtl">{{ $data_vencimento }}</div>
             </td>
         </tr>
         <tr>
             <td colspan="3">
                 <div class="titulo">Pagador</div>
-                <div class="conteudo">{{ $pagador['nome_documento'] }} </div>
+                <div class="conteudo">{{ $pagador_nome_documento }} </div>
             </td>
             <td>
                 <div class="titulo">Nº documento</div>
@@ -93,19 +93,19 @@
             </td>
             <td>
                 <div class="titulo">Quantidade</div>
-                <div class="conteudo rtl"></div>
+                <div class="conteudo rtl">{{ $quantidade }}</div>
             </td>
             <td>
                 <div class="titulo">Valor</div>
-                <div class="conteudo rtl"></div>
+                <div class="conteudo rtl">{{ $valor_unitario }}</div>
             </td>
             <td>
                 <div class="titulo">(-) Descontos / Abatimentos</div>
-                <div class="conteudo rtl"></div>
+                <div class="conteudo rtl">{{ $desconto_abatimento }}</div>
             </td>
             <td>
                 <div class="titulo">(=) Valor Documento</div>
-                <div class="conteudo rtl">{{ $valor }}</div>
+                <div class="conteudo rtl">{{ $valor_documento }}</div>
             </td>
         </tr>
         <tr>
@@ -115,15 +115,15 @@
             </td>
             <td>
                 <div class="titulo">(-) Outras deduções</div>
-                <div class="conteudo"></div>
+                <div class="conteudo">{{ $outras_deducoes }}</div>
             </td>
             <td>
                 <div class="titulo">(+) Outros acréscimos</div>
-                <div class="conteudo rtl"></div>
+                <div class="conteudo rtl">{{ $outros_acrescimos }}</div>
             </td>
             <td>
                 <div class="titulo">(=) Valor cobrado</div>
-                <div class="conteudo rtl"></div>
+                <div class="conteudo rtl">{{ $valor_cobrado }}</div>
             </td>
         </tr>
         <tr>

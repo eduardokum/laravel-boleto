@@ -1,7 +1,7 @@
 <?php
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
-use \Eduardokum\LaravelBoleto\Cnab\Retorno\AbstractRetorno as AbstractRetornoGeneric;
+use Eduardokum\LaravelBoleto\Cnab\Retorno\AbstractRetorno as AbstractRetornoGeneric;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\HeaderLote as HeaderLoteContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\TrailerLote as TrailerLoteContract;
 use Illuminate\Support\Collection;
@@ -15,8 +15,7 @@ use Illuminate\Support\Collection;
  * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Detalhe detalheAtual()
  * @package Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240
  */
-abstract class AbstractRetorno extends AbstractRetornoGeneric
-{
+abstract class AbstractRetorno extends AbstractRetornoGeneric {
     /**
      * @var HeaderLoteContract
      */
@@ -44,16 +43,14 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
     /**
      * @return HeaderLote
      */
-    public function getHeaderLote()
-    {
+    public function getHeaderLote() {
         return $this->headerLote;
     }
 
     /**
      * @return TrailerLote
      */
-    public function getTrailerLote()
-    {
+    public function getTrailerLote() {
         return $this->trailerLote;
     }
 
@@ -95,8 +92,7 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
     /**
      * Incrementa o detalhe.
      */
-    protected function incrementDetalhe()
-    {
+    protected function incrementDetalhe() {
         $this->increment++;
         $detalhe = new Detalhe();
         $this->detalhe[$this->increment] = $detalhe;
@@ -108,8 +104,7 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
      * @return $this
      * @throws \Exception
      */
-    public function processar()
-    {
+    public function processar() {
         if ($this->isProcessado()) {
             return $this;
         }
@@ -153,9 +148,9 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
      *
      * @return array
      */
-    public function toArray()
-    {
+    public function toArray() {
         $array = [
+            'codigoBanco' => $this->getCodigoBanco(),
             'header' => $this->header->toArray(),
             'headerLote' => $this->headerLote->toArray(),
             'trailerLote' => $this->trailerLote->toArray(),
@@ -184,8 +179,11 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
         return $array;
     }
 
-    protected function getSegmentType($line)
-    {
+    protected function getSegmentType($line) {
         return strtoupper($this->rem(14, 14, $line));
+    }
+
+    protected function getServiceType($line) {
+        return $this->rem(8, 8, $line);
     }
 }
