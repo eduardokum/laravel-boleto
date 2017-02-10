@@ -22,8 +22,9 @@
         <span class="header">Linha Digitável: {{ $linha_digitavel }}</span>
         {!! $valor_documento ? '<span class="header">Valor: R$' . $valor_documento . '</span>' : '' !!}
         <br>
-        <div class="linha-pontilhada" style="margin-bottom: 20px;">Recibo do pagador</div>
     </div>
+
+    <div class="linha-pontilhada" style="margin-bottom: 20px;">Recibo do pagador</div>
 
     <div class="info-empresa">
         @if ($logo)
