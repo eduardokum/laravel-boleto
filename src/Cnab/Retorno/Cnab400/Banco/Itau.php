@@ -104,7 +104,7 @@ class Itau extends AbstractRetorno implements RetornoCnab400
             ->setServico($this->rem(12, 26, $header))
             ->setAgencia($this->rem(27, 30, $header))
             ->setConta($this->rem(33, 37, $header))
-            ->setContaDigito($this->rem(38, 38, $header))
+            ->setContaDv($this->rem(38, 38, $header))
             ->setData($this->rem(95, 100, $header));
 
         return true;
@@ -116,6 +116,7 @@ class Itau extends AbstractRetorno implements RetornoCnab400
 
         $d->setNossoNumero($this->rem(86, 94, $detalhe))
             ->setNumeroDocumento($this->rem(117, 126, $detalhe))
+            ->setNumeroControle($this->rem(38, 62, $detalhe))
             ->setOcorrencia($this->rem(109, 110, $detalhe))
             ->setOcorrenciaDescricao(array_get($this->ocorrencias, $d->getOcorrencia(), 'Desconhecida'))
             ->setDataOcorrencia($this->rem(111, 116, $detalhe))
@@ -157,7 +158,6 @@ class Itau extends AbstractRetorno implements RetornoCnab400
 
     protected function processarTrailer(array $trailer)
     {
-
         $this->getTrailer()
             ->setQuantidadeTitulos((int) $this->rem(18, 25, $trailer) + (int) $this->rem(58, 65, $trailer) + (int) $this->rem(178, 185, $trailer))
             ->setValorTitulos((float) Util::nFloat($this->rem(221, 234, $trailer)/100, 2, false))

@@ -1,5 +1,5 @@
 <?php
-require realpath(__DIR__ . '/../../../') . DIRECTORY_SEPARATOR . 'autoload.php';
+require 'autoload.php';
 $beneficiario = new \Eduardokum\LaravelBoleto\Pessoa(
     [
         'nome'      => 'ACME',
@@ -52,7 +52,7 @@ $remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Bradesco(
         'carteira'      => '09',
         'conta'         => 99999999,
         'contaDv'       => 9,
-        'codigoCliente' => 12345678901234567890,
+        'codigoCliente' => '12345678901234567890',
         'beneficiario'  => $beneficiario,
     ]
 );

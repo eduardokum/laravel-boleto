@@ -30,7 +30,8 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric {
      * @param String $file
      * @throws \Exception
      */
-    public function __construct($file) {
+    public function __construct($file)
+    {
         parent::__construct($file);
 
         $this->header = new Header();
@@ -94,9 +95,6 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric {
     protected function incrementDetalhe() {
         $this->increment++;
         $detalhe = new Detalhe();
-        $detalhe->setSegmentoT(new DetalheSegmentoT());
-        $detalhe->setSegmentoU(new DetalheSegmentoU());
-        $detalhe->setSegmentoY(new DetalheSegmentoY());
         $this->detalhe[$this->increment] = $detalhe;
     }
 
@@ -104,6 +102,7 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric {
      * Processa o arquivo
      *
      * @return $this
+     * @throws \Exception
      */
     public function processar() {
         if ($this->isProcessado()) {
@@ -115,7 +114,6 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric {
         }
 
         foreach ($this->file as $linha) {
-
             $recordType = $this->rem(8, 8, $linha);
 
             if ($recordType == '0') {
@@ -123,7 +121,6 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric {
             } elseif ($recordType == '1') {
                 $this->processarHeaderLote($linha);
             } elseif ($recordType == '3') {
-
                 if ($this->getSegmentType($linha) == 'T') {
                     $this->incrementDetalhe();
                 }
@@ -132,13 +129,11 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric {
                     unset($this->detalhe[$this->increment]);
                     $this->increment--;
                 }
-
-            } else if ($recordType == '5') {
+            } elseif ($recordType == '5') {
                 $this->processarTrailerLote($linha);
-            } else if ($recordType == '9') {
+            } elseif ($recordType == '9') {
                 $this->processarTrailer($linha);
             }
-
         }
 
         if (method_exists($this, 'finalize')) {
@@ -164,7 +159,6 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric {
         ];
 
         foreach ($this->detalhe as $detalhe) {
-
             $arr = [
                 'ocorrenciaTipo' => $detalhe->getOcorrenciaTipo(),
                 'ocorrenciaDescricao' => $detalhe->getOcorrenciaDescricao(),

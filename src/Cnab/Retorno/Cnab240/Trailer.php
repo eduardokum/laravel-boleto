@@ -3,13 +3,30 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
 use \Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Trailer as TrailerContract;
+use Eduardokum\LaravelBoleto\MagicTrait;
 
 class Trailer implements TrailerContract
 {
-    private $numeroLoteRemessa;
-    private $tipoRegistro;
-    private $qtdLotesArquivo;
-    private $qtdRegistroArquivo;
+    use MagicTrait;
+    /**
+     * @var integer
+     */
+    protected $numeroLote;
+
+    /**
+     * @var integer
+     */
+    protected $tipoRegistro;
+
+    /**
+     * @var integer
+     */
+    protected $qtdLotesArquivo;
+
+    /**
+     * @var integer
+     */
+    protected $qtdRegistroArquivo;
 
     /**
      * @return mixed
@@ -20,11 +37,13 @@ class Trailer implements TrailerContract
     }
 
     /**
-     * @param mixed $numeroLoteRemessa
+     * @param mixed $numeroLote
+     *
+     * @return $this
      */
-    public function setNumeroLoteRemessa($numeroLoteRemessa)
+    public function setNumeroLote($numeroLote)
     {
-        $this->numeroLoteRemessa = $numeroLoteRemessa;
+        $this->numeroLote = $numeroLote;
 
         return $this;
     }
@@ -34,11 +53,13 @@ class Trailer implements TrailerContract
      */
     public function getNumeroLoteRemessa()
     {
-        return $this->numeroLoteRemessa;
+        return $this->numeroLote;
     }
 
     /**
      * @param mixed $qtdLotesArquivo
+     *
+     * @return $this
      */
     public function setQtdLotesArquivo($qtdLotesArquivo)
     {
@@ -57,6 +78,8 @@ class Trailer implements TrailerContract
 
     /**
      * @param mixed $qtdRegistroArquivo
+     *
+     * @return $this
      */
     public function setQtdRegistroArquivo($qtdRegistroArquivo)
     {
@@ -75,6 +98,8 @@ class Trailer implements TrailerContract
 
     /**
      * @param mixed $tipoRegistro
+     *
+     * @return $this
      */
     public function setTipoRegistro($tipoRegistro)
     {
@@ -82,59 +107,4 @@ class Trailer implements TrailerContract
 
         return $this;
     }
-
-
-    /**
-     * @return array
-     */
-    public function toArray()
-    {
-        $vars = array_keys(get_class_vars(self::class));
-        $aRet = [];
-        foreach ($vars as $var) {
-            $methodName = 'get' . ucfirst($var);
-            $aRet[$var] = method_exists($this, $methodName)
-                ? $this->$methodName()
-                : $this->$var;
-        }
-        return $aRet;
-    }
-
-    /**
-     * Fast set method.
-     *
-     * @param $name
-     * @param $value
-     */
-    public function __set($name, $value)
-    {
-        if (property_exists($this, $name)) {
-            $this->$name = $value;
-        }
-    }
-
-    /**
-     * Fast get method.
-     *
-     * @param $name
-     */
-    public function __get($name)
-    {
-        if (property_exists($this, $name)) {
-            $method = 'get' . ucwords($name);
-            return $this->{$method}();
-        }
-    }
-
-    /**
-     * Determine if an attribute exists
-     *
-     * @param  string $key
-     * @return bool
-     */
-    public function __isset($key)
-    {
-        return isset($this->$key);
-    }
-
 }

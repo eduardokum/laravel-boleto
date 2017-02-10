@@ -1,134 +1,122 @@
 <?php
-
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
+use Carbon\Carbon;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Detalhe as DetalheContract;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\DetalheSegmentoT as DetalheSegmentoTContract;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\DetalheSegmentoU as DetalheSegmentoUContract;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\DetalheSegmentoY as DetalheSegmentoYContract;
+use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
+use Eduardokum\LaravelBoleto\MagicTrait;
+use Eduardokum\LaravelBoleto\Util;
 
 class Detalhe implements DetalheContract
 {
-    /**
-     * @var DetalheSegmentoTContract
-     */
-    private $segmentoT;
-
-    /**
-     * @var DetalheSegmentoUContract
-     */
-    private $segmentoU;
-
-    /**
-     * @var DetalheSegmentoYContract
-     */
-    private $segmentoY;
+    use MagicTrait;
 
     /**
      * @var string
      */
-    private $valorPagoSacado;
+    protected $ocorrencia;
 
     /**
      * @var string
      */
-    private $ocorrenciaTipo;
+    protected $ocorrenciaTipo;
 
     /**
      * @var string
      */
-    private $ocorrenciaDescricao;
+    protected $ocorrenciaDescricao;
+
+    /**
+     * @var int
+     */
+    protected $numeroControle;
 
     /**
      * @var string
      */
-    private $ocorrencia;
+    protected $numeroDocumento;
 
     /**
      * @var string
      */
-    private $codigoOcorrencia;
+    protected $nossoNumero;
 
     /**
      * @var string
      */
-    private $error;
+    protected $carteira;
+
+    /**
+     * @var Carbon
+     */
+    protected $dataVencimento;
+
+    /**
+     * @var Carbon
+     */
+    protected $dataOcorrencia;
+    /**
+     * @var Carbon
+     */
+    protected $dataCredito;
 
     /**
      * @var string
      */
-    private $errorCode;
+    protected $valor;
 
     /**
-     * @return DetalheSegmentoTContract
+     * @var string
      */
-    public function getSegmentoT()
-    {
-        return $this->segmentoT;
-    }
+    protected $valorRecebido;
 
     /**
-     * @param DetalheSegmentoTContract $segmentoT
+     * @var string
      */
-    public function setSegmentoT(DetalheSegmentoTContract $segmentoT)
-    {
-        $this->segmentoT = $segmentoT;
-
-        return $this;
-    }
+    protected $valorTarifa;
 
     /**
-     * @return DetalheSegmentoUContract
+     * @var string
      */
-    public function getSegmentoU()
-    {
-        return $this->segmentoU;
-    }
+    protected $valorIOF;
+    /**
+     * @var string
+     */
+    protected $valorAbatimento;
+    /**
+     * @var string
+     */
+    protected $valorDesconto;
+    /**
+     * @var string
+     */
+    protected $valorMora;
+    /**
+     * @var string
+     */
+    protected $valorMulta;
 
     /**
-     * @param DetalheSegmentoUContract $segmentoU
+     * @var PessoaContract
      */
-    public function setSegmentoU(DetalheSegmentoUContract $segmentoU)
-    {
-        $this->segmentoU = $segmentoU;
-
-        return $this;
-    }
+    protected $pagador;
 
     /**
-     * @return DetalheSegmentoYContract
+     * @var array
      */
-    public function getSegmentoY()
-    {
-        return $this->segmentoY;
-    }
+    protected $cheques = [];
 
     /**
-     * @param DetalheSegmentoYContract $segmentoY
+     * @var string
      */
-    public function setSegmentoY(DetalheSegmentoYContract $segmentoY)
-    {
-        $this->segmentoY = $segmentoY;
-
-        return $this;
-    }
+    protected $error;
 
     /**
      * @return string
      */
-    public function getValorPagoSacado()
+    public function getOcorrencia()
     {
-        return $this->valorPagoSacado;
-    }
-
-    /**
-     * @param mixed $valorPagoSacado
-     */
-    public function setValorPagoSacado($valorPagoSacado)
-    {
-        $this->valorPagoSacado = $valorPagoSacado;
-
-        return $this;
+        return $this->ocorrencia;
     }
 
     /**
@@ -138,7 +126,7 @@ class Detalhe implements DetalheContract
     {
         $ocorrencias = func_get_args();
 
-        if (count($ocorrencias) == 0 && empty($this->getOcorrencia())) {
+        if (count($ocorrencias) == 0 && !empty($this->getOcorrencia())) {
             return true;
         }
 
@@ -154,21 +142,13 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @return string
-     */
-    public function getOcorrenciaDescricao()
-    {
-        return $this->ocorrenciaDescricao;
-    }
-
-    /**
-     * @param string $ocorrenciaDescricao
+     * @param string $ocorrencia
      *
-     * @return Detalhe
+     * @return $this
      */
-    public function setOcorrenciaDescricao($ocorrenciaDescricao)
+    public function setOcorrencia($ocorrencia)
     {
-        $this->ocorrenciaDescricao = $ocorrenciaDescricao;
+        $this->ocorrencia = $ocorrencia;
 
         return $this;
     }
@@ -184,7 +164,7 @@ class Detalhe implements DetalheContract
     /**
      * @param string $ocorrenciaTipo
      *
-     * @return Detalhe
+     * @return $this
      */
     public function setOcorrenciaTipo($ocorrenciaTipo)
     {
@@ -196,39 +176,358 @@ class Detalhe implements DetalheContract
     /**
      * @return string
      */
-    public function getCodigoOcorrencia()
+    public function getOcorrenciaDescricao()
     {
-        return $this->codigoOcorrencia;
+        return $this->ocorrenciaDescricao;
     }
 
     /**
-     * @param mixed $codigoOcorrencia
+     * @param string $ocorrenciaDescricao
+     *
+     * @return $this
      */
-    public function setCodigoOcorrencia($codigoOcorrencia)
+    public function setOcorrenciaDescricao($ocorrenciaDescricao)
     {
-        $this->codigoOcorrencia = $codigoOcorrencia;
+        $this->ocorrenciaDescricao = $ocorrenciaDescricao;
 
         return $this;
     }
 
+    /**
+     * @return int
+     */
+    public function getNumeroControle()
+    {
+        return $this->numeroControle;
+    }
+
+    /**
+     * @param int $numeroControle
+     *
+     * @return $this
+     */
+    public function setNumeroControle($numeroControle)
+    {
+        $this->numeroControle = $numeroControle;
+
+        return $this;
+    }
 
     /**
      * @return string
      */
-    public function getOcorrencia()
+    public function getNumeroDocumento()
     {
-        return $this->ocorrencia;
+        return $this->numeroDocumento;
     }
 
     /**
-     * @param string $ocorrencia
+     * @param string $numeroDocumento
      *
-     * @return Detalhe
+     * @return $this
      */
-    public function setOcorrencia($ocorrencia)
+    public function setNumeroDocumento($numeroDocumento)
     {
-        $this->ocorrencia = sprintf('%02s', $ocorrencia);
+        $this->numeroDocumento = $numeroDocumento;
 
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNossoNumero()
+    {
+        return $this->nossoNumero;
+    }
+
+    /**
+     * @param string $nossoNumero
+     *
+     * @return $this
+     */
+    public function setNossoNumero($nossoNumero)
+    {
+        $this->nossoNumero = $nossoNumero;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCarteira()
+    {
+        return $this->carteira;
+    }
+
+    /**
+     * @param string $carteira
+     *
+     * @return $this
+     */
+    public function setCarteira($carteira)
+    {
+        $this->carteira = $carteira;
+
+        return $this;
+    }
+
+    /**
+     * @param string $format
+     *
+     * @return Carbon|null|string
+     */
+    public function getDataVencimento($format = 'd/m/Y')
+    {
+        return $this->dataVencimento instanceof Carbon
+            ? $format === false ? $this->dataVencimento : $this->dataVencimento->format($format)
+            : null;
+    }
+
+    /**
+     * @param $dataVencimento
+     *
+     * @param string $format
+     *
+     * @return $this
+     */
+    public function setDataVencimento($dataVencimento, $format = 'dmY')
+    {
+        $this->dataVencimento = trim($dataVencimento, '0 ') ? Carbon::createFromFormat($format, $dataVencimento) : null;
+
+        return $this;
+    }
+
+    /**
+     * @param string $format
+     *
+     * @return Carbon|null|string
+     */
+    public function getDataCredito($format = 'd/m/Y')
+    {
+        return $this->dataCredito instanceof Carbon
+            ? $format === false ? $this->dataCredito : $this->dataCredito->format($format)
+            : null;
+    }
+
+    /**
+     * @param $dataCredito
+     *
+     * @param string $format
+     *
+     * @return $this
+     */
+    public function setDataCredito($dataCredito, $format = 'dmY')
+    {
+        $this->dataCredito = trim($dataCredito, '0 ') ? Carbon::createFromFormat($format, $dataCredito) : null;
+
+        return $this;
+    }
+
+    /**
+     * @param string $format
+     *
+     * @return Carbon|null|string
+     */
+    public function getDataOcorrencia($format = 'd/m/Y')
+    {
+        return $this->dataOcorrencia instanceof Carbon
+            ? $format === false ? $this->dataOcorrencia : $this->dataOcorrencia->format($format)
+            : null;
+    }
+
+    /**
+     * @param $dataOcorrencia
+     *
+     * @param string $format
+     *
+     * @return $this
+     */
+    public function setDataOcorrencia($dataOcorrencia, $format = 'dmY')
+    {
+        $this->dataOcorrencia = trim($dataOcorrencia, '0 ') ? Carbon::createFromFormat($format, $dataOcorrencia) : null;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getValor()
+    {
+        return $this->valor;
+    }
+
+    /**
+     * @param string $valor
+     *
+     * @return $this
+     */
+    public function setValor($valor)
+    {
+        $this->valor = $valor;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getValorIOF()
+    {
+        return $this->valorIOF;
+    }
+
+    /**
+     * @param string $valorIOF
+     *
+     * @return $this
+     */
+    public function setValorIOF($valorIOF)
+    {
+        $this->valorIOF = $valorIOF;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getValorAbatimento()
+    {
+        return $this->valorAbatimento;
+    }
+
+    /**
+     * @param string $valorAbatimento
+     *
+     * @return $this
+     */
+    public function setValorAbatimento($valorAbatimento)
+    {
+        $this->valorAbatimento = $valorAbatimento;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getValorDesconto()
+    {
+        return $this->valorDesconto;
+    }
+
+    /**
+     * @param string $valorDesconto
+     *
+     * @return $this
+     */
+    public function setValorDesconto($valorDesconto)
+    {
+        $this->valorDesconto = $valorDesconto;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getValorMora()
+    {
+        return $this->valorMora;
+    }
+
+    /**
+     * @param string $valorMora
+     *
+     * @return $this
+     */
+    public function setValorMora($valorMora)
+    {
+        $this->valorMora = $valorMora;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getValorMulta()
+    {
+        return $this->valorMulta;
+    }
+
+    /**
+     * @param string $valorMulta
+     *
+     * @return $this
+     */
+    public function setValorMulta($valorMulta)
+    {
+        $this->valorMulta = $valorMulta;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getValorRecebido()
+    {
+        return $this->valorRecebido;
+    }
+
+    /**
+     * @param string $valorRecebido
+     *
+     * @return $this
+     */
+    public function setValorRecebido($valorRecebido)
+    {
+        $this->valorRecebido = $valorRecebido;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getValorTarifa()
+    {
+        return $this->valorTarifa;
+    }
+
+    /**
+     * @param string $valorTarifa
+     *
+     * @return $this
+     */
+    public function setValorTarifa($valorTarifa)
+    {
+        $this->valorTarifa = $valorTarifa;
+
+        return $this;
+    }
+
+    /**
+     * @return PessoaContract
+     */
+    public function getPagador()
+    {
+        return $this->pagador;
+    }
+
+    /**
+     * @param $pagador
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    public function setPagador($pagador)
+    {
+        Util::addPessoa($this->pagador, $pagador);
         return $this;
     }
 
@@ -243,6 +542,27 @@ class Detalhe implements DetalheContract
     }
 
     /**
+     * @return array
+     */
+    public function getCheques()
+    {
+        return $this->cheques;
+    }
+
+    /**
+     * @param array $cheques
+     *
+     * @return Detalhe
+     */
+    public function setCheques(array $cheques)
+    {
+        $this->cheques = $cheques;
+
+        return $this;
+    }
+
+
+    /**
      * @return string
      */
     public function getError()
@@ -253,7 +573,7 @@ class Detalhe implements DetalheContract
     /**
      * @param string $error
      *
-     * @return Detalhe
+     * @return $this
      */
     public function setError($error)
     {
@@ -261,78 +581,5 @@ class Detalhe implements DetalheContract
         $this->error = $error;
 
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getErrorCode()
-    {
-        return $this->errorCode;
-    }
-
-    /**
-     * @param string $errorCode
-     */
-    public function setErrorCode($errorCode)
-    {
-        $this->errorCode = $errorCode;
-    }
-
-    /**
-     * @return array
-     */
-    public function toArray()
-    {
-        $vars = array_keys(get_class_vars(self::class));
-        $aRet = [];
-        foreach ($vars as $var) {
-            $methodName = 'get' . ucfirst($var);
-            $aRet[$var] = method_exists($this, $methodName)
-                ? $this->$methodName()
-                : $this->$var;
-
-            if( is_object($aRet[$var]) && method_exists($aRet[$var], 'toArray') ) {
-                $aRet[$var] = $aRet[$var]->toArray();
-            }
-        }
-        return $aRet;
-    }
-
-    /**
-     * Fast set method.
-     *
-     * @param $name
-     * @param $value
-     */
-    public function __set($name, $value)
-    {
-        if (property_exists($this, $name)) {
-            $this->$name = $value;
-        }
-    }
-
-    /**
-     * Fast get method.
-     *
-     * @param $name
-     */
-    public function __get($name)
-    {
-        if (property_exists($this, $name)) {
-            $method = 'get' . ucwords($name);
-            return $this->{$method}();
-        }
-    }
-
-    /**
-     * Determine if an attribute exists on the detalhe.
-     *
-     * @param  string $key
-     * @return bool
-     */
-    public function __isset($key)
-    {
-        return isset($this->$key);
     }
 }

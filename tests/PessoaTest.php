@@ -118,4 +118,31 @@ class PessoaTest extends TestCase
         }
 
     }
+
+    public function testPessoaMascara(){
+
+        $pessoa = new Pessoa;
+
+        $pessoa->setDocumento('99.999.999/9999-99');
+        $this->assertEquals('CNPJ', $pessoa->getTipoDocumento());
+        $this->assertEquals('99.999.999/9999-99', $pessoa->getDocumento());
+        $pessoa->setDocumento('99999999999999');
+        $this->assertEquals('CNPJ', $pessoa->getTipoDocumento());
+        $this->assertEquals('99.999.999/9999-99', $pessoa->getDocumento());
+
+        $pessoa->setDocumento('999.999.999-99');
+        $this->assertEquals('CPF', $pessoa->getTipoDocumento());
+        $this->assertEquals('999.999.999-99', $pessoa->getDocumento());
+        $pessoa->setDocumento('99999999999');
+        $this->assertEquals('CPF', $pessoa->getTipoDocumento());
+        $this->assertEquals('999.999.999-99', $pessoa->getDocumento());
+
+        $pessoa->setDocumento('99.99999.9-99');
+        $this->assertEquals('CEI', $pessoa->getTipoDocumento());
+        $this->assertEquals('99.99999.9-99', $pessoa->getDocumento());
+        $pessoa->setDocumento('9999999999');
+        $this->assertEquals('CEI', $pessoa->getTipoDocumento());
+        $this->assertEquals('99.99999.9-99', $pessoa->getDocumento());
+
+    }
 }

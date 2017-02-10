@@ -6,7 +6,6 @@ use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
 use Eduardokum\LaravelBoleto\Util;
 
-
 class Bb extends AbstractRetorno implements RetornoCnab400
 {
     /**
@@ -172,16 +171,15 @@ class Bb extends AbstractRetorno implements RetornoCnab400
 
     protected function processarHeader(array $header)
     {
-
         $this->getHeader()
             ->setOperacaoCodigo($this->rem(2, 2, $header))
             ->setOperacao($this->rem(3, 9, $header))
             ->setServicoCodigo($this->rem(10, 11, $header))
             ->setServico($this->rem(12, 19, $header))
             ->setAgencia($this->rem(27, 30, $header))
-            ->setAgenciaDigito($this->rem(31, 31, $header))
+            ->setAgenciaDv($this->rem(31, 31, $header))
             ->setConta($this->rem(32, 39, $header))
-            ->setContaDigito($this->rem(40, 40, $header))
+            ->setContaDv($this->rem(40, 40, $header))
             ->setConvenio($this->rem(150, 156, $header))
             ->setData($this->rem(95, 100, $header));
 
@@ -198,6 +196,7 @@ class Bb extends AbstractRetorno implements RetornoCnab400
 
         $d->setNossoNumero($this->rem(64, 80, $detalhe))
             ->setNumeroDocumento($this->rem(117, 126, $detalhe))
+            ->setNumeroControle($this->rem(39, 63, $detalhe))
             ->setOcorrencia($this->rem(109, 110, $detalhe))
             ->setOcorrenciaDescricao(array_get($this->ocorrencias, $d->getOcorrencia(), 'Desconhecida'))
             ->setDataOcorrencia($this->rem(111, 116, $detalhe))
@@ -250,5 +249,4 @@ class Bb extends AbstractRetorno implements RetornoCnab400
 
         return true;
     }
-
 }

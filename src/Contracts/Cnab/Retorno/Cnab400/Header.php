@@ -3,7 +3,6 @@ namespace Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400;
 
 interface Header
 {
-
     /**
      * @return mixed
      */
@@ -32,7 +31,7 @@ interface Header
     /**
      * @return mixed
      */
-    public function getAgenciaDigito();
+    public function getAgenciaDv();
 
     /**
      * @return mixed
@@ -42,7 +41,7 @@ interface Header
     /**
      * @return mixed
      */
-    public function getContaDigito();
+    public function getContaDv();
 
     /**
      * @param string $format
@@ -65,5 +64,4 @@ interface Header
      * @return array
      */
     public function toArray();
-
 }

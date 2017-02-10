@@ -8,7 +8,6 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Hsbc extends AbstractRetorno implements RetornoCnab400
 {
-
     /**
      * Código do banco
      *
@@ -176,7 +175,7 @@ class Hsbc extends AbstractRetorno implements RetornoCnab400
             ->setServico($this->rem(12, 26, $header))
             ->setAgencia($this->rem(28, 31, $header))
             ->setConta($this->rem(38, 43, $header))
-            ->setContaDigito($this->rem(44, 44, $header))
+            ->setContaDv($this->rem(44, 44, $header))
             ->setData($this->rem(95, 100, $header));
 
         return true;
@@ -184,10 +183,10 @@ class Hsbc extends AbstractRetorno implements RetornoCnab400
 
     protected function processarDetalhe(array $detalhe)
     {
-
         $d = $this->detalheAtual();
         $d->setNossoNumero($this->rem(63, 73, $detalhe))
             ->setNumeroDocumento($this->rem(117, 126, $detalhe))
+            ->setNumeroControle($this->rem(38, 62, $detalhe))
             ->setOcorrencia($this->rem(109, 110, $detalhe))
             ->setOcorrenciaDescricao(array_get($this->ocorrencias, $d->getOcorrencia(), 'Desconhecida'))
             ->setDataOcorrencia($this->rem(111, 116, $detalhe))

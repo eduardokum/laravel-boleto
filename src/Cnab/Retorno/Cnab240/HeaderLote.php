@@ -4,9 +4,11 @@ namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
 use Carbon\Carbon;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\HeaderLote as HeaderLoteContract;
+use Eduardokum\LaravelBoleto\MagicTrait;
 
 class HeaderLote implements HeaderLoteContract
 {
+    use MagicTrait;
     /**
      * @var string
      */
@@ -40,7 +42,7 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @var string
      */
-    protected $codigoInscricao;
+    protected $tipoInscricao;
 
     /**
      * @var string
@@ -50,7 +52,7 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @var string
      */
-    protected $agenciaDigito;
+    protected $agenciaDv;
 
     /**
      * @var string
@@ -85,7 +87,27 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @var string
      */
-    protected $contaDigito;
+    protected $contaDv;
+
+    /**
+     * @var string
+     */
+    protected $codigoBanco;
+
+    /**
+     * @var string
+     */
+    protected $mensagem_1;
+
+    /**
+     * @var Carbon
+     */
+    protected $dataCredito;
+
+    /**
+     * @var string
+     */
+    protected $convenio;
 
     /**
      * @return string
@@ -98,7 +120,7 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @param string $codigoBanco
      *
-     * @return HeaderLote
+     * @return $this
      */
     public function setCodigoBanco($codigoBanco)
     {
@@ -118,7 +140,7 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @param string $tipoRegistro
      *
-     * @return HeaderLote
+     * @return $this
      */
     public function setTipoRegistro($tipoRegistro)
     {
@@ -137,6 +159,8 @@ class HeaderLote implements HeaderLoteContract
 
     /**
      * @param string $codBanco
+     *
+     * @return $this
      */
     public function setCodBanco($codBanco)
     {
@@ -155,6 +179,8 @@ class HeaderLote implements HeaderLoteContract
 
     /**
      * @param string $numeroLoteRetorno
+     *
+     * @return $this
      */
     public function setNumeroLoteRetorno($numeroLoteRetorno)
     {
@@ -174,7 +200,7 @@ class HeaderLote implements HeaderLoteContract
     /**
      *
      * @param string $tipoOperacao
-     * @return HeaderLote
+     * @return $this
      */
     public function setTipoOperacao($tipoOperacao)
     {
@@ -195,7 +221,7 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @param string $tipoServico
      *
-     * @return HeaderLote
+     * @return $this
      */
     public function setTipoServico($tipoServico)
     {
@@ -216,7 +242,7 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @param string $versaoLayoutLote
      *
-     * @return HeaderLote
+     * @return $this
      */
     public function setVersaoLayoutLote($versaoLayoutLote)
     {
@@ -229,18 +255,20 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @return string
      */
-    public function getCodigoInscricao()
+    public function getTipoInscricao()
     {
-        return $this->codigoInscricao;
+        return $this->tipoInscricao;
     }
 
     /**
      *
-     * @return HeaderLote
+     * @param $tipoInscricao
+     *
+     * @return $this
      */
-    public function setCodigoInscricao($codigoInscricao)
+    public function setTipoInscricao($tipoInscricao)
     {
-        $this->codigoInscricao = $codigoInscricao;
+        $this->tipoInscricao = $tipoInscricao;
 
         return $this;
     }
@@ -257,7 +285,7 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @param string $numeroInscricao
      *
-     * @return HeaderLote
+     * @return $this
      */
     public function setNumeroInscricao($numeroInscricao)
     {
@@ -277,11 +305,31 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @param string $codigoCedente
      *
-     * @return HeaderLote
+     * @return $this
      */
     public function setCodigoCedente($codigoCedente)
     {
         $this->codigoCedente = $codigoCedente;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getConvenio()
+    {
+        return $this->convenio;
+    }
+
+    /**
+     * @param string $convenio
+     *
+     * @return $this
+     */
+    public function setConvenio($convenio)
+    {
+        $this->convenio = $convenio;
 
         return $this;
     }
@@ -297,7 +345,7 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @param string $nomeEmpresa
      *
-     * @return HeaderLote
+     * @return $this
      */
     public function setNomeEmpresa($nomeEmpresa)
     {
@@ -305,7 +353,6 @@ class HeaderLote implements HeaderLoteContract
 
         return $this;
     }
-
 
     /**
      * @return string
@@ -330,11 +377,39 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @param string $dataGravacao
      *
-     * @return HeaderLote
+     * @param string $format
+     *
+     * @return $this
      */
     public function setDataGravacao($dataGravacao, $format = 'dmY')
     {
         $this->dataGravacao = trim($dataGravacao, '0 ') ? Carbon::createFromFormat($format, $dataGravacao) : null;
+
+        return $this;
+    }
+
+    /**
+     * @param string $format
+     *
+     * @return string
+     */
+    public function getDataCredito($format = 'd/m/Y')
+    {
+        return $this->dataCredito instanceof Carbon
+            ? $format === false ? $this->dataCredito : $this->dataCredito->format($format)
+            : null;
+    }
+
+    /**
+     * @param string $dataCredito
+     *
+     * @param string $format
+     *
+     * @return $this
+     */
+    public function setDataCredito($dataCredito, $format = 'dmY')
+    {
+        $this->dataCredito = trim($dataCredito, '0 ') ? Carbon::createFromFormat($format, $dataCredito) : null;
 
         return $this;
     }
@@ -350,7 +425,7 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @param string $agencia
      *
-     * @return HeaderLote
+     * @return $this
      */
     public function setAgencia($agencia)
     {
@@ -363,19 +438,19 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @return string
      */
-    public function getAgenciaDigito()
+    public function getAgenciaDv()
     {
-        return $this->agenciaDigito;
+        return $this->agenciaDv;
     }
 
     /**
-     * @param string $agenciaDigito
+     * @param string $agenciaDv
      *
-     * @return HeaderLote
+     * @return $this
      */
-    public function setAgenciaDigito($agenciaDigito)
+    public function setAgenciaDv($agenciaDv)
     {
-        $this->agenciaDigito = $agenciaDigito;
+        $this->agenciaDv = $agenciaDv;
 
         return $this;
     }
@@ -391,7 +466,7 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @param string $conta
      *
-     * @return HeaderLote
+     * @return $this
      */
     public function setConta($conta)
     {
@@ -410,6 +485,8 @@ class HeaderLote implements HeaderLoteContract
 
     /**
      * @param string $numeroRetorno
+     *
+     * @return $this
      */
     public function setNumeroRetorno($numeroRetorno)
     {
@@ -421,74 +498,20 @@ class HeaderLote implements HeaderLoteContract
     /**
      * @return string
      */
-    public function getContaDigito()
+    public function getContaDv()
     {
-        return $this->contaDigito;
+        return $this->contaDv;
     }
 
     /**
-     * @param string $contaDigito
+     * @param string $contaDv
      *
-     * @return HeaderLote
+     * @return $this
      */
-    public function setContaDigito($contaDigito)
+    public function setContaDv($contaDv)
     {
-        $this->contaDigito = $contaDigito;
+        $this->contaDv = $contaDv;
 
         return $this;
-    }
-
-
-    /**
-     * @return array
-     */
-    public function toArray()
-    {
-        $vars = array_keys(get_class_vars(self::class));
-        $aRet = [];
-        foreach ($vars as $var) {
-            $methodName = 'get' . ucfirst($var);
-            $aRet[$var] = method_exists($this, $methodName)
-                ? $this->$methodName()
-                : $this->$var;
-        }
-        return $aRet;
-    }
-
-    /**
-     * Fast set method.
-     *
-     * @param $name
-     * @param $value
-     */
-    public function __set($name, $value)
-    {
-        if (property_exists($this, $name)) {
-            $this->$name = $value;
-        }
-    }
-
-    /**
-     * Fast get method.
-     *
-     * @param $name
-     */
-    public function __get($name)
-    {
-        if (property_exists($this, $name)) {
-            $method = 'get' . ucwords($name);
-            return $this->{$method}();
-        }
-    }
-
-    /**
-     * Determine if an attribute exists
-     *
-     * @param  string $key
-     * @return bool
-     */
-    public function __isset($key)
-    {
-        return isset($this->$key);
     }
 }

@@ -3,10 +3,11 @@ namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400;
 
 use Carbon\Carbon;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Header as HeaderContract;
+use Eduardokum\LaravelBoleto\MagicTrait;
 
 class Header implements HeaderContract
 {
-
+    use MagicTrait;
     /**
      * @var string
      */
@@ -30,7 +31,7 @@ class Header implements HeaderContract
     /**
      * @var string
      */
-    protected $agenciaDigito;
+    protected $agenciaDv;
     /**
      * @var string
      */
@@ -38,7 +39,7 @@ class Header implements HeaderContract
     /**
      * @var string
      */
-    protected $contaDigito;
+    protected $contaDv;
     /**
      * @var Carbon
      */
@@ -156,19 +157,19 @@ class Header implements HeaderContract
     /**
      * @return string
      */
-    public function getAgenciaDigito()
+    public function getAgenciaDv()
     {
-        return $this->agenciaDigito;
+        return $this->agenciaDv;
     }
 
     /**
-     * @param string $agenciaDigito
+     * @param string $agenciaDv
      *
      * @return Header
      */
-    public function setAgenciaDigito($agenciaDigito)
+    public function setAgenciaDv($agenciaDv)
     {
-        $this->agenciaDigito = $agenciaDigito;
+        $this->agenciaDv = $agenciaDv;
 
         return $this;
     }
@@ -196,19 +197,19 @@ class Header implements HeaderContract
     /**
      * @return string
      */
-    public function getContaDigito()
+    public function getContaDv()
     {
-        return $this->contaDigito;
+        return $this->contaDv;
     }
 
     /**
-     * @param string $contaDigito
+     * @param string $contaDv
      *
      * @return Header
      */
-    public function setContaDigito($contaDigito)
+    public function setContaDv($contaDv)
     {
-        $this->contaDigito = $contaDigito;
+        $this->contaDv = $contaDv;
 
         return $this;
     }
@@ -275,59 +276,5 @@ class Header implements HeaderContract
         $this->codigoCliente = ltrim(trim($codigoCliente, ' '), '0');
 
         return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function toArray()
-    {
-        $vars = array_keys(get_class_vars(self::class));
-        $aRet = [];
-        foreach ($vars as $var)
-        {
-            $methodName = 'get' . ucfirst($var);
-            $aRet[$var] = method_exists($this, $methodName)
-                ? $this->$methodName()
-                : $this->$var;
-        }
-        return $aRet;
-    }
-
-    /**
-     * Fast set method.
-     *
-     * @param $name
-     * @param $value
-     */
-    public function __set($name, $value)
-    {
-        if (property_exists($this, $name)) {
-            $this->$name = $value;
-        }
-    }
-
-    /**
-     * Fast get method.
-     *
-     * @param $name
-     */
-    public function __get($name)
-    {
-        if (property_exists($this, $name)) {
-            $method = 'get' . ucwords($name);
-            return $this->{$method}();
-        }
-    }
-
-    /**
-     * Determine if an attribute exists on the header.
-     *
-     * @param  string $key
-     * @return bool
-     */
-    public function __isset($key)
-    {
-        return isset($this->$key);
     }
 }

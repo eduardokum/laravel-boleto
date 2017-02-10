@@ -2,10 +2,8 @@
 
 namespace Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240;
 
-
 interface Trailer
 {
-
     /**
      * @return mixed
      */
@@ -30,5 +28,4 @@ interface Trailer
      * @return array
      */
     public function toArray();
-
 }

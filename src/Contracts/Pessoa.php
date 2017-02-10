@@ -3,7 +3,6 @@ namespace Eduardokum\LaravelBoleto\Contracts;
 
 interface Pessoa
 {
-
     public function getNome();
     public function getNomeDocumento();
     public function getDocumento();
@@ -13,5 +12,5 @@ interface Pessoa
     public function getCep();
     public function getCidade();
     public function getUf();
-
+    public function toArray();
 }

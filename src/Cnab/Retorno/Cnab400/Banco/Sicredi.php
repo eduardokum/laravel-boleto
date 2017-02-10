@@ -8,7 +8,6 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Sicredi extends AbstractRetorno implements RetornoCnab400
 {
-
     /**
      * Código do banco
      *
@@ -236,7 +235,6 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
 
     protected function processarDetalhe(array $detalhe)
     {
-
         $d = $this->detalheAtual();
         $d->setNossoNumero($this->rem(48, 62, $detalhe))
             ->setNumeroDocumento($this->rem(117, 126, $detalhe))

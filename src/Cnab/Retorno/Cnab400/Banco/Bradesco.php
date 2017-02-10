@@ -8,7 +8,6 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Bradesco extends AbstractRetorno implements RetornoCnab400
 {
-
     /**
      * Código do banco
      *
@@ -71,7 +70,6 @@ class Bradesco extends AbstractRetorno implements RetornoCnab400
 
     protected function processarHeader(array $header)
     {
-
         $this->getHeader()
             ->setOperacaoCodigo($this->rem(2, 2, $header))
             ->setOperacao($this->rem(3, 9, $header))
@@ -85,17 +83,17 @@ class Bradesco extends AbstractRetorno implements RetornoCnab400
 
     protected function processarDetalhe(array $detalhe)
     {
-
         if ($this->count() == 1) {
             $this->getHeader()
                 ->setAgencia($this->rem(25, 29, $detalhe))
                 ->setConta($this->rem(30, 36, $detalhe))
-                ->setContaDigito($this->rem(37, 37, $detalhe));
+                ->setContaDv($this->rem(37, 37, $detalhe));
         }
 
         $d = $this->detalheAtual();
         $d->setNossoNumero($this->rem(71, 82, $detalhe))
             ->setNumeroDocumento($this->rem(117, 126, $detalhe))
+            ->setNumeroControle($this->rem(38, 62, $detalhe))
             ->setOcorrencia($this->rem(109, 110, $detalhe))
             ->setOcorrenciaDescricao(array_get($this->ocorrencias, $d->getOcorrencia(), 'Desconhecida'))
             ->setDataOcorrencia($this->rem(111, 116, $detalhe))
@@ -137,7 +135,6 @@ class Bradesco extends AbstractRetorno implements RetornoCnab400
 
     protected function processarTrailer(array $trailer)
     {
-
         $this->getTrailer()
             ->setQuantidadeTitulos($this->rem(18, 25, $trailer))
             ->setValorTitulos(Util::nFloat($this->rem(26, 39, $trailer)/100, 2, false))

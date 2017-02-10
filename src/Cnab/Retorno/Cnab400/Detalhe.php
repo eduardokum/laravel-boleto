@@ -3,78 +3,83 @@ namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400;
 
 use Carbon\Carbon;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Detalhe as DetalheContract;
+use Eduardokum\LaravelBoleto\MagicTrait;
 
 class Detalhe implements DetalheContract
 {
-
+    use MagicTrait;
     /**
      * @var string
      */
-    private $nossoNumero;
+    protected $nossoNumero;
     /**
      * @var string
      */
-    private $numeroDocumento;
+    protected $numeroDocumento;
     /**
      * @var string
      */
-    private $ocorrencia;
+    protected $numeroControle;
     /**
      * @var string
      */
-    private $ocorrenciaTipo;
+    protected $ocorrencia;
     /**
      * @var string
      */
-    private $ocorrenciaDescricao;
+    protected $ocorrenciaTipo;
+    /**
+     * @var string
+     */
+    protected $ocorrenciaDescricao;
     /**
      * @var Carbon
      */
-    private $dataOcorrencia;
+    protected $dataOcorrencia;
     /**
      * @var Carbon
      */
-    private $dataVencimento;
+    protected $dataVencimento;
     /**
      * @var Carbon
      */
-    private $dataCredito;
+    protected $dataCredito;
     /**
      * @var string
      */
-    private $valor;
+    protected $valor;
     /**
      * @var string
      */
-    private $valorTarifa;
+    protected $valorTarifa;
     /**
      * @var string
      */
-    private $valorIOF;
+    protected $valorIOF;
     /**
      * @var string
      */
-    private $valorAbatimento;
+    protected $valorAbatimento;
     /**
      * @var string
      */
-    private $valorDesconto;
+    protected $valorDesconto;
     /**
      * @var string
      */
-    private $valorRecebido;
+    protected $valorRecebido;
     /**
      * @var string
      */
-    private $valorMora;
+    protected $valorMora;
     /**
      * @var string
      */
-    private $valorMulta;
+    protected $valorMulta;
     /**
      * @var string
      */
-    private $error;
+    protected $error;
 
     /**
      * @return string
@@ -112,6 +117,26 @@ class Detalhe implements DetalheContract
     public function setNumeroDocumento($numeroDocumento)
     {
         $this->numeroDocumento = ltrim(trim($numeroDocumento, ' '), '0');
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNumeroControle()
+    {
+        return $this->numeroControle;
+    }
+
+    /**
+     * @param string $numeroControle
+     *
+     * @return Detalhe
+     */
+    public function setNumeroControle($numeroControle)
+    {
+        $this->numeroControle = $numeroControle;
 
         return $this;
     }
@@ -371,7 +396,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @return string
+     * @return float
      */
     public function getValorRecebido()
     {
@@ -459,58 +484,5 @@ class Detalhe implements DetalheContract
         $this->error = $error;
 
         return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function toArray()
-    {
-        $vars = array_keys(get_class_vars(self::class));
-        $aRet = [];
-        foreach ($vars as $var) {
-            $methodName = 'get' . ucfirst($var);
-            $aRet[$var] = method_exists($this, $methodName)
-            ? $this->$methodName()
-            : $this->$var;
-        }
-        return $aRet;
-    }
-
-    /**
-     * Fast set method.
-     *
-     * @param $name
-     * @param $value
-     */
-    public function __set($name, $value)
-    {
-        if (property_exists($this, $name)) {
-            $this->$name = $value;
-        }
-    }
-
-    /**
-     * Fast get method.
-     *
-     * @param $name
-     */
-    public function __get($name)
-    {
-        if (property_exists($this, $name)) {
-            $method = 'get' . ucwords($name);
-            return $this->{$method}();
-        }
-    }
-
-    /**
-     * Determine if an attribute exists on the detalhe.
-     *
-     * @param  string $key
-     * @return bool
-     */
-    public function __isset($key)
-    {
-        return isset($this->$key);
     }
 }

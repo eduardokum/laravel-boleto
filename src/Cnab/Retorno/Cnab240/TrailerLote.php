@@ -3,21 +3,70 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
 use \Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\TrailerLote as TrailerLoteContract;
+use Eduardokum\LaravelBoleto\MagicTrait;
 
 class TrailerLote implements TrailerLoteContract
 {
-    private $loteServico;
-    private $TipoRegistro;
-    private $qtdRegistroLote;
-    private $qtdTitulosCobrancaSimples;
-    private $valorTotalTitulosCobranca;
-    private $qtdTitulosCobrancaVinculada;
-    private $valorTotalTitulosCobrancaVinculada;
-    private $qtdTitulosCobrancaCaucionada;
-    private $valorTotalTitulosCobrancaCaucionada;
-    private $qtdTitulosCobrancaDescontada;
-    private $valorTotalTitulosCobrancaDescontada;
-    private $numeroAvisoLancamento;
+    use MagicTrait;
+    /**
+     * @var integer
+     */
+    protected $loteServico;
+
+    /**
+     * @var integer
+     */
+    protected $TipoRegistro;
+
+    /**
+     * @var integer
+     */
+    protected $qtdRegistroLote;
+
+    /**
+     * @var integer
+     */
+    protected $qtdTitulosCobrancaSimples;
+
+    /**
+     * @var float
+     */
+    protected $valorTotalTitulosCobranca;
+
+    /**
+     * @var integer
+     */
+    protected $qtdTitulosCobrancaVinculada;
+
+    /**
+     * @var float
+     */
+    protected $valorTotalTitulosCobrancaVinculada;
+
+    /**
+     * @var integer
+     */
+    protected $qtdTitulosCobrancaCaucionada;
+
+    /**
+     * @var float
+     */
+    protected $valorTotalTitulosCobrancaCaucionada;
+
+    /**
+     * @var integer
+     */
+    protected $qtdTitulosCobrancaDescontada;
+
+    /**
+     * @var float
+     */
+    protected $valorTotalTitulosCobrancaDescontada;
+
+    /**
+     * @var integer
+     */
+    protected $numeroAvisoLancamento;
 
     /**
      * @return mixed
@@ -29,6 +78,8 @@ class TrailerLote implements TrailerLoteContract
 
     /**
      * @param mixed $loteServico
+     *
+     * @return $this
      */
     public function setLoteServico($loteServico)
     {
@@ -47,6 +98,8 @@ class TrailerLote implements TrailerLoteContract
 
     /**
      * @param mixed $numeroAvisoLancamento
+     *
+     * @return $this
      */
     public function setNumeroAvisoLancamento($numeroAvisoLancamento)
     {
@@ -65,6 +118,8 @@ class TrailerLote implements TrailerLoteContract
 
     /**
      * @param mixed $qtdRegistroLote
+     *
+     * @return $this
      */
     public function setQtdRegistroLote($qtdRegistroLote)
     {
@@ -83,6 +138,8 @@ class TrailerLote implements TrailerLoteContract
 
     /**
      * @param mixed $qtdTitulosCobrancaCaucionada
+     *
+     * @return $this
      */
     public function setQtdTitulosCobrancaCaucionada($qtdTitulosCobrancaCaucionada)
     {
@@ -101,6 +158,8 @@ class TrailerLote implements TrailerLoteContract
 
     /**
      * @param mixed $qtdTitulosCobrancaDescontada
+     *
+     * @return $this
      */
     public function setQtdTitulosCobrancaDescontada($qtdTitulosCobrancaDescontada)
     {
@@ -119,6 +178,8 @@ class TrailerLote implements TrailerLoteContract
 
     /**
      * @param mixed $qtdTitulosCobrancaSimples
+     *
+     * @return $this
      */
     public function setQtdTitulosCobrancaSimples($qtdTitulosCobrancaSimples)
     {
@@ -137,6 +198,8 @@ class TrailerLote implements TrailerLoteContract
 
     /**
      * @param mixed $qtdTitulosCobrancaVinculada
+     *
+     * @return $this
      */
     public function setQtdTitulosCobrancaVinculada($qtdTitulosCobrancaVinculada)
     {
@@ -155,6 +218,8 @@ class TrailerLote implements TrailerLoteContract
 
     /**
      * @param mixed $TipoRegistro
+     *
+     * @return $this
      */
     public function setTipoRegistro($TipoRegistro)
     {
@@ -173,6 +238,8 @@ class TrailerLote implements TrailerLoteContract
 
     /**
      * @param mixed $valorTotalTitulosCobranca
+     *
+     * @return $this
      */
     public function setValorTotalTitulosCobrancaSimples($valorTotalTitulosCobranca)
     {
@@ -191,6 +258,8 @@ class TrailerLote implements TrailerLoteContract
 
     /**
      * @param mixed $valorTotalTitulosCobrancaCaucionada
+     *
+     * @return $this
      */
     public function setValorTotalTitulosCobrancaCaucionada($valorTotalTitulosCobrancaCaucionada)
     {
@@ -209,6 +278,8 @@ class TrailerLote implements TrailerLoteContract
 
     /**
      * @param mixed $valorTotalTitulosCobrancaDescontada
+     *
+     * @return $this
      */
     public function setValorTotalTitulosCobrancaDescontada($valorTotalTitulosCobrancaDescontada)
     {
@@ -227,64 +298,13 @@ class TrailerLote implements TrailerLoteContract
 
     /**
      * @param mixed $valorTotalTitulosCobrancaVinculada
+     *
+     * @return $this
      */
     public function setValorTotalTitulosCobrancaVinculada($valorTotalTitulosCobrancaVinculada)
     {
         $this->valorTotalTitulosCobrancaVinculada = $valorTotalTitulosCobrancaVinculada;
 
         return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function toArray()
-    {
-        $vars = array_keys(get_class_vars(self::class));
-        $aRet = [];
-        foreach ($vars as $var) {
-            $methodName = 'get' . ucfirst($var);
-            $aRet[$var] = method_exists($this, $methodName)
-                ? $this->$methodName()
-                : $this->$var;
-        }
-        return $aRet;
-    }
-
-    /**
-     * Fast set method.
-     *
-     * @param $name
-     * @param $value
-     */
-    public function __set($name, $value)
-    {
-        if (property_exists($this, $name)) {
-            $this->$name = $value;
-        }
-    }
-
-    /**
-     * Fast get method.
-     *
-     * @param $name
-     */
-    public function __get($name)
-    {
-        if (property_exists($this, $name)) {
-            $method = 'get' . ucwords($name);
-            return $this->{$method}();
-        }
-    }
-
-    /**
-     * Determine if an attribute exists
-     *
-     * @param  string $key
-     * @return bool
-     */
-    public function __isset($key)
-    {
-        return isset($this->$key);
     }
 }

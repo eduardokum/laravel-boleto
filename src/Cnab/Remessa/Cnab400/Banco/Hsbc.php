@@ -8,7 +8,6 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Hsbc extends AbstractRemessa implements RemessaContract
 {
-
     const ESPECIE_DUPLICATA = '01';
     const ESPECIE_NOTA_PROMISSORIA = '02';
     const ESPECIE_NOTA_SEGURO = '03';
@@ -63,6 +62,13 @@ class Hsbc extends AbstractRemessa implements RemessaContract
     const INSTRUCAO_PROTESTAR_XX_VENC_UTEIS = '77';
     const INSTRUCAO_PROTESTAR_XX_VENC_UTEIS_NAO_PAGO = '76';
     const INSTRUCAO_PROTESTAR_XX_VENC_NAO_PAGO = '84';
+
+    public function __construct(array $params = [])
+    {
+        parent::__construct($params);
+        $this->addCampoObrigatorio('contaDv');
+    }
+
 
     /**
      * Código do banco
@@ -145,7 +151,7 @@ class Hsbc extends AbstractRemessa implements RemessaContract
         $this->add(29, 34, Util::formatCnab('9L', $this->getConta(), 6));
         $this->add(35, 35, Util::formatCnab('9L', $this->getContaDv(), 1));
         $this->add(36, 37, '');
-        $this->add(38, 62, Util::formatCnab('X', $boleto->getNumero(), 25)); // numero de controle
+        $this->add(38, 62, Util::formatCnab('X', $boleto->getNumeroControle(), 25)); // numero de controle
         $this->add(63, 73, Util::formatCnab('9', $boleto->getNossoNumero(), 11));
         $this->add(74, 79, '000000');
         $this->add(80, 90, Util::formatCnab('9', 0, 11, 2));
@@ -177,18 +183,16 @@ class Hsbc extends AbstractRemessa implements RemessaContract
             $this->add(206, 211, '');
             $this->add(206, 215, Util::formatCnab('9', $boleto->getMulta(), 2, 2));
             $this->add(206, 218, Util::formatCnab('9', $boleto->getJurosApos(), 3));
-        }
-        else
-        {
-            $this->add(206, 218, Util::formatCnab('9', $boleto->getDescontosAbatimentos(), 13, 2));
+        } else {
+            $this->add(206, 218, Util::formatCnab('9', 0, 13, 2));
         }
         $juros = 0;
         if ($boleto->getJuros() > 0) {
             $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
         }
         $this->add(161, 173, Util::formatCnab('9', $juros, 13, 2));
-        $this->add(174, 179, '000000');
-        $this->add(180, 192, Util::formatCnab('9', 0, 13, 2));
+        $this->add(174, 179, $boleto->getDataDesconto()->format('dmy'));
+        $this->add(180, 192, Util::formatCnab('9', $boleto->getDesconto(), 13, 2));
         $this->add(193, 205, Util::formatCnab('9', 0, 13, 2));
         $this->add(219, 220, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? '02' : '01');
         $this->add(221, 234, Util::formatCnab('9L', $boleto->getPagador()->getDocumento(), 14));
@@ -216,14 +220,4 @@ class Hsbc extends AbstractRemessa implements RemessaContract
 
         return $this;
     }
-
-    public function isValid()
-    {
-        if ($this->getContaDv() == '' || !parent::isValid()) {
-            return false;
-        }
-
-        return true;
-    }
-
 }

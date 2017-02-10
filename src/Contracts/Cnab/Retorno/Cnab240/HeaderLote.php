@@ -27,7 +27,7 @@ interface HeaderLote
     /**
      * @return mixed
      */
-    public function getCodigoInscricao();
+    public function getTipoInscricao();
 
     /**
      * @return mixed
@@ -42,6 +42,11 @@ interface HeaderLote
     /**
      * @return mixed
      */
+    public function getConvenio();
+
+    /**
+     * @return mixed
+     */
     public function getNomeEmpresa();
 
     /**
@@ -52,7 +57,7 @@ interface HeaderLote
     /**
      * @return mixed
      */
-    public function getAgenciaDigito();
+    public function getAgenciaDv();
 
     /**
      * @return mixed
@@ -67,7 +72,7 @@ interface HeaderLote
     /**
      * @return mixed
      */
-    public function getContaDigito();
+    public function getContaDv();
 
     /**
      * @param string $format
@@ -77,8 +82,14 @@ interface HeaderLote
     public function getDataGravacao($format = 'd/m/Y');
 
     /**
+     * @param string $format
+     *
+     * @return string
+     */
+    public function getDataCredito($format = 'd/m/Y');
+
+    /**
      * @return array
      */
     public function toArray();
-
 }

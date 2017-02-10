@@ -18,13 +18,13 @@
         </td>
         <td width="180" class="top-2">
             <div class="titulo">Vencimento</div>
-            <div class="conteudo rtl">{{ $data_vencimento }}</div>
+            <div class="conteudo rtl">{{ $data_vencimento->format('d/m/Y') }}</div>
         </td>
     </tr>
     <tr>
         <td colspan="7">
             <div class="titulo">Beneficiário</div>
-            <div class="conteudo">{{ $beneficiario_nome_documento }}</div>
+            <div class="conteudo">{{ $beneficiario['nome_documento'] }}</div>
         </td>
         <td>
             <div class="titulo">Agência/Código beneficiário</div>
@@ -34,7 +34,7 @@
     <tr>
         <td width="110" colspan="2">
             <div class="titulo">Data do documento</div>
-            <div class="conteudo">{{ $data_documento }}</div>
+            <div class="conteudo">{{ $data_documento->format('d/m/Y') }}</div>
         </td>
         <td width="120" colspan="2">
             <div class="titulo">Nº documento</div>
@@ -50,7 +50,7 @@
         </td>
         <td width="110">
             <div class="titulo">Data processamento</div>
-            <div class="conteudo">{{ $data_processamento }}</div>
+            <div class="conteudo">{{ $data_processamento->format('d/m/Y') }}</div>
         </td>
         <td>
             <div class="titulo">Nosso número</div>
@@ -74,7 +74,7 @@
 
         <td {{isset($esconde_uso_banco) && $esconde_uso_banco ? 'colspan=3': '' }}>
             <div class="titulo">Carteira</div>
-            <div class="conteudo">{{ $carteira }}</div>
+            <div class="conteudo">{{ $carteira_nome }}</div>
         </td>
         <td width="35">
             <div class="titulo">Espécie</div>
@@ -82,20 +82,20 @@
         </td>
         <td colspan="2">
             <div class="titulo">Quantidade</div>
-            <div class="conteudo">{{ $quantidade }}</div>
+            <div class="conteudo"></div>
         </td>
         <td width="110">
             <div class="titulo">Valor</div>
-            <div class="conteudo">{{ $valor_unitario }}</div>
+            <div class="conteudo"></div>
         </td>
         <td>
             <div class="titulo">(=) Valor do Documento</div>
-            <div class="conteudo rtl">{{ $valor_documento }}</div>
+            <div class="conteudo rtl">{{ $valor }}</div>
         </td>
     </tr>
     <tr>
         <td colspan="7">
-            <div class="titulo">Instruções (Texto de responsabilidade do beneficiário)</div>
+            <div class="titulo">Instruções de responsabilidade do beneficiário. Qualquer dúvida sobre este boleto, contate o beneficiário</div>
         </td>
         <td>
             <div class="titulo">(-) Descontos / Abatimentos</div>
@@ -145,9 +145,9 @@
     <tr>
         <td colspan="7">
             <div class="titulo">Pagador</div>
-            <div class="conteudo">{{ $pagador_nome_documento }}</div>
-            <div class="conteudo">{{ $pagador_endereco1 }}</div>
-            <div class="conteudo">{{ $pagador_endereco2 }}</div>
+            <div class="conteudo">{{ $pagador['nome_documento'] }}</div>
+            <div class="conteudo">{{ $pagador['endereco'] }}</div>
+            <div class="conteudo">{{ $pagador['endereco2'] }}</div>
 
         </td>
         <td class="noleftborder">
@@ -158,7 +158,7 @@
     <tr>
         <td colspan="6" class="noleftborder">
             <div class="titulo">Sacador/Avalista
-                <div class="conteudo sacador">{{ $sacador_avalista }}</div>
+                <div class="conteudo sacador">{{ $sacador_avalista ? $sacador_avalista['nome_documento'] : '' }}</div>
             </div>
         </td>
         <td colspan="2" class="norightborder noleftborder">

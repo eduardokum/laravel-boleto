@@ -105,4 +105,53 @@ class UtilTest extends TestCase
         $this->assertEquals('2016-12-25', Util::fatorVencimentoBack('7019'));
         $this->assertEquals('3606', Util::dataJuliano('2016-12-25'));
     }
+
+    public function testNumeros() {
+
+        $this->assertEquals('', Util::nFloat('ABC'));
+        $this->assertEquals('', Util::nFloat(null));
+        $this->assertEquals('1000.00', Util::nFloat(1000));
+        $this->assertEquals('1000.000', Util::nFloat(1000, 3));
+        $this->assertEquals('1,000.000', Util::nFloat(1000, 3, true));
+        $this->assertEquals('1,000.123', Util::nFloat(1000.123000000, false, true));
+        $this->assertEquals('1,000.123000009', Util::nFloat(1000.123000009, false, true));
+
+        $this->assertEquals('', Util::nReal('ABC'));
+        $this->assertEquals('', Util::nReal(null));
+        $this->assertEquals('R$ 1.000,00', Util::nReal(1000));
+        $this->assertEquals('R$ 1.000,000', Util::nReal(1000, 3));
+        $this->assertEquals('1.000,000', Util::nReal(1000, 3, false));
+        $this->assertEquals('1.000,123', Util::nReal(1000.123000000, false, false));
+        $this->assertEquals('R$ 1.000,123000009', Util::nReal(1000.123000009, false, true));
+        $this->assertEquals('R$ 1.000,12300', Util::nReal(1000.123000000, 5, true, true));
+        $this->assertEquals('R$ 1.000', Util::nReal(1000, false, true, true));
+        $this->assertEquals('R$ 1.000,0', Util::nReal(1000, false, true, false));
+    }
+
+    public function testControleArray() {
+
+        $exemplo = [
+            'P' => 123, // Pedido 123
+            'NF' => 456, // Nota Fiscal 456
+            'C' => 99, // Cliente 99
+        ];
+
+        $this->assertEquals('P123NF456C99', Util::array2Controle($exemplo));
+        $this->assertEquals($exemplo, Util::controle2array('P123NF456C99'));
+        $this->assertEquals([123], Util::controle2array(123));
+    }
+
+    /**
+     * @expectedException     \Exception
+     */
+    public function testControleArrayMaior25() {
+        Util::array2Controle(['ABCDEFG' => 1231231, 'EFGHIJKL' => 1231231]);
+    }
+
+    /**
+     * @expectedException     \Exception
+     */
+    public function testControleArrayKeyNumerica() {
+        Util::array2Controle([0 => 1]);
+    }
 }

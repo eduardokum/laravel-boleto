@@ -8,6 +8,13 @@ use Eduardokum\LaravelBoleto\Util;
 class Bancoob extends AbstractBoleto implements BoletoContract
 {
     const BANCOBB_CONST_NOSSO_NUMERO = "3197";
+
+    public function __construct(array $params = [])
+    {
+        parent::__construct($params);
+        $this->addCampoObrigatorio('convenio');
+    }
+
     /**
      * Código do banco
      * @var string
@@ -17,7 +24,7 @@ class Bancoob extends AbstractBoleto implements BoletoContract
      * Define as carteiras disponíveis para este banco
      * @var array
      */
-    protected $carteiras = array('1','3');
+    protected $carteiras = ['1','3'];
     /**
      * Espécie do documento, coódigo para remessa
      * @var string
@@ -53,23 +60,6 @@ class Bancoob extends AbstractBoleto implements BoletoContract
     {
         return $this->convenio;
     }
-
-    /**
-     * Método que valida se o banco tem todos os campos obrigadotorios preenchidos
-     */
-    public function isValid()
-    {
-        if ($this->numeroDocumento == ''
-            || $this->agencia == ''
-            || $this->conta == ''
-            || $this->convenio == ''
-            || $this->carteira == ''
-        ) {
-            return false;
-        }
-
-        return true;
-    }
     /**
      * Gera o Nosso Número.
      *
@@ -79,12 +69,24 @@ class Bancoob extends AbstractBoleto implements BoletoContract
     protected function gerarNossoNumero()
     {
         $agencia = $this->getAgencia();
-        $conta = $this->getConta().$this->getContaDv();
+        $convenio = $this->getConvenio();
         $numero_boleto = $this->getNumero();
 
-        $numero = Util::numberFormatGeral($agencia, 4).Util::numberFormatGeral($conta, 10).Util::numberFormatGeral($numero_boleto, 7);
+        $numero = Util::numberFormatGeral($agencia, 4).Util::numberFormatGeral($convenio, 10).Util::numberFormatGeral($numero_boleto, 7);
 
-        return $numero;
+        $chars = str_split($numero, 1);
+        $sums = str_split('3197319731973197319731973197', 1);
+        $sum = 0;
+        foreach ($chars as $i => $char) {
+            $sum += $char*$sums[$i];
+        }
+        $resto = $sum % 11;
+        $digito_verificador = 0;
+
+        if (($resto != 0) && ($resto != 1)) {
+            $digito_verificador = 11 - $resto;
+        }
+        return $numero . $digito_verificador;
     }
     /**
      * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
@@ -93,27 +95,8 @@ class Bancoob extends AbstractBoleto implements BoletoContract
      */
     public function getNossoNumeroBoleto()
     {
-        $numero = $this->getNossoNumero();
-
-        $constante = str_repeat(self::BANCOBB_CONST_NOSSO_NUMERO, 6);
-        $soma = 0;
-
-        for ($i=0; $i < strlen($numero); $i++) {
-            if ((int)$numero[$i] > 0) {
-                $soma += ((int)$numero[$i] * (int)$constante[$i]);
-            }
-        }
-
-        $resto = $soma % 11;
-        $digito_verificador = 0;
-
-        if (($resto != 0) && ($resto != 1)){
-            $digito_verificador = 11 - $resto;
-        }
-
-        $nosso_numero = $this->getNumero().'-'.$digito_verificador;
-
-        return $nosso_numero;
+        $nn = $this->getNossoNumero();
+        return substr($nn, 0, -1) . '-' . substr($nn, -1);
     }
     /**
      * Método para gerar o código da posição de 20 a 44
@@ -127,7 +110,7 @@ class Bancoob extends AbstractBoleto implements BoletoContract
             return $this->campoLivre;
         }
 
-        $nossoNumero = $this->getNossoNumeroBoleto();
+        $nossoNumero = $this->getNossoNumero();
 
         $campoLivre = Util::numberFormatGeral($this->getCarteira(), 1);
         $campoLivre .= Util::numberFormatGeral($this->getAgencia(), 4);
@@ -135,7 +118,7 @@ class Bancoob extends AbstractBoleto implements BoletoContract
         $campoLivre .= Util::numberFormatGeral($this->getConvenio(), 7);
         $campoLivre .= Util::numberFormatGeral($nossoNumero, 8);
         $campoLivre .= Util::numberFormatGeral(1, 3); //Numero da parcela - Não implementado
-        
+
         return $this->campoLivre = $campoLivre;
     }
 }

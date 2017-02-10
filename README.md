@@ -8,56 +8,35 @@
 [![Build Status](https://travis-ci.org/eduardokum/laravel-boleto.svg?branch=master)](https://travis-ci.org/eduardokum/laravel-boleto)
 [![GitHub forks](https://img.shields.io/github/forks/eduardokum/laravel-boleto.svg?style=social&label=Fork)](https://github.com/eduardokum/laravel-boleto)
 
-# laravel-boleto
-Pacote para gerar boletos e remessas
+# Laravel Boleto
+Pacote para gerar boletos, remessas e leitura de retorno.
 
-```
-PR's devem ser enviados para o branch develop
-```
+## Para dúvidas ou sugestões utilize o nosso grupo de discussão
 
-# ATENÇÃO
-**Havera uma mudança na forma em que se gera o número dos boletos.**
-Hoje o atributo **nossoNumero** é gerado a partir do atributo **numeroDocumento**, porém esse número pode ser um alfanumérico, o que eu não tinha atentado no início do projeto. A grande mudança será que o atributo **numero** que antes era utilizado somente como um número de controle, hoje será usado para gerar o atributo **nossoNumero**, o atributo **numeroDocumento** continuará aparecendo no boleto no campo designado a ele, e será adicionado um novo campo que será utilizado para o número de controle, que será o atributo **numeroControle**.
+## Requerimentos
+- [PHP Extensão Intl](http://php.net/manual/pt_BR/book.intl.php)
 
 
-Essas mudanças seram comitadas no branch **develop**
-
-Data Definida para o merge: **01/02/2017**
-
-----------
+## Links
+- [Documentação da API](http://eduardokum.github.io/laravel-boleto/)
+- [Grupo de Discussão](https://groups.google.com/d/forum/laravel-boleto)
+- [Grupo no Telegram](https://t.me/laravelBoleto)
 
 ## Bancos suportados
 
-**Boleto**
-- Banco do Brasil
-- Bradesco
-- Caixa
-- Hsbc
-- Itau
-- Santander
-- Bancoob (Sicoob)
-- Sicredi **em processo de homologação**
-- Banrisul **necessita homologação**
+Banco | Boleto | Remessa 400 | Remessa 240 | Retorno 400 | Retorno 240
+----- | ------ | ----------- | ----------- | ----------- | ----------- |
+ Banco do Brasil | :white_check_mark: | :white_check_mark: | | :white_check_mark: | |
+ Bancoob (Sicoob) | :white_check_mark: * | :white_check_mark: | | | :white_check_mark: * |
+ Banrisul | :white_check_mark: | :white_check_mark: | | :white_check_mark: | |
+ Bradesco | :white_check_mark: | :white_check_mark: | | :white_check_mark: | |
+ Caixa | :white_check_mark: | :white_check_mark: | | :white_check_mark: | |
+ Hsbc | :white_check_mark: | :white_check_mark: | | :white_check_mark: | |
+ Itau | :white_check_mark: | :white_check_mark: | | :white_check_mark: | |
+ Santander | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+ Sicredi | :white_check_mark: | :white_check_mark: | | :white_check_mark: * | |
 
-**Remessa**
-- Banco do Brasil [400]
-- Bradesco [400]
-- Caixa [400]
-- Hsbc [400]
-- Itau [400]
-- Bancoob (Sicoob) [400]
-- Santander [400, 240 **necessita testes**		]
-- Sicredi [400]  **em processo de homologação**
-- Banrisul [400] **necessita homologação e complemento**
-
-**Retorno**
-- Banco do Brasil  [400]
-- Bradesco [400]
-- Caixa [400]
-- Hsbc [400]
-- Itau [400]
-- Santander [400, 240]
-- Sicredi [400] **em testes**
+**\* necessita de homologação**
 
 ## Instalação
 Via composer:
@@ -70,7 +49,6 @@ Ou adicione manualmente ao seu composer.json:
 
 ## Gerar boleto
 
-Gerando somente 1
 
 ### Criando o beneficiário ou pagador
 
@@ -94,6 +72,14 @@ $pagador = new \Eduardokum\LaravelBoleto\Pessoa([
     'documento' => '999.999.999-99',
 ]);
 ```
+
+### Criando o objeto boleto
+
+#### Campos númericos e suas funções
+- **numero**: campo numérico utilizado para a criação do nosso numero. (identificação do título no banco)*
+- **numeroControle**: campo de livre utilização. até 25 caracteres. *(identificação do título na empresa)*
+- **numeroDocumento**: campo utilizado para informar ao que o documento se referente *(duplicata, nf, np, ns, etc...)*
+
 
 ```php
 $boletoArray = [
@@ -125,24 +111,70 @@ $boletoArray = [
 ];
 
 $boleto = new \Eduardokum\LaravelBoleto\Boleto\Banco\Bb($boletoArray);
+```
 
+### Gerando o boleto
+
+**Gerando o boleto a partir da instância do objeto (somente um boleto)**
+
+```php
 $boleto->renderPDF();
 // ou
 $boleto->renderHTML();
 
+// Os dois métodos aceita como parâmetro um boleano que define se após renderizado irá mostrar a janela de impressão. O Valor default é false.
+//Ex:
+$boleto->renderPDF(true); // imostra a janela de impressão
+```
+```php
+/*
+ * O comportamento padrão para os métodos renderPDF e renderHTM é retornar uma string pura.
+ * Para gerar um retorno no controller do laravel utilize da seguinte forma:
+ */
+
+// PDF
+return response($boleto->renderPDF(), 200, [
+    'Content-Type' => 'application/pdf',
+    'Content-Disposition' => 'inline; boleto.pdf',
+]);
+
+// HTML
+return response($boleto->renderHTML());
+
 ```
 
+**Gerando boleto a partir da instância do render (mais de um boleto para o PDF)**
 
-Gerando mais de 1, não chamar a função render() do boleto e usar: (SOMENTE PDF)
 
 ```php
+// Gerar em PDF
 $pdf = new Eduardokum\LaravelBoleto\Boleto\Render\Pdf();
 
 $pdf->addBoleto($boleto);
 Ou para adicionar um array de boletos
 $pdf->addBoletos($boletos);
 
+// Quando não informado parâmetros ele se comportará como Pdf::OUTPUT_STANDARD, enviando o buffer do pdf com os headers apropriados.
 $pdf->gerarBoleto();
+
+// O método gerarBoleto da classe PDF aceita como parâmetro:
+//	1º destino: constante com os destinos disponíveis. Ex: Pdf::OUTPUT_SAVE.
+//	2º path: caminho absoluto para salvar o pdf quando destino for Pdf::OUTPUT_SAVE.
+//	3º print: boleano que define se após renderizado irá mostrar a janela de impressão. O Valor default é false.
+//Ex:
+$pdf->gerarBoleto(Pdf::OUTPUT_SAVE, storage_path('app/boletos/meu_boleto.pdf')); // salva o boleto na pasta.
+$pdf->gerarBoleto(Pdf::OUTPUT_STANDARD, null, true); // executa o comportamento padrão do navedor, mostrando a janela de impressão.
+$pdf_inline = $pdf->gerarBoleto(Pdf::OUTPUT_STRING); // retorna o boleto em formato string.
+$pdf->gerarBoleto(Pdf::OUTPUT_DOWNLOAD); // força o download pelo navegador.
+
+// Gerar em HTML
+$html = new Eduardokum\LaravelBoleto\Boleto\Render\Html($boleto->toArray());
+
+$html->gerarBoleto();
+
+// O método gerarBoleto da classe HTML aceita como um boleano que define se após renderizado irá mostrar a janela de impressão. O Valor default é false.
+//Ex:
+$html->gerarBoleto(true); // mostra a janela de impressão
 ```
 
 ## Gerar remessa
@@ -163,8 +195,14 @@ $remessaArray = [
 
 $remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Bb($remessaArray);
 
-$remessa->addBoleto($boleto); // Objeto de boleto gerado, BoletoContract
-Ou para adicionar um array de boletos
+// Adicionar um boleto.
+$remessa->addBoleto($boleto);
+
+// Ou para adicionar um array de boletos
+$boletos = [];
+$boletos[] = $boleto1;
+$boletos[] = $boleto2;
+$boletos[] = $boleto3;
 $remessa->addBoletos($boletos);
 
 echo $remessa->gerar();
@@ -175,12 +213,23 @@ echo $remessa->gerar();
 ```php
 $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make('full_path_arquivo_retorno');
 $retorno->processar();
-
 echo $retorno->getBancoNome();
-foreach($retorno as $registro)
-{
-	dd($registro->getDados());
+
+// Retorno implementa \SeekableIterator sendo assim podemos utilizar o foreach da seguinte forma:
+foreach($retorno as $registro) {
+	var_dump($registro->getDados());
 }
+
+// Ou também podemos:
+$detalheCollection = $retorno->getDetalhes();
+foreach($detalheCollection as $detalhe) {
+	var_dump($detalhe->getDados());
+}
+
+// Ou até mesmo do jeito laravel
+$detalheCollection->each(function ($detalhe, $index) {
+    var_dump($detalhe->getDados())
+});
 ```
 
 **Métodos disponíveis:**
@@ -190,5 +239,5 @@ $retorno->getDetalhes();
 
 $retorno->getHeader();
 
-$retorno->getTrailer());
+$retorno->getTrailer();
 ```

@@ -7,6 +7,11 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Bb extends AbstractBoleto implements BoletoContract
 {
+    public function __construct(array $params = [])
+    {
+        parent::__construct($params);
+        $this->setCamposObrigatorios('numero', 'convenio', 'carteira');
+    }
     /**
      * Código do banco
      *
@@ -51,7 +56,7 @@ class Bb extends AbstractBoleto implements BoletoContract
      * Define o número do convênio. Sempre use string pois a quantidade de caracteres é validada.
      *
      * @param  string $convenio
-     * @return BancoDoBrasil
+     * @return Bb
      */
     public function setConvenio($convenio)
     {
@@ -71,7 +76,7 @@ class Bb extends AbstractBoleto implements BoletoContract
      * Define o número da variação da carteira, para saber quando utilizar o nosso numero de 17 posições.
      *
      * @param  string $variacao_carteira
-     * @return BancoDoBrasil
+     * @return Bb
      */
     public function setVariacaoCarteira($variacao_carteira)
     {
@@ -88,19 +93,6 @@ class Bb extends AbstractBoleto implements BoletoContract
         return $this->variacao_carteira;
     }
     /**
-     * Método que valida se o banco tem todos os campos obrigadotorios preenchidos
-     */
-    public function isValid()
-    {
-        if ($this->numeroDocumento == '' 
-            || $this->convenio == '' 
-            || $this->carteira == ''
-        ) {
-            return false;
-        }
-        return true;
-    }
-    /**
      * Gera o Nosso Número.
      *
      * @throws \Exception
@@ -109,7 +101,7 @@ class Bb extends AbstractBoleto implements BoletoContract
     protected function gerarNossoNumero()
     {
         $convenio = $this->getConvenio();
-        $numero_boleto = $this->getNumeroDocumento();
+        $numero_boleto = $this->getNumero();
         switch (strlen($convenio)) {
         case 4:
             $numero = Util::numberFormatGeral($convenio, 4) . Util::numberFormatGeral($numero_boleto, 7);

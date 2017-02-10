@@ -16,6 +16,18 @@ abstract class AbstractRemessa
     protected $tamanho_linha = false;
 
     /**
+     * Campos que são necessários para a remessa
+     *
+     * @var array
+     */
+    private $camposObrigatorios = [
+        'carteira',
+        'agencia',
+        'conta',
+        'beneficiario',
+    ];
+
+    /**
      * Código do banco
      *
      * @var string
@@ -112,12 +124,37 @@ abstract class AbstractRemessa
      */
     public function __construct($params = array())
     {
-        foreach ($params as $param => $value)
-        {
-            if (method_exists($this, 'set' . ucwords($param))) {
-                $this->{'set' . ucwords($param)}($value);
-            }
+        Util::fillClass($this, $params);
+    }
+
+    /**
+     * Seta os campos obrigatórios
+     *
+     * @return $this
+     */
+    protected function setCamposObrigatorios()
+    {
+        $args = func_get_args();
+        $this->camposObrigatorios = [];
+        foreach ($args as $arg) {
+            $this->addCampoObrigatorio($arg);
         }
+        return $this;
+    }
+
+    /**
+     * Adiciona os campos obrigatórios
+     *
+     * @return $this
+     */
+    protected function addCampoObrigatorio()
+    {
+        $args = func_get_args();
+        foreach ($args as $arg) {
+            !is_array($arg) || call_user_func_array([$this, __FUNCTION__], $arg);
+            !is_string($arg) || array_push($this->camposObrigatorios, $arg);
+        }
+        return $this;
     }
 
     /**
@@ -159,14 +196,14 @@ abstract class AbstractRemessa
     }
 
     /**
-     * @param PessoaContract $beneficiario
+     * @param $beneficiario
      *
      * @return AbstractRemessa
+     * @throws \Exception
      */
-    public function setBeneficiario(PessoaContract $beneficiario)
+    public function setBeneficiario($beneficiario)
     {
-        $this->beneficiario = $beneficiario;
-
+        Util::addPessoa($this->beneficiario, $beneficiario);
         return $this;
     }
     /**
@@ -276,10 +313,12 @@ abstract class AbstractRemessa
      *
      * @return boolean
      */
-    public function isValid() 
+    public function isValid()
     {
-        if ($this->carteira == '' || $this->agencia == '' || $this->conta == '' || !$this->beneficiario instanceof PessoaContract) {
-            return false;
+        foreach ($this->camposObrigatorios as $campo) {
+            if (call_user_func([$this, 'get' . ucwords($campo)]) == '') {
+                return false;
+            }
         }
         return true;
     }
@@ -324,7 +363,7 @@ abstract class AbstractRemessa
      *
      * @return $this
      */
-    public function addBoletos(array $boletos) 
+    public function addBoletos(array $boletos)
     {
         foreach ($boletos as $boleto) {
             $this->addBoleto($boleto);
@@ -353,7 +392,7 @@ abstract class AbstractRemessa
      *
      * @return mixed
      */
-    protected function getHeader() 
+    protected function getHeader()
     {
         return $this->aRegistros[self::HEADER];
     }
@@ -363,7 +402,7 @@ abstract class AbstractRemessa
      *
      * @return \Illuminate\Support\Collection
      */
-    protected function getDetalhes() 
+    protected function getDetalhes()
     {
         return collect($this->aRegistros[self::DETALHE]);
     }
@@ -373,7 +412,7 @@ abstract class AbstractRemessa
      *
      * @return mixed
      */
-    protected function getTrailer() 
+    protected function getTrailer()
     {
         return $this->aRegistros[self::TRAILER];
     }
@@ -386,10 +425,9 @@ abstract class AbstractRemessa
      * @return string
      * @throws \Exception
      */
-    protected function valida(array $a) 
+    protected function valida(array $a)
     {
-        if($this->tamanho_linha === false)
-        {
+        if ($this->tamanho_linha === false) {
             throw new \Exception('Classe remessa deve informar o tamanho da linha');
         }
 

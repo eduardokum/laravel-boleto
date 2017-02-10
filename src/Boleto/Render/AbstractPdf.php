@@ -15,10 +15,10 @@ abstract class AbstractPdf extends FPDF
         $this->javascript = $script;
     }
 
-    function Footer()
+    public function Footer()
     {
         $this->SetY(-20);
-        if(count($this->PageGroups)) {
+        if (count($this->PageGroups)) {
             $this->Cell(0, 6, 'Boleto '.$this->GroupPageNo().'/'.$this->PageGroupAlias(), 0, 0, 'C');
         }
     }
@@ -89,7 +89,7 @@ abstract class AbstractPdf extends FPDF
             $this->CurrPageGroup = $alias;
             $this->NewPageGroup = false;
         } elseif ($this->CurrPageGroup) {
-                    $this->PageGroups[$this->CurrPageGroup]++;
+            $this->PageGroups[$this->CurrPageGroup]++;
         }
     }
 
@@ -98,10 +98,8 @@ abstract class AbstractPdf extends FPDF
         $nb = $this->page;
         if (!empty($this->PageGroups)) {
             // do page number replacement
-            foreach ($this->PageGroups as $k => $v)
-            {
-                for ($n = 1; $n <= $nb; $n++)
-                {
+            foreach ($this->PageGroups as $k => $v) {
+                for ($n = 1; $n <= $nb; $n++) {
                     $this->pages[$n] = str_replace($k, $v, $this->pages[$n]);
                 }
             }
@@ -109,7 +107,7 @@ abstract class AbstractPdf extends FPDF
         parent::_putpages();
     }
 
-    protected function _() 
+    protected function _()
     {
         $args = func_get_args();
         $var  = utf8_decode(array_shift($args));
@@ -126,7 +124,7 @@ abstract class AbstractPdf extends FPDF
      * @param $align
      * @param float  $dec
      */
-    protected function textFitCell($w, $h, $txt, $border, $ln, $align, $dec = 0.1) 
+    protected function textFitCell($w, $h, $txt, $border, $ln, $align, $dec = 0.1)
     {
         $fsize = $this->FontSizePt;
         $size = $fsize;

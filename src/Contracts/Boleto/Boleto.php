@@ -1,7 +1,7 @@
 <?php
 namespace Eduardokum\LaravelBoleto\Contracts\Boleto;
 
-Use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
+use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
 
 interface Boleto
 {
@@ -88,14 +88,14 @@ interface Boleto
     public function getMoeda();
 
     /**
-     * @return mixed
+     * @return \Carbon\Carbon
      */
-    public function getQuantidade();
+    public function getDataVencimento();
 
     /**
      * @return \Carbon\Carbon
      */
-    public function getDataVencimento();
+    public function getDataDesconto();
 
     /**
      * @return \Carbon\Carbon
@@ -115,12 +115,7 @@ interface Boleto
     /**
      * @return mixed
      */
-    public function getDescontosAbatimentos();
-
-    /**
-     * @return mixed
-     */
-    public function getOutrasDeducoes();
+    public function getDesconto();
 
     /**
      * @return mixed
@@ -150,21 +145,6 @@ interface Boleto
      * @return mixed
      */
     public function getDiasBaixaAutomatica($default = 0);
-
-    /**
-     * @return mixed
-     */
-    public function getOutrosAcrescimos();
-
-    /**
-     * @return mixed
-     */
-    public function getValorCobrado();
-
-    /**
-     * @return mixed
-     */
-    public function getValorUnitario();
 
     /**
      * @return PessoaContract
@@ -200,6 +180,11 @@ interface Boleto
      * @return mixed
      */
     public function getNumeroDocumento();
+
+    /**
+     * @return mixed
+     */
+    public function getNumeroControle();
 
     /**
      * @return mixed
@@ -260,5 +245,4 @@ interface Boleto
      * @return mixed
      */
     public function baixarBoleto();
-
 }

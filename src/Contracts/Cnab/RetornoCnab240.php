@@ -6,7 +6,6 @@ use Illuminate\Support\Collection;
 
 interface RetornoCnab240 extends Cnab
 {
-
     /**
      * @return mixed
      */
@@ -56,5 +55,4 @@ interface RetornoCnab240 extends Cnab
      * @return array
      */
     public function toArray();
-
 }

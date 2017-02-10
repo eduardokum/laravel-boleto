@@ -68,6 +68,13 @@ class Bb extends AbstractRemessa implements RemessaContract
     const INSTRUCAO_BAIXAR = '44';
     const INSTRUCAO_ENTREGAR_SACADO_PAGAMENTO = '46';
 
+    public function __construct(array $params = [])
+    {
+        parent::__construct($params);
+        $this->addCampoObrigatorio('convenio', 'convenioLider');
+    }
+
+
     /**
      * Código do banco
      *
@@ -194,7 +201,7 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(27, 30, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(31, 31, Util::modulo11($this->getAgencia()));
         $this->add(32, 39, Util::formatCnab('9', $this->getConta(), 8));
-        $this->add(40, 40, Util::modulo11($this->getConta()));
+        $this->add(40, 40, Util::formatCnab('9', $this->getContaDv(), 1));
         $this->add(41, 46, '000000');
         $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(77, 79, $this->getCodigoBanco());
@@ -219,9 +226,9 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(18, 21, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(22, 22, Util::modulo11($this->getAgencia()));
         $this->add(23, 30, Util::formatCnab('9', $this->getConta(), 8));
-        $this->add(31, 31, Util::modulo11($this->getConta()));
+        $this->add(31, 31, Util::formatCnab('9', $this->getContaDv(), 1));
         $this->add(32, 38, Util::formatCnab('9', $this->getConvenio(), 7));
-        $this->add(39, 63, Util::formatCnab('X', $boleto->getNumero(), 25)); // numero de controle
+        $this->add(39, 63, Util::formatCnab('X', $boleto->getNumeroControle(), 25)); // numero de controle
         $this->add(64, 80, $boleto->getNossoNumero());
         $this->add(81, 82, '00');
         $this->add(83, 84, '00');
@@ -253,12 +260,10 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(159, 160, self::INSTRUCAO_SEM);
         $diasProtesto = '00';
         $const = sprintf('self::INSTRUCAO_PROTESTAR_VENC_%02s', $boleto->getDiasProtesto());
-        if($boleto->getStatus() != $boleto::STATUS_BAIXA) {
+        if ($boleto->getStatus() != $boleto::STATUS_BAIXA) {
             if (defined($const)) {
                 $this->add(157, 158, constant($const));
-            }
-            else
-            {
+            } else {
                 $this->add(157, 158, self::INSTRUCAO_PROTESTAR_VENC_XX);
                 $diasProtesto = Util::formatCnab('9', $boleto->getDiasProtesto(), 2, 0);
             }
@@ -268,10 +273,10 @@ class Bb extends AbstractRemessa implements RemessaContract
             }
         }
         $this->add(161, 173, Util::formatCnab('9', $juros, 13, 2));
-        $this->add(174, 179, '000000');
-        $this->add(180, 192, Util::formatCnab('9', 0, 13, 2));
+        $this->add(174, 179, $boleto->getDataDesconto()->format('dmy'));
+        $this->add(180, 192, Util::formatCnab('9', $boleto->getDesconto(), 13, 2));
         $this->add(193, 205, Util::formatCnab('9', 0, 13, 2));
-        $this->add(206, 218, Util::formatCnab('9', $boleto->getDescontosAbatimentos(), 13, 2));
+        $this->add(206, 218, Util::formatCnab('9', 0, 13, 2));
         $this->add(219, 220, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? '02' : '01');
         $this->add(221, 234, Util::formatCnab('9L', $boleto->getPagador()->getDocumento(), 14));
         $this->add(235, 271, Util::formatCnab('X', $boleto->getPagador()->getNome(), 37));
@@ -297,7 +302,6 @@ class Bb extends AbstractRemessa implements RemessaContract
             $this->add(23, 394, '');
             $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
         }
-
     }
 
     protected function trailer()
@@ -310,14 +314,4 @@ class Bb extends AbstractRemessa implements RemessaContract
 
         return $this;
     }
-
-    public function isValid()
-    {
-        if ($this->getConvenio() == '' || $this->getConvenioLider() == '' || !parent::isValid()) {
-            return false;
-        }
-
-        return true;
-    }
-
 }

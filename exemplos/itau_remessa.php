@@ -1,5 +1,5 @@
 <?php
-require realpath(__DIR__ . '/../../../') . DIRECTORY_SEPARATOR . 'autoload.php';
+require 'autoload.php';
 $beneficiario = new \Eduardokum\LaravelBoleto\Pessoa(
     [
         'nome'      => 'ACME',
