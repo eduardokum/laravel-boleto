@@ -181,7 +181,7 @@ $html->addBoletos($boletos);
 $html->showPrint();
 
 // Para remover as intruções de impressão
-$pdf->hideInstrucoes();
+$html->hideInstrucoes();
 
 $html->gerarBoleto();
 
