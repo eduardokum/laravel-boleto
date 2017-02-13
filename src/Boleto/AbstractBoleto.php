@@ -1402,11 +1402,11 @@ abstract class AbstractBoleto implements BoletoContract
      * @throws \Exception
      * @throws \Throwable
      */
-    public function renderHTML($print = false)
+    public function renderHTML($print = false, $imprimirInstrucoes = true)
     {
         $html = new Html($this->toArray());
 
-        return $html->gerarBoleto($print);
+        return $html->gerarBoleto($print, $imprimirInstrucoes);
     }
 
     /**
