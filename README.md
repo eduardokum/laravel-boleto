@@ -122,9 +122,10 @@ $boleto->renderPDF();
 // ou
 $boleto->renderHTML();
 
-// Os dois métodos aceita como parâmetro um boleano que define se após renderizado irá mostrar a janela de impressão. O Valor default é false.
-//Ex:
-$boleto->renderPDF(true); // imostra a janela de impressão
+// Os dois métodos aceita como parâmetro 2 boleano.
+// 1º Se True após renderizado irá mostrar a janela de impressão. O Valor default é false.
+// 2º Se False irá esconder as instruções de impressão. O valor default é true
+$boleto->renderPDF(true, false); // mostra a janela de impressão e esconde as instruções de impressão
 ```
 ```php
 /*
