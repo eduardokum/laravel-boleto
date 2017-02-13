@@ -10,21 +10,25 @@
 <body>
 
 <div style="width: 666px">
-    <div class="noprint info">
-        <h2>Instruções de Impressão</h2>
-        <ul>
-            <li>Imprima em impressora jato de tinta (ink jet) ou laser em qualidade normal ou alta (Não use modo econômico).</li>
-            <li>Utilize folha A4 (210 x 297 mm) ou Carta (216 x 279 mm) e margens mínimas à esquerda e à direita do formulário.</li>
-            <li>Corte na linha indicada. Não rasure, risque, fure ou dobre a região onde se encontra o código de barras.</li>
-            <li>Caso não apareça o código de barras no final, pressione F5 para atualizar esta tela.</li>
-            <li>Caso tenha problemas ao imprimir, copie a sequencia numérica abaixo e pague no caixa eletrônico ou no internet banking:</li>
-        </ul>
-        <span class="header">Linha Digitável: {{ $linha_digitavel }}</span>
-        <span class="header">Número: {{ $numero }}</span>
-        {!! $valor ? '<span class="header">Valor: R$' . $valor . '</span>' : '' !!}
-        <br>
-        <div class="linha-pontilhada" style="margin-bottom: 20px;">Recibo do pagador</div>
-    </div>
+
+    @if($imprimir_instrucoes)
+        <div class="noprint info">
+            <h2>Instruções de Impressão</h2>
+            <ul>
+                <li>Imprima em impressora jato de tinta (ink jet) ou laser em qualidade normal ou alta (Não use modo econômico).</li>
+                <li>Utilize folha A4 (210 x 297 mm) ou Carta (216 x 279 mm) e margens mínimas à esquerda e à direita do formulário.</li>
+                <li>Corte na linha indicada. Não rasure, risque, fure ou dobre a região onde se encontra o código de barras.</li>
+                <li>Caso não apareça o código de barras no final, pressione F5 para atualizar esta tela.</li>
+                <li>Caso tenha problemas ao imprimir, copie a sequencia numérica abaixo e pague no caixa eletrônico ou no internet banking:</li>
+            </ul>
+            <span class="header">Linha Digitável: {{ $linha_digitavel }}</span>
+            <span class="header">Número: {{ $numero }}</span>
+            {!! $valor ? '<span class="header">Valor: R$' . $valor . '</span>' : '' !!}
+            <br>
+        </div>
+    @endif
+    
+    <div class="linha-pontilhada" style="margin-bottom: 20px;">Recibo do pagador</div>
 
     <div class="info-empresa">
         @if ($logo)
