@@ -18,6 +18,17 @@ class Pdf extends AbstractPdf implements PdfContract
      */
     private $boleto = array();
 
+    /**
+     * @var bool
+     */
+    private $print = false;
+
+    /**
+     * @var bool
+     */
+    private $showInstrucoes = true;
+
+
     private $desc  = 3; // tamanho célula descrição
     private $cell  = 4; // tamanho célula dado
     private $fdes  = 6; // tamanho fonte descrição
@@ -48,32 +59,33 @@ class Pdf extends AbstractPdf implements PdfContract
         }
 
         $this->SetFont($this->PadraoFont, 'B', 8);
-        $this->Cell(0, 5, $this->_('Instruções de Impressão'), 0, 1, 'C');
-        $this->Ln(3);
-        $this->SetFont($this->PadraoFont, '', 6);
-        $this->Cell(0, $this->desc, $this->_('- Imprima em impressora jato de tinta (ink jet) ou laser em qualidade normal ou alta (Não use modo econômico).'), 0, 1, 'L');
-        $this->Cell(0, $this->desc, $this->_('- Utilize folha A4 (210 x 297 mm) ou Carta (216 x 279 mm) e margens mínimas à esquerda e à direita do formulário.'), 0, 1, 'L');
-        $this->Cell(0, $this->desc, $this->_('- Corte na linha indicada. Não rasure, risque, fure ou dobre a região onde se encontra o código de barras.'), 0, 1, 'L');
-        $this->Cell(0, $this->desc, $this->_('- Caso não apareça o código de barras no final, clique em F5 para atualizar esta tela.'), 0, 1, 'L');
-        $this->Cell(0, $this->desc, $this->_('- Caso tenha problemas ao imprimir, copie a seqüencia numérica abaixo e pague no caixa eletrônico ou no internet banking:'), 0, 1, 'L');
-        $this->Ln(4);
+        if($this->showInstrucoes) {
+            $this->Cell(0, 5, $this->_('Instruções de Impressão'), 0, 1, 'C');
+            $this->Ln(3);
+            $this->SetFont($this->PadraoFont, '', 6);
+            $this->Cell(0, $this->desc, $this->_('- Imprima em impressora jato de tinta (ink jet) ou laser em qualidade normal ou alta (Não use modo econômico).'), 0, 1, 'L');
+            $this->Cell(0, $this->desc, $this->_('- Utilize folha A4 (210 x 297 mm) ou Carta (216 x 279 mm) e margens mínimas à esquerda e à direita do formulário.'), 0, 1, 'L');
+            $this->Cell(0, $this->desc, $this->_('- Corte na linha indicada. Não rasure, risque, fure ou dobre a região onde se encontra o código de barras.'), 0, 1, 'L');
+            $this->Cell(0, $this->desc, $this->_('- Caso não apareça o código de barras no final, clique em F5 para atualizar esta tela.'), 0, 1, 'L');
+            $this->Cell(0, $this->desc, $this->_('- Caso tenha problemas ao imprimir, copie a seqüencia numérica abaixo e pague no caixa eletrônico ou no internet banking:'), 0, 1, 'L');
+            $this->Ln(4);
 
-        $this->SetFont($this->PadraoFont, '', $this->fcel);
-        $this->Cell(25, $this->cell, $this->_('Linha Digitável: '), 0, 0);
-        $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-        $this->Cell(0, $this->cell, $this->_($this->boleto[$i]->getLinhaDigitavel()), 0, 1);
-        $this->SetFont($this->PadraoFont, '', $this->fcel);
-        $this->Cell(25, $this->cell, $this->_('Número: '), 0, 0);
-        $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-        $this->Cell(0, $this->cell, $this->_($this->boleto[$i]->getNumero()), 0, 1);
-        $this->SetFont($this->PadraoFont, '', $this->fcel);
-        $this->Cell(25, $this->cell, $this->_('Valor: '), 0, 0);
-        $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-        $this->Cell(0, $this->cell, $this->_(Util::nReal($this->boleto[$i]->getValor())), 0, 1);
-        $this->SetFont($this->PadraoFont, '', $this->fcel);
+            $this->SetFont($this->PadraoFont, '', $this->fcel);
+            $this->Cell(25, $this->cell, $this->_('Linha Digitável: '), 0, 0);
+            $this->SetFont($this->PadraoFont, 'B', $this->fcel);
+            $this->Cell(0, $this->cell, $this->_($this->boleto[$i]->getLinhaDigitavel()), 0, 1);
+            $this->SetFont($this->PadraoFont, '', $this->fcel);
+            $this->Cell(25, $this->cell, $this->_('Número: '), 0, 0);
+            $this->SetFont($this->PadraoFont, 'B', $this->fcel);
+            $this->Cell(0, $this->cell, $this->_($this->boleto[$i]->getNumero()), 0, 1);
+            $this->SetFont($this->PadraoFont, '', $this->fcel);
+            $this->Cell(25, $this->cell, $this->_('Valor: '), 0, 0);
+            $this->SetFont($this->PadraoFont, 'B', $this->fcel);
+            $this->Cell(0, $this->cell, $this->_(Util::nReal($this->boleto[$i]->getValor())), 0, 1);
+            $this->SetFont($this->PadraoFont, '', $this->fcel);
+        }
 
         $this->traco('Recibo do Pagador', 4);
-
         return $this;
     }
 
@@ -398,16 +410,46 @@ class Pdf extends AbstractPdf implements PdfContract
     }
 
     /**
+     * @return $this
+     */
+    public function showIntrucoes() {
+        $this->showInstrucoes = true;
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function hideIntrucoes() {
+        $this->showInstrucoes = false;
+        return $this;
+    }
+    /**
+     * @return $this
+     */
+    public function showPrint() {
+        $this->print = true;
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function hidePrint() {
+        $this->print = false;
+        return $this;
+    }
+
+    /**
      * função para gerar o boleto
      *
      * @param string $dest      tipo de destino const BOLETOPDF_DEST_STANDARD | BOLETOPDF_DEST_DOWNLOAD | BOLETOPDF_DEST_SAVE | BOLETOPDF_DEST_STRING
      * @param null   $save_path
-     * @param bool   $print     se vai solicitar impressão
      *
      * @return string
      * @throws \Exception
      */
-    public function gerarBoleto($dest = self::OUTPUT_STANDARD, $save_path = null, $print = false)
+    public function gerarBoleto($dest = self::OUTPUT_STANDARD, $save_path = null)
     {
         if ($this->totalBoletos == 0) {
             throw new \Exception('Nenhum Boleto adicionado');
@@ -419,10 +461,10 @@ class Pdf extends AbstractPdf implements PdfContract
             $this->instrucoes($i)->logoEmpresa($i)->Topo($i)->Bottom($i)->codigoBarras($i);
         }
         if ($dest == self::OUTPUT_SAVE) {
-            $this->Output($save_path, $dest, $print);
+            $this->Output($save_path, $dest, $this->print);
             return $save_path;
         }
-        return $this->Output(str_random(32) . '.pdf', $dest, $print);
+        return $this->Output(str_random(32) . '.pdf', $dest, $this->print);
     }
 
     /**
