@@ -160,7 +160,7 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(83, 84, '00');
         $this->add(85, 97, Util::formatCnab('9', 0, 13, 2));
         $this->add(98, 101, '');
-        $this->add(102, 107, $boleto->getDataVencimento()->copy()->addDays($boleto->getJurosApos())->format('dmy'));
+        $this->add(102, 107, $boleto->getJurosApos() === false ? '000000' : $boleto->getDataVencimento()->copy()->addDays($boleto->getJurosApos())->format('dmy'));
         $this->add(108, 108, $this->getCarteiraNumero() > 200 ? '1' : '5');
         $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
         if ($boleto->getStatus() == $boleto::STATUS_BAIXA) {

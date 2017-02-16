@@ -1381,32 +1381,38 @@ abstract class AbstractBoleto implements BoletoContract
      * Render PDF
      *
      * @param bool $print
+     * @param bool $instrucoes
      *
      * @return string
      * @throws \Exception
      */
-    public function renderPDF($print = false)
+    public function renderPDF($print = false, $instrucoes = true)
     {
         $pdf = new Pdf();
         $pdf->addBoleto($this);
+        !$print || $pdf->showPrint();
+        $instrucoes || $pdf->showIntrucoes();
 
-        return $pdf->gerarBoleto('S', null, $print);
+        return $pdf->gerarBoleto('S', null);
     }
 
     /**
      * Render HTML
      *
      * @param bool $print
+     * @param bool $instrucoes
      *
      * @return string
-     * @throws \Exception
      * @throws \Throwable
      */
-    public function renderHTML($print = false)
+    public function renderHTML($print = false, $instrucoes = true)
     {
-        $html = new Html($this->toArray());
+        $html = new Html();
+        $html->addBoleto($this);
+        !$print || $pdf->showPrint();
+        $instrucoes || $pdf->showIntrucoes();
 
-        return $html->gerarBoleto($print);
+        return $html->gerarBoleto();
     }
 
     /**

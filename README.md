@@ -122,9 +122,10 @@ $boleto->renderPDF();
 // ou
 $boleto->renderHTML();
 
-// Os dois métodos aceita como parâmetro um boleano que define se após renderizado irá mostrar a janela de impressão. O Valor default é false.
-//Ex:
-$boleto->renderPDF(true); // imostra a janela de impressão
+// Os dois métodos aceita como parâmetro 2 boleano.
+// 1º Se True após renderizado irá mostrar a janela de impressão. O Valor default é false.
+// 2º Se False irá esconder as instruções de impressão. O valor default é true
+$boleto->renderPDF(true, false); // mostra a janela de impressão e esconde as instruções de impressão
 ```
 ```php
 /*
@@ -143,7 +144,7 @@ return response($boleto->renderHTML());
 
 ```
 
-**Gerando boleto a partir da instância do render (mais de um boleto para o PDF)**
+**Gerando boleto a partir da instância do render**
 
 
 ```php
@@ -151,30 +152,40 @@ return response($boleto->renderHTML());
 $pdf = new Eduardokum\LaravelBoleto\Boleto\Render\Pdf();
 
 $pdf->addBoleto($boleto);
-Ou para adicionar um array de boletos
+// Ou para adicionar um array de boletos
 $pdf->addBoletos($boletos);
 
 // Quando não informado parâmetros ele se comportará como Pdf::OUTPUT_STANDARD, enviando o buffer do pdf com os headers apropriados.
 $pdf->gerarBoleto();
 
+// Para mostrar a janela de impressão no load do PDF
+$pdf->showPrint();
+
+// Para remover as intruções de impressão
+$pdf->hideInstrucoes();
+
 // O método gerarBoleto da classe PDF aceita como parâmetro:
 //	1º destino: constante com os destinos disponíveis. Ex: Pdf::OUTPUT_SAVE.
 //	2º path: caminho absoluto para salvar o pdf quando destino for Pdf::OUTPUT_SAVE.
-//	3º print: boleano que define se após renderizado irá mostrar a janela de impressão. O Valor default é false.
 //Ex:
 $pdf->gerarBoleto(Pdf::OUTPUT_SAVE, storage_path('app/boletos/meu_boleto.pdf')); // salva o boleto na pasta.
-$pdf->gerarBoleto(Pdf::OUTPUT_STANDARD, null, true); // executa o comportamento padrão do navedor, mostrando a janela de impressão.
 $pdf_inline = $pdf->gerarBoleto(Pdf::OUTPUT_STRING); // retorna o boleto em formato string.
 $pdf->gerarBoleto(Pdf::OUTPUT_DOWNLOAD); // força o download pelo navegador.
 
 // Gerar em HTML
-$html = new Eduardokum\LaravelBoleto\Boleto\Render\Html($boleto->toArray());
+$html = new Eduardokum\LaravelBoleto\Boleto\Render\Html();
+$html->addBoleto($boleto);
+// Ou para adicionar um array de boletos
+$html->addBoletos($boletos);
+
+// Para mostrar a janela de impressão no load da página
+$html->showPrint();
+
+// Para remover as intruções de impressão
+$html->hideInstrucoes();
 
 $html->gerarBoleto();
 
-// O método gerarBoleto da classe HTML aceita como um boleano que define se após renderizado irá mostrar a janela de impressão. O Valor default é false.
-//Ex:
-$html->gerarBoleto(true); // mostra a janela de impressão
 ```
 
 ## Gerar remessa
