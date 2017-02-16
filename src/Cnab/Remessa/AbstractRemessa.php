@@ -473,4 +473,19 @@ abstract class AbstractRemessa
 
         return $path;
     }
-}
+
+    /**
+     * Realiza o download da string retornada do metodo gerar
+     * @param null $filename
+     *
+     * @throws \Exception
+     */
+    public function download($filename = null)
+    {
+        if ($filename === null){
+            $filename = 'remessa.txt';
+        }
+        header('Content-type: text/plain');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        echo $this->gerar();
+    }

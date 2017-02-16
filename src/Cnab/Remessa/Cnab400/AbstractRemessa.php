@@ -64,18 +64,4 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
 
         return $stringRemessa;
     }
-
-    /**
-     * Realiza o download da string retornada do metodo gerar
-     * @param string nome do arquivo para o download (opcional).
-     */
-    public function download($filename = null)
-    {
-        if ($filename === null){
-            $filename = 'remessa.txt';
-        }
-        header('Content-type: text/plain');
-        header('Content-Disposition: attachment; filename="' . $filename . '"');
-        echo $this->gerar();
-    }
 }
