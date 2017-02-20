@@ -2,7 +2,7 @@
 @section('boleto')
 
     @foreach($boletos as $i => $boleto)
-        @php extract($boleto); @endphp
+        <?php extract($boleto) ?>
         @if($mostrar_instrucoes)
             <div class="noprint info">
                 <h2>Instruções de Impressão</h2>
