@@ -50,19 +50,10 @@ class Html implements HtmlContract
         $this->boleto[] = $dados;
         return $this;
     }
-
     /**
      * @return $this
      */
-    public function showIntrucoes() {
-        $this->showInstrucoes = true;
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
-    public function hideIntrucoes() {
+    public function hideInstrucoes() {
         $this->showInstrucoes = false;
         return $this;
     }
@@ -71,14 +62,6 @@ class Html implements HtmlContract
      */
     public function showPrint() {
         $this->print = true;
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
-    public function hidePrint() {
-        $this->print = false;
         return $this;
     }
 
