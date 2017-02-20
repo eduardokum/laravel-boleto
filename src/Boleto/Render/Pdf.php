@@ -412,15 +412,7 @@ class Pdf extends AbstractPdf implements PdfContract
     /**
      * @return $this
      */
-    public function showIntrucoes() {
-        $this->showInstrucoes = true;
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
-    public function hideIntrucoes() {
+    public function hideInstrucoes() {
         $this->showInstrucoes = false;
         return $this;
     }
@@ -429,14 +421,6 @@ class Pdf extends AbstractPdf implements PdfContract
      */
     public function showPrint() {
         $this->print = true;
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
-    public function hidePrint() {
-        $this->print = false;
         return $this;
     }
 
