@@ -818,7 +818,7 @@ final class Util
         }
 
         $value = sprintf("%{$t}s", $value);
-        $value = str_split($value, 1);
+        $value = preg_split('//u', $value, -1, PREG_SPLIT_NO_EMPTY);
 
         return array_splice($line, $i, $t, $value);
     }
