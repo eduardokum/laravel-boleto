@@ -86,7 +86,8 @@ class Bancoob extends AbstractBoleto implements BoletoContract
         if (($resto != 0) && ($resto != 1)) {
             $digito_verificador = 11 - $resto;
         }
-        return $numero . $digito_verificador;
+
+        return $numero_boleto . $digito_verificador;
     }
     /**
      * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
