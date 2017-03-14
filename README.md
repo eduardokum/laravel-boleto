@@ -27,7 +27,7 @@ Pacote para gerar boletos, remessas e leitura de retorno.
 Banco | Boleto | Remessa 400 | Remessa 240 | Retorno 400 | Retorno 240
 ----- | ------ | ----------- | ----------- | ----------- | ----------- |
  Banco do Brasil | :white_check_mark: | :white_check_mark: | | :white_check_mark: | |
- Bancoob (Sicoob) | :white_check_mark: * | :white_check_mark: | | | :white_check_mark: * |
+ Bancoob (Sicoob) | :white_check_mark: * | :white_check_mark: | | :white_check_mark: * | :white_check_mark: * |
  Banrisul | :white_check_mark: | :white_check_mark: | | :white_check_mark: | |
  Bradesco | :white_check_mark: | :white_check_mark: | | :white_check_mark: | |
  Caixa | :white_check_mark: | :white_check_mark: | | :white_check_mark: | |
@@ -35,6 +35,7 @@ Banco | Boleto | Remessa 400 | Remessa 240 | Retorno 400 | Retorno 240
  Itau | :white_check_mark: | :white_check_mark: | | :white_check_mark: | |
  Santander | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
  Sicredi | :white_check_mark: | :white_check_mark: | | :white_check_mark: * | |
+ Banco do Nordeste | :white_check_mark: * | :white_check_mark: * | | | |
 
 **\* necessita de homologação**
 
