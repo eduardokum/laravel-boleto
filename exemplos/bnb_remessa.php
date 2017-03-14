@@ -2,24 +2,24 @@
 require 'autoload.php';
 $beneficiario = new \Eduardokum\LaravelBoleto\Pessoa(
     [
-        'nome'      => 'S L COMERCIO DE CARNES LTDA',
+        'nome'      => 'ACME',
         'endereco'  => 'Rua um, 123',
         'cep'       => '99999-999',
         'uf'        => 'UF',
         'cidade'    => 'CIDADE',
-        'documento' => '08.080.317/0001-97',
+        'documento' => '99.999.999/9999-99',
     ]
 );
 
 $pagador = new \Eduardokum\LaravelBoleto\Pessoa(
     [
-        'nome'      => 'DIFUSORA ATLANTICO LTDA EPP',
-        'endereco'  => 'AV AGAMENN MAGALHAES, 444',
+        'nome'      => 'Cliente',
+        'endereco'  => 'Rua um, 123',
         'bairro'    => 'Bairro',
-        'cep'       => '51010-040',
-        'uf'        => 'PE',
-        'cidade'    => 'RECIFE',
-        'documento' => '01.040.143/0001-26',
+        'cep'       => '99999-999',
+        'uf'        => 'UF',
+        'cidade'    => 'CIDADE',
+        'documento' => '999.999.999-99',
     ]
 );
 
