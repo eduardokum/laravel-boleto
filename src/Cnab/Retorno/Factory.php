@@ -55,6 +55,7 @@ class Factory
             BoletoContract::COD_BANCO_SICREDI => 'Banco\\Sicredi',
             BoletoContract::COD_BANCO_BANRISUL => 'Banco\\Banrisul',
             BoletoContract::COD_BANCO_BANCOOB => 'Banco\\Bancoob',
+            BoletoContract::COD_BANCO_BNB => 'Banco\\Bnb',
         ];
 
         if (array_key_exists($banco, $aBancos)) {
