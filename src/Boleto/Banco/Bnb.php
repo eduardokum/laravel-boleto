@@ -109,7 +109,6 @@ class Bnb extends AbstractBoleto implements BoletoContract
      */
     public function getNossoNumeroBoleto()
     {
-        //return $this->getCarteira() . '/' . substr_replace($this->getNossoNumero(), '-', -1, 0);
         return $this->getNossoNumero() . '-' . Util::modulo11($this->getNossoNumero());
     }
     
@@ -128,19 +127,15 @@ class Bnb extends AbstractBoleto implements BoletoContract
         if ($this->campoLivre) {
             return $this->campoLivre;
         }
-        
         $numero_boleto = Util::numberFormatGeral($this->getNumero(), 7);
+        $dvNossoNumero = Util::numberFormatGeral($this->getNossoNumeroDv(), 1);
         $carteira = Util::numberFormatGeral($this->getCarteira(), 2);
         $agencia = Util::numberFormatGeral($this->getAgencia(), 4);
         $conta = Util::numberFormatGeral($this->getConta(), 7);
         $dvContaCedente = Util::numberFormatGeral($this->getContaDv(), 1);
         $dvAgContaCarteira = Util::modulo10($agencia . $conta . $carteira . $numero_boleto);
-        $dvNossoNumero = Util::modulo11($numero_boleto);
         $this->setCarteiraDv($dvAgContaCarteira);
-        
-        // Módulo 10 Agência/Conta
-        $dvAgConta = Util::modulo10($agencia . $conta);
-        //return $this->campoLivre = $carteira . $numero_boleto . $dvAgContaCarteira . $agencia . $conta . $dvAgConta . '000';
+
         return $this->campoLivre = $agencia . $conta . $dvContaCedente . $numero_boleto . $dvNossoNumero . $carteira . '000';
     }
 }

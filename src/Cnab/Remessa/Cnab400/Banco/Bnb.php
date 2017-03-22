@@ -110,18 +110,17 @@ class Bnb extends AbstractRemessa implements RemessaContract
     public function addBoleto(BoletoContract $boleto)
     {
         $this->iniciaDetalhe();
-
         $this->add(1, 1, '1');
         $this->add(2, 17, '');
         $this->add(18, 21, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(22, 23, '00');
         $this->add(24, 30, Util::formatCnab('9', $this->getConta(), 7));
         $this->add(31, 31, $this->getContaDv());
-        $this->add(32, 33, Util::formatCnab('9', $boleto->getMulta(), 2)); // TODO: Perc de multa atraso
+        $this->add(32, 33, Util::formatCnab('9', round($boleto->getMulta()), 2)); // Só aceita números inteiros
         $this->add(34, 37, '');
-        $this->add(38, 62, Util::formatCnab('X', $boleto->getNumeroControle(), 25)); // numero de controle
+        $this->add(38, 62, Util::formatCnab('X', $boleto->getNumeroControle(), 25)); // Numero de controle
         $this->add(63, 69, Util::formatCnab('9', $boleto->getNumero(), 7));
-        $this->add(70, 70, Util::formatCnab('9', '1', 1)); // TODO: Nosso número DV
+        $this->add(70, 70, Util::formatCnab('9', Util::modulo11( Util::numberFormatGeral($boleto->getNumero(), 7) ), 1)); // Nosso número DV
         $this->add(71, 80, '0000000000');
         $this->add(81, 86, '000000'); // Data segundo desconto
         $this->add(87, 99, Util::formatCnab('9', '0', 13)); // Segundo desconto
@@ -146,7 +145,7 @@ class Bnb extends AbstractRemessa implements RemessaContract
         $this->add(157, 160, Util::formatCnab('9', self::INSTRUCAO_SEM, 4));
         $juros = 0;
         if ($boleto->getJuros() > 0) {
-            $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
+            $juros = Util::percent($boleto->getValor(), $boleto->getJuros()) / 30; // Valor por dia
         }
         $this->add(161, 173, Util::formatCnab('9', $juros, 13, 2));
         $this->add(174, 179, $boleto->getDataDesconto()->format('dmy'));
