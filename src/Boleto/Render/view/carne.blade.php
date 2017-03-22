@@ -1,15 +1,8 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ $beneficiario }}</title>
-    <style type="text/css">
-        {!! $css !!}
-    </style>
-</head>
-<body>
-
-<div style="width: 863px">
+@extends('BoletoHtmlRender::layout')
+@section('boleto')
+    @foreach($boletos as $i => $boleto)
+        @php extract($boleto); @endphp
+        <div style="width: 863px">
     <div style="float: left">
         <table class="table-boleto" style="width: 180px" cellpadding="0" cellspacing="0" border="0">
             <tr>
@@ -45,25 +38,25 @@
             <tr>
                 <td>
                     <div class="titulo">Quantidade</div>
-                    <div class="conteudo">{{ $quantidade }}</div>
+                    <div class="conteudo"></div>
                 </td>
             </tr>
             <tr>
                 <td>
                     <div class="titulo">(=) Valor Documento</div>
-                    <div class="conteudo">{{ $valor_documento }}</div>
+                    <div class="conteudo">{{ $valor }}</div>
                 </td>
             </tr>
             <tr>
                 <td>
                     <div class="titulo">(-) Descontos / Abatimentos</div>
-                    <div class="conteudo">{{ $desconto_abatimento }}</div>
+                    <div class="conteudo"></div>
                 </td>
             </tr>
             <tr>
                 <td>
                     <div class="titulo">(-) Outras deduções</div>
-                    <div class="conteudo">{{ $outras_deducoes }}</div>
+                    <div class="conteudo"></div>
                 </td>
             </tr>
             <tr>
@@ -75,13 +68,13 @@
             <tr>
                 <td>
                     <div class="titulo">(+) Outros acréscimos</div>
-                    <div class="conteudo">{{ $outros_acrescimos }}</div>
+                    <div class="conteudo"></div>
                 </td>
             </tr>
             <tr>
                 <td class="bottomborder">
                     <div class="titulo">(=) Valor cobrado</div>
-                    <div class="conteudo">{{ $valor_cobrado }}</div>
+                    <div class="conteudo"></div>
                 </td>
             </tr>
         </table>
@@ -94,6 +87,5 @@
     <div style="clear: both"></div>
     <div class="linha-pontilhada">Corte na linha pontilhada</div>
 </div>
-
-</body>
-</html>
+    @endforeach
+@endsection

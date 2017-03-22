@@ -1,25 +1,4 @@
 <?php
-/**
- *   Copyright (c) 2016 Eduardo Gusmão
- *
- *   Permission is hereby granted, free of charge, to any person obtaining a
- *   copy of this software and associated documentation files (the "Software"),
- *   to deal in the Software without restriction, including without limitation
- *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
- *   and/or sell copies of the Software, and to permit persons to whom the
- *   Software is furnished to do so, subject to the following conditions:
- *
- *   The above copyright notice and this permission notice shall be included in all
- *   copies or substantial portions of the Software.
- *
- *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
- *   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
- *   PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- *   COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- *   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
- *   IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
@@ -28,18 +7,27 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Caixa  extends AbstractBoleto implements BoletoContract
 {
+    public function __construct(array $params = [])
+    {
+        parent::__construct($params);
+        $this->setCamposObrigatorios('numero', 'agencia', 'carteira', 'codigoCliente');
+    }
+
     /**
      * Código do banco
+     *
      * @var string
      */
     protected $codigoBanco = self::COD_BANCO_CEF;
     /**
      * Define as carteiras disponíveis para este banco
+     *
      * @var array
      */
-    protected $carteiras = ['RG','SR'];
+    protected $carteiras = ['RG', 'SR'];
     /**
      * Espécie do documento, coódigo para remessa
+     *
      * @var string
      */
     protected $especiesCodigo = [
@@ -50,21 +38,34 @@ class Caixa  extends AbstractBoleto implements BoletoContract
         'LC' => '06',
     ];
     /**
-     * Método que valida se o banco tem todos os campos obrigadotorios preenchidos
+     * Codigo do cliente junto ao banco.
+     *
+     * @var string
      */
-    public function isValid()
+    protected $codigoCliente;
+    /**
+     * Seta o codigo do cliente.
+     *
+     * @param mixed $codigoCliente
+     *
+     * @return $this
+     */
+    public function setCodigoCliente($codigoCliente)
     {
-        if(
-            empty($this->numero) ||
-            empty($this->agencia) ||
-            empty($this->conta) ||
-            empty($this->carteira)
-        )
-        {
-            return false;
-        }
-        return true;
+        $this->codigoCliente = $codigoCliente;
+
+        return $this;
     }
+    /**
+     * Retorna o codigo do cliente.
+     *
+     * @return string
+     */
+    public function getCodigoCliente()
+    {
+        return $this->codigoCliente;
+    }
+
     /**
      * Gera o Nosso Número.
      *
@@ -73,16 +74,16 @@ class Caixa  extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        $numero = $this->getNumero();
+        $numero_boleto = $this->getNumero();
         $composicao = '1';
-        if ($this->getCarteira() == 'SR'){
+        if ($this->getCarteira() == 'SR') {
             $composicao = '2';
         }
 
-        $carteira = $composicao. '4';
+        $carteira = $composicao . '4';
         // As 15 próximas posições no nosso número são a critério do beneficiário, utilizando o sequencial
         // Depois, calcula-se o código verificador por módulo 11
-        $numero = $carteira.Util::numberFormatGeral($numero, 15);
+        $numero = $carteira . Util::numberFormatGeral($numero_boleto, 15);
         return $numero;
     }
     /**
@@ -94,11 +95,30 @@ class Caixa  extends AbstractBoleto implements BoletoContract
     {
         return $this->getNossoNumero() . '-' . Util::modulo11($this->getNossoNumero());
     }
+
+    /**
+     * Seta dias para baixa automática
+     *
+     * @param int $baixaAutomatica
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    public function setDiasBaixaAutomatica($baixaAutomatica)
+    {
+        if ($this->getDiasProtesto() > 0) {
+            throw new \Exception('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
+        }
+        $baixaAutomatica = (int) $baixaAutomatica;
+        $this->diasBaixaAutomatica = $baixaAutomatica > 0 ? $baixaAutomatica : 0;
+        return $this;
+    }
+
     /**
      * Método para gerar o código da posição de 20 a 44
      *
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     protected function getCampoLivre()
     {
@@ -106,12 +126,12 @@ class Caixa  extends AbstractBoleto implements BoletoContract
             return $this->campoLivre;
         }
         $nossoNumero = Util::numberFormatGeral($this->gerarNossoNumero(), 17);
-        $beneficiario = Util::numberFormatGeral($this->getConta(), 6);
+        $beneficiario = Util::numberFormatGeral($this->getCodigoCliente(), 6);
         // Código do beneficiário + DV]
         $campoLivre = $beneficiario . Util::modulo11($beneficiario);
         // Sequencia 1 (posições 3-5 NN) + Constante 1 (1 => registrada, 2 => sem registro)
         $carteira = $this->getCarteira();
-        if ($carteira == 'SR'){
+        if ($carteira == 'SR') {
             $constante = '2';
         } else {
             $constante = '1';

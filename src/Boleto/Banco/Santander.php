@@ -1,25 +1,4 @@
 <?php
-/**
- *   Copyright (c) 2016 Eduardo Gusmão
- *
- *   Permission is hereby granted, free of charge, to any person obtaining a
- *   copy of this software and associated documentation files (the "Software"),
- *   to deal in the Software without restriction, including without limitation
- *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
- *   and/or sell copies of the Software, and to permit persons to whom the
- *   Software is furnished to do so, subject to the following conditions:
- *
- *   The above copyright notice and this permission notice shall be included in all
- *   copies or substantial portions of the Software.
- *
- *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
- *   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
- *   PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- *   COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- *   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
- *   IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
@@ -28,18 +7,27 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Santander  extends AbstractBoleto implements BoletoContract
 {
+    public function __construct(array $params = [])
+    {
+        parent::__construct($params);
+        $this->setCamposObrigatorios('numero', 'conta', 'carteira');
+    }
+
     /**
      * Código do banco
+     *
      * @var string
      */
     protected $codigoBanco = self::COD_BANCO_SANTANDER;
     /**
      * Define as carteiras disponíveis para este banco
+     *
      * @var array
      */
     protected $carteiras = ['101', '201'];
     /**
      * Espécie do documento, coódigo para remessa
+     *
      * @var string
      */
     protected $especiesCodigo = [
@@ -47,16 +35,18 @@ class Santander  extends AbstractBoleto implements BoletoContract
         'NP' => '02',
         'NS' => '03',
         'REC' => '05',
-        'NS' => '06',
+        'DS' => '06',
         'LC' => '07',
     ];
     /**
      * Define os nomes das carteiras para exibição no boleto
+     *
      * @var array
      */
     protected $carteirasNomes = ['101' => 'Cobrança Simples ECR', '102' => 'Cobrança Simples CSR'];
     /**
      * Define o valor do IOS - Seguradoras (Se 7% informar 7. Limitado a 9%) - Demais clientes usar 0 (zero)
+     *
      * @var int
      */
     protected $ios = 0;
@@ -71,21 +61,20 @@ class Santander  extends AbstractBoleto implements BoletoContract
     /**
      * Define o código da carteira (Com ou sem registro)
      *
-     * @param string $carteira
+     * @param  string $carteira
      * @return AbstractBoleto
      * @throws \Exception
      */
     public function setCarteira($carteira)
     {
-        switch($carteira)
-        {
-            case '1':
-            case '5':
-                $carteira = '101';
-                break;
-            case '4':
-                $carteira = '102';
-                break;
+        switch ($carteira) {
+        case '1':
+        case '5':
+            $carteira = '101';
+            break;
+        case '4':
+            $carteira = '102';
+            break;
         }
         return parent::setCarteira($carteira);
     }
@@ -107,20 +96,26 @@ class Santander  extends AbstractBoleto implements BoletoContract
     {
         return $this->ios;
     }
+
     /**
-     * Método que valida se o banco tem todos os campos obrigadotorios preenchidos
+     * Seta dias para baixa automática
+     *
+     * @param int $baixaAutomatica
+     *
+     * @return $this
+     * @throws \Exception
      */
-    public function isValid()
+    public function setDiasBaixaAutomatica($baixaAutomatica)
     {
-        if(
-            empty($this->numero) ||
-            empty($this->conta) ||
-            empty($this->carteira)
-        )
-        {
-            return false;
+        if ($this->getDiasProtesto() > 0) {
+            throw new \Exception('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
         }
-        return true;
+        if (!in_array($baixaAutomatica, [15, 30])) {
+            throw new \Exception('O Banco Santander so aceita 15 ou 30 dias após o vencimento para baixa automática');
+        }
+        $baixaAutomatica = (int) $baixaAutomatica;
+        $this->diasBaixaAutomatica = $baixaAutomatica > 0 ? $baixaAutomatica : 0;
+        return $this;
     }
     /**
      * Gera o Nosso Número.
@@ -129,8 +124,9 @@ class Santander  extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        $nossoNumero = Util::numberFormatGeral($this->getNumero(), 12);
-        $nossoNumero .= Util::modulo11($this->getNumero());
+        $numero_boleto = $this->getNumero();
+        $nossoNumero = Util::numberFormatGeral($numero_boleto, 12);
+        $nossoNumero .= Util::modulo11($numero_boleto);
         return $nossoNumero;
     }
     /**

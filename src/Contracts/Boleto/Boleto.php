@@ -1,28 +1,7 @@
 <?php
-/**
- *   Copyright (c) 2016 Eduardo Gusmão
- *
- *   Permission is hereby granted, free of charge, to any person obtaining a
- *   copy of this software and associated documentation files (the "Software"),
- *   to deal in the Software without restriction, including without limitation
- *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
- *   and/or sell copies of the Software, and to permit persons to whom the
- *   Software is furnished to do so, subject to the following conditions:
- *
- *   The above copyright notice and this permission notice shall be included in all
- *   copies or substantial portions of the Software.
- *
- *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
- *   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
- *   PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- *   COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- *   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
- *   IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-
 namespace Eduardokum\LaravelBoleto\Contracts\Boleto;
 
-Use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
+use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
 
 interface Boleto
 {
@@ -32,6 +11,9 @@ interface Boleto
     const COD_BANCO_BRADESCO = '237';
     const COD_BANCO_ITAU = '341';
     const COD_BANCO_HSBC = '399';
+    const COD_BANCO_SICREDI = '748';
+    const COD_BANCO_BANRISUL = '041';
+    const COD_BANCO_BANCOOB = '756';
 
     const STATUS_REGISTRO = 1;
     const STATUS_ALTERACAO = 2;
@@ -40,7 +22,7 @@ interface Boleto
     /**
      * Render PDF.
      *
-     * @param bool   $print
+     * @param bool $print
      *
      * @return mixed
      */
@@ -106,14 +88,14 @@ interface Boleto
     public function getMoeda();
 
     /**
-     * @return mixed
+     * @return \Carbon\Carbon
      */
-    public function getQuantidade();
+    public function getDataVencimento();
 
     /**
      * @return \Carbon\Carbon
      */
-    public function getDataVencimento();
+    public function getDataDesconto();
 
     /**
      * @return \Carbon\Carbon
@@ -133,12 +115,7 @@ interface Boleto
     /**
      * @return mixed
      */
-    public function getDescontosAbatimentos();
-
-    /**
-     * @return mixed
-     */
-    public function getOutrasDeducoes();
+    public function getDesconto();
 
     /**
      * @return mixed
@@ -151,33 +128,23 @@ interface Boleto
     public function getJuros();
 
     /**
-     * @param bool $default
+     * @return mixed
+     */
+    public function getJurosApos();
+
+    /**
+     * @param int $default
      *
      * @return mixed
      */
-    public function getJurosApos($default = false);
+    public function getDiasProtesto($default = 0);
 
     /**
-     * @param bool $default
+     * @param int $default
      *
      * @return mixed
      */
-    public function getDiasProtesto($default = false);
-
-    /**
-     * @return mixed
-     */
-    public function getOutrosAcrescimos();
-
-    /**
-     * @return mixed
-     */
-    public function getValorCobrado();
-
-    /**
-     * @return mixed
-     */
-    public function getValorUnitario();
+    public function getDiasBaixaAutomatica($default = 0);
 
     /**
      * @return PessoaContract
@@ -212,12 +179,12 @@ interface Boleto
     /**
      * @return mixed
      */
-    public function getCip();
+    public function getNumeroDocumento();
 
     /**
      * @return mixed
      */
-    public function getNumeroDocumento();
+    public function getNumeroControle();
 
     /**
      * @return mixed
@@ -242,7 +209,7 @@ interface Boleto
     /**
      * @return mixed
      */
-    public function getEspecieDocCodigo();
+    public function getEspecieDocCodigo($default = 99);
 
     /**
      * @return mixed
@@ -278,5 +245,4 @@ interface Boleto
      * @return mixed
      */
     public function baixarBoleto();
-
 }

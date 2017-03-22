@@ -1,37 +1,8 @@
 <?php
-/**
- *   Copyright (c) 2016 Eduardo Gusmão
- *
- *   Permission is hereby granted, free of charge, to any person obtaining a
- *   copy of this software and associated documentation files (the "Software"),
- *   to deal in the Software without restriction, including without limitation
- *   the rights to use, copy, modify, merge, publish, distribute, sublicense,
- *   and/or sell copies of the Software, and to permit persons to whom the
- *   Software is furnished to do so, subject to the following conditions:
- *
- *   The above copyright notice and this permission notice shall be included in all
- *   copies or substantial portions of the Software.
- *
- *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
- *   INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
- *   PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- *   COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- *   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR
- *   IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+namespace Eduardokum\LaravelBoleto;
 
-/**
- * Created by PhpStorm.
- * User: eduardo
- * Date: 07/02/16
- * Time: 06:23
- */
-
-namespace Eduardokum\LaravelBoleto\Boleto;
-
-
-use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
+use Eduardokum\LaravelBoleto\Util;
 
 class Pessoa implements PessoaContract
 {
@@ -67,12 +38,12 @@ class Pessoa implements PessoaContract
     /**
      * Cria a pessoa passando os parametros.
      *
-     * @param      $nome
-     * @param      $documento
-     * @param null $endereco
-     * @param null $cep
-     * @param null $cidade
-     * @param null $uf
+     * @param $nome
+     * @param $documento
+     * @param null      $endereco
+     * @param null      $cep
+     * @param null      $cidade
+     * @param null      $uf
      *
      * @return Pessoa
      */
@@ -96,12 +67,7 @@ class Pessoa implements PessoaContract
      */
     public function __construct($params = [])
     {
-        foreach ($params as $param => $value)
-        {
-            if (method_exists($this, 'set' . ucwords($param))) {
-                $this->{'set' . ucwords($param)}($value);
-            }
-        }
+        Util::fillClass($this, $params);
     }
     /**
      * Define o CEP
@@ -139,13 +105,20 @@ class Pessoa implements PessoaContract
     {
         return $this->cidade;
     }
+
     /**
-     * Define o documento (CPF ou CNPJ)
+     * Define o documento (CPF, CNPJ ou CEI)
      *
      * @param string $documento
+     *
+     * @throws \Exception
      */
     public function setDocumento($documento)
     {
+        $documento = substr(Util::onlyNumbers($documento), -14);
+        if (!in_array(strlen($documento), [10, 11, 14, 0])) {
+            throw new \Exception('Documento inválido');
+        }
         $this->documento = $documento;
     }
     /**
@@ -155,15 +128,12 @@ class Pessoa implements PessoaContract
      */
     public function getDocumento()
     {
-        if($this->getTipoDocumento() == 'CPF')
-        {
+        if ($this->getTipoDocumento() == 'CPF') {
             return Util::maskString(Util::onlyNumbers($this->documento), '###.###.###-##');
+        } elseif ($this->getTipoDocumento() == 'CEI') {
+            return Util::maskString(Util::onlyNumbers($this->documento), '##.#####.#-##');
         }
-        if($this->getTipoDocumento() == 'CNPJ')
-        {
-            return Util::maskString(Util::onlyNumbers($this->documento), '##.###.###/####-##');
-        }
-        return $this->documento;
+        return Util::maskString(Util::onlyNumbers($this->documento), '##.###.###/####-##');
     }
     /**
      * Define o endereço
@@ -244,7 +214,7 @@ class Pessoa implements PessoaContract
      */
     public function getNomeDocumento()
     {
-        if(!$this->getDocumento()) {
+        if (!$this->getDocumento()) {
             return $this->getNome();
         } else {
             return $this->getNome() . ' / ' . $this->getTipoDocumento() . ': ' . $this->getDocumento();
@@ -257,13 +227,15 @@ class Pessoa implements PessoaContract
      */
     public function getTipoDocumento()
     {
-        $cpf_cnpj = Util::onlyNumbers($this->documento);
-        if (strlen($cpf_cnpj) == 11) {
+        $cpf_cnpj_cei = Util::onlyNumbers($this->documento);
+
+        if (strlen($cpf_cnpj_cei) == 11) {
             return 'CPF';
-        } else if (strlen($cpf_cnpj) == 14) {
-            return 'CNPJ';
+        } elseif (strlen($cpf_cnpj_cei) == 10) {
+            return 'CEI';
         }
-        return 'Documento';
+        
+        return 'CNPJ';
     }
     /**
      * Retorna o endereço formatado para a linha 2 de endereço
@@ -276,5 +248,23 @@ class Pessoa implements PessoaContract
     {
         $dados = array_filter(array($this->getCep(), $this->getCidade(), $this->getUf()));
         return implode(' - ', $dados);
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        return [
+            'nome' => $this->getNome(),
+            'endereco' => $this->getEndereco(),
+            'bairro' => $this->getBairro(),
+            'cep' => $this->getCep(),
+            'uf' => $this->getUf(),
+            'cidade' => $this->getCidade(),
+            'documento' => $this->getDocumento(),
+            'nome_documento' => $this->getNomeDocumento(),
+            'endereco2' => $this->getCepCidadeUf(),
+        ];
     }
 }
