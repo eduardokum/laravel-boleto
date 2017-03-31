@@ -65,6 +65,16 @@ class Caixa  extends AbstractBoleto implements BoletoContract
     {
         return $this->codigoCliente;
     }
+    /**
+     * Retorna o codigo do cliente como se fosse a conta
+     * ja que a caixa não faz uso da conta para nada.
+     *
+     * @return string
+     */
+    public function getConta()
+    {
+        return $this->getCodigoCliente();
+    }
 
     /**
      * Gera o Nosso Número.
