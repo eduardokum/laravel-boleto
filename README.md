@@ -229,18 +229,18 @@ echo $retorno->getBancoNome();
 
 // Retorno implementa \SeekableIterator sendo assim podemos utilizar o foreach da seguinte forma:
 foreach($retorno as $registro) {
-	var_dump($registro->getDados());
+	var_dump($registro->toArray());
 }
 
 // Ou também podemos:
 $detalheCollection = $retorno->getDetalhes();
 foreach($detalheCollection as $detalhe) {
-	var_dump($detalhe->getDados());
+	var_dump($detalhe->toArray());
 }
 
 // Ou até mesmo do jeito laravel
 $detalheCollection->each(function ($detalhe, $index) {
-    var_dump($detalhe->getDados())
+    var_dump($detalhe->toArray())
 });
 ```
 
