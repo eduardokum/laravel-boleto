@@ -233,7 +233,9 @@ class Itau extends AbstractRemessa implements RemessaContract
         
         // Verifica multa
         if ($boleto->getMulta() > 0) {
-            $this->iniciaAdicional();
+            // Inicia uma nova linha de detalhe e marca com a atual de edição
+            $this->iniciaDetalhe();
+            // Campo adicional para a multa
             $this->add(1, 1, Util::formatCnab('9', '2', 1)); // Adicional Multa
             $this->add(2, 2, Util::formatCnab('X', '2', 1)); // Cód 2 = Informa Valor em percentual
             $this->add(3, 10, $boleto->getDataVencimento()->format('dmY')); // Data da multa
@@ -243,16 +245,6 @@ class Itau extends AbstractRemessa implements RemessaContract
         }
 
         return $this;
-    }
-    
-    /**
-     * Campo adicional para a multa
-     */
-    protected function iniciaAdicional()
-    {
-        $this->iRegistros++; // Mesmo registro
-        $this->aRegistros[self::DETALHE][$this->iRegistros] = array_fill(0, 400, ' ');
-        $this->atual = &$this->aRegistros[self::DETALHE][$this->iRegistros];
     }
 
     protected function trailer()
