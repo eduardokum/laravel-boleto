@@ -230,6 +230,19 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(392, 393, Util::formatCnab('9', $boleto->getDiasProtesto($boleto->getDiasBaixaAutomatica()), 2));
         $this->add(394, 394, '');
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
+        
+        // Verifica multa
+        if ($boleto->getMulta() > 0) {
+            // Inicia uma nova linha de detalhe e marca com a atual de edição
+            $this->iniciaDetalhe();
+            // Campo adicional para a multa
+            $this->add(1, 1, Util::formatCnab('9', '2', 1)); // Adicional Multa
+            $this->add(2, 2, Util::formatCnab('X', '2', 1)); // Cód 2 = Informa Valor em percentual
+            $this->add(3, 10, $boleto->getDataVencimento()->format('dmY')); // Data da multa
+            $this->add(11, 23, Util::formatCnab('9', Util::nFloat($boleto->getMulta(), 2), 13));
+            $this->add(24, 394, '');
+            $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
+        }
 
         return $this;
     }
