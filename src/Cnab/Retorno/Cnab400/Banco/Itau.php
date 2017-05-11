@@ -1,10 +1,10 @@
 <?php
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco;
 
+use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\AbstractRetorno;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
-use Eduardokum\LaravelBoleto\Util;
 
 class Itau extends AbstractRetorno implements RetornoCnab400
 {
@@ -42,6 +42,12 @@ class Itau extends AbstractRetorno implements RetornoCnab400
         '20' => 'Confirma recebimento de instrução de sustação de protesto /tarifa',
         '21' => 'Confirma recebimento de instrução de não protestar',
         '23' => 'Título enviado a cartório/tarifa',
+        '24' => 'Instrução de protesto rejeitada / sustada / pendente',
+        '25' => 'Alegações do pagador',
+        '26' => 'Tarifa de aviso de cobrança',
+        '27' => 'Tarifa de extrato posição (B40X)',
+        '28' => 'Tarifa de relação das liquidações',
+        '29' => 'Tarifa de manutenção de títulos vencidos',
         '30' => 'Débito mensal de tarifas (para entradas e baixas)',
         '32' => 'Baixa por ter sido protestado',
         '33' => 'Custas de protesto',
@@ -73,11 +79,29 @@ class Itau extends AbstractRetorno implements RetornoCnab400
         '62' => 'Débito mensal de tarifa - aviso de movimentação de títulos (2154)',
         '63' => 'Título sustado judicialmente',
         '64' => 'Entrada confirmada com rateio de crédito',
+        '65' => 'Pagamento com cheque – aguardando compensação',
         '69' => 'Cheque devolvido (nota 20 - tabela 9)',
         '71' => 'Entrada registrada, aguardando avaliação',
         '72' => 'Baixa por crédito em c/c através do sispag sem título correspondente',
         '73' => 'Confirmação de entrada na cobrança simples – entrada não aceita na cobrança contratual',
+        '74' => 'Instrução de negativação expressa rejeitada',
+        '75' => 'Confirmação de recebimento de instrução de entrada em negativação expressa',
         '76' => 'Cheque compensado',
+        '77' => 'Confirmação de recebimento de instrução de exclusão de entrada em negativação expressa',
+        '78' => 'Confirmação de recebimento de instrução de cancelamento de negativação expressa',
+        '79' => 'Negativação expressa informacional',
+        '80' => 'Confirmação de entrada em negativação expressa – tarifa',
+        '82' => 'Confirmação do cancelamento de negativação expressa – tarifa',
+        '83' => 'Confirmação de exclusão de entrada em negativação expressa por liquidação – tarifa',
+        '85' => 'Tarifa por boleto (até 03 envios) cobrança ativa eletrônica',
+        '86' => 'Tarifa email cobrança ativa eletrônica',
+        '87' => 'Tarifa SMS cobrança ativa eletrônica',
+        '88' => 'Tarifa mensal por boleto (até 03 envios) cobrança ativa eletrônica',
+        '89' => 'Tarifa mensal email cobrança ativa eletrônica',
+        '90' => 'Tarifa mensal SMS cobrança ativa eletrônica',
+        '91' => 'Tarifa mensal de exclusão de entrada de negativação expressa',
+        '92' => 'Tarifa mensal de cancelamento de negativação expressa',
+        '93' => 'Tarifa mensal de exclusão de negativação expressa por liquidação',
     ];
 
     /**
@@ -86,12 +110,12 @@ class Itau extends AbstractRetorno implements RetornoCnab400
     protected function init()
     {
         $this->totais = [
-            'liquidados' => 0,
-            'entradas' => 0,
-            'baixados' => 0,
+            'liquidados'  => 0,
+            'entradas'    => 0,
+            'baixados'    => 0,
             'protestados' => 0,
-            'erros' => 0,
-            'alterados' => 0,
+            'erros'       => 0,
+            'alterados'   => 0,
         ];
     }
 
@@ -114,7 +138,8 @@ class Itau extends AbstractRetorno implements RetornoCnab400
     {
         $d = $this->detalheAtual();
 
-        $d->setNossoNumero($this->rem(86, 94, $detalhe))
+        $d->setCarteira($this->rem(83, 85, $detalhe))
+            ->setNossoNumero($this->rem(86, 94, $detalhe))
             ->setNumeroDocumento($this->rem(117, 126, $detalhe))
             ->setNumeroControle($this->rem(38, 62, $detalhe))
             ->setOcorrencia($this->rem(109, 110, $detalhe))
@@ -122,14 +147,14 @@ class Itau extends AbstractRetorno implements RetornoCnab400
             ->setDataOcorrencia($this->rem(111, 116, $detalhe))
             ->setDataVencimento($this->rem(147, 152, $detalhe))
             ->setDataCredito($this->rem(296, 301, $detalhe))
-            ->setValor(Util::nFloat($this->rem(153, 165, $detalhe)/100, 2, false))
-            ->setValorTarifa(Util::nFloat($this->rem(176, 188, $detalhe)/100, 2, false))
-            ->setValorIOF(Util::nFloat($this->rem(215, 227, $detalhe)/100, 2, false))
-            ->setValorAbatimento(Util::nFloat($this->rem(228, 240, $detalhe)/100, 2, false))
-            ->setValorDesconto(Util::nFloat($this->rem(241, 253, $detalhe)/100, 2, false))
-            ->setValorRecebido(Util::nFloat($this->rem(254, 266, $detalhe)/100, 2, false))
-            ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe)/100, 2, false))
-            ->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe)/100, 2, false));
+            ->setValor(Util::nFloat($this->rem(153, 165, $detalhe) / 100, 2, false))
+            ->setValorTarifa(Util::nFloat($this->rem(176, 188, $detalhe) / 100, 2, false))
+            ->setValorIOF(Util::nFloat($this->rem(215, 227, $detalhe) / 100, 2, false))
+            ->setValorAbatimento(Util::nFloat($this->rem(228, 240, $detalhe) / 100, 2, false))
+            ->setValorDesconto(Util::nFloat($this->rem(241, 253, $detalhe) / 100, 2, false))
+            ->setValorRecebido(Util::nFloat($this->rem(254, 266, $detalhe) / 100, 2, false))
+            ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe) / 100, 2, false))
+            ->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe) / 100, 2, false));
 
         if ($d->hasOcorrencia('06', '07', '08', '10', '59')) {
             $this->totais['liquidados']++;
@@ -160,7 +185,7 @@ class Itau extends AbstractRetorno implements RetornoCnab400
     {
         $this->getTrailer()
             ->setQuantidadeTitulos((int) $this->rem(18, 25, $trailer) + (int) $this->rem(58, 65, $trailer) + (int) $this->rem(178, 185, $trailer))
-            ->setValorTitulos((float) Util::nFloat($this->rem(221, 234, $trailer)/100, 2, false))
+            ->setValorTitulos((float) Util::nFloat($this->rem(221, 234, $trailer) / 100, 2, false))
             ->setQuantidadeErros((int) $this->totais['erros'])
             ->setQuantidadeEntradas((int) $this->totais['entradas'])
             ->setQuantidadeLiquidados((int) $this->totais['liquidados'])
