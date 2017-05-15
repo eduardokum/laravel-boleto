@@ -199,9 +199,9 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(12, 19, Util::formatCnab('X', 'COBRANCA', 8));
         $this->add(20, 26, '');
         $this->add(27, 30, Util::formatCnab('9', $this->getAgencia(), 4));
-        $this->add(31, 31, Util::modulo11($this->getAgencia()));
+        $this->add(31, 31, Util::modulo11($this->getAgencia(), 2, 9, 0, 'X'));
         $this->add(32, 39, Util::formatCnab('9', $this->getConta(), 8));
-        $this->add(40, 40, Util::formatCnab('9', $this->getContaDv(), 1));
+        $this->add(40, 40, Util::formatCnab('X', $this->getContaDv() ?: Util::modulo11($this->getContaDv(), 2, 9, 0, 'X'), 1));
         $this->add(41, 46, '000000');
         $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(77, 79, $this->getCodigoBanco());
@@ -224,9 +224,9 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(2, 3, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? '02' : '01');
         $this->add(4, 17, Util::formatCnab('9L', $this->getBeneficiario()->getDocumento(), 14));
         $this->add(18, 21, Util::formatCnab('9', $this->getAgencia(), 4));
-        $this->add(22, 22, Util::modulo11($this->getAgencia()));
+        $this->add(22, 22, Util::modulo11($this->getAgencia(), 2, 9, 0, 'X'));
         $this->add(23, 30, Util::formatCnab('9', $this->getConta(), 8));
-        $this->add(31, 31, Util::formatCnab('9', $this->getContaDv(), 1));
+        $this->add(31, 31, Util::formatCnab('X', $this->getContaDv() ?: Util::modulo11($this->getContaDv(), 2, 9, 0, 'X'), 1));
         $this->add(32, 38, Util::formatCnab('9', $this->getConvenio(), 7));
         $this->add(39, 63, Util::formatCnab('X', $boleto->getNumeroControle(), 25)); // numero de controle
         $this->add(64, 80, $boleto->getNossoNumero());
@@ -260,6 +260,9 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(159, 160, self::INSTRUCAO_SEM);
         $diasProtesto = '00';
         $const = sprintf('self::INSTRUCAO_PROTESTAR_VENC_%02s', $boleto->getDiasProtesto());
+
+        $juros = 0;
+
         if ($boleto->getStatus() != $boleto::STATUS_BAIXA) {
             if (defined($const)) {
                 $this->add(157, 158, constant($const));
@@ -267,13 +270,14 @@ class Bb extends AbstractRemessa implements RemessaContract
                 $this->add(157, 158, self::INSTRUCAO_PROTESTAR_VENC_XX);
                 $diasProtesto = Util::formatCnab('9', $boleto->getDiasProtesto(), 2, 0);
             }
-            $juros = 0;
+
             if ($boleto->getJuros() > 0) {
                 $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
             }
         }
+
         $this->add(161, 173, Util::formatCnab('9', $juros, 13, 2));
-        $this->add(174, 179, $boleto->getDataDesconto()->format('dmy'));
+        $this->add(174, 179, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmy') : '000000');
         $this->add(180, 192, Util::formatCnab('9', $boleto->getDesconto(), 13, 2));
         $this->add(193, 205, Util::formatCnab('9', 0, 13, 2));
         $this->add(206, 218, Util::formatCnab('9', 0, 13, 2));
