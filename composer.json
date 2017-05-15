@@ -16,6 +16,7 @@
     "require": {
         "php" : ">=5.5.0",
         "ext-intl": "*",
+        "ext-mbstring": "*",
         "itbz/fpdf": "^1.7",
         "nesbot/carbon": "1.*",
         "illuminate/contracts": "~5.1",

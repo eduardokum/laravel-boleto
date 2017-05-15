@@ -71,7 +71,7 @@ class Bb extends AbstractRemessa implements RemessaContract
     public function __construct(array $params = [])
     {
         parent::__construct($params);
-        $this->addCampoObrigatorio('convenio', 'convenioLider');
+        $this->addCampoObrigatorio('contaDv', 'convenio', 'convenioLider');
     }
 
 
@@ -199,9 +199,9 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(12, 19, Util::formatCnab('X', 'COBRANCA', 8));
         $this->add(20, 26, '');
         $this->add(27, 30, Util::formatCnab('9', $this->getAgencia(), 4));
-        $this->add(31, 31, Util::modulo11($this->getAgencia()));
+        $this->add(31, 31, Util::modulo11($this->getAgencia(), 2, 9, 0, 'X'));
         $this->add(32, 39, Util::formatCnab('9', $this->getConta(), 8));
-        $this->add(40, 40, Util::formatCnab('9', $this->getContaDv(), 1));
+        $this->add(40, 40, Util::formatCnab('X', $this->getContaDv(), 1));
         $this->add(41, 46, '000000');
         $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(77, 79, $this->getCodigoBanco());
@@ -224,9 +224,9 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(2, 3, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? '02' : '01');
         $this->add(4, 17, Util::formatCnab('9L', $this->getBeneficiario()->getDocumento(), 14));
         $this->add(18, 21, Util::formatCnab('9', $this->getAgencia(), 4));
-        $this->add(22, 22, Util::modulo11($this->getAgencia()));
+        $this->add(22, 22, Util::modulo11($this->getAgencia(), 2, 9, 0, 'X'));
         $this->add(23, 30, Util::formatCnab('9', $this->getConta(), 8));
-        $this->add(31, 31, Util::formatCnab('9', $this->getContaDv(), 1));
+        $this->add(31, 31, Util::formatCnab('X', $this->getContaDv(), 1));
         $this->add(32, 38, Util::formatCnab('9', $this->getConvenio(), 7));
         $this->add(39, 63, Util::formatCnab('X', $boleto->getNumeroControle(), 25)); // numero de controle
         $this->add(64, 80, $boleto->getNossoNumero());
