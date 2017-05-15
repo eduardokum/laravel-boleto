@@ -188,7 +188,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(161, 166, Util::formatCnab('9', 0, 6, 4));
         $this->add(167, 172, Util::formatCnab('9', $juros, 6, 4));
         $this->add(173, 173, '2'); //Tipo de distribuição: 1 - Cooperativa 2 - Cliente
-        $this->add(174, 179, $boleto->getDataDesconto()->format('dmy'));
+        $this->add(174, 179, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmy') : '000000');
         $this->add(180, 192, Util::formatCnab('9', $boleto->getDesconto(), 13, 2));
         $this->add(193, 193, '9');
         $this->add(194, 205, Util::formatCnab('9', 0, 12, 2));
