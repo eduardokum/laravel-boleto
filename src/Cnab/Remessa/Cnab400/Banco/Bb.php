@@ -71,7 +71,7 @@ class Bb extends AbstractRemessa implements RemessaContract
     public function __construct(array $params = [])
     {
         parent::__construct($params);
-        $this->addCampoObrigatorio('contaDv', 'convenio', 'convenioLider');
+        $this->addCampoObrigatorio('convenio', 'convenioLider');
     }
 
 
