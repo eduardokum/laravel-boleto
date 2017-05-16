@@ -2,6 +2,7 @@
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto;
 use Eduardokum\LaravelBoleto\Util;
@@ -60,7 +61,8 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        return Util::numberFormatGeral($this->getNumero(), 11);
+        return Util::numberFormatGeral($this->getNumero(), 11)
+            . CalculoDV::bradescoNossoNumero($this->getCarteira(), $this->getNumero());
     }
 
     /**
@@ -88,9 +90,7 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
      */
     public function getNossoNumeroBoleto()
     {
-        return Util::numberFormatGeral($this->getCarteira(), 2)
-        . ' / ' . $this->getNossoNumero()
-        . '-' . Util::modulo11($this->getCarteira() . $this->getNossoNumero(), 2, 7, 0, 'P');
+        return Util::numberFormatGeral($this->getCarteira(), 2) . ' / ' .  substr_replace($this->getNossoNumero(), '-', -1, 0);
     }
     /**
      * Método para gerar o código da posição de 20 a 44
@@ -104,7 +104,7 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
         }
         return $this->campoLivre = Util::numberFormatGeral($this->getAgencia(), 4) .
         Util::numberFormatGeral($this->getCarteira(), 2) .
-        Util::numberFormatGeral($this->getNossoNumero(), 11) .
+        Util::numberFormatGeral($this->getNumero(), 11) .
         Util::numberFormatGeral($this->getConta(), 7) .
         '0';
     }

@@ -2,12 +2,17 @@
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
 
 class Bnb extends AbstractBoleto implements BoletoContract
 {
-
+    public function __construct(array $params = [])
+    {
+        parent::__construct($params);
+        $this->setCamposObrigatorios('contaDv');
+    }
     /**
      * Local de pagamento
      *
@@ -48,30 +53,6 @@ class Bnb extends AbstractBoleto implements BoletoContract
         'RC' => '05'
     ];
     /**
-     * Dígito verificador da carteira/nosso número para impressão no boleto
-     *
-     * @var int
-     */
-    protected $carteiraDv;
-    /**
-     * @return int
-     */
-    public function getCarteiraDv()
-    {
-        return $this->carteiraDv;
-    }
-
-    /**
-     * @param integer $carteiraDv
-     *
-     * @return $this
-     */
-    public function setCarteiraDv($carteiraDv)
-    {
-        $this->carteiraDv = $carteiraDv;
-        return $this;
-    }
-    /**
      * Seta dias para baixa automática
      *
      * @param int $baixaAutomatica
@@ -97,10 +78,8 @@ class Bnb extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        $this->getCampoLivre(); // Força o calculo do DV.
         $numero_boleto = $this->getNumero();
-        //return Util::numberFormatGeral($numero_boleto, 8) . $this->getCarteiraDv();
-        return Util::numberFormatGeral($numero_boleto, 8);
+        return Util::numberFormatGeral($numero_boleto, 7) . CalculoDV::bnbNossoNumero($this->getNumero());
     }
     /**
      * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
@@ -109,13 +88,9 @@ class Bnb extends AbstractBoleto implements BoletoContract
      */
     public function getNossoNumeroBoleto()
     {
-        return $this->getNossoNumero() . '-' . Util::modulo11($this->getNossoNumero());
+        return substr_replace($this->getNossoNumero(), '-', -1, 0);
     }
-    
-    public function getNossoNumeroDv() {
-        return Util::modulo11(Util::numberFormatGeral($this->getNumero(), 7));
-    }
-    
+
     /**
      * Método para gerar o código da posição de 20 a 44
      *
@@ -127,15 +102,12 @@ class Bnb extends AbstractBoleto implements BoletoContract
         if ($this->campoLivre) {
             return $this->campoLivre;
         }
-        $numero_boleto = Util::numberFormatGeral($this->getNumero(), 7);
-        $dvNossoNumero = Util::numberFormatGeral($this->getNossoNumeroDv(), 1);
+        $nosso_numero = $this->getNossoNumero();
         $carteira = Util::numberFormatGeral($this->getCarteira(), 2);
         $agencia = Util::numberFormatGeral($this->getAgencia(), 4);
         $conta = Util::numberFormatGeral($this->getConta(), 7);
         $dvContaCedente = Util::numberFormatGeral($this->getContaDv(), 1);
-        $dvAgContaCarteira = Util::modulo10($agencia . $conta . $carteira . $numero_boleto);
-        $this->setCarteiraDv($dvAgContaCarteira);
 
-        return $this->campoLivre = $agencia . $conta . $dvContaCedente . $numero_boleto . $dvNossoNumero . $carteira . '000';
+        return $this->campoLivre = $agencia . $conta . $dvContaCedente . $nosso_numero . $carteira . '000';
     }
 }

@@ -119,8 +119,7 @@ class Bnb extends AbstractRemessa implements RemessaContract
         $this->add(32, 33, Util::formatCnab('9', round($boleto->getMulta()), 2)); // Só aceita números inteiros
         $this->add(34, 37, '');
         $this->add(38, 62, Util::formatCnab('X', $boleto->getNumeroControle(), 25)); // Numero de controle
-        $this->add(63, 69, Util::formatCnab('9', $boleto->getNumero(), 7));
-        $this->add(70, 70, Util::formatCnab('9', Util::modulo11( Util::numberFormatGeral($boleto->getNumero(), 7) ), 1)); // Nosso número DV
+        $this->add(63, 70, Util::formatCnab('9', $boleto->getNossoNumero(), 8));
         $this->add(71, 80, '0000000000');
         $this->add(81, 86, '000000'); // Data segundo desconto
         $this->add(87, 99, Util::formatCnab('9', '0', 13)); // Segundo desconto

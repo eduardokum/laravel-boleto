@@ -2,6 +2,7 @@
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
 
@@ -55,30 +56,6 @@ class Itau extends AbstractBoleto implements BoletoContract
         'CPS' => '17',
     ];
     /**
-     * Dígito verificador da carteira/nosso número para impressão no boleto
-     *
-     * @var int
-     */
-    protected $carteiraDv;
-    /**
-     * @return int
-     */
-    public function getCarteiraDv()
-    {
-        return $this->carteiraDv;
-    }
-
-    /**
-     * @param integer $carteiraDv
-     *
-     * @return $this
-     */
-    public function setCarteiraDv($carteiraDv)
-    {
-        $this->carteiraDv = $carteiraDv;
-        return $this;
-    }
-    /**
      * Seta dias para baixa automática
      *
      * @param int $baixaAutomatica
@@ -104,9 +81,12 @@ class Itau extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        $this->getCampoLivre(); // Força o calculo do DV.
-        $numero_boleto = $this->getNumero();
-        return Util::numberFormatGeral($numero_boleto, 8) . $this->getCarteiraDv();
+        $numero_boleto = Util::numberFormatGeral($this->getNumero(), 8);
+        $carteira = Util::numberFormatGeral($this->getCarteira(), 3);
+        $agencia = Util::numberFormatGeral($this->getAgencia(), 4);
+        $conta = Util::numberFormatGeral($this->getConta(), 5);
+        $dv = CalculoDV::itauNossoNumero($agencia, $conta, $carteira, $numero_boleto);
+        return $numero_boleto . $dv;
     }
     /**
      * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
@@ -128,14 +108,11 @@ class Itau extends AbstractBoleto implements BoletoContract
         if ($this->campoLivre) {
             return $this->campoLivre;
         }
-        $numero_boleto = Util::numberFormatGeral($this->getNumero(), 8);
+        $nosso_numero = Util::numberFormatGeral($this->getNossoNumero(), 9);
         $carteira = Util::numberFormatGeral($this->getCarteira(), 3);
         $agencia = Util::numberFormatGeral($this->getAgencia(), 4);
         $conta = Util::numberFormatGeral($this->getConta(), 5);
-        $dvAgContaCarteira = Util::modulo10($agencia . $conta . $carteira . $numero_boleto);
-        $this->setCarteiraDv($dvAgContaCarteira);
-        // Módulo 10 Agência/Conta
-        $dvAgConta = Util::modulo10($agencia . $conta);
-        return $this->campoLivre = $carteira . $numero_boleto . $dvAgContaCarteira . $agencia . $conta . $dvAgConta . '000';
+        $dvAgConta = CalculoDV::itauContaCorrente($agencia, $conta);
+        return $this->campoLivre = $carteira . $nosso_numero . $agencia . $conta . $dvAgConta . '000';
     }
 }

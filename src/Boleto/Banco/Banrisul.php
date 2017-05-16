@@ -3,6 +3,7 @@
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
 
@@ -42,26 +43,6 @@ class Banrisul extends AbstractBoleto implements BoletoContract
     protected $carteiras = ['1', '2', '3', '4', '5', '6', '7', '8', 'C', 'D', 'E', 'F', 'H', 'I', 'K', 'M', 'N', 'R', 'S', 'X'];
 
     /**
-     * Gera o Duplo digito do nosso npumero
-     *
-     * @param  $nossoNumero
-     * @return int
-     */
-    private function duploDigitoBanrisul($nossoNumero)
-    {
-        $dv1 = Util::modulo10($nossoNumero);
-        $dv2 = Util::modulo11($nossoNumero . $dv1, 2, 7, 0, 10);
-        if ($dv2 == 10) {
-            $dv1++;
-            $dv2 = Util::modulo11($nossoNumero . $dv1, 2, 7, 0, 10);
-            if ($dv1 > 9) {
-                $dv1 = 0;
-            }
-        }
-        return $dv1 . $dv2;
-    }
-
-    /**
      * Seta dias para baixa automática
      *
      * @param int $baixaAutomatica
@@ -88,7 +69,7 @@ class Banrisul extends AbstractBoleto implements BoletoContract
     {
         $numero_boleto = $this->getNumero();
         $nossoNumero = Util::numberFormatGeral($numero_boleto, 8)
-            . $this->duploDigitoBanrisul(Util::numberFormatGeral($numero_boleto, 8));
+            . CalculoDV::banrisulNossoNumero(Util::numberFormatGeral($numero_boleto, 8));
         return $nossoNumero;
     }
     /**
@@ -98,8 +79,7 @@ class Banrisul extends AbstractBoleto implements BoletoContract
      */
     public function getNossoNumeroBoleto()
     {
-        $nn = $this->getNossoNumero();
-        return substr($nn, 0, -2) . '-' . substr($nn, -2);
+        return substr_replace($this->getNossoNumero(), '-', -2, 0);
     }
     /**
      * Método para gerar o código da posição de 20 a 44
@@ -132,7 +112,7 @@ class Banrisul extends AbstractBoleto implements BoletoContract
         $this->campoLivre .= '40';
 
         // Duplo digito => 43 - 44 | Valor: calculado(00) ´2´
-        $this->campoLivre .= $this->duploDigitoBanrisul(Util::onlyNumbers($this->campoLivre));
+        $this->campoLivre .= CalculoDV::banrisulDuploDigito(Util::onlyNumbers($this->campoLivre));
         return $this->campoLivre;
     }
 }
