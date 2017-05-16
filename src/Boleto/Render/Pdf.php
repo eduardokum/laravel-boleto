@@ -166,7 +166,7 @@ class Pdf extends AbstractPdf implements PdfContract
         $this->Cell(50, $this->desc, $this->_('(=) Valor Cobrado'), 'TR', 1);
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-        $this->Cell(30, $this->cell, $this->_(''), 'LR');
+        $this->Cell(30, $this->cell, $this->_(Util::nReal($this->boleto[$i]->getDesconto())), 'LR');
         $this->Cell(30, $this->cell, $this->_(''), 'R');
         $this->Cell(30, $this->cell, $this->_(''), 'R');
         $this->Cell(30, $this->cell, $this->_(''), 'R');
@@ -287,7 +287,7 @@ class Pdf extends AbstractPdf implements PdfContract
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
         $this->Cell(120, $this->cell, $this->_(''), 'LR');
-        $this->Cell(50, $this->cell, $this->_(''), 'R', 1);
+        $this->Cell(50, $this->cell, $this->_(Util::nReal($this->boleto[$i]->getDesconto())), 'R', 1);
 
         $this->Cell(120, $this->desc, $this->_(''), 'LR');
         $this->Cell(50, $this->desc, $this->_('(-) Outras deduções'), 'TR', 1);
