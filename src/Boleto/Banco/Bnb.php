@@ -8,11 +8,6 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Bnb extends AbstractBoleto implements BoletoContract
 {
-    public function __construct(array $params = [])
-    {
-        parent::__construct($params);
-        $this->setCamposObrigatorios('contaDv');
-    }
     /**
      * Local de pagamento
      *
@@ -106,7 +101,7 @@ class Bnb extends AbstractBoleto implements BoletoContract
         $carteira = Util::numberFormatGeral($this->getCarteira(), 2);
         $agencia = Util::numberFormatGeral($this->getAgencia(), 4);
         $conta = Util::numberFormatGeral($this->getConta(), 7);
-        $dvContaCedente = Util::numberFormatGeral($this->getContaDv(), 1);
+        $dvContaCedente = $this->getContaDv() ?: CalculoDV::bnbContaCorrente($this->getAgencia(), $this->getConta());
 
         return $this->campoLivre = $agencia . $conta . $dvContaCedente . $nosso_numero . $carteira . '000';
     }
