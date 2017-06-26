@@ -8,6 +8,7 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco;
 
+use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
@@ -140,9 +141,9 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(18, 21, Util::formatCnab(9, $this->getAgencia(), 4)); // Agência do cedente
         $this->add(22, 22, Util::formatCnab(9, '', 1)); // Digito verificador da Agência do cedente
         $this->add(23, 31, Util::formatCnab(9, $this->getConta(), 9)); // Numero da conta corrente
-        $this->add(32, 32, Util::formatCnab(9, $this->getContaDv(), 1)); // Digito verificador da conta corrente
+        $this->add(32, 32, $this->getContaDv() ?: CalculoDV::santanderContaCorrente($this->getAgencia(), $this->getConta())); // Digito verificador da conta corrente
         $this->add(33, 41, Util::formatCnab(9, $this->getConta(), 9)); // Conta Cobrança
-        $this->add(42, 42, Util::formatCnab(9, $this->getContaDv(), 1)); // Digito  da Conta Cobrança
+        $this->add(42, 42, $this->getContaDv() ?: CalculoDV::santanderContaCorrente($this->getAgencia(), $this->getConta())); // Digito  da Conta Cobrança
         $this->add(43, 44, ''); // Reservado (Uso Banco)
 
         $this->add(45, 57, Util::formatCnab(9, $boleto->getNossoNumero(), 13)); // Nosso Número

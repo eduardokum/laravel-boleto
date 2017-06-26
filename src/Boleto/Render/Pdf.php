@@ -39,8 +39,9 @@ class Pdf extends AbstractPdf implements PdfContract
     public function __construct()
     {
         parent::__construct('P', 'mm', 'A4');
+        $this->SetAutoPageBreak(false);
         $this->SetLeftMargin(20);
-        $this->SetTopMargin(5);
+        $this->SetTopMargin(15);
         $this->SetRightMargin(20);
         $this->SetLineWidth($this->small);
     }
@@ -54,6 +55,8 @@ class Pdf extends AbstractPdf implements PdfContract
     {
         $this->SetFont($this->PadraoFont, '', 8);
         if ($this->totalBoletos > 1) {
+            $this->SetAutoPageBreak(true);
+            $this->SetY(5);
             $this->Cell(30, 10, date('d/m/Y H:i:s'));
             $this->Cell(0, 10, "Boleto " . ($i + 1) . " de " . $this->totalBoletos, 0, 1, 'R');
         }
@@ -61,14 +64,14 @@ class Pdf extends AbstractPdf implements PdfContract
         $this->SetFont($this->PadraoFont, 'B', 8);
         if($this->showInstrucoes) {
             $this->Cell(0, 5, $this->_('Instruções de Impressão'), 0, 1, 'C');
-            $this->Ln(3);
+            $this->Ln(5);
             $this->SetFont($this->PadraoFont, '', 6);
             $this->Cell(0, $this->desc, $this->_('- Imprima em impressora jato de tinta (ink jet) ou laser em qualidade normal ou alta (Não use modo econômico).'), 0, 1, 'L');
             $this->Cell(0, $this->desc, $this->_('- Utilize folha A4 (210 x 297 mm) ou Carta (216 x 279 mm) e margens mínimas à esquerda e à direita do formulário.'), 0, 1, 'L');
             $this->Cell(0, $this->desc, $this->_('- Corte na linha indicada. Não rasure, risque, fure ou dobre a região onde se encontra o código de barras.'), 0, 1, 'L');
             $this->Cell(0, $this->desc, $this->_('- Caso não apareça o código de barras no final, clique em F5 para atualizar esta tela.'), 0, 1, 'L');
             $this->Cell(0, $this->desc, $this->_('- Caso tenha problemas ao imprimir, copie a seqüencia numérica abaixo e pague no caixa eletrônico ou no internet banking:'), 0, 1, 'L');
-            $this->Ln(4);
+            $this->Ln(6);
 
             $this->SetFont($this->PadraoFont, '', $this->fcel);
             $this->Cell(25, $this->cell, $this->_('Linha Digitável: '), 0, 0);
@@ -183,7 +186,7 @@ class Pdf extends AbstractPdf implements PdfContract
         $this->Cell(0, $this->desc, $this->_('Autenticação mecânica'), 0, 1, 'R');
         $this->Ln(2);
 
-        $pulaLinha = 16;
+        $pulaLinha = 26;
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
         if (count($this->boleto[$i]->getDescricaoDemonstrativo()) > 0) {
@@ -372,9 +375,9 @@ class Pdf extends AbstractPdf implements PdfContract
      */
     protected function codigoBarras($i)
     {
-        $this->Ln(2);
+        $this->Ln(3);
         $this->Cell(0, 15, '', 0, 1, 'L');
-        $this->i25($this->GetX(), $this->GetY() - 15, $this->boleto[$i]->getCodigoBarras(), 0.8, 15);
+        $this->i25($this->GetX(), $this->GetY() - 15, $this->boleto[$i]->getCodigoBarras(), 0.8, 17);
     }
 
     /**

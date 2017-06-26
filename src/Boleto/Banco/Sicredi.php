@@ -2,6 +2,7 @@
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
 
@@ -149,14 +150,11 @@ class Sicredi extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        $agencia = Util::numberFormatGeral($this->getAgencia(), 4);
-        $posto = Util::numberFormatGeral($this->getPosto(), 2);
-        $conta = Util::numberFormatGeral($this->getConta(), 5);
         $ano = $this->getDataDocumento()->format('y');
         $byte = $this->getByte();
         $numero_boleto = Util::numberFormatGeral($this->getNumero(), 5);
-        $dv = $agencia . $posto . $conta . $ano . $byte . $numero_boleto;
-        $nossoNumero = $ano . $byte . $numero_boleto . Util::modulo11($dv);
+        $nossoNumero = $ano . $byte . $numero_boleto
+            . CalculoDV::sicrediNossoNumero($this->getAgencia(), $this->getPosto(), $this->getConta(), $ano, $byte, $numero_boleto);
         return $nossoNumero;
     }
     /**
@@ -186,22 +184,8 @@ class Sicredi extends AbstractBoleto implements BoletoContract
         $agencia = Util::numberFormatGeral($this->getAgencia(), 4);
         $posto = Util::numberFormatGeral($this->getPosto(), 2);
         $conta = Util::numberFormatGeral($this->getConta(), 5);
-        $possui_valor = $this->getValor() > 0 ? '1' : '0';
 
-        $campo_livre = $tipo_cobranca . $carteira . $nosso_numero . $agencia . $posto . $conta . $possui_valor . '0';
-        return $this->campoLivre = $campo_livre . Util::modulo11($campo_livre);
+        $this->campoLivre = $tipo_cobranca . $carteira . $nosso_numero . $agencia . $posto . $conta . '10';
+        return $this->campoLivre .= Util::modulo11($this->campoLivre);
     }
-
-    /**
-     * Retorna o código do banco com o dígito verificador ('X') para o banco Sicredi
-     *
-     * @return string
-     */
-    public function getCodigoBancoComDv()
-    {
-        $codigoBanco = $this->getCodigoBanco();
-
-        return $codigoBanco . '-' . 'X';
-    }
-
 }

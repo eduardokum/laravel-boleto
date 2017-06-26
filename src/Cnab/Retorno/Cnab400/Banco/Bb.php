@@ -217,7 +217,7 @@ class Bb extends AbstractRetorno implements RetornoCnab400
         } elseif ($d->hasOcorrencia('02')) {
             $this->totais['entradas']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_ENTRADA);
-        } elseif ($d->hasOcorrencia('09')) {
+        } elseif ($d->hasOcorrencia('09', '10')) {
             $this->totais['baixados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_BAIXADA);
         } elseif ($d->hasOcorrencia('61')) {
