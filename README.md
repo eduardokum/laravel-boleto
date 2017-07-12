@@ -42,11 +42,15 @@ Banco | Boleto | Remessa 400 | Remessa 240 | Retorno 400 | Retorno 240
 ## Instalação
 Via composer:
 
+```
 composer require eduardokum/laravel-boleto
+```
 
 Ou adicione manualmente ao seu composer.json:
 
+```
 "eduardokum/laravel-boleto": "dev-master"
+```
 
 ## Gerar boleto
 
@@ -123,15 +127,15 @@ $boleto->renderPDF();
 // ou
 $boleto->renderHTML();
 
-// Os dois métodos aceita como parâmetro 2 boleano.
-// 1º Se True após renderizado irá mostrar a janela de impressão. O Valor default é false.
-// 2º Se False irá esconder as instruções de impressão. O valor default é true
+// Os dois métodos aceitam como parâmetro dois booleanos.
+// 1º Se True, após renderizado, irá mostrar a janela de impressão. O Valor default é false.
+// 2º Se False, irá esconder as instruções de impressão. O valor default é true.
 $boleto->renderPDF(true, false); // mostra a janela de impressão e esconde as instruções de impressão
 ```
 ```php
 /*
- * O comportamento padrão para os métodos renderPDF e renderHTM é retornar uma string pura.
- * Para gerar um retorno no controller do laravel utilize da seguinte forma:
+ * O comportamento padrão para os métodos renderPDF() e renderHTML() é retornar uma string pura.
+ * Para gerar um retorno no controller do laravel, utilize da seguinte forma:
  */
 
 // PDF
@@ -153,7 +157,7 @@ return response($boleto->renderHTML());
 $pdf = new Eduardokum\LaravelBoleto\Boleto\Render\Pdf();
 
 $pdf->addBoleto($boleto);
-// Ou para adicionar um array de boletos
+// Ou, para adicionar um array de boletos
 $pdf->addBoletos($boletos);
 
 // Quando não informado parâmetros ele se comportará como Pdf::OUTPUT_STANDARD, enviando o buffer do pdf com os headers apropriados.
@@ -165,9 +169,9 @@ $pdf->showPrint();
 // Para remover as intruções de impressão
 $pdf->hideInstrucoes();
 
-// O método gerarBoleto da classe PDF aceita como parâmetro:
+// O método gerarBoleto() da classe PDF aceita como parâmetro:
 //	1º destino: constante com os destinos disponíveis. Ex: Pdf::OUTPUT_SAVE.
-//	2º path: caminho absoluto para salvar o pdf quando destino for Pdf::OUTPUT_SAVE.
+//	2º path: caminho absoluto para salvar o pdf quando o destino for Pdf::OUTPUT_SAVE.
 //Ex:
 $pdf->gerarBoleto(Pdf::OUTPUT_SAVE, storage_path('app/boletos/meu_boleto.pdf')); // salva o boleto na pasta.
 $pdf_inline = $pdf->gerarBoleto(Pdf::OUTPUT_STRING); // retorna o boleto em formato string.
@@ -207,7 +211,7 @@ $remessaArray = [
 
 $remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Bb($remessaArray);
 
-// Adicionar um boleto.
+// Adicionar um boleto
 $remessa->addBoleto($boleto);
 
 // Ou para adicionar um array de boletos
@@ -227,7 +231,7 @@ $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make('full_path_arqui
 $retorno->processar();
 echo $retorno->getBancoNome();
 
-// Retorno implementa \SeekableIterator sendo assim podemos utilizar o foreach da seguinte forma:
+// Retorno implementa \SeekableIterator, sendo assim, podemos utilizar o foreach da seguinte forma:
 foreach($retorno as $registro) {
 	var_dump($registro->toArray());
 }
