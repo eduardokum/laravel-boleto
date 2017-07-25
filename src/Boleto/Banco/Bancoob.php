@@ -102,4 +102,15 @@ class Bancoob extends AbstractBoleto implements BoletoContract
 
         return $this->campoLivre = $campoLivre;
     }
+    
+    /**
+     * Agência/Código do Beneficiário: Informar o prefixo da agência e o código de associado/cliente.
+     * Estes dados constam na planilha "Capa" deste arquivo. O código de cliente não deve ser
+     * confundido com o número da conta corrente, pois são códigos diferentes.
+     * @return string
+     */
+    public function getAgenciaCodigoBeneficiario(){
+        return $this->getAgencia() . ' / ' . $this->getConvenio();
+    }
+    
 }
