@@ -2,6 +2,7 @@
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
 
@@ -125,9 +126,8 @@ class Santander  extends AbstractBoleto implements BoletoContract
     protected function gerarNossoNumero()
     {
         $numero_boleto = $this->getNumero();
-        $nossoNumero = Util::numberFormatGeral($numero_boleto, 12);
-        $nossoNumero .= Util::modulo11($numero_boleto);
-        return $nossoNumero;
+        return Util::numberFormatGeral($numero_boleto, 12)
+            . CalculoDV::santanderNossoNumero($numero_boleto);
     }
     /**
      * Método para gerar o código da posição de 20 a 44
@@ -139,9 +139,9 @@ class Santander  extends AbstractBoleto implements BoletoContract
         if ($this->campoLivre) {
             return $this->campoLivre;
         }
-        return $this->campoLivre = '9' . Util::numberFormatGeral($this->getConta(), 7) .
-        $this->getNossoNumero() .
-        Util::numberFormatGeral($this->getIos(), 1) .
-        Util::numberFormatGeral($this->getCarteira(), 3);
+        return $this->campoLivre = '9' . Util::numberFormatGeral($this->getConta(), 7)
+            . Util::numberFormatGeral($this->getNossoNumero(), 13)
+            . Util::numberFormatGeral($this->getIos(), 1)
+            . Util::numberFormatGeral($this->getCarteira(), 3);
     }
 }

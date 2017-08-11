@@ -66,7 +66,6 @@ final class Util
         'M03' => 'Banco Fiat S.A.',
         '224' => 'Banco Fibra S.A.',
         '626' => 'Banco Ficsa S.A.',
-        '394' => 'Banco Finasa BMC S.A.',
         'M18' => 'Banco Ford S.A.',
         'M07' => 'Banco GMAC S.A.',
         '612' => 'Banco Guanabara S.A.',
@@ -148,7 +147,7 @@ final class Util
      */
     public static function upper($string)
     {
-        return strtr(strtoupper($string), "àáâãäåæçèéêëìíîïðñòóôõö÷øùüúþÿ", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÜÚÞß");
+        return strtr(mb_strtoupper($string), "àáâãäåæçèéêëìíîïðñòóôõö÷øùüúþÿ", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÜÚÞß");
     }
 
     /**
@@ -160,7 +159,7 @@ final class Util
      */
     public static function lower($string)
     {
-        return strtr(strtolower($string), "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÜÚÞß", "àáâãäåæçèéêëìíîïðñòóôõö÷øùüúþÿ");
+        return strtr(mb_strtolower($string), "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÜÚÞß", "àáâãäåæçèéêëìíîïðñòóôõö÷øùüúþÿ");
     }
 
     /**
@@ -333,14 +332,14 @@ final class Util
             return '';
         }
         $pontuacao = preg_replace('/[0-9]/', '', $number);
-        $locale = (substr($pontuacao, -1, 1) == ',') ? "pt-BR" : "en-US";
+        $locale = (mb_substr($pontuacao, -1, 1) == ',') ? "pt-BR" : "en-US";
         $formater = new \NumberFormatter($locale, \NumberFormatter::DECIMAL);
 
         if ($decimals === false) {
             $decimals = 2;
             preg_match_all('/[0-9][^0-9]([0-9]+)/', $number, $matches);
             if (!empty($matches[1])) {
-                $decimals = strlen(rtrim($matches[1][0], 0));
+                $decimals = mb_strlen(rtrim($matches[1][0], 0));
             }
         }
 
@@ -367,7 +366,7 @@ final class Util
             $decimals = 2;
             preg_match_all('/[0-9][^0-9]([0-9]+)/', $number, $matches);
             if (!empty($matches[1])) {
-                $decimals = strlen(rtrim($matches[1][0], 0));
+                $decimals = mb_strlen(rtrim($matches[1][0], 0));
             }
         }
         $formater->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, $decimals);
@@ -429,9 +428,9 @@ final class Util
         $maskared = '';
         $k = 0;
         if (is_numeric($val)) {
-            $val = sprintf('%0' . strlen(preg_replace('/[^#]/', '', $mask)) . 's', $val);
+            $val = sprintf('%0' . mb_strlen(preg_replace('/[^#]/', '', $mask)) . 's', $val);
         }
-        for ($i = 0; $i <= strlen($mask) - 1; $i++) {
+        for ($i = 0; $i <= mb_strlen($mask) - 1; $i++) {
             if ($mask[$i] == '#') {
                 if (isset($val[$k])) {
                     $maskared .= $val[$k++];
@@ -456,7 +455,7 @@ final class Util
     public static function numberFormatGeral($n, $loop, $insert = 0)
     {
         // Removo os caracteras a mais do que o pad solicitado caso a string seja maior
-        $n = substr(self::onlyNumbers($n), 0, $loop);
+        $n = mb_substr(self::onlyNumbers($n), 0, $loop);
         return str_pad($n, $loop, $insert, STR_PAD_LEFT);
     }
 
@@ -485,11 +484,11 @@ final class Util
         } elseif (in_array($tipo, array('A', 'X'))) {
             $left = '-';
             $type = 's';
-            $valor = strtoupper(self::normalizeChars($valor));
+            $valor = self::upper(self::normalizeChars($valor));
         } else {
             throw new \Exception('Tipo inválido');
         }
-        return sprintf("%{$left}{$sFill}{$tamanho}{$type}", substr($valor, 0, $tamanho));
+        return sprintf("%{$left}{$sFill}{$tamanho}{$type}", mb_substr($valor, 0, $tamanho));
     }
 
     /**
@@ -514,7 +513,7 @@ final class Util
     {
         $date = ($date instanceof Carbon) ? $date : Carbon::createFromFormat($format, $date);
         $dateDiff = $date->copy()->day(31)->month(12)->subYear(1)->diffInDays($date);
-        return $dateDiff . substr($date->year, -1);
+        return $dateDiff . mb_substr($date->year, -1);
     }
 
     /**
@@ -542,8 +541,8 @@ final class Util
     public static function modulo11($n, $factor = 2, $base = 9, $x10 = 0, $resto10 = 0)
     {
         $sum = 0;
-        for ($i = strlen($n); $i > 0; $i--) {
-            $sum += substr($n, $i - 1, 1)*$factor;
+        for ($i = mb_strlen($n); $i > 0; $i--) {
+            $sum += mb_substr($n, $i - 1, 1)*$factor;
             if ($factor == $base) {
                 $factor = 1;
             }
@@ -553,7 +552,7 @@ final class Util
         if ($x10 == 0) {
             $sum *= 10;
             $digito = $sum%11;
-            if ($digito >= 10) {
+            if ($digito == 10) {
                 $digito = $resto10;
             }
             return $digito;
@@ -597,7 +596,7 @@ final class Util
             $controle .= sprintf('%s%s', $key, $value);
         }
 
-        if (strlen($controle) > 25) {
+        if (mb_strlen($controle) > 25) {
             throw new \Exception('Controle muito grande, máximo permitido de 25 caracteres');
         }
 
@@ -813,12 +812,12 @@ final class Util
 
         $t = $f - $i;
 
-        if (strlen($value) > $t) {
-            throw new \Exception(sprintf('String $valor maior que o tamanho definido em $ini e $fim: $valor=%s e tamanho é de: %s', strlen($value), $t));
+        if (mb_strlen($value) > $t) {
+            throw new \Exception(sprintf('String $valor maior que o tamanho definido em $ini e $fim: $valor=%s e tamanho é de: %s', mb_strlen($value), $t));
         }
 
         $value = sprintf("%{$t}s", $value);
-        $value = str_split($value, 1);
+        $value = preg_split('//u', $value, -1, PREG_SPLIT_NO_EMPTY);
 
         return array_splice($line, $i, $t, $value);
     }
@@ -832,7 +831,7 @@ final class Util
     public static function isCnab240($content)
     {
         $content = is_array($content) ? $content[0] : $content;
-        return strlen(rtrim($content, "\r\n")) == 240 ? true : false;
+        return mb_strlen(rtrim($content, "\r\n")) == 240 ? true : false;
     }
 
     /**
@@ -844,7 +843,7 @@ final class Util
     public static function isCnab400($content)
     {
         $content = is_array($content) ? $content[0] : $content;
-        return strlen(rtrim($content, "\r\n")) == 400 ? true : false;
+        return mb_strlen(rtrim($content, "\r\n")) == 400 ? true : false;
     }
 
     /**
@@ -881,10 +880,10 @@ final class Util
         if (!self::isCnab240($header) && !self::isCnab400($header)) {
             return false;
         }
-        if (self::isCnab400($header) && substr($header, 0, 9) != '02RETORNO') {
+        if (self::isCnab400($header) && mb_substr($header, 0, 9) != '02RETORNO') {
             return false;
         }
-        if (self::isCnab240($header) && substr($header, 142, 1) != '2') {
+        if (self::isCnab240($header) && mb_substr($header, 142, 1) != '2') {
             return false;
         }
         return true;

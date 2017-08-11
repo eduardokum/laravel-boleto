@@ -2,12 +2,18 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400;
 
 use Carbon\Carbon;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Detalhe as DetalheContract;
 use Eduardokum\LaravelBoleto\MagicTrait;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Detalhe as DetalheContract;
 
 class Detalhe implements DetalheContract
 {
     use MagicTrait;
+
+    /**
+     * @var string
+     */
+    protected $carteira;
+
     /**
      * @var string
      */
@@ -80,6 +86,26 @@ class Detalhe implements DetalheContract
      * @var string
      */
     protected $error;
+
+    /**
+     * @return string
+     */
+    public function getCarteira()
+    {
+        return $this->carteira;
+    }
+
+    /**
+     * @param string $nossoNumero
+     *
+     * @return Detalhe
+     */
+    public function setCarteira($carteira)
+    {
+        $this->carteira = $carteira;
+
+        return $this;
+    }
 
     /**
      * @return string
@@ -481,7 +507,7 @@ class Detalhe implements DetalheContract
     public function setError($error)
     {
         $this->ocorrenciaTipo = self::OCORRENCIA_ERRO;
-        $this->error = $error;
+        $this->error          = $error;
 
         return $this;
     }

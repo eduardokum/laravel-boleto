@@ -1,6 +1,7 @@
 <?php
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
+use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
@@ -106,13 +107,6 @@ class Itau extends AbstractRemessa implements RemessaContract
     const INSTRUCAO_MSG_30_POS = '93';
     const INSTRUCAO_MSG_40_POS = '94';
 
-    public function __construct(array $params = [])
-    {
-        parent::__construct($params);
-        $this->addCampoObrigatorio('contaDv');
-    }
-
-
     /**
      * Código do banco
      *
@@ -153,7 +147,7 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(27, 30, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(31, 32, '00');
         $this->add(33, 37, Util::formatCnab('9', $this->getConta(), 5));
-        $this->add(38, 38, $this->getContaDv());
+        $this->add(38, 38, $this->getContaDv() ?: CalculoDV::itauContaCorrente($this->getAgencia(), $this->getContaDv()));
         $this->add(39, 46, '');
         $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(77, 79, $this->getCodigoBanco());
@@ -175,7 +169,7 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(18, 21, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(22, 23, '00');
         $this->add(24, 28, Util::formatCnab('9', $this->getConta(), 5));
-        $this->add(29, 29, $this->getContaDv());
+        $this->add(29, 29, $this->getContaDv() ?: CalculoDV::itauContaCorrente($this->getAgencia(), $this->getContaDv()));
         $this->add(30, 33, '');
         $this->add(34, 37, '0000');
         $this->add(38, 62, Util::formatCnab('X', $boleto->getNumeroControle(), 25)); // numero de controle
@@ -211,7 +205,7 @@ class Itau extends AbstractRemessa implements RemessaContract
             $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
         }
         $this->add(161, 173, Util::formatCnab('9', $juros, 13, 2));
-        $this->add(174, 179, $boleto->getDataDesconto()->format('dmy'));
+        $this->add(174, 179, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmy') : '000000');
         $this->add(180, 192, Util::formatCnab('9', $boleto->getDesconto(), 13, 2));
         $this->add(193, 205, Util::formatCnab('9', 0, 13, 2));
         $this->add(206, 218, Util::formatCnab('9', 0, 13, 2));
@@ -230,6 +224,19 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(392, 393, Util::formatCnab('9', $boleto->getDiasProtesto($boleto->getDiasBaixaAutomatica()), 2));
         $this->add(394, 394, '');
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
+        
+        // Verifica multa
+        if ($boleto->getMulta() > 0) {
+            // Inicia uma nova linha de detalhe e marca com a atual de edição
+            $this->iniciaDetalhe();
+            // Campo adicional para a multa
+            $this->add(1, 1, Util::formatCnab('9', '2', 1)); // Adicional Multa
+            $this->add(2, 2, Util::formatCnab('X', '2', 1)); // Cód 2 = Informa Valor em percentual
+            $this->add(3, 10, $boleto->getDataVencimento()->format('dmY')); // Data da multa
+            $this->add(11, 23, Util::formatCnab('9', Util::nFloat($boleto->getMulta(), 2), 13));
+            $this->add(24, 394, '');
+            $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
+        }
 
         return $this;
     }

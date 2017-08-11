@@ -2,13 +2,12 @@
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
 
 class Bancoob extends AbstractBoleto implements BoletoContract
 {
-    const BANCOBB_CONST_NOSSO_NUMERO = "3197";
-
     public function __construct(array $params = [])
     {
         parent::__construct($params);
@@ -68,25 +67,8 @@ class Bancoob extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        $agencia = $this->getAgencia();
-        $convenio = $this->getConvenio();
-        $numero_boleto = $this->getNumero();
-
-        $numero = Util::numberFormatGeral($agencia, 4).Util::numberFormatGeral($convenio, 10).Util::numberFormatGeral($numero_boleto, 7);
-
-        $chars = str_split($numero, 1);
-        $sums = str_split('3197319731973197319731973197', 1);
-        $sum = 0;
-        foreach ($chars as $i => $char) {
-            $sum += $char*$sums[$i];
-        }
-        $resto = $sum % 11;
-        $digito_verificador = 0;
-
-        if (($resto != 0) && ($resto != 1)) {
-            $digito_verificador = 11 - $resto;
-        }
-        return $numero . $digito_verificador;
+        return $this->getNumero()
+            . CalculoDV::bancoobNossoNumero($this->getAgencia(), $this->getConvenio(), $this->getNumero());
     }
     /**
      * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
@@ -95,8 +77,7 @@ class Bancoob extends AbstractBoleto implements BoletoContract
      */
     public function getNossoNumeroBoleto()
     {
-        $nn = $this->getNossoNumero();
-        return substr($nn, 0, -1) . '-' . substr($nn, -1);
+        return substr_replace($this->getNossoNumero(), '-', -1, 0);
     }
     /**
      * Método para gerar o código da posição de 20 a 44

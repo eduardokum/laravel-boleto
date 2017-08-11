@@ -1,6 +1,7 @@
 <?php
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
+use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
@@ -107,9 +108,9 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(2, 2, '1');
         $this->add(3, 9, 'REMESSA');
         $this->add(10, 11, '01');
-        $this->add(12, 26, '      COBRANÇA');
+        $this->add(12, 26, 'COBRANÇA      ');
         $this->add(27, 30, Util::formatCnab('9', $this->getAgencia(), 4));
-        $this->add(31, 31, Util::modulo11($this->getAgencia()));
+        $this->add(31, 31, CalculoDv::bancoobAgencia($this->getAgencia()));
         $this->add(32, 40, Util::formatCnab('9', $this->getConvenio(), 9));
         $this->add(41, 46, '');
         $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
@@ -131,11 +132,11 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(2, 3, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? '02' : '01');
         $this->add(4, 17, Util::formatCnab('9L', $this->getBeneficiario()->getDocumento(), 14));
         $this->add(18, 21, Util::formatCnab('9', $this->getAgencia(), 4));
-        $this->add(22, 22, Util::modulo11($this->getAgencia()));
+        $this->add(22, 22, CalculoDv::bancoobAgencia($this->getAgencia()));
         $this->add(23, 30, Util::formatCnab('9', $this->getConta(), 8));
         $this->add(31, 31, Util::formatCnab('9', $this->getContaDv(), 1));
         $this->add(32, 37, '000000');
-        $this->add(38, 62, Util::formatCnab('X', '', 25)); // numero de controle
+        $this->add(38, 62, Util::formatCnab('X', $boleto->getNumeroControle(), 25)); // numero de controle
         $this->add(63, 74, Util::formatCnab('9', $boleto->getNossoNumero(), 12));
         $this->add(75, 76, '01'); //Numero da parcela - Não implementado
         $this->add(77, 78, '00'); //Grupo de valor
@@ -160,7 +161,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(127, 139, Util::formatCnab('9', $boleto->getValor(), 13, 2));
         $this->add(140, 142, $this->getCodigoBanco());
         $this->add(143, 146, Util::formatCnab('9', $this->getAgencia(), 4));
-        $this->add(147, 147, Util::modulo11($this->getAgencia()));
+        $this->add(147, 147, CalculoDv::bancoobAgencia($this->getAgencia()));
         $this->add(148, 149, $boleto->getEspecieDocCodigo());
 
         $this->add(150, 150, ($boleto->getAceite() == 'N' ? '0' : '1'));
@@ -188,7 +189,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(161, 166, Util::formatCnab('9', 0, 6, 4));
         $this->add(167, 172, Util::formatCnab('9', $juros, 6, 4));
         $this->add(173, 173, '2'); //Tipo de distribuição: 1 - Cooperativa 2 - Cliente
-        $this->add(174, 179, $boleto->getDataDesconto()->format('dmy'));
+        $this->add(174, 179, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmy') : '000000');
         $this->add(180, 192, Util::formatCnab('9', $boleto->getDesconto(), 13, 2));
         $this->add(193, 193, '9');
         $this->add(194, 205, Util::formatCnab('9', 0, 12, 2));

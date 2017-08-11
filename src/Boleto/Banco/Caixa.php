@@ -2,6 +2,7 @@
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
 
@@ -65,11 +66,21 @@ class Caixa  extends AbstractBoleto implements BoletoContract
     {
         return $this->codigoCliente;
     }
+    /**
+     * Retorna o codigo do cliente como se fosse a conta
+     * ja que a caixa não faz uso da conta para nada.
+     *
+     * @return string
+     */
+    public function getConta()
+    {
+        return $this->getCodigoCliente();
+    }
 
     /**
      * Gera o Nosso Número.
      *
-     * @throws Exception
+     * @throws \Exception
      * @return string
      */
     protected function gerarNossoNumero()
@@ -93,7 +104,7 @@ class Caixa  extends AbstractBoleto implements BoletoContract
      */
     public function getNossoNumeroBoleto()
     {
-        return $this->getNossoNumero() . '-' . Util::modulo11($this->getNossoNumero());
+        return $this->getNossoNumero() . '-' . CalculoDV::cefNossoNumero($this->getNossoNumero());
     }
 
     /**
@@ -118,7 +129,7 @@ class Caixa  extends AbstractBoleto implements BoletoContract
      * Método para gerar o código da posição de 20 a 44
      *
      * @return string
-     * @throws Exception
+     * @throws \Exception
      */
     protected function getCampoLivre()
     {

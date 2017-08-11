@@ -14,6 +14,7 @@ interface Boleto
     const COD_BANCO_SICREDI = '748';
     const COD_BANCO_BANRISUL = '041';
     const COD_BANCO_BANCOOB = '756';
+    const COD_BANCO_BNB = '004';
 
     const STATUS_REGISTRO = 1;
     const STATUS_ALTERACAO = 2;
