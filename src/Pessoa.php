@@ -116,7 +116,7 @@ class Pessoa implements PessoaContract
     public function setDocumento($documento)
     {
         $documento = substr(Util::onlyNumbers($documento), -14);
-        if (!in_array(strlen($documento), [10, 11, 14, 0])) {
+        if (!in_array(strlen($documento), [12, 11, 14, 0])) {
             throw new \Exception('Documento inválido');
         }
         $this->documento = $documento;
@@ -131,7 +131,7 @@ class Pessoa implements PessoaContract
         if ($this->getTipoDocumento() == 'CPF') {
             return Util::maskString(Util::onlyNumbers($this->documento), '###.###.###-##');
         } elseif ($this->getTipoDocumento() == 'CEI') {
-            return Util::maskString(Util::onlyNumbers($this->documento), '##.#####.#-##');
+            return Util::maskString(Util::onlyNumbers($this->documento), '###.###.####/##');
         }
         return Util::maskString(Util::onlyNumbers($this->documento), '##.###.###/####-##');
     }
