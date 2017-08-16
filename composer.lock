@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "37d583b14c1f938c1d530576c8161e93",
+    "content-hash": "76e5e5bb6d1ef7477506332ef1a75f52",
     "packages": [
         {
             "name": "classpreloader/classpreloader",
@@ -670,6 +670,40 @@
                 "schedule"
             ],
             "time": "2017-01-23T04:29:33+00:00"
+        },
+        {
+            "name": "neitanod/forceutf8",
+            "version": "v2.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/neitanod/forceutf8.git",
+                "reference": "47c883ab2739e7938a8bb0bfd1c29d48c88858de"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/neitanod/forceutf8/zipball/47c883ab2739e7938a8bb0bfd1c29d48c88858de",
+                "reference": "47c883ab2739e7938a8bb0bfd1c29d48c88858de",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "ForceUTF8\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Sebastián Grignoli",
+                    "email": "grignoli@gmail.com"
+                }
+            ],
+            "description": "PHP Class Encoding featuring popular Encoding::toUTF8() function --formerly known as forceUTF8()-- that fixes mixed encoded strings.",
+            "homepage": "https://github.com/neitanod/forceutf8",
+            "time": "2017-05-22T18:50:57+00:00"
         },
         {
             "name": "nesbot/carbon",
@@ -3417,7 +3451,8 @@
     "prefer-lowest": false,
     "platform": {
         "php": ">=5.5.0",
-        "ext-intl": "*"
+        "ext-intl": "*",
+        "ext-mbstring": "*"
     },
     "platform-dev": []
 }

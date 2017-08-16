@@ -2,6 +2,7 @@
 namespace Eduardokum\LaravelBoleto;
 
 use Carbon\Carbon;
+use ForceUTF8\Encoding;
 
 /**
  * Class Util
@@ -834,6 +835,7 @@ final class Util
     public static function isCnab240($content)
     {
         $content = is_array($content) ? $content[0] : $content;
+        $content = Encoding::toUTF8($content);
         return mb_strlen(rtrim($content, "\r\n")) == 240 ? true : false;
     }
 
@@ -846,6 +848,7 @@ final class Util
     public static function isCnab400($content)
     {
         $content = is_array($content) ? $content[0] : $content;
+        $content = Encoding::toUTF8($content);
         return mb_strlen(rtrim($content, "\r\n")) == 400 ? true : false;
     }
 
