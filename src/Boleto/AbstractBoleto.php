@@ -1065,7 +1065,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getJurosApos()
     {
-        return $this->jurosApos;
+        return $this->jurosApos ? $this->jurosApos : false;
     }
 
     /**

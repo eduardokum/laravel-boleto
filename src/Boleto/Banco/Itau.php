@@ -45,6 +45,7 @@ class Itau extends AbstractBoleto implements BoletoContract
         'DM' => '01',
         'NP' => '02',
         'NS' => '03',
+        'ME' => '04',
         'REC' => '05',
         'CT' => '06',
         'CS' => '07',
