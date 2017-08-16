@@ -612,7 +612,7 @@ final class Util
     public static function controle2array($controle)
     {
         $matches = '';
-        $matches_founded = '';
+        $matches_founded = [];
         preg_match_all('/(([A-Za-zÀ-Úà-ú]+)([0-9]*))/', $controle, $matches, PREG_SET_ORDER);
         if ($matches) {
             foreach ($matches as $match) {
