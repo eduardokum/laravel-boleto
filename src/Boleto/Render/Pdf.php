@@ -384,12 +384,15 @@ class Pdf extends AbstractPdf implements PdfContract
      * Addiciona o boletos
      *
      * @param array $boletos
+     * @param bool  $withGroup
      *
      * @return $this
      */
-    public function addBoletos(array $boletos)
+    public function addBoletos(array $boletos, $withGroup = true)
     {
-        $this->StartPageGroup();
+        if($withGroup) {
+            $this->StartPageGroup();
+        }
 
         foreach ($boletos as $boleto) {
             $this->addBoleto($boleto);
