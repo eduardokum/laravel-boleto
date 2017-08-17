@@ -23,7 +23,7 @@
         <div class="linha-pontilhada" style="margin-bottom: 20px;">Recibo do pagador</div>
 
         <div class="info-empresa">
-            @if ($logo)
+           @if (isset($logo))
                 <div style="display: inline-block;">
                     <img alt="logo" src="{{ $logo_base64 }}" />
                 </div>
