@@ -103,7 +103,7 @@ class Banrisul extends AbstractBoleto implements BoletoContract
         $this->campoLivre .= Util::numberFormatGeral($this->getAgencia(), 4);
 
         // Cod. Cedente => 26 a 32 | Valor: dinâmico(0000000) ´7´
-        $this->campoLivre .= $this->getConta();
+        $this->campoLivre .= Util::numberFormatGeral($this->getConta(), 7);
 
         // Nosso numero => 33 a 40 | Valor: dinâmico(00000000) ´8´
         $this->campoLivre .= Util::numberFormatGeral($this->getNumero(), 8);
