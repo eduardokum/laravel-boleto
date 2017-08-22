@@ -78,6 +78,7 @@ class Itau extends AbstractRemessa implements RemessaContract
      */
     public function addBoleto(BoletoContract $boleto)
     {
+        $this->boletos[] = $boleto;
         $this->segmentoP($boleto);
         $this->segmentoQ($boleto);
         if($boleto->getSacadorAvalista()) {
@@ -98,7 +99,7 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(1, 3, Util::onlyNumbers($this->getCodigoBanco()));
         $this->add(4, 7, '0001');
         $this->add(8, 8, '3');
-        $this->add(9, 13, Util::formatCnab(9, $this->iRegistrosLote, 5));
+        $this->add(9, 13, Util::formatCnab('9', $this->iRegistrosLote, 5));
         $this->add(14, 14, 'P');
         $this->add(15, 15, '');
         $this->add(16, 17, self::OCORRENCIA_REMESSA);
@@ -109,43 +110,43 @@ class Itau extends AbstractRemessa implements RemessaContract
             $this->add(16, 17, self::OCORRENCIA_ALT_OUTROS_DADOS);
         }
         $this->add(18, 18, '0');
-        $this->add(19, 22, Util::formatCnab(9, $this->getAgencia(), 4));
+        $this->add(19, 22, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(23, 23, '');
         $this->add(24, 30, '0000000');
-        $this->add(31, 35, Util::formatCnab(9, $this->getConta(), 5));
+        $this->add(31, 35, Util::formatCnab('9', $this->getConta(), 5));
         $this->add(36, 36, '');
         $this->add(37, 37, $this->getContaDv());
-        $this->add(38, 40, Util::formatCnab(9, $this->getCarteira(), 3));
-        $this->add(41, 49, Util::formatCnab(9, $boleto->getNossoNumero(), 9));
+        $this->add(38, 40, Util::formatCnab('9', $this->getCarteira(), 3));
+        $this->add(41, 49, Util::formatCnab('9', $boleto->getNossoNumero(), 9));
         $this->add(50, 57, '');
         $this->add(58, 62, '00000');
-        $this->add(63, 72, Util::formatCnab(9, $boleto->getNumero(), 10));
+        $this->add(63, 72, Util::formatCnab('9', $boleto->getNumero(), 10));
         $this->add(73, 77, '');
         $this->add(78, 85, $boleto->getDataVencimento()->format('dmY'));
-        $this->add(86, 100, Util::formatCnab(9, $boleto->getValor(), 15, 2));
+        $this->add(86, 100, Util::formatCnab('9', $boleto->getValor(), 15, 2));
         $this->add(101, 105, '00000');
-        $this->add(106, 106, '');
-        $this->add(107, 108, Util::formatCnab(9, $boleto->getEspecieDocCodigo(), 2));
+        $this->add(106, 106, '0');
+        $this->add(107, 108, Util::formatCnab('9', $boleto->getEspecieDocCodigo(), 2));
         $this->add(109, 109, Util::formatCnab('9', $boleto->getAceite(), 1));
         $this->add(110, 117, $boleto->getDataDocumento()->format('dmY'));
-        $this->add(118, 118, '');
+        $this->add(118, 118, '0');
         $this->add(119, 126, $boleto->getDataVencimento()->format('dmY'));
-        $this->add(127, 141, Util::formatCnab(9, $boleto->getMoraDia(), 15, 2)); //Valor da mora/dia ou Taxa mensal
-        $this->add(142, 142, '');
+        $this->add(127, 141, Util::formatCnab('9', $boleto->getMoraDia(), 15, 2)); //Valor da mora/dia ou Taxa mensal
+        $this->add(142, 142, '0');
         $this->add(143, 150, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmY') : '00000000');
-        $this->add(151, 165, Util::formatCnab(9, $boleto->getDesconto(), 15, 2));
-        $this->add(166, 180, Util::formatCnab(9, 0, 15, 2));
-        $this->add(181, 195, Util::formatCnab(9, 0, 15, 2));
+        $this->add(151, 165, Util::formatCnab('9', $boleto->getDesconto(), 15, 2));
+        $this->add(166, 180, Util::formatCnab('9', 0, 15, 2));
+        $this->add(181, 195, Util::formatCnab('9', 0, 15, 2));
         $this->add(196, 220, Util::formatCnab('X', $boleto->getNumeroControle(), 25));
         $this->add(221, 221, self::PROTESTO_SEM);
         if ($boleto->getDiasProtesto() > 0) {
             $this->add(221, 221, self::PROTESTO_DIAS_UTEIS);
         }
-        $this->add(222, 223, Util::formatCnab(9, $boleto->getDiasProtesto(), 1));
+        $this->add(222, 223, Util::formatCnab('9', $boleto->getDiasProtesto(), 2));
         $this->add(224, 224, '0');
         $this->add(225, 226, '00');
-        $this->add(226, 239, '0000000000000');
-        $this->add(230, 240, '');
+        $this->add(227, 239, '0000000000000');
+        $this->add(240, 240, '');
 
         return $this;
     }
@@ -162,7 +163,7 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(1, 3, Util::onlyNumbers($this->getCodigoBanco()));
         $this->add(4, 7, '0001');
         $this->add(8, 8, '3');
-        $this->add(9, 13, Util::formatCnab(9, $this->iRegistrosLote, 5));
+        $this->add(9, 13, Util::formatCnab('9', $this->iRegistrosLote, 5));
         $this->add(14, 14, 'Q');
         $this->add(15, 15, '');
         $this->add(16, 17, self::OCORRENCIA_REMESSA);
@@ -210,7 +211,7 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(1, 3, Util::onlyNumbers($this->getCodigoBanco()));
         $this->add(4, 7, '0001');
         $this->add(8, 8, '3');
-        $this->add(9, 13, Util::formatCnab(9, $this->iRegistrosLote, 5));
+        $this->add(9, 13, Util::formatCnab('9', $this->iRegistrosLote, 5));
         $this->add(14, 14, 'Y');
         $this->add(15, 15, '');
         $this->add(16, 17, self::OCORRENCIA_REMESSA);
@@ -265,13 +266,12 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(143, 143, 1);
         $this->add(144, 151, date('dmY'));
         $this->add(152, 157, date('His'));
-        $this->add(158, 163, Util::formatCnab(9, 0, 6));
+        $this->add(158, 163, '000000');
         $this->add(164, 166, '040');
         $this->add(167, 171, '00000');
-        $this->add(162, 225, '');
+        $this->add(172, 225, '');
         $this->add(226, 228, '000');
         $this->add(229, 240, '');
-
         return $this;
     }
 
@@ -291,7 +291,7 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(8, 8, '1');
         $this->add(9, 9, 'R');
         $this->add(10, 11, '01');
-        $this->add(12, 13, '');
+        $this->add(12, 13, '00');
         $this->add(14, 16, '030');
         $this->add(17, 17, '');
         $this->add(18, 18, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? 2 : 1);
@@ -306,9 +306,9 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(73, 73, $this->getContaDv());
         $this->add(74, 103, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(104, 183, '');
-        $this->add(184, 191, Util::formatCnab(9, 0, 8));
+        $this->add(184, 191, Util::formatCnab('9', 0, 8));
         $this->add(192, 199, date('dmY'));
-        $this->add(200, 207, date('His'));
+        $this->add(200, 207, Util::formatCnab('9', 0, 8));
         $this->add(200, 240, '');
 
         return $this;
@@ -322,12 +322,22 @@ class Itau extends AbstractRemessa implements RemessaContract
     {
         $this->iniciaTrailerLote();
 
+        $valor = array_reduce($this->boletos, function($valor, $boleto) {
+            return $valor + $boleto->getValor();
+        }, 0);
+
         $this->add(1, 3, Util::onlyNumbers($this->getCodigoBanco()));
-        $this->add(4, 7, Util::formatCnab(9, 1, 4));
+        $this->add(4, 7, Util::formatCnab('9', 1, 4));
         $this->add(8, 8, '5');
         $this->add(9, 17, '');
-        $this->add(18, 23, Util::formatCnab(9, ($this->iRegistrosLote + 2), 6));
-        $this->add(24, 240, '');
+        $this->add(18, 23, Util::formatCnab('9', count($this->boletos), 6));
+        $this->add(24, 29, Util::formatCnab('9', count($this->boletos), 6));
+        $this->add(30, 46, Util::formatCnab('9', $valor, 15, 2));
+        $this->add(47, 52, Util::formatCnab('9', 0, 6));
+        $this->add(53, 69, Util::formatCnab('9', 0, 15, 2));
+        $this->add(70, 115, Util::formatCnab('9', 0, 46));
+        $this->add(116, 123, '00000000');
+        $this->add(124, 240, '');
 
         return $this;
     }
@@ -344,9 +354,10 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(4, 7, '9999');
         $this->add(8, 8, '9');
         $this->add(9, 17, '');
-        $this->add(18, 23, Util::formatCnab(9, 1, 6));
-        $this->add(24, 29, Util::formatCnab(9, count($this->aRegistros) + 1, 6));
-        $this->add(30, 240, '');
+        $this->add(18, 23, Util::formatCnab('9', 1, 6));
+        $this->add(24, 29, Util::formatCnab('9', count($this->aRegistros) + 1, 6));
+        $this->add(30, 35, '000000');
+        $this->add(36, 240, '');
 
         return $this;
     }

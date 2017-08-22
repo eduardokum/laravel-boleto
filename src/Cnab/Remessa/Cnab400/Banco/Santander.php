@@ -143,6 +143,7 @@ class Santander extends AbstractRemessa implements RemessaContract
 
     public function addBoleto(BoletoContract $boleto)
     {
+        $this->boletos[] = $boleto;
         $this->iniciaDetalhe();
 
         $this->total += $boleto->getValor();

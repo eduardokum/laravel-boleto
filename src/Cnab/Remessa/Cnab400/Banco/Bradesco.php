@@ -145,6 +145,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
 
     public function addBoleto(BoletoContract $boleto)
     {
+        $this->boletos[] = $boleto;
         $this->iniciaDetalhe();
 
         $beneficiario_id =  Util::formatCnab('9', $this->getCarteiraNumero(), 4) .

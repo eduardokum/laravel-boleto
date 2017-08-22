@@ -108,6 +108,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
 
     public function addBoleto(BoletoContract $boleto)
     {
+        $this->boletos[] = $boleto;
         if (!$boleto->isComRegistro()) {
             return $this;
         }
