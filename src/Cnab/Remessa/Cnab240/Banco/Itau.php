@@ -308,7 +308,7 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(104, 183, '');
         $this->add(184, 191, Util::formatCnab('9', 0, 8));
         $this->add(192, 199, date('dmY'));
-        $this->add(200, 207, Util::formatCnab('9', 0, 8));
+        $this->add(200, 207, date('dmY'));
         $this->add(200, 240, '');
 
         return $this;
@@ -330,11 +330,11 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(4, 7, Util::formatCnab('9', 1, 4));
         $this->add(8, 8, '5');
         $this->add(9, 17, '');
-        $this->add(18, 23, Util::formatCnab('9', count($this->boletos), 6));
+        $this->add(18, 23, Util::formatCnab('9', $this->iRegistros + 2, 6));
         $this->add(24, 29, Util::formatCnab('9', count($this->boletos), 6));
-        $this->add(30, 46, Util::formatCnab('9', $valor, 15, 2));
+        $this->add(30, 46, Util::formatCnab('9', $valor, 17, 2));
         $this->add(47, 52, Util::formatCnab('9', 0, 6));
-        $this->add(53, 69, Util::formatCnab('9', 0, 15, 2));
+        $this->add(53, 69, Util::formatCnab('9', 0, 17, 2));
         $this->add(70, 115, Util::formatCnab('9', 0, 46));
         $this->add(116, 123, '00000000');
         $this->add(124, 240, '');
