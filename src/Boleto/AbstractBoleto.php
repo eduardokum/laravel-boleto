@@ -1044,6 +1044,19 @@ abstract class AbstractBoleto implements BoletoContract
     }
 
     /**
+     * Retorna valor mora diária
+     *
+     * @return float
+     */
+    public function getMoraDia()
+    {
+        if (!$this->getJuros() > 0) {
+           return 0;
+        }
+        return Util::percent($this->getValor(), $this->getJuros())/30;
+    }
+
+    /**
      * Seta a quantidade de dias apos o vencimento que cobra o juros
      *
      * @param  int $jurosApos

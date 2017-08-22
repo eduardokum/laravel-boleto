@@ -169,9 +169,6 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(157, 158, $boleto->getStatus() == $boleto::STATUS_BAIXA ? self::OCORRENCIA_BAIXAR : self::INSTRUCAO_SEM);
         $this->add(159, 160, self::INSTRUCAO_SEM);
         $diasProtesto = '00';
-
-        $juros = 0;
-
         if (($boleto->getStatus() != $boleto::STATUS_BAIXA) && ($boleto->getDiasProtesto() > 0)) {
             $const = sprintf('self::INSTRUCAO_PROTESTAR_VENC_%02s', $boleto->getDiasProtesto());
 
@@ -180,14 +177,9 @@ class Bancoob extends AbstractRemessa implements RemessaContract
             } else {
                 throw new \Exception("A instrução para protesto em ".$boleto->getDiasProtesto()." dias não existe no banco.");
             }
-
-            if ($boleto->getJuros() > 0) {
-                $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
-            }
         }
-
-        $this->add(161, 166, Util::formatCnab('9', 0, 6, 4));
-        $this->add(167, 172, Util::formatCnab('9', $juros, 6, 4));
+        $this->add(161, 166, Util::formatCnab('9', $boleto->getJuros(), 6, 4));
+        $this->add(167, 172, Util::formatCnab('9', $boleto->getMulta(), 6, 4));
         $this->add(173, 173, '2'); //Tipo de distribuição: 1 - Cooperativa 2 - Cliente
         $this->add(174, 179, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmy') : '000000');
         $this->add(180, 192, Util::formatCnab('9', $boleto->getDesconto(), 13, 2));

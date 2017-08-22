@@ -200,11 +200,7 @@ class Itau extends AbstractRemessa implements RemessaContract
         } elseif ($boleto->getDiasBaixaAutomatica() > 0) {
             $this->add(157, 158, self::INSTRUCAO_DEVOL_VENC_XX);
         }
-        $juros = 0;
-        if ($boleto->getJuros() > 0) {
-            $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
-        }
-        $this->add(161, 173, Util::formatCnab('9', $juros, 13, 2));
+        $this->add(161, 173, Util::formatCnab('9', $boleto->getMoraDia(), 13, 2));
         $this->add(174, 179, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmy') : '000000');
         $this->add(180, 192, Util::formatCnab('9', $boleto->getDesconto(), 13, 2));
         $this->add(193, 205, Util::formatCnab('9', 0, 13, 2));
@@ -230,8 +226,8 @@ class Itau extends AbstractRemessa implements RemessaContract
             // Inicia uma nova linha de detalhe e marca com a atual de edição
             $this->iniciaDetalhe();
             // Campo adicional para a multa
-            $this->add(1, 1, Util::formatCnab('9', '2', 1)); // Adicional Multa
-            $this->add(2, 2, Util::formatCnab('X', '2', 1)); // Cód 2 = Informa Valor em percentual
+            $this->add(1, 1, 2); // Adicional Multa
+            $this->add(2, 2, 2); // Cód 2 = Informa Valor em percentual
             $this->add(3, 10, $boleto->getDataVencimento()->format('dmY')); // Data da multa
             $this->add(11, 23, Util::formatCnab('9', Util::nFloat($boleto->getMulta(), 2), 13));
             $this->add(24, 394, '');

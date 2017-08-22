@@ -276,12 +276,8 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         if ($boleto->getMulta() > 0) {
             $this->add(159, 160, self::INSTRUCAO_MULTA_XX);
         }
-        $juros = 0;
-        if ($boleto->getJuros() > 0) {
-            $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
-        }
-        $this->add(161, 161, '0');
-        $this->add(162, 173, Util::formatCnab('9', $juros, 12, 2));
+        $this->add(161, 161, 0);
+        $this->add(162, 173, Util::formatCnab('9', $boleto->getMoraDia(), 12, 2));
         $this->add(174, 179, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmy') : '000000');
         $this->add(180, 192, Util::formatCnab('9', $boleto->getDesconto(), 13, 2));
         $this->add(193, 205, Util::formatCnab('9', 0, 13, 2));

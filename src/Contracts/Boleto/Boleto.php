@@ -131,6 +131,11 @@ interface Boleto
     /**
      * @return mixed
      */
+    public function getMoraDia();
+
+    /**
+     * @return mixed
+     */
     public function getJurosApos();
 
     /**
