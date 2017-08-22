@@ -12,7 +12,7 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
      */
     protected function iniciaHeader()
     {
-        $this->aRegistros[self::HEADER] = array_fill(0, 400, ' ');
+        $this->aRegistros[self::HEADER] = array_fill(0, $this->tamanho_linha, ' ');
         $this->atual = &$this->aRegistros[self::HEADER];
     }
 
@@ -21,7 +21,7 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
      */
     protected function iniciaTrailer()
     {
-        $this->aRegistros[self::TRAILER] = array_fill(0, 400, ' ');
+        $this->aRegistros[self::TRAILER] = array_fill(0, $this->tamanho_linha, ' ');
         $this->atual = &$this->aRegistros[self::TRAILER];
     }
 
@@ -31,7 +31,7 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
     protected function iniciaDetalhe()
     {
         $this->iRegistros++;
-        $this->aRegistros[self::DETALHE][$this->iRegistros] = array_fill(0, 400, ' ');
+        $this->aRegistros[self::DETALHE][$this->iRegistros] = array_fill(0, $this->tamanho_linha, ' ');
         $this->atual = &$this->aRegistros[self::DETALHE][$this->iRegistros];
     }
 

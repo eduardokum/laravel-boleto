@@ -21,6 +21,11 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
     ];
 
     /**
+     * Quantidade de registros do lote.
+     */
+    protected $iRegistrosLote;
+
+    /**
      * Função para gerar o cabeçalho do arquivo.
      *
      * @return mixed
@@ -60,7 +65,7 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
      */
     protected function iniciaHeader()
     {
-        $this->aRegistros[self::HEADER] = array_fill(0, 240, ' ');
+        $this->aRegistros[self::HEADER] = array_fill(0, $this->tamanho_linha, ' ');
         $this->atual = &$this->aRegistros[self::HEADER];
     }
 
@@ -69,7 +74,8 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
      */
     protected function iniciaHeaderLote()
     {
-        $this->aRegistros[self::HEADER_LOTE] = array_fill(0, 240, ' ');
+        $this->iRegistrosLote = 0;
+        $this->aRegistros[self::HEADER_LOTE] = array_fill(0, $this->tamanho_linha, ' ');
         $this->atual = &$this->aRegistros[self::HEADER_LOTE];
     }
 
@@ -78,7 +84,7 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
      */
     protected function iniciaTrailerLote()
     {
-        $this->aRegistros[self::TRAILER_LOTE] = array_fill(0, 240, ' ');
+        $this->aRegistros[self::TRAILER_LOTE] = array_fill(0, $this->tamanho_linha, ' ');
         $this->atual = &$this->aRegistros[self::TRAILER_LOTE];
     }
 
@@ -87,7 +93,7 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
      */
     protected function iniciaTrailer()
     {
-        $this->aRegistros[self::TRAILER] = array_fill(0, 240, ' ');
+        $this->aRegistros[self::TRAILER] = array_fill(0, $this->tamanho_linha, ' ');
         $this->atual = &$this->aRegistros[self::TRAILER];
     }
 
@@ -97,7 +103,8 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
     protected function iniciaDetalhe()
     {
         $this->iRegistros++;
-        $this->aRegistros[self::DETALHE][$this->iRegistros] = array_fill(0, 240, ' ');
+        $this->iRegistrosLote++;
+        $this->aRegistros[self::DETALHE][$this->iRegistros] = array_fill(0, $this->tamanho_linha, ' ');
         $this->atual = &$this->aRegistros[self::DETALHE][$this->iRegistros];
     }
 

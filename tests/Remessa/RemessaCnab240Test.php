@@ -99,4 +99,45 @@ class RemessaCnab240Test extends TestCase
         $this->assertEquals($file, $file2);
     }
 
+    public function testRemessaItauCnab240(){
+        $boleto = new Boleto\Itau([
+            'logo' => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '033.png',
+            'dataVencimento' => new \Carbon\Carbon(),
+            'valor' => 100,
+            'multa' => false,
+            'juros' => false,
+            'numero' => 1,
+            'numeroDocumento' => 1,
+            'pagador' => self::$pagador,
+            'beneficiario' => self::$beneficiario,
+            'diasBaixaAutomatica' => 0,
+            'carteira' => '109',
+            'agencia' => '9999',
+            'conta' => '99999',
+            'descricaoDemonstrativo' => ['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'],
+            'instrucoes' =>  ['instrucao 1', 'instrucao 2', 'instrucao 3'],
+            'aceite' => 'S',
+            'especieDoc' => 'DM',
+        ]);
+
+        $remessa = new Remessa\Itau([
+            'agencia' => '9999',
+            'carteira' => '109',
+            'conta' => '99999',
+            'beneficiario' => self::$beneficiario,
+        ]);
+        $remessa->addBoleto($boleto);
+
+        $file = implode(DIRECTORY_SEPARATOR, [
+            __DIR__,
+            'files',
+            'cnab240',
+            'itau.txt'
+        ]);
+
+        $file2 = $remessa->save($file);
+
+        $this->assertFileExists($file);
+        $this->assertEquals($file, $file2);
+    }
 }
