@@ -37,20 +37,6 @@ class Santander extends AbstractRemessa implements RemessaContract
     protected $carteiras = [101, 201];
 
     /**
-     * Caracter de fim de linha
-     *
-     * @var string
-     */
-    protected $fimLinha = "\r\n";
-
-    /**
-     * Caracter de fim de arquivo
-     *
-     * @var null
-     */
-    protected $fimArquivo = "\r\n";
-
-    /**
      * Codigo do cliente junto ao banco.
      *
      * @var string

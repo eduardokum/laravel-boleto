@@ -8,6 +8,20 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
     protected $tamanho_linha = 240;
 
     /**
+     * Caracter de fim de linha
+     *
+     * @var string
+     */
+    protected $fimLinha = "\r\n";
+
+    /**
+     * Caracter de fim de arquivo
+     *
+     * @var null
+     */
+    protected $fimArquivo = "\r\n";
+
+    /**
      * Array contendo o cnab.
      *
      * @var array
