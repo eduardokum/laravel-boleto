@@ -1,9 +1,10 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: simetriatecnologia
- * Date: 15/09/16
- * Time: 14:02
+ * Created by Guilherme Couto.
+ * User: guicouto
+ * Email: ccoutoguilherme@gmail.com
+ * Date: 23/08/2017
+ * Time: 15:02
  */
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco;
