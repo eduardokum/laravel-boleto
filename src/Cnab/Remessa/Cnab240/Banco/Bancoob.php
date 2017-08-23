@@ -208,7 +208,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(4, 7, '0001');
         $this->add(8, 8, '3');
         $this->add(9, 13, Util::formatCnab('9', $this->iRegistrosLote, 5));
-        $this->add(14, 14, 'Y');
+        $this->add(14, 14, 'R');
         $this->add(15, 15, '');
         $this->add(16, 17, self::OCORRENCIA_REMESSA);
         if ($boleto->getStatus() == $boleto::STATUS_BAIXA) {
@@ -217,16 +217,24 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
             $this->add(16, 17, self::OCORRENCIA_ALT_OUTROS_DADOS);
         }
-        $this->add(18, 19, '01');
-        $this->add(20, 20, strlen(Util::onlyNumbers($boleto->getSacadorAvalista()->getDocumento())) == 14 ? 2 : 1);
-        $this->add(21, 35, Util::formatCnab('9', Util::onlyNumbers($boleto->getSacadorAvalista()->getDocumento()), 15));
-        $this->add(36, 75, Util::formatCnab('X', $boleto->getSacadorAvalista()->getNome(), 40));
-        $this->add(76, 115, Util::formatCnab('X', $boleto->getSacadorAvalista()->getEndereco(), 40));
-        $this->add(116, 130, Util::formatCnab('X', $boleto->getSacadorAvalista()->getBairro(), 15));
-        $this->add(131, 138, Util::formatCnab('9', Util::onlyNumbers($boleto->getSacadorAvalista()->getCep()), 8));
-        $this->add(139, 131, Util::formatCnab('X', $boleto->getSacadorAvalista()->getCidade(), 15));
-        $this->add(154, 155, Util::formatCnab('X', $boleto->getSacadorAvalista()->getUf(), 2));
-        $this->add(156, 240, '');
+        $this->add(18, 18, '0');
+        $this->add(19, 26, '00000000');
+        $this->add(27, 41, '000000000000000');
+        $this->add(42, 42, '0');
+        $this->add(43, 50, '00000000');
+        $this->add(51, 65, '000000000000000');
+        $this->add(66, 66, $boleto->getMulta() > 0 ? '2' : '0'); //0 = ISENTO | 1 = VALOR FIXO | 2 = PERCENTUAL
+        $this->add(67, 74, $boleto->getDataVencimento()->format('dmY'));
+        $this->add(75, 89, Util::formatCnab('9', $boleto->getMulta()*100, 15, 2));  //2,20 = 0000000000220
+        $this->add(90, 199, '');
+        $this->add(200, 207, '00000000');
+        $this->add(208, 210, '000');
+        $this->add(211, 215, '00000');
+        $this->add(216, 216, '');
+        $this->add(217, 228, '000000000000');
+        $this->add(229, 230, '');
+        $this->add(231, 231, '0');
+        $this->add(232, 240, '');
 
         return $this;
     }
