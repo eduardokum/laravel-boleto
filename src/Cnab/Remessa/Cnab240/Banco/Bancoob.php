@@ -82,9 +82,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->boletos[] = $boleto;
         $this->segmentoP($boleto);
         $this->segmentoQ($boleto);
-        if($boleto->getSacadorAvalista()) {
-            $this->segmentoY($boleto);
-        }
+        $this->segmentoR($boleto);
         return $this;
     }
 
@@ -187,11 +185,17 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(134, 136, Util::formatCnab('9', Util::onlyNumbers(substr($boleto->getPagador()->getCep(), 6, 9)), 3));
         $this->add(137, 151, Util::formatCnab('X', $boleto->getPagador()->getCidade(), 15));
         $this->add(152, 153, Util::formatCnab('X', $boleto->getPagador()->getUf(), 2));
-        $this->add(154, 154, strlen(Util::onlyNumbers($this->getSacadorAvalista()->getDocumento())) == 14 ? 2 : 1);
-        $this->add(155, 169, $boleto->getSacadorAvalista() ? Util::formatCnab('9', Util::onlyNumbers($boleto->getSacadorAvalista()->getDocumento()), 15) : '000000000000000');
-        $this->add(170, 209, $boleto->getSacadorAvalista() ? Util::formatCnab('X', $boleto->getSacadorAvalista()->getNome(), 40) : '');
+        $this->add(154, 154, '1');
+        $this->add(155, 169, '000000000000000');
+        $this->add(170, 209, '');
         $this->add(210, 212, '000');
         $this->add(213, 240, '');
+
+        if($boleto->getSacadorAvalista()) {
+            $this->add(154, 154, strlen(Util::onlyNumbers($boleto->getSacadorAvalista()->getDocumento())) == 14 ? 2 : 1);
+            $this->add(155, 169, Util::formatCnab('9', Util::onlyNumbers($boleto->getSacadorAvalista()->getDocumento()), 15));
+            $this->add(170, 209, Util::formatCnab('X', $boleto->getSacadorAvalista()->getNome(), 30));
+        }
 
         return $this;
     }
