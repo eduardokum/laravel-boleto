@@ -179,26 +179,18 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         }
         $this->add(18, 18, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? 2 : 1);
         $this->add(19, 33, Util::formatCnab('9', Util::onlyNumbers($this->getBeneficiario()->getDocumento()), 15));
-        $this->add(34, 63, Util::formatCnab('X', $boleto->getPagador()->getNome(), 30));
-        $this->add(64, 73, '');
+        $this->add(34, 73, Util::formatCnab('X', $boleto->getPagador()->getNome(), 40));
         $this->add(74, 113, Util::formatCnab('X', $boleto->getPagador()->getEndereco(), 40));
         $this->add(114, 128, Util::formatCnab('X', $boleto->getPagador()->getBairro(), 15));
         $this->add(129, 133, Util::formatCnab('9', Util::onlyNumbers($boleto->getPagador()->getCep()), 5));
         $this->add(134, 136, Util::formatCnab('9', Util::onlyNumbers(substr($boleto->getPagador()->getCep(), 6, 9)), 3));
         $this->add(137, 151, Util::formatCnab('X', $boleto->getPagador()->getCidade(), 15));
         $this->add(152, 153, Util::formatCnab('X', $boleto->getPagador()->getUf(), 2));
-        $this->add(154, 154, '1');
-        $this->add(155, 169, '000000000000000');
-        $this->add(170, 199, '');
-        $this->add(200, 209, '');
+        $this->add(154, 154, strlen(Util::onlyNumbers($this->getSacadorAvalista()->getDocumento())) == 14 ? 2 : 1);
+        $this->add(155, 169, $boleto->getSacadorAvalista() ? Util::formatCnab('9', Util::onlyNumbers($boleto->getSacadorAvalista()->getDocumento()), 15) : '000000000000000');
+        $this->add(170, 209, $boleto->getSacadorAvalista() ? Util::formatCnab('X', $boleto->getSacadorAvalista()->getNome(), 40) : '');
         $this->add(210, 212, '000');
         $this->add(213, 240, '');
-
-        if($boleto->getSacadorAvalista()) {
-            $this->add(154, 154, strlen(Util::onlyNumbers($boleto->getSacadorAvalista()->getDocumento())) == 14 ? 2 : 1);
-            $this->add(155, 169, Util::formatCnab('9', Util::onlyNumbers($boleto->getSacadorAvalista()->getDocumento()), 15));
-            $this->add(170, 199, Util::formatCnab('X', $boleto->getSacadorAvalista()->getNome(), 30));
-        }
 
         return $this;
     }
