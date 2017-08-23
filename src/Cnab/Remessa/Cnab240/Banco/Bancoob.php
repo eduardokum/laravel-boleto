@@ -324,7 +324,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         }, 0);
 
         $this->add(1, 3, Util::onlyNumbers($this->getCodigoBanco()));
-        $this->add(4, 7, Util::formatCnab('9', 1, 4));
+        $this->add(4, 7, '0001');
         $this->add(8, 8, '5');
         $this->add(9, 17, '');
         $this->add(18, 23, Util::formatCnab('9', count($this->boletos) + 2, 6));
@@ -333,8 +333,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(47, 52, Util::formatCnab('9', 0, 6));
         $this->add(53, 69, Util::formatCnab('9', 0, 17, 2));
         $this->add(70, 115, Util::formatCnab('9', 0, 46));
-        $this->add(116, 123, '00000000');
-        $this->add(124, 240, '');
+        $this->add(116, 240, '');
 
         return $this;
     }
