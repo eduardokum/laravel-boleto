@@ -109,30 +109,33 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
             $this->add(16, 17, self::OCORRENCIA_ALT_OUTROS_DADOS);
         }
-        $this->add(18, 18, '0');
-        $this->add(19, 22, Util::formatCnab('9', $this->getAgencia(), 4));
-        $this->add(23, 23, '');
-        $this->add(24, 30, '0000000');
-        $this->add(31, 35, Util::formatCnab('9', $this->getConta(), 5));
-        $this->add(36, 36, '');
+        $this->add(18, 22, Util::formatCnab('9', $this->getAgencia(), 5));
+        $this->add(23, 23, CalculoDv::bancoobAgencia($this->getAgencia()));
+        $this->add(24, 35, Util::formatCnab('9', $this->getConta(), 12));
+        $this->add(36, 36, Util::formatCnab('X', $this->getContaDv(), 1));
         $this->add(37, 37, $this->getContaDv());
-        $this->add(38, 40, Util::formatCnab('9', $this->getCarteira(), 3));
-        $this->add(41, 49, Util::formatCnab('9', $boleto->getNossoNumero(), 9));
-        $this->add(50, 57, '');
-        $this->add(58, 62, '00000');
-        $this->add(63, 72, Util::formatCnab('9', $boleto->getNumero(), 10));
-        $this->add(73, 77, '');
+        $this->add(38, 47, Util::formatCnab('9', $boleto->getNossoNumero(), 10));
+        $this->add(48, 49, '01');   //Parcela Única
+        $this->add(50, 51, '01');   //Simples Com Registro
+        $this->add(52, 52, '4');    //A4 Sem Envelopamento
+        $this->add(53, 57, '');
+        $this->add(58, 58, $this->getCarteira());
+        $this->add(59, 59, '0');
+        $this->add(60, 60, '');
+        $this->add(61, 61, '2');
+        $this->add(62, 62, '2');
+        $this->add(63, 77, Util::formatCnab('9', $boleto->getNossoNumero(), 15));
         $this->add(78, 85, $boleto->getDataVencimento()->format('dmY'));
         $this->add(86, 100, Util::formatCnab('9', $boleto->getValor(), 15, 2));
         $this->add(101, 105, '00000');
-        $this->add(106, 106, '0');
+        $this->add(106, 106, '');
         $this->add(107, 108, Util::formatCnab('9', $boleto->getEspecieDocCodigo(), 2));
-        $this->add(109, 109, Util::formatCnab('9', $boleto->getAceite(), 1));
+        $this->add(109, 109, Util::formatCnab('9', $boleto->getAceite() == 'N' ? 'N' : 'A', 1));    //N = Não Aceita     A = Aceite
         $this->add(110, 117, $boleto->getDataDocumento()->format('dmY'));
-        $this->add(118, 118, '0');
+        $this->add(118, 118, ($boleto->getJuros() !== null && $boleto->getJuros() > 0) ? '1' : '0');    //0 = ISENTO | 1 = R$ ao dia | 2 = % ao mês
         $this->add(119, 126, $boleto->getDataVencimento()->format('dmY'));
         $this->add(127, 141, Util::formatCnab('9', $boleto->getMoraDia(), 15, 2)); //Valor da mora/dia ou Taxa mensal
-        $this->add(142, 142, '0');
+        $this->add(142, 142, $boleto->getDesconto() > 0  ? '1' : '0'); //0 = SEM DESCONTO | 1 = VALOR FIXO | 2 = PERCENTUAL
         $this->add(143, 150, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmY') : '00000000');
         $this->add(151, 165, Util::formatCnab('9', $boleto->getDesconto(), 15, 2));
         $this->add(166, 180, Util::formatCnab('9', 0, 15, 2));
@@ -144,8 +147,9 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         }
         $this->add(222, 223, Util::formatCnab('9', $boleto->getDiasProtesto(), 2));
         $this->add(224, 224, '0');
-        $this->add(225, 226, '00');
-        $this->add(227, 239, '0000000000000');
+        $this->add(225, 227, '');
+        $this->add(227, 229, '09');
+        $this->add(230, 239, '0000000000');
         $this->add(240, 240, '');
 
         return $this;
