@@ -32,7 +32,7 @@ Banco | Boleto | Remessa 400 | Remessa 240 | Retorno 400 | Retorno 240
  Bradesco | :white_check_mark: | :white_check_mark: | :white_check_mark: * | :white_check_mark: | |
  Caixa | :white_check_mark: | :white_check_mark: | :white_check_mark: * | :white_check_mark: | |
  Hsbc | :white_check_mark: | :white_check_mark: | | :white_check_mark: | |
- Itau | :white_check_mark: | :white_check_mark: | :white_check_mark: * | :white_check_mark: | |
+ Itau | :white_check_mark: | :white_check_mark: | :white_check_mark: * | :white_check_mark: | :white_check_mark: * |
  Santander | :white_check_mark: | :white_check_mark: | :white_check_mark: * | :white_check_mark: | :white_check_mark: |
  Sicredi | :white_check_mark: | :white_check_mark: | :white_check_mark: * | :white_check_mark: * | |
  Banco do Nordeste | :white_check_mark: * | :white_check_mark: * | | | |
