@@ -7,14 +7,14 @@ use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab240;
 use Eduardokum\LaravelBoleto\Util;
 
-class Bancoob extends AbstractRetorno implements RetornoCnab240
+class Bradesco extends AbstractRetorno implements RetornoCnab240
 {
     /**
      * Código do banco
      *
      * @var string
      */
-    protected $codigoBanco = BoletoContract::COD_BANCO_BANCOOB;
+    protected $codigoBanco = BoletoContract::COD_BANCO_BRADESCO;
 
     /**
      * Array com as ocorrencias do banco;
@@ -35,28 +35,28 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
         '13' => 'Confirmação Recebimento Instrução de Cancelamento Abatimento',
         '14' => 'Confirmação Recebimento Instrução Alteração de Vencimento',
         '15' => 'Franco de Pagamento',
-        '17' => 'Liquidação Após Baixa ou Liquidação Título Não Registrado',
+        '17' => 'Liquidação Após Baixa ou Liquidação Título Não Registrado b/c',
         '19' => 'Confirmação Recebimento Instrução de Protesto',
-        '20' => 'Confirmação Recebimento Instrução de Sustação/Cancelamento de Protesto',
+        '20' => 'Confirmação Recebimento Instrução de Sustação de Protesto',
         '23' => 'Remessa a Cartório (Aponte em Cartório)',
         '24' => 'Retirada de Cartório e Manutenção em Carteira',
         '25' => 'Protestado e Baixado (Baixa por Ter Sido Protestado)',
-        '26' => 'Instrução Rejeitada',
+        '26' => 'Instrução Rejeitada (utilizar serviço Negativação)',
         '27' => 'Confirmação do Pedido de Alteração de Outros Dados',
         '28' => 'Débito de Tarifas/Custas',
-        '29' => 'Ocorrências do Pagador',
+        '29' => 'Ocorrências do Pagador (Não Tratar DDA)',
         '30' => 'Alteração de Dados Rejeitada',
         '33' => 'Confirmação da Alteração dos Dados do Rateio de Crédito',
         '34' => 'Confirmação do Cancelamento dos Dados do Rateio de Crédito',
         '35' => 'Confirmação do Desagendamento do Débito Automático',
-        '36' => 'Confirmação de envio de e-mail/SMS',
-        '37' => 'Envio de e-mail/SMS rejeitado',
-        '38' => 'Confirmação de alteração do Prazo Limite de Recebimento (a data deve ser',
+        '36' => 'Confirmação de envio de e-mail/SMS (Não Tratar)',
+        '37' => 'Envio de e-mail/SMS rejeitado (Não tratar)',
+        '38' => 'Confirmação de alteração do Prazo Limite de Recebimento',
         '39' => 'Confirmação de Dispensa de Prazo Limite de Recebimento',
-        '40' => 'Confirmação da alteração do número do título dado pelo Beneficiário',
+        '40' => 'Confirmação da alteração do número do título dado pelo beneficiario',
         '41' => 'Confirmação da alteração do número controle do Participante',
         '42' => 'Confirmação da alteração dos dados do Pagador',
-        '43' => 'Confirmação da alteração dos dados do Pagadorr/Avalista',
+        '43' => 'Confirmação da alteração dos dados do Sacador/Avalista',
         '44' => 'Título pago com cheque devolvido',
         '45' => 'Título pago com cheque compensado',
         '46' => 'Instrução para cancelar protesto confirmada',
@@ -64,16 +64,42 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
         '48' => 'Confirmação de instrução de transferência de carteira/modalidade de cobrança',
         '49' => 'Alteração de contrato de cobrança',
         '50' => 'Título pago com cheque pendente de liquidação',
-        '51' => 'Título DDA reconhecido pelo Pagador',
-        '52' => 'Título DDA não reconhecido pelo Pagador',
+        '51' => 'Título DDA reconhecido pelo pagador',
+        '52' => 'Título DDA não reconhecido pelo pagador',
         '53' => 'Título DDA recusado pela CIP',
         '54' => 'Confirmação da Instrução de Baixa de Título Negativado sem Protesto',
-        '55' => 'Confirmação de Pedido de Dispensa de Multa',
-        '56' => 'Confirmação do Pedido de Cobrança de Multa',
-        '57' => 'Confirmação do Pedido de Alteração de Cobrança de Juros',
-        '58' => 'Confirmação do Pedido de Alteração do Valor/Data de Desconto',
-        '59' => 'Confirmação do Pedido de Alteração do Beneficiário do Título',
-        '60' => 'Confirmação do Pedido de Dispensa de Juros de Mora',
+        '73' => 'Confirmação recebimento pedido de negativação',
+    ];
+
+    /**
+     * Array com as possiveis descricoes de baixa e liquidacao.
+     *
+     * @var array
+     */
+    private $baixa_liquidacao = [
+        '01' => 'Por Saldo',
+        '02' => 'Por Conta',
+        '03' => 'Liquidação no Guichê de Caixa em Dinheiro',
+        '04' => 'Compensação Eletrônica',
+        '05' => 'Compensação Convencional',
+        '06' => 'Por Meio Eletrônico',
+        '07' => 'Após Feriado Local',
+        '08' => 'Em Cartório',
+        '30' => 'Liquidação no Guichê de Caixa em Cheque',
+        '31' => 'Liquidação em banco correspondente',
+        '32' => 'Liquidação Terminal de Auto-Atendimento',
+        '33' => 'Liquidação na Internet (Home banking)',
+        '34' => 'Liquidado Office Banking',
+        '35' => 'Liquidado Correspondente em Dinheiro',
+        '36' => 'Liquidado Correspondente em Cheque',
+        '37' => 'Liquidado por meio de Central de Atendimento (Telefone) Baixa: PELO BANCO)',
+        '09' => 'Comandada Banco',
+        '10' => 'Comandada Cliente Arquivo',
+        '11' => 'Comandada Cliente On-line',
+        '12' => 'Decurso Prazo - Cliente',
+        '13' => 'Decurso Prazo - Banco',
+        '14' => 'Protestado',
+        '15' => 'Título Excluído',
     ];
 
     /**
@@ -87,7 +113,7 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
         '03' => 'Código do Segmento Inválido',
         '04' => 'Código de Movimento Não Permitido para Carteira',
         '05' => 'Código de Movimento Inválido',
-        '06' => 'Tipo/Número de Inscrição do Cedente Inválidos',
+        '06' => 'Tipo/Número de Inscrição do Beneficiario Inválidos',
         '07' => 'Agência/Conta/DV Inválido',
         '08' => 'Nosso Número Inválido',
         '09' => 'Nosso Número Duplicado',
@@ -99,19 +125,19 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
         '15' => 'Características da Cobrança Incompatíveis',
         '16' => 'Data de Vencimento Inválida',
         '17' => 'Data de Vencimento Anterior a Data de Emissão',
-        '18' => 'Vencimento Fora do Prazo de Operação',
-        '19' => 'Título a Cargo de Bancos Correspondentes com Vencimento Inferior a XX Dias',
+        '18' => 'Vencimento fora do prazo da operação da Operação (indicador registro de títulos vencidos há mais de 59 dias)',
+        '19' => 'Título a cargo de Bancos Correspondentes com vencimento inferior a XX dias',
         '20' => 'Valor do Título Inválido',
         '21' => 'Espécie do Título Inválida',
-        '22' => 'Espécie do Título Não Permitida para a Carteira',
-        '23' => 'Aceite Inválido',
+        '22' => 'Espécie do Título Não permitida para a carteira',
+        '23' => 'Aceita Inválido (Utilizar serviço Negativação)',
         '24' => 'Data da Emissão Inválida',
-        '25' => 'Data da Emissão Posterior a Data de Entrada',
+        '25' => 'Data da Emissão porteior da data de entrada',
         '26' => 'Código de Juros de Mora Inválido',
-        '27' => 'Valor/Taxa de Juros de Mora Inválido',
+        '27' => 'Valor/taxa de Juros de Mora Inválido',
         '28' => 'Código do Desconto Inválido',
-        '29' => 'Valor do Desconto Maior ou Igual ao Valor do Título',
-        '30' => 'Desconto a Conceder Não Confere',
+        '29' => 'Valor do Desconto Maior ou Igual ao Valor do título',
+        '30' => 'Desconto a conceder não confere',
         '31' => 'Concessão de Desconto - Já Existe Desconto Anterior',
         '32' => 'Valor do IOF Inválido',
         '33' => 'Valor do Abatimento Inválido',
@@ -119,23 +145,23 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
         '35' => 'Valor a Conceder Não Confere',
         '36' => 'Concessão de Abatimento - Já Existe Abatimento Anterior',
         '37' => 'Código para Protesto Inválido',
-        '38' => 'Prazo para Protesto Inválido',
-        '39' => 'Pedido de Protesto Não Permitido para o Título',
-        '40' => 'Título com Ordem de Protesto Emitida',
-        '41' => 'Pedido de Cancelamento/Sustação para Títulos sem Instrução de Protesto',
+        '38' => 'Prazo para Protesto/Negativação Inválido (alterado)',
+        '39' => 'Pedido de Protesto/ Negativação Não Permitido para o Título (alterado)',
+        '40' => 'Título com Ordem/pedido de Protesto/Negativação Emitida (o) (alterado)',
+        '41' => 'Pedido de Sustação/Excl p/ Título s/ Instr de Protesto/Negativação (alterado)',
         '42' => 'Código para Baixa/Devolução Inválido',
         '43' => 'Prazo para Baixa/Devolução Inválido',
         '44' => 'Código da Moeda Inválido',
-        '45' => 'Nome do Sacado Não Informado',
-        '46' => 'Tipo/Número de Inscrição do Sacado Inválidos',
-        '47' => 'Endereço do Sacado Não Informado',
+        '45' => 'Nome do Pagador Não Informado',
+        '46' => 'Tipo/Número de Inscrição do Pagador Inválidos',
+        '47' => 'Endereço do Pagador Não Informado',
         '48' => 'CEP Inválido',
         '49' => 'CEP Sem Praça de Cobrança (Não Localizado)',
         '50' => 'CEP Referente a um Banco Correspondente',
         '51' => 'CEP incompatível com a Unidade da Federação',
         '52' => 'Unidade da Federação Inválida',
-        '53' => 'Tipo/Número de Inscrição do Sacador/Avalista Inválidos',
-        '54' => 'Sacador/Avalista Não Informado',
+        '53' => 'Tipo/Número de Inscrição do Pagadorr/Avalista Inválidos',
+        '54' => 'Pagadorr/Avalista Não Informado',
         '55' => 'Nosso número no Banco Correspondente Não Informado',
         '56' => 'Código do Banco Correspondente Não Informado',
         '57' => 'Código da Multa Inválido',
@@ -151,9 +177,9 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
         '67' => 'Dados para Débito incompatível com a Identificação da Emissão do Bloqueto',
         '68' => 'Débito Automático Agendado',
         '69' => 'Débito Não Agendado - Erro nos Dados da Remessa',
-        '70' => 'Débito Não Agendado - Sacado Não Consta do Cadastro de Autorizante',
-        '71' => 'Débito Não Agendado - Cedente Não Autorizado pelo Sacado',
-        '72' => 'Débito Não Agendado - Cedente Não Participa da Modalidade Débito Automático',
+        '70' => 'Débito Não Agendado - Pagador Não Consta do Cadastro de Autorizante',
+        '71' => 'Débito Não Agendado - Beneficiario Não Autorizado pelo Pagador',
+        '72' => 'Débito Não Agendado - Beneficiario Não Participa da Modalidade Débito Automático',
         '73' => 'Débito Não Agendado - Código de Moeda Diferente de Real (R$)',
         '74' => 'Débito Não Agendado - Data Vencimento Inválida',
         '75' => 'Débito Não Agendado, Conforme seu Pedido, Título Não Registrado',
@@ -172,26 +198,19 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
         '88' => 'e-mail Lido',
         '89' => 'e-mail/SMS devolvido - endereço de e-mail ou número do celular incorreto',
         '90' => 'e-mail devolvido - caixa postal cheia',
-        '91' => 'e-mail/número do celular do sacado não informado',
-        '92' => 'Sacado optante por Bloqueto Eletrônico - e-mail não enviado',
+        '91' => 'e-mail/número do celular do pagador não informado',
+        '92' => 'Pagador optante por Bloqueto Eletrônico - e-mail não enviado',
         '93' => 'Código para emissão de bloqueto não permite envio de e-mail',
         '94' => 'Código da Carteira inválido para envio e-mail.',
-        '95' => 'Contrato não permite o envio de e-mail',
-        '96' => 'Número de contrato inválido',
-        '97' => 'Rejeição da alteração do prazo limite de recebimento (a data deve ser informada no campo 28.3.p)',
+        '95' => 'ntrato não permite o envio de e-mail',
+        '96' => 'úmero de contrato inválido',
+        '97' => 'Rejeição da alteração do prazo limite de recebimento',
         '98' => 'Rejeição de dispensa de prazo limite de recebimento',
-        '99' => 'Rejeição da alteração do número do título dado pelo cedente',
+        '99' => 'Rejeição da alteração do número do título dado pelo beneficiario',
         'A1' => 'Rejeição da alteração do número controle do participante',
-        'A2' => 'Rejeição da alteração dos dados do sacado',
-        'A3' => 'Rejeição da alteração dos dados do sacador/avalista',
-        'A4' => 'Sacado DDA',
-        'A5' => 'Registro Rejeitado – Título já Liquidado',
-        'A6' => 'Código do Convenente Inválido ou Encerrado',
-        'A7' => 'Título já se encontra na situação Pretendida',
-        'A8' => 'Valor do Abatimento inválido para cancelamento',
-        'A9' => 'Não autoriza pagamento parcial',
-        'B1' => 'Autoriza recebimento parcial',
-
+        'A2' => 'Rejeição da alteração dos dados do pagador',
+        'A3' => 'Rejeição da alteração dos dados do pagadorr/avalista',
+        'A4' => 'Pagador DDA',
     ];
 
     /**
@@ -223,18 +242,17 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
             ->setTipoRegistro($this->rem(8, 8, $header))
             ->setTipoInscricao($this->rem(18, 18, $header))
             ->setNumeroInscricao($this->rem(19, 32, $header))
-            ->setCodigoCedente($this->rem(33, 52, $header))
             ->setAgencia($this->rem(53, 57, $header))
             ->setAgenciaDv($this->rem(58, 58, $header))
             ->setConta($this->rem(59, 70, $header))
             ->setContaDv($this->rem(71, 71, $header))
+//            ->setContaDv($this->rem(72, 72, $header))
             ->setNomeEmpresa($this->rem(73, 102, $header))
             ->setNomeBanco($this->rem(103, 132, $header))
             ->setCodigoRemessaRetorno($this->rem(143, 143, $header))
             ->setData($this->rem(144, 151, $header))
             ->setNumeroSequencialArquivo($this->rem(158, 163, $header))
-            ->setVersaoLayoutArquivo($this->rem(164, 166, $header))
-            ->setData($this->rem(192, 199, $header));
+            ->setVersaoLayoutArquivo($this->rem(164, 166, $header));
 
         return true;
     }
@@ -256,11 +274,11 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
             ->setVersaoLayoutLote($this->rem(14, 16, $headerLote))
             ->setTipoInscricao($this->rem(18, 18, $headerLote))
             ->setNumeroInscricao($this->rem(19, 33, $headerLote))
-            ->setConvenio($this->rem(34, 53, $headerLote))
             ->setAgencia($this->rem(54, 58, $headerLote))
             ->setAgenciaDv($this->rem(59, 59, $headerLote))
             ->setConta($this->rem(60, 71, $headerLote))
             ->setContaDv($this->rem(72, 72, $headerLote))
+//            ->setContaDv($this->rem(73, 73, $headerLote))
             ->setNomeEmpresa($this->rem(74, 103, $headerLote))
             ->setNumeroRetorno($this->rem(184, 191, $headerLote))
             ->setDataGravacao($this->rem(192, 199, $headerLote))
@@ -297,20 +315,38 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
             /**
              * ocorrencias
             */
-            $msgAdicional = str_split(sprintf('%010s', $this->rem(214, 223, $detalhe)), 2);
-            if ($d->hasOcorrencia('06', '17', '50')) {
+            $msgAdicional = str_split(sprintf('%08s', $this->rem(214, 223, $detalhe)), 2);
+            if ($d->hasOcorrencia('06', '17')) {
                 $this->totais['liquidados']++;
                 $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
+                $ocorrencia = Util::appendStrings(
+                    $d->getOcorrenciaDescricao(),
+                    array_get($this->baixa_liquidacao, $msgAdicional[0], ''),
+                    array_get($this->baixa_liquidacao, $msgAdicional[1], ''),
+                    array_get($this->baixa_liquidacao, $msgAdicional[2], ''),
+                    array_get($this->baixa_liquidacao, $msgAdicional[3], ''),
+                    array_get($this->baixa_liquidacao, $msgAdicional[4], '')
+                );
+                $d->setOcorrenciaDescricao($ocorrencia);
             } elseif ($d->hasOcorrencia('02')) {
                 $this->totais['entradas']++;
                 $d->setOcorrenciaTipo($d::OCORRENCIA_ENTRADA);
             } elseif ($d->hasOcorrencia('09')) {
                 $this->totais['baixados']++;
+                $ocorrencia = Util::appendStrings(
+                    $d->getOcorrenciaDescricao(),
+                    array_get($this->rejeicoes, $msgAdicional[0], ''),
+                    array_get($this->rejeicoes, $msgAdicional[1], ''),
+                    array_get($this->rejeicoes, $msgAdicional[2], ''),
+                    array_get($this->rejeicoes, $msgAdicional[3], ''),
+                    array_get($this->rejeicoes, $msgAdicional[4], '')
+                );
+                $d->setOcorrenciaDescricao($ocorrencia);
                 $d->setOcorrenciaTipo($d::OCORRENCIA_BAIXADA);
             } elseif ($d->hasOcorrencia('25')) {
                 $this->totais['protestados']++;
                 $d->setOcorrenciaTipo($d::OCORRENCIA_PROTESTADA);
-            } elseif ($d->hasOcorrencia('27')) {
+            } elseif ($d->hasOcorrencia('33', '38', '40', '41', '42', '43', '49')) {
                 $this->totais['alterados']++;
                 $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
             } elseif ($d->hasOcorrencia('03', '26', '30')) {

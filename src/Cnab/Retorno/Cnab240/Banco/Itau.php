@@ -325,6 +325,7 @@ class Itau extends AbstractRetorno implements RetornoCnab240
             /**
              * ocorrencias
             */
+            $msgAdicional = str_split(sprintf('%08s', $this->rem(214, 221, $detalhe)), 2);
             if ($d->hasOcorrencia('06', '08', '10')) {
                 $this->totais['liquidados']++;
                 $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
@@ -342,11 +343,12 @@ class Itau extends AbstractRetorno implements RetornoCnab240
                 $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
             } elseif ($d->hasOcorrencia('03', '15', '16', '17', '18')) {
                 $this->totais['erros']++;
-                $errorsRetorno = str_split(sprintf('%08s', $this->rem(214, 221, $detalhe)), 2);
-                $error = array_get($this->rejeicoes[$d->getOcorrencia()], $errorsRetorno[0], '');
-                $error .= array_get($this->rejeicoes[$d->getOcorrencia()], $errorsRetorno[1], '');
-                $error .= array_get($this->rejeicoes[$d->getOcorrencia()], $errorsRetorno[2], '');
-                $error .= array_get($this->rejeicoes[$d->getOcorrencia()], $errorsRetorno[3], '');
+                $error = Util::appendStrings(
+                    array_get($this->rejeicoes, $msgAdicional[0], ''),
+                    array_get($this->rejeicoes, $msgAdicional[1], ''),
+                    array_get($this->rejeicoes, $msgAdicional[2], ''),
+                    array_get($this->rejeicoes, $msgAdicional[3], '')
+                );
                 $d->setError($error);
             } else {
                 $d->setOcorrenciaTipo($d::OCORRENCIA_OUTROS);

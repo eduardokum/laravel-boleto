@@ -931,4 +931,17 @@ final class Util
         }
         throw new \Exception('Objeto inválido, somente Pessoa e Array');
     }
+
+    /**
+     * @return string
+     */
+    public static function appendStrings()
+    {
+        $strings = func_get_args();
+        $appended = null;
+        foreach ($strings as $string) {
+            $appended .= " $string";
+        }
+        return trim($appended);
+    }
 }
