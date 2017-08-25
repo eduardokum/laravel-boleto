@@ -318,7 +318,6 @@ class Bradesco extends AbstractRetorno implements RetornoCnab240
             $msgAdicional = str_split(sprintf('%08s', $this->rem(214, 223, $detalhe)), 2);
             if ($d->hasOcorrencia('06', '17')) {
                 $this->totais['liquidados']++;
-                $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
                 $ocorrencia = Util::appendStrings(
                     $d->getOcorrenciaDescricao(),
                     array_get($this->baixa_liquidacao, $msgAdicional[0], ''),
@@ -328,6 +327,7 @@ class Bradesco extends AbstractRetorno implements RetornoCnab240
                     array_get($this->baixa_liquidacao, $msgAdicional[4], '')
                 );
                 $d->setOcorrenciaDescricao($ocorrencia);
+                $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
             } elseif ($d->hasOcorrencia('02')) {
                 $this->totais['entradas']++;
                 $d->setOcorrenciaTipo($d::OCORRENCIA_ENTRADA);

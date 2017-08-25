@@ -30,7 +30,7 @@ Banco | Boleto | Remessa 400 | Remessa 240 | Retorno 400 | Retorno 240
  Bancoob (Sicoob) | :white_check_mark: * | :white_check_mark: | :white_check_mark: | :white_check_mark: * | :white_check_mark: * |
  Banrisul | :white_check_mark: | :white_check_mark: | :white_check_mark: * | :white_check_mark: | |
  Bradesco | :white_check_mark: | :white_check_mark: | :white_check_mark: * | :white_check_mark: | :white_check_mark: * |
- Caixa | :white_check_mark: | :white_check_mark: | :white_check_mark: * | :white_check_mark: | |
+ Caixa | :white_check_mark: | :white_check_mark: | :white_check_mark: * | :white_check_mark: | :white_check_mark: * |
  Hsbc | :white_check_mark: | :white_check_mark: | | :white_check_mark: | |
  Itau | :white_check_mark: | :white_check_mark: | :white_check_mark: * | :white_check_mark: | :white_check_mark: * |
  Santander | :white_check_mark: | :white_check_mark: | :white_check_mark: * | :white_check_mark: | :white_check_mark: |
