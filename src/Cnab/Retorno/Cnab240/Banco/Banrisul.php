@@ -261,6 +261,9 @@ class Banrisul extends AbstractRetorno implements RetornoCnab240
                 $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
             } elseif ($d->hasOcorrencia('02')) {
                 $this->totais['entradas']++;
+                if(array_search('a4', array_map('strtolower', $msgAdicional)) !== false) {
+                    $d->getPagador()->setDda(true);
+                }
                 $d->setOcorrenciaTipo($d::OCORRENCIA_ENTRADA);
             } elseif ($d->hasOcorrencia('09')) {
                 $this->totais['baixados']++;
