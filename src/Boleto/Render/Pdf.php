@@ -1,4 +1,5 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Boleto\Render;
 
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
@@ -7,10 +8,10 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Pdf extends AbstractPdf implements PdfContract
 {
-    const OUTPUT_STANDARD   = 'I';
-    const OUTPUT_DOWNLOAD   = 'D';
-    const OUTPUT_SAVE       = 'F';
-    const OUTPUT_STRING     = 'S';
+    const OUTPUT_STANDARD = 'I';
+    const OUTPUT_DOWNLOAD = 'D';
+    const OUTPUT_SAVE = 'F';
+    const OUTPUT_STRING = 'S';
 
     private $PadraoFont = 'Arial';
     /**
@@ -29,10 +30,10 @@ class Pdf extends AbstractPdf implements PdfContract
     private $showInstrucoes = true;
 
 
-    private $desc  = 3; // tamanho célula descrição
-    private $cell  = 4; // tamanho célula dado
-    private $fdes  = 6; // tamanho fonte descrição
-    private $fcel  = 8; // tamanho fonte célula
+    private $desc = 3; // tamanho célula descrição
+    private $cell = 4; // tamanho célula dado
+    private $fdes = 6; // tamanho fonte descrição
+    private $fcel = 8; // tamanho fonte célula
     private $small = 0.2; // tamanho barra fina
     private $totalBoletos = 0;
 
@@ -62,16 +63,20 @@ class Pdf extends AbstractPdf implements PdfContract
         }
 
         $this->SetFont($this->PadraoFont, 'B', 8);
-        if($this->showInstrucoes) {
+        if ($this->showInstrucoes) {
             $this->Cell(0, 5, $this->_('Instruções de Impressão'), 0, 1, 'C');
             $this->Ln(5);
             $this->SetFont($this->PadraoFont, '', 6);
-            $this->Cell(0, $this->desc, $this->_('- Imprima em impressora jato de tinta (ink jet) ou laser em qualidade normal ou alta (Não use modo econômico).'), 0, 1, 'L');
-            $this->Cell(0, $this->desc, $this->_('- Utilize folha A4 (210 x 297 mm) ou Carta (216 x 279 mm) e margens mínimas à esquerda e à direita do formulário.'), 0, 1, 'L');
-            $this->Cell(0, $this->desc, $this->_('- Corte na linha indicada. Não rasure, risque, fure ou dobre a região onde se encontra o código de barras.'), 0, 1, 'L');
-            $this->Cell(0, $this->desc, $this->_('- Caso não apareça o código de barras no final, clique em F5 para atualizar esta tela.'), 0, 1, 'L');
-            $this->Cell(0, $this->desc, $this->_('- Caso tenha problemas ao imprimir, copie a seqüencia numérica abaixo e pague no caixa eletrônico ou no internet banking:'), 0, 1, 'L');
-            $this->Ln(6);
+            if (count($this->boleto[$i]->getInstrucoesImpressao()) > 0) {
+                $this->listaLinhas($this->boleto[$i]->getInstrucoesImpressao(), 0);
+            } else {
+                $this->Cell(0, $this->desc, $this->_('- Imprima em impressora jato de tinta (ink jet) ou laser em qualidade normal ou alta (Não use modo econômico).'), 0, 1, 'L');
+                $this->Cell(0, $this->desc, $this->_('- Utilize folha A4 (210 x 297 mm) ou Carta (216 x 279 mm) e margens mínimas à esquerda e à direita do formulário.'), 0, 1, 'L');
+                $this->Cell(0, $this->desc, $this->_('- Corte na linha indicada. Não rasure, risque, fure ou dobre a região onde se encontra o código de barras.'), 0, 1, 'L');
+                $this->Cell(0, $this->desc, $this->_('- Caso não apareça o código de barras no final, clique em F5 para atualizar esta tela.'), 0, 1, 'L');
+                $this->Cell(0, $this->desc, $this->_('- Caso tenha problemas ao imprimir, copie a seqüencia numérica abaixo e pague no caixa eletrônico ou no internet banking:'), 0, 1, 'L');
+            }
+            $this->Ln(4);
 
             $this->SetFont($this->PadraoFont, '', $this->fcel);
             $this->Cell(25, $this->cell, $this->_('Linha Digitável: '), 0, 0);
@@ -351,7 +356,7 @@ class Pdf extends AbstractPdf implements PdfContract
     }
 
     /**
-     * @param      string  $texto
+     * @param      string $texto
      * @param integer $ln
      * @param integer $ln2
      */
@@ -384,13 +389,13 @@ class Pdf extends AbstractPdf implements PdfContract
      * Addiciona o boletos
      *
      * @param array $boletos
-     * @param bool  $withGroup
+     * @param bool $withGroup
      *
      * @return $this
      */
     public function addBoletos(array $boletos, $withGroup = true)
     {
-        if($withGroup) {
+        if ($withGroup) {
             $this->StartPageGroup();
         }
 
@@ -418,14 +423,17 @@ class Pdf extends AbstractPdf implements PdfContract
     /**
      * @return $this
      */
-    public function hideInstrucoes() {
+    public function hideInstrucoes()
+    {
         $this->showInstrucoes = false;
         return $this;
     }
+
     /**
      * @return $this
      */
-    public function showPrint() {
+    public function showPrint()
+    {
         $this->print = true;
         return $this;
     }
@@ -433,8 +441,8 @@ class Pdf extends AbstractPdf implements PdfContract
     /**
      * função para gerar o boleto
      *
-     * @param string $dest      tipo de destino const BOLETOPDF_DEST_STANDARD | BOLETOPDF_DEST_DOWNLOAD | BOLETOPDF_DEST_SAVE | BOLETOPDF_DEST_STRING
-     * @param null   $save_path
+     * @param string $dest tipo de destino const BOLETOPDF_DEST_STANDARD | BOLETOPDF_DEST_DOWNLOAD | BOLETOPDF_DEST_SAVE | BOLETOPDF_DEST_STRING
+     * @param null $save_path
      *
      * @return string
      * @throws \Exception
@@ -467,7 +475,7 @@ class Pdf extends AbstractPdf implements PdfContract
     {
         foreach ($lista as $d) {
             $pulaLinha -= 2;
-            $this->Cell(0, $this->cell-0.2, $this->_(preg_replace('/(%)/', '%$1', $d)), 0, 1);
+            $this->Cell(0, $this->cell - 0.2, $this->_(preg_replace('/(%)/', '%$1', $d)), 0, 1);
         }
 
         return $pulaLinha;
