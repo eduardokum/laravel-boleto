@@ -143,7 +143,7 @@ class Html implements HtmlContract
         }
 
         view()->addNamespace('BoletoHtmlRender', realpath(__DIR__ . '/view/'));
-        return view('BoletoHtmlRender::carne', [
+        return view('BoletoHtmlRender::boleto', [
             'boletos' => $this->boleto,
             'css' => $this->writeCss(),
             'imprimir_carregamento' => (bool) $this->print,
