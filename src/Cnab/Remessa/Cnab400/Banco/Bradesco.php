@@ -147,7 +147,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     {
         $this->iniciaDetalhe();
 
-        $beneficiario_id =  Util::formatCnab('9', $this->getCarteiraNumero(), 3) .
+        $beneficiario_id =  Util::formatCnab('9', $this->getCarteiraNumero(), 4) .
             Util::formatCnab('9', $this->getAgencia(), 5) .
             Util::formatCnab('9', $this->getConta(), 7) .
             Util::formatCnab('9', $this->getContaDv() ?: CalculoDV::bradescoContaCorrente($this->getConta()), 1);
