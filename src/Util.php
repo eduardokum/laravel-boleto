@@ -931,4 +931,19 @@ final class Util
         }
         throw new \Exception('Objeto inválido, somente Pessoa e Array');
     }
+
+    /**
+     * Retorna a data do arquivo CNAB da Sicred em formato aceito pelo Carbon
+     *
+     * @param $date (yyyymmdd)
+     *
+     * @return string (yyyy-mm-dd)
+     */
+    public static function formatDateSicred($date)
+    {
+        if(strlen(trim($date)) == 6)
+            return substr($date, 0, 4) . '-' . substr($date, 4, 2) . '-' . substr($date, 6, 2);
+        else
+            return false;
+    }
 }
