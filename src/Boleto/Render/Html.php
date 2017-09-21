@@ -150,4 +150,25 @@ class Html implements HtmlContract
             'mostrar_instrucoes' => (bool) $this->showInstrucoes,
         ])->render();
     }
+
+      /**
+     * função para gerar o carne
+     *
+     * @return string
+     * @throws \Throwable'
+     */
+    public function gerarCarne()
+    {
+        if (count($this->boleto) == 0) {
+            throw new \Exception('Nenhum Boleto adicionado');
+        }
+
+        view()->addNamespace('BoletoHtmlRender', realpath(__DIR__ . '/view/'));
+        return view('BoletoHtmlRender::carne', [
+            'boletos' => $this->boleto,
+            'css' => $this->writeCss(),
+            'imprimir_carregamento' => (bool) $this->print,
+            'mostrar_instrucoes' => (bool) $this->showInstrucoes,
+        ])->render();
+    }
 }
