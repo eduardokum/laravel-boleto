@@ -59,6 +59,51 @@ class Santander  extends AbstractBoleto implements BoletoContract
     public $variaveis_adicionais = [
         'esconde_uso_banco' => true,
     ];
+
+    /**
+     * Código do cliente.
+     *
+     * @var int
+     */
+    protected $codigoCliente;
+
+    /**
+     * Retorna o campo Agência/Beneficiário do boleto
+     *
+     * @return string
+     */
+    public function getAgenciaCodigoBeneficiario()
+    {
+        $agencia = $this->getAgenciaDv() !== null ? $this->getAgencia() . '-' . $this->getAgenciaDv() : $this->getAgencia();
+        $codigoCliente = $this->getCodigoCliente();
+
+        return $agencia . ' / ' . $codigoCliente;
+    }
+
+    /**
+     * Retorna o código do cliente.
+     *
+     * @return int
+     */
+    public function getCodigoCliente()
+    {
+        return $this->codigoCliente;
+    }
+
+    /**
+     * Define o código do cliente.
+     *
+     * @param int $codigoCliente
+     *
+     * @return AbstractBoleto
+     */
+    public function setCodigoCliente($codigoCliente)
+    {
+        $this->codigoCliente = $codigoCliente;
+
+        return $this;
+    }
+
     /**
      * Define o código da carteira (Com ou sem registro)
      *
