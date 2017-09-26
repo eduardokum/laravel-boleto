@@ -349,7 +349,7 @@ class BoletoTest extends TestCase
                 'diasBaixaAutomatica' => 15,
                 'carteira' => 101,
                 'agencia' => 1111,
-                'conta' => 99999999,
+                'codigoCliente' => 9999999,
                 'descricaoDemonstrativo' => ['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'],
                 'instrucoes' =>  ['instrucao 1', 'instrucao 2', 'instrucao 3'],
                 'aceite' => 'S',
