@@ -493,6 +493,19 @@ final class Util
     }
 
     /**
+     * @param        $valor
+     * @param int $tamanho
+     * @param string $sFill
+     *
+     * @return string
+     */
+    public static function formatContaCnab($valor, $tamanho = 8, $sFill = '0')
+    {
+        $valor = self::onlyNumbers($valor);
+        return sprintf("%{$sFill}{$tamanho}s", mb_substr($valor, 0, $tamanho - 1));
+    }
+
+    /**
      * @param        Carbon|string $date
      * @param string $format
      *
