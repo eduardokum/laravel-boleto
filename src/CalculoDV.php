@@ -173,9 +173,14 @@ class CalculoDV
     | 104 - Caixa Econômica Federal
     |--------------------------------------------------------------------------
     */
+    public static function cefAgencia($agencia)
+    {
+        return Util::modulo11(Util::numberFormatGeral($agencia, 5));
+    }
+
     public static function cefContaCorrente($agencia, $contaCorrente)
     {
-        $n = Util::numberFormatGeral($agencia, 4)
+        $n = Util::numberFormatGeral($agencia, 5)
             . Util::numberFormatGeral($contaCorrente, 11);
         return Util::modulo11($n);
     }

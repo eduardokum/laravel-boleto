@@ -164,22 +164,7 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
         ];
 
         foreach ($this->detalhe as $detalhe) {
-            $arr = [
-                'ocorrenciaTipo' => $detalhe->getOcorrenciaTipo(),
-                'ocorrenciaDescricao' => $detalhe->getOcorrenciaDescricao(),
-                'segmentoT' => $detalhe->getSegmentoT()->toArray(),
-                'segmentoU' => $detalhe->getSegmentoU()->toArray(),
-                'segmentoY' => $detalhe->getSegmentoY()->toArray(),
-            ];
-
-            if ($detalhe->getOcorrenciaTipo() == 9) {
-                $arr['error'] = [
-                    'message' => $detalhe->getError(),
-                    'code' => $detalhe->getErrorCode(),
-                ];
-            }
-
-            $array['detalhes']->push($arr);
+            $array['detalhes']->push($detalhe->toArray());
         }
         return $array;
     }

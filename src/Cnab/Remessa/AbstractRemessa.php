@@ -29,6 +29,11 @@ abstract class AbstractRemessa
     ];
 
     /**
+     * @var array
+     */
+    protected $boletos = [];
+
+    /**
      * Código do banco
      *
      * @var string

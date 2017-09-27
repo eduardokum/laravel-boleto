@@ -222,11 +222,15 @@ class Santander extends AbstractRetorno implements RetornoCnab240
             /**
              * ocorrencias
             */
+            $msgAdicional = str_split(sprintf('%010s', $this->rem(209, 218, $detalhe)), 2);
             if ($d->hasOcorrencia('06', '09', '17')) {
                 $this->totais['liquidados']++;
                 $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
             } elseif ($d->hasOcorrencia('02')) {
                 $this->totais['entradas']++;
+                if(array_search('a4', array_map('strtolower', $msgAdicional)) !== false) {
+                    $d->getPagador()->setDda(true);
+                }
                 $d->setOcorrenciaTipo($d::OCORRENCIA_ENTRADA);
             } elseif ($d->hasOcorrencia('09')) {
                 $this->totais['baixados']++;
@@ -239,12 +243,13 @@ class Santander extends AbstractRetorno implements RetornoCnab240
                 $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
             } elseif ($d->hasOcorrencia('03', '26', '30')) {
                 $this->totais['erros']++;
-                $errorsRetorno = str_split(sprintf('%010s', $this->rem(209, 218, $detalhe)), 2);
-                $error = array_get($this->rejeicoes, $errorsRetorno[0], '');
-                $error .= array_get($this->rejeicoes, $errorsRetorno[1], '');
-                $error .= array_get($this->rejeicoes, $errorsRetorno[2], '');
-                $error .= array_get($this->rejeicoes, $errorsRetorno[3], '');
-                $error .= array_get($this->rejeicoes, $errorsRetorno[4], '');
+                $error = Util::appendStrings(
+                    array_get($this->rejeicoes, $msgAdicional[0], ''),
+                    array_get($this->rejeicoes, $msgAdicional[1], ''),
+                    array_get($this->rejeicoes, $msgAdicional[2], ''),
+                    array_get($this->rejeicoes, $msgAdicional[3], ''),
+                    array_get($this->rejeicoes, $msgAdicional[4], '')
+                );
                 $d->setError($error);
             } else {
                 $d->setOcorrenciaTipo($d::OCORRENCIA_OUTROS);

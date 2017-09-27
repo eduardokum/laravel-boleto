@@ -11,7 +11,7 @@ class Santander  extends AbstractBoleto implements BoletoContract
     public function __construct(array $params = [])
     {
         parent::__construct($params);
-        $this->setCamposObrigatorios('numero', 'conta', 'carteira');
+        $this->setCamposObrigatorios('numero', 'codigoCliente', 'carteira');
     }
 
     /**
@@ -59,6 +59,51 @@ class Santander  extends AbstractBoleto implements BoletoContract
     public $variaveis_adicionais = [
         'esconde_uso_banco' => true,
     ];
+
+    /**
+     * Código do cliente.
+     *
+     * @var int
+     */
+    protected $codigoCliente;
+
+    /**
+     * Retorna o campo Agência/Beneficiário do boleto
+     *
+     * @return string
+     */
+    public function getAgenciaCodigoBeneficiario()
+    {
+        $agencia = $this->getAgenciaDv() !== null ? $this->getAgencia() . '-' . $this->getAgenciaDv() : $this->getAgencia();
+        $codigoCliente = $this->getCodigoCliente();
+
+        return $agencia . ' / ' . $codigoCliente;
+    }
+
+    /**
+     * Retorna o código do cliente.
+     *
+     * @return int
+     */
+    public function getCodigoCliente()
+    {
+        return $this->codigoCliente;
+    }
+
+    /**
+     * Define o código do cliente.
+     *
+     * @param int $codigoCliente
+     *
+     * @return AbstractBoleto
+     */
+    public function setCodigoCliente($codigoCliente)
+    {
+        $this->codigoCliente = $codigoCliente;
+
+        return $this;
+    }
+
     /**
      * Define o código da carteira (Com ou sem registro)
      *
@@ -139,7 +184,7 @@ class Santander  extends AbstractBoleto implements BoletoContract
         if ($this->campoLivre) {
             return $this->campoLivre;
         }
-        return $this->campoLivre = '9' . Util::numberFormatGeral($this->getConta(), 7)
+        return $this->campoLivre = '9' . Util::numberFormatGeral($this->getCodigoCliente(), 7)
             . Util::numberFormatGeral($this->getNossoNumero(), 13)
             . Util::numberFormatGeral($this->getIos(), 1)
             . Util::numberFormatGeral($this->getCarteira(), 3);

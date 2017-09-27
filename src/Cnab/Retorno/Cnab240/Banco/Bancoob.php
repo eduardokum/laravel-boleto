@@ -248,23 +248,23 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
     protected function processarHeaderLote(array $headerLote)
     {
         $this->getHeaderLote()
-            ->setCodBanco($this->rem(1, 3, $header))
+            ->setCodBanco($this->rem(1, 3, $headerLote))
             ->setNumeroLoteRetorno($this->rem(4, 7, $headerLote))
             ->setTipoRegistro($this->rem(8, 8, $headerLote))
             ->setTipoOperacao($this->rem(9, 9, $headerLote))
             ->setTipoServico($this->rem(10, 11, $headerLote))
             ->setVersaoLayoutLote($this->rem(14, 16, $headerLote))
-            ->setTipoInscricao($this->rem(18, 18, $header))
-            ->setNumeroInscricao($this->rem(19, 33, $header))
-            ->setConvenio($this->rem(34, 53, $header))
-            ->setAgencia($this->rem(54, 58, $header))
-            ->setAgenciaDv($this->rem(59, 59, $header))
-            ->setConta($this->rem(60, 71, $header))
-            ->setContaDv($this->rem(72, 72, $header))
-            ->setNomeEmpresa($this->rem(74, 103, $header))
-            ->setNumeroRetorno($this->rem(184, 191, $header))
-            ->setDataGravacao($this->rem(192, 199, $header))
-            ->setDataCredito($this->rem(200, 207, $header));
+            ->setTipoInscricao($this->rem(18, 18, $headerLote))
+            ->setNumeroInscricao($this->rem(19, 33, $headerLote))
+            ->setConvenio($this->rem(34, 53, $headerLote))
+            ->setAgencia($this->rem(54, 58, $headerLote))
+            ->setAgenciaDv($this->rem(59, 59, $headerLote))
+            ->setConta($this->rem(60, 71, $headerLote))
+            ->setContaDv($this->rem(72, 72, $headerLote))
+            ->setNomeEmpresa($this->rem(74, 103, $headerLote))
+            ->setNumeroRetorno($this->rem(184, 191, $headerLote))
+            ->setDataGravacao($this->rem(192, 199, $headerLote))
+            ->setDataCredito($this->rem(200, 207, $headerLote));
 
         return true;
     }
@@ -297,11 +297,15 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
             /**
              * ocorrencias
             */
+            $msgAdicional = str_split(sprintf('%010s', $this->rem(214, 223, $detalhe)), 2);
             if ($d->hasOcorrencia('06', '17', '50')) {
                 $this->totais['liquidados']++;
                 $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
             } elseif ($d->hasOcorrencia('02')) {
                 $this->totais['entradas']++;
+                if(array_search('a4', array_map('strtolower', $msgAdicional)) !== false) {
+                    $d->getPagador()->setDda(true);
+                }
                 $d->setOcorrenciaTipo($d::OCORRENCIA_ENTRADA);
             } elseif ($d->hasOcorrencia('09')) {
                 $this->totais['baixados']++;
@@ -314,12 +318,13 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
                 $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
             } elseif ($d->hasOcorrencia('03', '26', '30')) {
                 $this->totais['erros']++;
-                $errorsRetorno = str_split(sprintf('%010s', $this->rem(214, 223, $detalhe)), 2);
-                $error = array_get($this->rejeicoes, $errorsRetorno[0], '');
-                $error .= array_get($this->rejeicoes, $errorsRetorno[1], '');
-                $error .= array_get($this->rejeicoes, $errorsRetorno[2], '');
-                $error .= array_get($this->rejeicoes, $errorsRetorno[3], '');
-                $error .= array_get($this->rejeicoes, $errorsRetorno[4], '');
+                $error = Util::appendStrings(
+                    array_get($this->rejeicoes, $msgAdicional[0], ''),
+                    array_get($this->rejeicoes, $msgAdicional[1], ''),
+                    array_get($this->rejeicoes, $msgAdicional[2], ''),
+                    array_get($this->rejeicoes, $msgAdicional[3], ''),
+                    array_get($this->rejeicoes, $msgAdicional[4], '')
+                );
                 $d->setError($error);
             } else {
                 $d->setOcorrenciaTipo($d::OCORRENCIA_OUTROS);

@@ -118,6 +118,10 @@ class Bradesco extends AbstractRemessa implements RemessaContract
         return $this;
     }
 
+    /**
+     * @return $this
+     * @throws \Exception
+     */
     protected function header()
     {
         $this->iniciaHeader();
@@ -141,10 +145,15 @@ class Bradesco extends AbstractRemessa implements RemessaContract
         return $this;
     }
 
-
-
+    /**
+     * @param BoletoContract $boleto
+     *
+     * @return $this
+     * @throws \Exception
+     */
     public function addBoleto(BoletoContract $boleto)
     {
+        $this->boletos[] = $boleto;
         $this->iniciaDetalhe();
 
         $beneficiario_id =  Util::formatCnab('9', $this->getCarteiraNumero(), 4) .
@@ -195,27 +204,27 @@ class Bradesco extends AbstractRemessa implements RemessaContract
             $this->add(157, 158, self::INSTRUCAO_DEVOLVER_XX);
             $this->add(159, 160, Util::formatCnab('9', $boleto->getDiasBaixaAutomatica(), 2));
         }
-        $juros = 0;
-        if ($boleto->getJuros() > 0) {
-            $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
-        }
-        $this->add(161, 173, Util::formatCnab('9', $juros, 13, 2));
+        $this->add(161, 173, Util::formatCnab('9', $boleto->getMoraDia(), 13, 2));
         $this->add(174, 179, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmy') : '000000');
         $this->add(180, 192, Util::formatCnab('9', $boleto->getDesconto(), 13, 2));
         $this->add(193, 205, Util::formatCnab('9', 0, 13, 2));
         $this->add(206, 218, Util::formatCnab('9', 0, 13, 2));
         $this->add(219, 220, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? '02' : '01');
-        $this->add(221, 234, Util::formatCnab('9L', $boleto->getPagador()->getDocumento(), 14));
+        $this->add(221, 234, Util::formatCnab('9', Util::onlyNumbers($boleto->getPagador()->getDocumento()), 14));
         $this->add(235, 274, Util::formatCnab('X', $boleto->getPagador()->getNome(), 40));
         $this->add(275, 314, Util::formatCnab('X', $boleto->getPagador()->getEndereco(), 40));
         $this->add(315, 326, Util::formatCnab('X', $boleto->getPagador()->getBairro(), 12));
-        $this->add(327, 334, Util::formatCnab('9L', $boleto->getPagador()->getCep(), 8));
+        $this->add(327, 334, Util::formatCnab('9', Util::onlyNumbers($boleto->getPagador()->getCep()), 8));
         $this->add(335, 394, Util::formatCnab('X', $boleto->getSacadorAvalista() ? $boleto->getSacadorAvalista()->getNome() : '', 60));
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
 
         return $this;
     }
 
+    /**
+     * @return $this
+     * @throws \Exception
+     */
     protected function trailer()
     {
         $this->iniciaTrailer();

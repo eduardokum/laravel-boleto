@@ -135,6 +135,10 @@ class Itau extends AbstractRemessa implements RemessaContract
      */
     protected $fimArquivo = "\r\n";
 
+    /**
+     * @return $this
+     * @throws \Exception
+     */
     protected function header()
     {
         $this->iniciaHeader();
@@ -159,13 +163,20 @@ class Itau extends AbstractRemessa implements RemessaContract
         return $this;
     }
 
+    /**
+     * @param BoletoContract $boleto
+     *
+     * @return $this
+     * @throws \Exception
+     */
     public function addBoleto(BoletoContract $boleto)
     {
+        $this->boletos[] = $boleto;
         $this->iniciaDetalhe();
 
         $this->add(1, 1, '1');
         $this->add(2, 3, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? '02' : '01');
-        $this->add(4, 17, Util::formatCnab('9L', $this->getBeneficiario()->getDocumento(), 14));
+        $this->add(4, 17, Util::formatCnab('9', Util::onlyNumbers($this->getBeneficiario()->getDocumento()), 14));
         $this->add(18, 21, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(22, 23, '00');
         $this->add(24, 28, Util::formatCnab('9', $this->getConta(), 5));
@@ -200,22 +211,18 @@ class Itau extends AbstractRemessa implements RemessaContract
         } elseif ($boleto->getDiasBaixaAutomatica() > 0) {
             $this->add(157, 158, self::INSTRUCAO_DEVOL_VENC_XX);
         }
-        $juros = 0;
-        if ($boleto->getJuros() > 0) {
-            $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
-        }
-        $this->add(161, 173, Util::formatCnab('9', $juros, 13, 2));
+        $this->add(161, 173, Util::formatCnab('9', $boleto->getMoraDia(), 13, 2));
         $this->add(174, 179, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmy') : '000000');
         $this->add(180, 192, Util::formatCnab('9', $boleto->getDesconto(), 13, 2));
         $this->add(193, 205, Util::formatCnab('9', 0, 13, 2));
         $this->add(206, 218, Util::formatCnab('9', 0, 13, 2));
         $this->add(219, 220, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? '02' : '01');
-        $this->add(221, 234, Util::formatCnab('9L', $boleto->getPagador()->getDocumento(), 14));
+        $this->add(221, 234, Util::formatCnab('9', Util::onlyNumbers($boleto->getPagador()->getDocumento()), 14));
         $this->add(235, 264, Util::formatCnab('X', $boleto->getPagador()->getNome(), 30));
         $this->add(265, 274, '');
         $this->add(275, 314, Util::formatCnab('X', $boleto->getPagador()->getEndereco(), 40));
         $this->add(315, 326, Util::formatCnab('X', $boleto->getPagador()->getBairro(), 12));
-        $this->add(327, 334, Util::formatCnab('9L', $boleto->getPagador()->getCep(), 8));
+        $this->add(327, 334, Util::formatCnab('9', Util::onlyNumbers($boleto->getPagador()->getCep()), 8));
         $this->add(335, 349, Util::formatCnab('X', $boleto->getPagador()->getCidade(), 15));
         $this->add(350, 351, Util::formatCnab('X', $boleto->getPagador()->getUf(), 2));
         $this->add(352, 381, Util::formatCnab('X', $boleto->getSacadorAvalista() ? $boleto->getSacadorAvalista()->getNome() : '', 30));
@@ -230,8 +237,8 @@ class Itau extends AbstractRemessa implements RemessaContract
             // Inicia uma nova linha de detalhe e marca com a atual de edição
             $this->iniciaDetalhe();
             // Campo adicional para a multa
-            $this->add(1, 1, Util::formatCnab('9', '2', 1)); // Adicional Multa
-            $this->add(2, 2, Util::formatCnab('X', '2', 1)); // Cód 2 = Informa Valor em percentual
+            $this->add(1, 1, 2); // Adicional Multa
+            $this->add(2, 2, 2); // Cód 2 = Informa Valor em percentual
             $this->add(3, 10, $boleto->getDataVencimento()->format('dmY')); // Data da multa
             $this->add(11, 23, Util::formatCnab('9', Util::nFloat($boleto->getMulta(), 2), 13));
             $this->add(24, 394, '');
@@ -241,6 +248,10 @@ class Itau extends AbstractRemessa implements RemessaContract
         return $this;
     }
 
+    /**
+     * @return $this
+     * @throws \Exception
+     */
     protected function trailer()
     {
         $this->iniciaTrailer();

@@ -108,6 +108,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
 
     public function addBoleto(BoletoContract $boleto)
     {
+        $this->boletos[] = $boleto;
         if (!$boleto->isComRegistro()) {
             return $this;
         }
@@ -121,7 +122,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(5, 16, '');
         $this->add(17, 17, 'A');
         $this->add(18, 18, 'A');
-        $this->add(19, 19, 'B');
+        $this->add(19, 19, 'A');
         $this->add(20, 47, '');
         $this->add(48, 56, Util::formatCnab('9', $boleto->getNossoNumero(), 9));
         $this->add(57, 62, '');
@@ -156,7 +157,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
             $this->add(157, 158, self::INSTRUCAO_PROTESTO);
             $this->add(159, 160, Util::formatCnab('9', $boleto->getDiasProtesto(), 2));
         }
-        $this->add(161, 173, Util::formatCnab('9', $boleto->getJuros(), 13, 2));
+        $this->add(161, 173, Util::formatCnab('9', $boleto->getMoraDia(), 13, 2));
         $this->add(174, 179, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmy') : '000000');
         $this->add(180, 192, Util::formatCnab('9', $boleto->getDesconto(), 13, 2));
         $this->add(193, 205, Util::formatCnab('9', 0, 13, 2));

@@ -2,7 +2,6 @@
 namespace Eduardokum\LaravelBoleto;
 
 use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
-use Eduardokum\LaravelBoleto\Util;
 
 class Pessoa implements PessoaContract
 {
@@ -34,6 +33,11 @@ class Pessoa implements PessoaContract
      * @var string
      */
     protected $documento;
+
+    /**
+     * @var boolean
+     */
+    protected $dda = false;
 
     /**
      * Cria a pessoa passando os parametros.
@@ -251,6 +255,23 @@ class Pessoa implements PessoaContract
     }
 
     /**
+     * @return bool
+     */
+    public function isDda() {
+        return $this->dda;
+    }
+
+    /**
+     * @param bool $dda
+     *
+     * @return Pessoa
+     */
+    public function setDda($dda) {
+        $this->dda = $dda;
+
+        return $this;
+    }
+    /**
      * @return array
      */
     public function toArray()
@@ -265,6 +286,7 @@ class Pessoa implements PessoaContract
             'documento' => $this->getDocumento(),
             'nome_documento' => $this->getNomeDocumento(),
             'endereco2' => $this->getCepCidadeUf(),
+            'dda' => $this->isDda(),
         ];
     }
 }
