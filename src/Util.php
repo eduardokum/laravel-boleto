@@ -494,15 +494,15 @@ final class Util
 
     /**
      * @param        $valor
+     * @param int $shift
      * @param int $tamanho
      * @param string $sFill
      *
      * @return string
      */
-    public static function formatContaCnab($valor, $tamanho = 8, $sFill = '0')
+    public static function formatContaCnab($valor, $shift = 1, $tamanho = 8, $sFill = '0')
     {
-        $valor = self::onlyNumbers($valor);
-        return sprintf("%{$sFill}{$tamanho}s", mb_substr($valor, 0, $tamanho - 1));
+        return sprintf("%{$sFill}{$tamanho}s", mb_substr($valor, 0, $tamanho - $shift));
     }
 
     /**
