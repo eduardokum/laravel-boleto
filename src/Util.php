@@ -493,6 +493,19 @@ final class Util
     }
 
     /**
+     * @param        $valor
+     * @param int $shift
+     * @param int $tamanho
+     * @param string $sFill
+     *
+     * @return string
+     */
+    public static function formatContaCnab($valor, $shift = 1, $tamanho = 8, $sFill = '0')
+    {
+        return sprintf("%{$sFill}{$tamanho}s", mb_substr($valor, 0, $tamanho - $shift));
+    }
+
+    /**
      * @param        Carbon|string $date
      * @param string $format
      *
