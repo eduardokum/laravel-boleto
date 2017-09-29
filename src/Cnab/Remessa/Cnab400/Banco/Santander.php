@@ -1,6 +1,7 @@
 <?php
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
+use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
@@ -109,7 +110,7 @@ class Santander extends AbstractRemessa implements RemessaContract
     {
         return Util::formatCnab('9', $this->getAgencia(), 4)
             . Util::formatCnab('9', $this->getCodigoCliente(), 8)
-            . Util::formatCnab('9', substr($this->getConta(), 0, -1), 8);
+            . Util::formatCnab('9', $this->getConta(), 8);
     }
 
     /**
@@ -203,7 +204,7 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(352, 381, Util::formatCnab('X', $boleto->getSacadorAvalista() ? $boleto->getSacadorAvalista()->getNome() : '', 30));
         $this->add(382, 382, '');
         $this->add(383, 383, 'I');
-        $this->add(384, 385, substr($this->getConta(), -2));
+        $this->add(384, 385, substr($this->getConta(), -1) . CalculoDV::santanderContaCorrente($this->getAgencia(), $this->getConta()));
         $this->add(386, 391, '');
         $this->add(392, 393, Util::formatCnab('9', $boleto->getDiasProtesto('0'), 2));
         $this->add(394, 394, '');
