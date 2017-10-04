@@ -193,7 +193,7 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(8, 8, '0');
         $this->add(9, 16, '');
         $this->add(17, 17, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? '2' : '1');
-        $this->add(18, 32, Util::formatCnab('9', Util::onlyNumbers($this->getBeneficiario()->getDocumento()), 14));
+        $this->add(18, 32, Util::formatCnab('9', Util::onlyNumbers($this->getBeneficiario()->getDocumento()), 15));
         $this->add(33, 47, Util::formatCnab('9', $this->getCodigoTransmissao(), 15));
         $this->add(48, 72, '');
         $this->add(73, 102, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
@@ -243,7 +243,7 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(14, 16, Util::formatCnab('9', '030', 3));
         $this->add(17, 17, '');
         $this->add(18, 18, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? '2' : '1');
-        $this->add(19, 33, Util::formatCnab('9', Util::onlyNumbers($this->getBeneficiario()->getDocumento()), 14));
+        $this->add(19, 33, Util::formatCnab('9', Util::onlyNumbers($this->getBeneficiario()->getDocumento()), 15));
         $this->add(34, 53, '');
         $this->add(54, 68, Util::formatCnab('9', $this->getCodigoTransmissao(), 15));
         $this->add(69, 73, '');
