@@ -67,6 +67,41 @@ Ou adicione manualmente ao seu composer.json:
 "eduardokum/laravel-boleto": "dev-master"
 ```
 
+## Problemas conhecidos
+
+Caso esteja usando o laravel com versão inferior a 5.3, precisa adicionar no seu *AppServiceProvider* as seguintes linhas:
+```php
+// O laravel não tem a diretiva @php que usa para fazer o extract das variaveis na view HTML.
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * Perform post-registration booting of services.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        Blade::directive('php', function($expression) {
+        	return $expression ? "<?php {$expression}; ?>" : '<?php ';
+        });
+        
+        Blade::directive('endphp', function($expression) {
+        	return ' ?>';
+        });
+    }
+
+    /**
+     * Register bindings in the container.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        //
+    }
+}
+```
+
 ## Gerar boleto
 
 
