@@ -1,6 +1,7 @@
 <?php
 namespace Eduardokum\LaravelBoleto\Boleto\Render;
 
+use Eduardokum\LaravelBoleto\Blade;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use \Eduardokum\LaravelBoleto\Contracts\Boleto\Render\Html as HtmlContract;
 
@@ -20,6 +21,38 @@ class Html implements HtmlContract
      * @var bool
      */
     private $showInstrucoes = true;
+
+    /**
+     * @var \Illuminate\View\Factory
+     */
+    private $blade = null;
+
+    /**
+     * @return \Illuminate\View\Factory
+     * @throws \Exception
+     */
+    private function getBlade() {
+        if (!is_null($this->blade)) {
+            return $this->blade;
+        }
+
+        if (!is_null(\Illuminate\Container\Container::getInstance()))  {
+            view()->addNamespace('BoletoHtmlRender', realpath(__DIR__ . '/view/'));
+            $this->blade = view();
+        } else {
+            $blade = new Blade(realpath(__DIR__ . '/view/'), realpath(__DIR__ . '/cache/'));
+            $blade->view()->addNamespace('BoletoHtmlRender', realpath(__DIR__ . '/view/'));
+            $this->blade = $blade->view();
+        }
+        $blade = $this->blade->getEngineResolver()->resolve('blade')->getCompiler();
+        $blade->directive('php', function($expression) {
+                    return $expression ? "<?php {$expression}; ?>" : '<?php ';
+        });
+        $blade->directive('endphp', function($expression) {
+                    return ' ?>';
+        });
+        return $this->blade;
+    }
 
     /**
      * Addiciona o boletos
@@ -142,8 +175,7 @@ class Html implements HtmlContract
             throw new \Exception('Nenhum Boleto adicionado');
         }
 
-        view()->addNamespace('BoletoHtmlRender', realpath(__DIR__ . '/view/'));
-        return view('BoletoHtmlRender::boleto', [
+        return $this->getBlade()->make('BoletoHtmlRender::boleto', [
             'boletos' => $this->boleto,
             'css' => $this->writeCss(),
             'imprimir_carregamento' => (bool) $this->print,
@@ -163,8 +195,7 @@ class Html implements HtmlContract
             throw new \Exception('Nenhum Boleto adicionado');
         }
 
-        view()->addNamespace('BoletoHtmlRender', realpath(__DIR__ . '/view/'));
-        return view('BoletoHtmlRender::carne', [
+        return $this->getBlade()->make('BoletoHtmlRender::carne', [
             'boletos' => $this->boleto,
             'css' => $this->writeCss(),
             'imprimir_carregamento' => (bool) $this->print,
