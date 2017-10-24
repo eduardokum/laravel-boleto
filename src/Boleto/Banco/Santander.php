@@ -189,4 +189,24 @@ class Santander  extends AbstractBoleto implements BoletoContract
             . Util::numberFormatGeral($this->getIos(), 1)
             . Util::numberFormatGeral($this->getCarteira(), 3);
     }
+
+    /**
+     * Método onde qualquer boleto deve extender para gerar o código da posição de 20 a 44
+     *
+     * @return array
+     */
+    public static function parseCampoLivre($campoLivre) {
+        return [
+            'convenio' => null,
+            'agencia' => null,
+            'agenciaDv' => null,
+            'contaCorrente' => null,
+            'contaCorrenteDv' => null,
+            'codigoCliente' => substr($campoLivre, 1, 7),
+            'nossoNumero' => substr($campoLivre, 8, 12),
+            'nossoNumeroDv' => substr($campoLivre, 20, 1),
+            'nossoNumeroFull' => substr($campoLivre, 8, 13),
+            'carteira' => substr($campoLivre, 22, 3),
+        ];
+    }
 }

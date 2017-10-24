@@ -102,7 +102,30 @@ class Bancoob extends AbstractBoleto implements BoletoContract
 
         return $this->campoLivre = $campoLivre;
     }
-    
+
+    /**
+     * Método onde qualquer boleto deve extender para gerar o código da posição de 20 a 44
+     *
+     * @return array
+     */
+    static public function parseCampoLivre($campoLivre) {
+        return [
+            'codigoCliente' => null,
+            'agenciaDv' => null,
+            'contaCorrente' => null,
+            'contaCorrenteDv' => null,
+            'carteira' => substr($campoLivre, 0, 1),
+            'agencia' => substr($campoLivre, 1, 4),
+            'modalidade' => substr($campoLivre, 5, 2),
+            'convenio' => substr($campoLivre, 7, 7),
+            'nossoNumero' => substr($campoLivre, 14, 7),
+            'nossoNumeroDv' => substr($campoLivre, 21, 1),
+            'nossoNumeroFull' => substr($campoLivre, 14, 8),
+            'parcela' => substr($campoLivre, 22, 3),
+        ];
+    }
+
+
     /**
      * Agência/Código do Beneficiário: Informar o prefixo da agência e o código de associado/cliente.
      * Estes dados constam na planilha "Capa" deste arquivo. O código de cliente não deve ser

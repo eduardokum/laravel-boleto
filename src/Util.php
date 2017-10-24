@@ -3,6 +3,7 @@ namespace Eduardokum\LaravelBoleto;
 
 use Carbon\Carbon;
 use ForceUTF8\Encoding;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 /**
  * Class Util
@@ -910,6 +911,82 @@ final class Util
                 $obj->{'set' . ucwords($param)}($value);
             }
         }
+    }
+
+    /**
+     * @param $ipte
+     *
+     * @return string
+     */
+    public static function IPTE2CodigoBarras($ipte)
+    {
+        $ipte = self::onlyNumbers($ipte);
+
+        $barras = substr($ipte, 0, 4);
+        $barras .= substr($ipte, 32, 1) ;
+        $barras .= substr($ipte, 33, 14) ;
+        $barras .= substr($ipte, 4,1) ;
+        $barras .= substr($ipte, 5, 4) ;
+        $barras .= substr($ipte, 10, 10) ;
+        $barras .= substr($ipte, 21, 8) ;
+        $barras .= substr($ipte, 29, 2);
+
+        return $barras;
+    }
+
+    /**
+     * @param $ipte
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public static function IPTE2Variveis($ipte)
+    {
+        $barras = self::IPTE2CodigoBarras($ipte);
+
+        $variaveis = [
+            'banco' => substr($barras, 0, 3),
+            'moeda' => substr($barras, 3, 1),
+            'dv' => substr($barras, 4, 1),
+            'fator_vencimento' => substr($barras, 5, 4),
+            'vencimento' => self::fatorVencimentoBack(substr($barras, 5, 4), false),
+            'valor' => ((float) substr($barras, 9, 10)) / 100,
+            'campo_livre' => substr($barras, -25),
+        ];
+
+        $class = __NAMESPACE__ . '\\Boleto\\' . self::getBancoClass($variaveis['banco']);
+        $variaveis['campo_livre_parsed'] = $class::parseCampoLivre($variaveis['campo_livre']);
+
+        return $variaveis;
+    }
+
+
+    /**
+     * @param $banco
+     *
+     * @return string
+     * @throws \Exception
+     */
+    public static function getBancoClass($banco) {
+
+        $aBancos = [
+            BoletoContract::COD_BANCO_BB => 'Banco\\Bb',
+            BoletoContract::COD_BANCO_SANTANDER => 'Banco\\Santander',
+            BoletoContract::COD_BANCO_CEF => 'Banco\\Caixa',
+            BoletoContract::COD_BANCO_BRADESCO => 'Banco\\Bradesco',
+            BoletoContract::COD_BANCO_ITAU => 'Banco\\Itau',
+            BoletoContract::COD_BANCO_HSBC => 'Banco\\Hsbc',
+            BoletoContract::COD_BANCO_SICREDI => 'Banco\\Sicredi',
+            BoletoContract::COD_BANCO_BANRISUL => 'Banco\\Banrisul',
+            BoletoContract::COD_BANCO_BANCOOB => 'Banco\\Bancoob',
+            BoletoContract::COD_BANCO_BNB => 'Banco\\Bnb',
+        ];
+
+        if (array_key_exists($banco, $aBancos)) {
+            return $aBancos[$banco];
+        }
+
+        throw new \Exception("Banco: $banco, inválido");
     }
 
     /**

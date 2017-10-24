@@ -251,4 +251,11 @@ interface Boleto
      * @return mixed
      */
     public function baixarBoleto();
+
+    /**
+     * Método onde qualquer boleto deve extender para gerar o código da posição de 20 a 44
+     *
+     * @return array
+     */
+    static public function parseCampoLivre($campoLivre);
 }

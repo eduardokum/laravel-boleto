@@ -85,7 +85,7 @@ class Caixa  extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        $numero_boleto = $this->getNumero();
+        $numero_boleto = Util::numberFormatGeral($this->getNumero(), 9);
         $composicao = '1';
         if ($this->getCarteira() == 'SR') {
             $composicao = '2';
@@ -136,24 +136,35 @@ class Caixa  extends AbstractBoleto implements BoletoContract
         if ($this->campoLivre) {
             return $this->campoLivre;
         }
+
         $nossoNumero = Util::numberFormatGeral($this->gerarNossoNumero(), 17);
         $beneficiario = Util::numberFormatGeral($this->getCodigoCliente(), 6);
-        // Código do beneficiário + DV]
+
         $campoLivre = $beneficiario . Util::modulo11($beneficiario);
-        // Sequencia 1 (posições 3-5 NN) + Constante 1 (1 => registrada, 2 => sem registro)
-        $carteira = $this->getCarteira();
-        if ($carteira == 'SR') {
-            $constante = '2';
-        } else {
-            $constante = '1';
-        }
-        $campoLivre .= substr($nossoNumero, 2, 3) . $constante;
-        // Sequencia 2 (posições 6-8 NN) + Constante 2 (4-Beneficiário)
-        $campoLivre .= substr($nossoNumero, 5, 3) . '4';
-        // Sequencia 3 (posições 9-17 NN)
-        $campoLivre .= substr($nossoNumero, 8, 9);
-        // DV do Campo Livre
+        $campoLivre .= '000' . ($this->getCarteira() == 'SR' ? '2' : '1');
+        $campoLivre .= '0004';
+        $campoLivre .= substr($nossoNumero, -9);
         $campoLivre .= Util::modulo11($campoLivre);
         return $this->campoLivre = $campoLivre;
+    }
+
+    /**
+     * Método onde qualquer boleto deve extender para gerar o código da posição de 20 a 44
+     *
+     * @return array
+     */
+    public static function parseCampoLivre($campoLivre) {
+        return [
+            'convenio' => null,
+            'agencia' => null,
+            'agenciaDv' => null,
+            'contaCorrente' => null,
+            'contaCorrenteDv' => null,
+            'codigoCliente' => substr($campoLivre, 0, 7),
+            'carteira' => substr($campoLivre, 10, 1),
+            'nossoNumero' => substr($campoLivre, -10, 9),
+            'nossoNumeroDv' => substr($campoLivre, -1),
+            'nossoNumeroFull' => substr($campoLivre, -10),
+        ];
     }
 }

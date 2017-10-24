@@ -178,14 +178,35 @@ class Sicredi extends AbstractBoleto implements BoletoContract
             return $this->campoLivre;
         }
 
-        $tipo_cobranca = $this->isComRegistro() ? '1' : '3';
-        $carteira = Util::numberFormatGeral($this->getCarteira(), 1);
-        $nosso_numero = $this->getNossoNumero();
-        $agencia = Util::numberFormatGeral($this->getAgencia(), 4);
-        $posto = Util::numberFormatGeral($this->getPosto(), 2);
-        $conta = Util::numberFormatGeral($this->getConta(), 5);
+        $campoLivre = $this->isComRegistro() ? '1' : '3';
+        $campoLivre .= Util::numberFormatGeral($this->getCarteira(), 1);
+        $campoLivre .= $this->getNossoNumero();
+        $campoLivre .= Util::numberFormatGeral($this->getAgencia(), 4);
+        $campoLivre .= Util::numberFormatGeral($this->getPosto(), 2);
+        $campoLivre .= Util::numberFormatGeral($this->getConta(), 5);
+        $campoLivre .= '10';
+        $campoLivre .= Util::modulo11($campoLivre);
 
-        $this->campoLivre = $tipo_cobranca . $carteira . $nosso_numero . $agencia . $posto . $conta . '10';
-        return $this->campoLivre .= Util::modulo11($this->campoLivre);
+        return $this->campoLivre .= $campoLivre;
+    }
+
+    /**
+     * Método onde qualquer boleto deve extender para gerar o código da posição de 20 a 44
+     *
+     * @return array
+     */
+    public static function parseCampoLivre($campoLivre) {
+        return [
+            'convenio' => null,
+            'agenciaDv' => null,
+            'contaCorrenteDv' => null,
+            'codigoCliente' => null,
+            'carteira' => substr($campoLivre, 1, 1),
+            'nossoNumero' => substr($campoLivre, 2, 8),
+            'nossoNumeroDv' => substr($campoLivre, 10, 1),
+            'nossoNumeroFull' => substr($campoLivre, 2, 9),
+            'agencia' => substr($campoLivre, 11, 4),
+            'contaCorrente' => substr($campoLivre, 17, 5),
+        ];
     }
 }

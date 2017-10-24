@@ -102,12 +102,35 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
         if ($this->campoLivre) {
             return $this->campoLivre;
         }
-        return $this->campoLivre = Util::numberFormatGeral($this->getAgencia(), 4) .
-        Util::numberFormatGeral($this->getCarteira(), 2) .
-        Util::numberFormatGeral($this->getNumero(), 11) .
-        Util::numberFormatGeral($this->getConta(), 7) .
-        '0';
+
+        $campoLivre = Util::numberFormatGeral($this->getAgencia(), 4);
+        $campoLivre .= Util::numberFormatGeral($this->getCarteira(), 2);
+        $campoLivre .= Util::numberFormatGeral($this->getNumero(), 11);
+        $campoLivre .= Util::numberFormatGeral($this->getConta(), 7);
+        $campoLivre .= '0';
+
+        return $this->campoLivre = $campoLivre;
     }
+
+    /**
+     * Método onde qualquer boleto deve extender para gerar o código da posição de 20 a 44
+     *
+     * @return array
+     */
+    public static function parseCampoLivre($campoLivre) {
+        return [
+            'convenio' => null,
+            'agenciaDv' => null,
+            'contaCorrenteDv' => null,
+            'agencia' => substr($campoLivre, 0, 4),
+            'carteira' => substr($campoLivre, 4, 2),
+            'nossoNumero' => substr($campoLivre, 6, 11),
+            'nossoNumeroDv' => null,
+            'nossoNumeroFull' => substr($campoLivre, 6, 11),
+            'contaCorrente' => substr($campoLivre, 17, 7),
+        ];
+    }
+
     /**
      * Define o campo CIP do boleto
      *

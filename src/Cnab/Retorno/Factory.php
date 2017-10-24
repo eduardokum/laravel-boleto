@@ -59,7 +59,7 @@ class Factory
         ];
 
         if (array_key_exists($banco, $aBancos)) {
-            $bancoClass = $namespace . $aBancos[$banco];
+            $bancoClass = $namespace . Util::getBancoClass($banco);
             return new $bancoClass($file_content);
         }
 

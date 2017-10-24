@@ -161,4 +161,39 @@ class Bb extends AbstractBoleto implements BoletoContract
         }
         throw new \Exception('O código do convênio precisa ter 4, 6 ou 7 dígitos!');
     }
+
+    /**
+     * Método onde qualquer boleto deve extender para gerar o código da posição de 20 a 44
+     *
+     * @return array
+     */
+    public static function parseCampoLivre($campoLivre) {
+        $convenio = substr($campoLivre, 0, 6);
+        $nossoNumero = substr($campoLivre, 6, 5);
+        if ($convenio == '000000') {
+            $convenio = substr($campoLivre, 6, 7);
+            $nossoNumero = substr($campoLivre, 13, 10);
+        }
+        if ($convenio == '0000000' && in_array(substr($campoLivre, -2), ['16', '18']) ) {
+            $convenio = substr($campoLivre, 0, 4);
+            $nossoNumero = substr($campoLivre, 4, 7);
+        }
+        if ($convenio == '0000000' && !in_array(substr($campoLivre, -2), ['16', '18']) ) {
+            $convenio = null;
+            $nossoNumero = substr($campoLivre, 0, 17);
+        }
+
+        return [
+            'codigoCliente' => null,
+            'agencia' => null,
+            'agenciaDv' => null,
+            'contaCorrente' => null,
+            'contaCorrenteDv' => null,
+            'carteira' => substr($campoLivre, -2),
+            'convenio' => $convenio,
+            'nossoNumero' => $nossoNumero,
+            'nossoNumeroDv' => null,
+            'nossoNumeroFull' => $nossoNumero,
+        ];
+    }
 }

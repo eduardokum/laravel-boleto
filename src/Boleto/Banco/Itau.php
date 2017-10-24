@@ -109,11 +109,34 @@ class Itau extends AbstractBoleto implements BoletoContract
         if ($this->campoLivre) {
             return $this->campoLivre;
         }
-        $nosso_numero = Util::numberFormatGeral($this->getNossoNumero(), 9);
-        $carteira = Util::numberFormatGeral($this->getCarteira(), 3);
-        $agencia = Util::numberFormatGeral($this->getAgencia(), 4);
-        $conta = Util::numberFormatGeral($this->getConta(), 5);
-        $dvAgConta = CalculoDV::itauContaCorrente($agencia, $conta);
-        return $this->campoLivre = $carteira . $nosso_numero . $agencia . $conta . $dvAgConta . '000';
+
+        $campoLivre = Util::numberFormatGeral($this->getCarteira(), 3);
+        $campoLivre .= Util::numberFormatGeral($this->getNossoNumero(), 9);
+        $campoLivre .= Util::numberFormatGeral($this->getAgencia(), 4);
+        $campoLivre .= Util::numberFormatGeral($this->getConta(), 5);
+        $campoLivre .= CalculoDV::itauContaCorrente($this->getAgencia(), $this->getConta());
+        $campoLivre .= '000';
+
+        return $this->campoLivre = $campoLivre;
+    }
+
+    /**
+     * Método onde qualquer boleto deve extender para gerar o código da posição de 20 a 44
+     *
+     * @return array
+     */
+    public static function parseCampoLivre($campoLivre) {
+        return [
+            'convenio' => null,
+            'agenciaDv' => null,
+            'codigoCliente' => null,
+            'carteira' => substr($campoLivre, 0, 3),
+            'nossoNumero' => substr($campoLivre, 3, 8),
+            'nossoNumeroDv' => substr($campoLivre, 11, 1),
+            'nossoNumeroFull' => substr($campoLivre, 3, 9),
+            'agencia' => substr($campoLivre, 12, 4),
+            'contaCorrente' => substr($campoLivre, 16, 5),
+            'contaCorrenteDv' => substr($campoLivre, 21, 1),
+        ];
     }
 }

@@ -16,7 +16,7 @@ class Itau extends AbstractRemessa implements RemessaContract
     const ESPECIE_RECIBO = '05';
     const ESPECIE_CONTRATO = '06';
     const ESPECIE_COSSEGUROS = '07';
-    const ESPECIE_DUPLICATA_SERVIÇO = '08';
+    const ESPECIE_DUPLICATA_SERVICO = '08';
     const ESPECIE_LETRA_CAMBIO = '09';
     const ESPECIE_NOTA_DEBITOS = '13';
     const ESPECIE_DOCUMENTO_DIVIDA = '15';

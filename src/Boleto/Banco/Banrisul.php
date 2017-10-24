@@ -93,26 +93,30 @@ class Banrisul extends AbstractBoleto implements BoletoContract
             return $this->campoLivre;
         }
 
-        // Carteira     => 20 - 20 | Valor: 1(Com registro) ou 2(Sem registro)
-        $this->campoLivre  = '2';
+        $campoLivre = '2';
+        $campoLivre .= '1';
+        $campoLivre .= Util::numberFormatGeral($this->getAgencia(), 4);
+        $campoLivre .= Util::numberFormatGeral($this->getConta(), 7);
+        $campoLivre .= Util::numberFormatGeral($this->getNumero(), 8);
+        $campoLivre .= '40';
+        $campoLivre .= CalculoDV::banrisulDuploDigito(Util::onlyNumbers($campoLivre));
 
-        // Constante    => 21 - 21 | Valor: 1(Constante)
-        $this->campoLivre .= '1';
+        return $this->campoLivre = $campoLivre;
+    }
 
-        // Agencia      => 22 a 25 | Valor: dinâmico(0000) ´4´
-        $this->campoLivre .= Util::numberFormatGeral($this->getAgencia(), 4);
-
-        // Cod. Cedente => 26 a 32 | Valor: dinâmico(0000000) ´7´
-        $this->campoLivre .= Util::numberFormatGeral($this->getConta(), 7);
-
-        // Nosso numero => 33 a 40 | Valor: dinâmico(00000000) ´8´
-        $this->campoLivre .= Util::numberFormatGeral($this->getNumero(), 8);
-
-        // Constante    => 41 - 42 | Valor: 40(Constante)
-        $this->campoLivre .= '40';
-
-        // Duplo digito => 43 - 44 | Valor: calculado(00) ´2´
-        $this->campoLivre .= CalculoDV::banrisulDuploDigito(Util::onlyNumbers($this->campoLivre));
-        return $this->campoLivre;
+    /**
+     * Método onde qualquer boleto deve extender para gerar o código da posição de 20 a 44
+     *
+     * @return array
+     */
+    public static function parseCampoLivre($campoLivre) {
+        return [
+            'carteira' => substr($campoLivre, 0, 1),
+            'agencia' => substr($campoLivre, 2, 4),
+            'contaCorrente' => substr($campoLivre, 6, 7),
+            'nossoNumero' => substr($campoLivre, 13, 8),
+            'nossoNumeroDv' => null,
+            'nossoNumeroFull' => substr($campoLivre, 13, 8),
+        ];
     }
 }
