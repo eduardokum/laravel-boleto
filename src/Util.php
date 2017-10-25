@@ -955,7 +955,11 @@ final class Util
         ];
 
         $class = __NAMESPACE__ . '\\Boleto\\' . self::getBancoClass($variaveis['banco']);
-        $variaveis['campo_livre_parsed'] = $class::parseCampoLivre($variaveis['campo_livre']);
+        if (method_exists($class, 'parseCampoLivre')) {
+            $variaveis['campo_livre_parsed'] = $class::parseCampoLivre($variaveis['campo_livre']);
+        } else {
+            $variaveis['campo_livre_parsed'] = false;
+        }
 
         return $variaveis;
     }
