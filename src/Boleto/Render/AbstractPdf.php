@@ -1,9 +1,7 @@
 <?php
 namespace Eduardokum\LaravelBoleto\Boleto\Render;
 
-use fpdf\FPDF;
-
-abstract class AbstractPdf extends FPDF
+abstract class AbstractPdf extends \FPDF
 {
     // INCLUDE JS
     protected $javascript;
@@ -78,9 +76,9 @@ abstract class AbstractPdf extends FPDF
         return $this->CurrPageGroup;
     }
 
-    public function _beginpage($orientation, $size)
+    public function _beginpage($orientation, $size, $rotation)
     {
-        parent::_beginpage($orientation, $size);
+        parent::_beginpage($orientation, $size, $rotation);
         if ($this->NewPageGroup) {
             // start a new group
             $n = sizeof($this->PageGroups) + 1;
@@ -138,11 +136,13 @@ abstract class AbstractPdf extends FPDF
     /**
      * BarCode
      *
-     * @param $xpos
-     * @param $ypos
-     * @param $code
-     * @param int  $basewidth
-     * @param int  $height
+     * @param     $xpos
+     * @param     $ypos
+     * @param     $code
+     * @param int $basewidth
+     * @param int $height
+     *
+     * @throws \Exception
      */
     public function i25($xpos, $ypos, $code, $basewidth = 1, $height = 10)
     {
@@ -222,7 +222,7 @@ abstract class AbstractPdf extends FPDF
      * F: save to a local<br>
      * S: return as a string. name is ignored.
      * @param bool   $print 1 imprime 0 nao imprime
-     * @return string|void
+     * @return string
      */
     public function Output($name = '', $dest = 'I', $print = false)
     {
