@@ -474,10 +474,7 @@ abstract class AbstractRemessa
      * @return string
      * @throws \Exception
      */
-    public function gerar()
-    {
-        throw new \Exception('Método não implementado');
-    }
+    abstract public function gerar();
 
     /**
      * Salva o arquivo no path informado
