@@ -74,7 +74,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
      * @param  bool $registro
      * @return $this
      */
-    public function setComRegistro(bool $registro)
+    public function setComRegistro($registro)
     {
         $this->registro = $registro;
         return $this;
@@ -192,6 +192,8 @@ class Sicredi extends AbstractBoleto implements BoletoContract
 
     /**
      * Método onde qualquer boleto deve extender para gerar o código da posição de 20 a 44
+     *
+     * @param $campoLivre
      *
      * @return array
      */

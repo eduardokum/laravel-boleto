@@ -165,6 +165,8 @@ class Bb extends AbstractBoleto implements BoletoContract
     /**
      * Método onde qualquer boleto deve extender para gerar o código da posição de 20 a 44
      *
+     * @param $campoLivre
+     *
      * @return array
      */
     public static function parseCampoLivre($campoLivre) {

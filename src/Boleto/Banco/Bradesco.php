@@ -115,6 +115,8 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
     /**
      * Método onde qualquer boleto deve extender para gerar o código da posição de 20 a 44
      *
+     * @param $campoLivre
+     *
      * @return array
      */
     public static function parseCampoLivre($campoLivre) {
@@ -143,10 +145,11 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
         $this->variaveis_adicionais['cip'] = $this->getCip();
         return $this;
     }
+
     /**
      * Retorna o campo CIP do boleto
      *
-     * @return int
+     * @return string
      */
     public function getCip()
     {
