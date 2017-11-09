@@ -184,7 +184,7 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(24, 35, Util::formatCnab('9', $this->getConta(), 12));
         $this->add(36, 36, CalculoDV::bbContaCorrente($this->getConta()));
         $this->add(37, 37, '');
-        $this->add(38, 57, Util::formatCnab('9', $this->nossoNumero($boleto), 20));
+        $this->add(38, 57, Util::formatCnab('X', $this->nossoNumero($boleto), 20));
         $this->add(58, 58, '1'); //'1' = Cobrança Simples
         $this->add(59, 59, '');
         $this->add(60, 60, '');
