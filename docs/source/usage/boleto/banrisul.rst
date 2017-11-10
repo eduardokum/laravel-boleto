@@ -9,8 +9,8 @@ This bank has the following mandatory fields:
 
 .. code-block:: php
 
-    $bancoob = new Eduardokum\LaravelBoleto\Boleto\Banco\Banrisul;
-    $bancoob->setLogo('/path/to/logo.png')
+    $banrisul = new Eduardokum\LaravelBoleto\Boleto\Banco\Banrisul;
+    $banrisul->setLogo('/path/to/logo.png')
         ->setDataVencimento('1997-10-07')
         ->setValor('100')
         ->setNumero(1)
@@ -18,21 +18,21 @@ This bank has the following mandatory fields:
         ->setPagador($pagador)
         ->setBeneficiario($beneficiario)
         ->setCarteira(1)
-        ->setAgencia('1111')
-        ->setConta('22222')
+        ->setAgencia(1111)
+        ->setConta(22222)
         ->setDescricaoDemonstrativo(['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'])
         ->setInstrucoes(['instrucao 1', 'instrucao 2', 'instrucao 3']);
 
     // You can add more ``Demonstrativos`` or ``Instrucoes`` on this way:
 
-    $bancoob->addDescricaoDemonstrativo('demonstrativo 4');
-    $bancoob->addInstrucoes('instrucao 2');
+    $banrisul->addDescricaoDemonstrativo('demonstrativo 4');
+    $banrisul->addInstrucoes('instrucao 2');
 
 Or, Simply:
 
 .. code-block:: php
 
-    $bancoob = new Eduardokum\LaravelBoleto\Boleto\Banco\Bancoob([
+    $banrisul = new Eduardokum\LaravelBoleto\Boleto\Banco\Bancoob([
         'logo' => '/path/to/logo.png',
         'dataVencimento' => '1997-10-07',
         'valor' => 100,

@@ -18,9 +18,9 @@ This bank has the following mandatory fields:
         ->setPagador($pagador)
         ->setBeneficiario($beneficiario)
         ->setCarteira(1)
-        ->setAgencia('1111')
-        ->setConvenio('123123')
-        ->setConta('22222')
+        ->setAgencia(1111)
+        ->setConvenio(1231237)
+        ->setConta(22222)
         ->setDescricaoDemonstrativo(['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'])
         ->setInstrucoes(['instrucao 1', 'instrucao 2', 'instrucao 3']);
 
