@@ -2,4 +2,9 @@ Laravel Boleto's Docs
 =====================
 
 .. toctree::
-   :caption: Contents:
+
+    install
+    license
+    usage/index
+    contributing
+    support
