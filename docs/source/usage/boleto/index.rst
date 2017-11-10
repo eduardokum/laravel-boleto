@@ -5,23 +5,26 @@ Boleto
 
 All banks have information that is shared such as:
 
-:logo: Path with logo image.
+:logo: Path with logo image. [default: Without logo]
+:carteira: Charging account code.
 :dataVencimento: Date the bill expires.
-:dataDocumento: Bill date.
-:dataProcessamento: Creation date bill.
+:dataDesconto: Maximum date for granting the discount. [default: ``dataVencimento``]
+:dataDocumento: Bill date. [default: today]
+:dataProcessamento: Creation date bill. [default: today]
+:desconto: Bill discount amount.
 :valor: Bill amount.
-:multa: Percentage of fee to be charged.
-:juros: Percentage of interest to be charged.
-:jurosApos: How many days after expired will be charged the interest.
-:diasProtesto: How many days after expired will be protested.
+:multa: Percentage of fee to be charged. [default: false]
+:juros: Percentage of interest to be charged. [default: false]
+:jurosApos: How many days after expired will be charged the interest. [default: 0]
+:diasProtesto: How many days after expired will be protested. [default: 0]
 :numero: Bill number. (Will be used to generate the ``Nosso Número``)
 :numeroDocumento: Your internal bill number.
 :numeroControle: Any control that you may have, the same one sent will be returned in :ref:`return`
 :descricaoDemonstrativo: Texts that will be shown in the bill ``Demonostrativo`` field.
 :instrucoes: Texts that will be shown in the bill ``Instruções ao caixa`` field.
 :instrucoesImpressao: Texts that will be shown at the top of the bill with instructions for printing or anything else you want to communicate.
-:aceite: If the bill is accepted by the customer
-:especieDoc: Kind of bill. (Usually ``DM - Duplicata Mercantil``)
+:aceite: If the bill is accepted by the customer. [default: N]
+:especieDoc: Kind of bill. (Usually ``DM - Duplicata Mercantil``) [default: DM]
 :pagador: The :ref:`payer`.
 :beneficiario: The :ref:`recipient`
 
@@ -38,3 +41,4 @@ All banks have information that is shared such as:
     itau
     santander
     sicredi
+    render/index

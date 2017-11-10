@@ -1,2 +1,61 @@
 Bancoob
 =======
+
+This bank has the following mandatory fields:
+
+:agencia: Account keeping agency.
+:conta: Account number.
+:convenio: Number of agreement with the bank.
+
+.. code-block:: php
+
+    $bancoob = new Eduardokum\LaravelBoleto\Boleto\Banco\Bancoob;
+    $bancoob->setLogo('/path/to/logo.png')
+        ->setDataVencimento('1997-10-07')
+        ->setValor('100')
+        ->setMulta(false)
+        ->setJuros(false)
+        ->setNumero(1)
+        ->setNumeroDocumento(1)
+        ->setPagador($pagador)
+        ->setBeneficiario($beneficiario)
+        ->setCarteira(1)
+        ->setAgencia('1111')
+        ->setConvenio('123123')
+        ->setConta('22222')
+        ->setDescricaoDemonstrativo(['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'])
+        ->setInstrucoes(['instrucao 1', 'instrucao 2', 'instrucao 3'])
+        ->setAceite('S')
+        ->setEspecieDoc('DM');
+
+    // You can add more ``Demonstrativos`` or ``Instrucoes`` on this way:
+
+    $bancoob->addDescricaoDemonstrativo('demonstrativo 4');
+    $bancoob->addInstrucoes('instrucao 2');
+
+Or, Simply:
+
+.. code-block:: php
+
+    $bancoob = new Eduardokum\LaravelBoleto\Boleto\Banco\Bancoob([
+        'logo' => '/path/to/logo.png',
+        'dataVencimento' => '1997-10-07',
+        'valor' => 100,
+        'multa' => false,
+        'juros' => false,
+        'numero' => 1,
+        'numeroDocumento' => 1,
+        'pagador' => $pagador,
+        'beneficiario' => $beneficiario,
+        'carteira' => 1,
+        'agencia' => 1111,
+        'convenio' => 123123,
+        'conta' => 22222,
+        'descricaoDemonstrativo' => ['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'],
+        'instrucoes' => ['instrucao 1', 'instrucao 2', 'instrucao 3'],
+        'aceite' => 'S',
+        'especieDoc' => 'DM',
+    ]);
+
+.. ATTENTION::
+    To render this object see the :ref:`render` session.

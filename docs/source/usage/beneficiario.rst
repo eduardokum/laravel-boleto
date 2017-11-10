@@ -35,4 +35,4 @@ Or, Simply:
 
 
 .. ATTENTION::
-    The :ref:`bill` requires an instance of ``Pagador``.
+    The :ref:`bill` requires an instance of ``Beneficário``.
