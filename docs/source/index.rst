@@ -4,7 +4,7 @@ Laravel Boleto's Docs
 .. toctree::
 
     install
-    license
     usage/index
+    license
     contributing
     support

@@ -4,9 +4,14 @@ Banco do Brasil
 This bank has the following mandatory fields:
 
 :numero: Bill number.
-    - ``convenio`` 4 - (size: 7)
-    - ``convenio`` 6 - (size: 5)
-    - ``convenio`` 7 - (size: 10)
+
+    .. hlist::
+        :columns: 1
+
+        *  ``convenio 4`` (size: 7)
+        *  ``convenio 6`` (size: 5)
+        *  ``convenio 7`` (size: 10)
+
 :agencia: Account keeping agency. (size: 4)
 :conta: Account number. (size: 8)
 :convenio: Number of agreement with the bank. (size: 4, 6 and 7)

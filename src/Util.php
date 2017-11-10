@@ -964,7 +964,6 @@ final class Util
         return $variaveis;
     }
 
-
     /**
      * @param $banco
      *

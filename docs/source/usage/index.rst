@@ -12,3 +12,4 @@ Usage
     boleto/index
     retorno/index
     remessa/index
+    utilities
