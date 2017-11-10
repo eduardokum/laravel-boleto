@@ -35,7 +35,7 @@ class Itau extends AbstractBoleto implements BoletoContract
      *
      * @var array
      */
-    protected $carteiras = ['112', '115', '188', '109', '121', '180', '175'];
+    protected $carteiras = ['112', '115', '188', '109', '121', '180', '110', '111'];
     /**
      * Espécie do documento, coódigo para remessa
      *

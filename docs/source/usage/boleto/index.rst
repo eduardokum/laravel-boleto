@@ -6,7 +6,7 @@ Boleto
 All banks have information that is shared such as:
 
 :logo: Path with logo image. [default: Without logo]
-:carteira: Charging account code.
+:carteira: Bank contracts.
 :dataVencimento: Date the bill expires.
 :dataDesconto: Maximum date for granting the discount. [default: ``dataVencimento``]
 :dataDocumento: Bill date. [default: today]

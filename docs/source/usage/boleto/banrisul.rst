@@ -1,11 +1,35 @@
 Banrisul
 ========
 
-
 This bank has the following mandatory fields:
 
+:numero: Bill number. (size: 8)
 :agencia: Account keeping agency. (size: 4)
 :conta: Account number. (size: 5)
+
+| Available bank contracts:
+
+=  ===========================================
+1  Cobrança Simples
+3  Cobrança Caucionada
+4  Cobrança em IGPM
+5  Cobrança Caucionada CGB Especial
+6  Cobrança Simples Seguradora
+7  Cobrança em UFIR
+8  Cobrança em IDTR
+C  Cobrança Vinculada
+D  Cobrança CSB
+E  Cobrança Caucionada Câmbio
+F  Cobrança Vendor
+H  Cobrança Caucionada Dólar
+I  Cobrança Caucionada Compror
+K  Cobrança Simples INCC-M
+M  Cobrança Partilhada
+N  Capital de Giro CGB ICM
+R  Desconto de Duplicata
+S  Vendor Eletrônico – Valor Final (Corrigido)
+X  Vendor BDL – Valor Inicial (Valor da NF)
+=  ===========================================
 
 .. code-block:: php
 
@@ -32,7 +56,7 @@ Or, Simply:
 
 .. code-block:: php
 
-    $banrisul = new Eduardokum\LaravelBoleto\Boleto\Banco\Bancoob([
+    $banrisul = new Eduardokum\LaravelBoleto\Boleto\Banco\Banrisul([
         'logo' => '/path/to/logo.png',
         'dataVencimento' => '1997-10-07',
         'valor' => 100,
@@ -48,4 +72,4 @@ Or, Simply:
     ]);
 
 .. ATTENTION::
-To render this object see the :ref:`render` session.
+    To render this object see the :ref:`render` session.

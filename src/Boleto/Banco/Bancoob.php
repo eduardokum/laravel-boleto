@@ -67,7 +67,7 @@ class Bancoob extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        return $this->getNumero()
+        return Util::numberFormatGeral($this->getNumero(), 7)
             . CalculoDV::bancoobNossoNumero($this->getAgencia(), $this->getConvenio(), $this->getNumero());
     }
     /**

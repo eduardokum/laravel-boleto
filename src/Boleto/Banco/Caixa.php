@@ -25,7 +25,7 @@ class Caixa  extends AbstractBoleto implements BoletoContract
      *
      * @var array
      */
-    protected $carteiras = ['RG', 'SR'];
+    protected $carteiras = ['RG'];
     /**
      * Espécie do documento, coódigo para remessa
      *
@@ -85,7 +85,7 @@ class Caixa  extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        $numero_boleto = Util::numberFormatGeral($this->getNumero(), 9);
+        $numero_boleto = Util::numberFormatGeral($this->getNumero(), 15);
         $composicao = '1';
         if ($this->getCarteira() == 'SR') {
             $composicao = '2';

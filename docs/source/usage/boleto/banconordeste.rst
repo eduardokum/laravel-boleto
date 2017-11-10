@@ -3,12 +3,21 @@ Banco do Nordeste
 
 This bank has the following mandatory fields:
 
+:numero: Bill number. (size: 7)
 :agencia: Account keeping agency. (size: 4)
 :conta: Account number. (size: 7)
 
+| Available bank contracts:
+
+==  =================================================
+21  Cobrança Simples - Boleto Emitido Pelo Cliente
+31  Cobrança Caucionada - Boleto Emitido Pelo Cliente
+41  Cobrança Vinculada - Boleto Emitido Pelo Cliente
+==  =================================================
+
 .. code-block:: php
 
-    $bnb = new Eduardokum\LaravelBoleto\Boleto\Banco\Bb;
+    $bnb = new Eduardokum\LaravelBoleto\Boleto\Banco\Bnb;
     $bnb->setLogo('/path/to/logo.png')
         ->setDataVencimento('1997-10-07')
         ->setValor('100')
@@ -16,7 +25,7 @@ This bank has the following mandatory fields:
         ->setNumeroDocumento(1)
         ->setPagador($pagador)
         ->setBeneficiario($beneficiario)
-        ->setCarteira(1)
+        ->setCarteira(21)
         ->setAgencia(1111)
         ->setConta(22222)
         ->setDescricaoDemonstrativo(['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'])
@@ -31,7 +40,7 @@ Or, Simply:
 
 .. code-block:: php
 
-    $bnb = new Eduardokum\LaravelBoleto\Boleto\Banco\Bancoob([
+    $bnb = new Eduardokum\LaravelBoleto\Boleto\Banco\Bnb([
         'logo' => '/path/to/logo.png',
         'dataVencimento' => '1997-10-07',
         'valor' => 100,
@@ -39,7 +48,7 @@ Or, Simply:
         'numeroDocumento' => 1,
         'pagador' => $pagador,
         'beneficiario' => $beneficiario,
-        'carteira' => 1,
+        'carteira' => 21,
         'agencia' => 1111,
         'conta' => 22222,
         'descricaoDemonstrativo' => ['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'],
@@ -47,4 +56,4 @@ Or, Simply:
     ]);
 
 .. ATTENTION::
-To render this object see the :ref:`render` session.
+    To render this object see the :ref:`render` session.

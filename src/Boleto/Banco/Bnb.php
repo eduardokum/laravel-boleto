@@ -34,7 +34,7 @@ class Bnb extends AbstractBoleto implements BoletoContract
      *
      * @var array
      */
-    protected $carteiras = ['21'];
+    protected $carteiras = ['21', '31', '41'];
     /**
      * Espécie do documento, coódigo para remessa
      *

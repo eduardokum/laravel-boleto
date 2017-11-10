@@ -3,9 +3,26 @@ Banco do Brasil
 
 This bank has the following mandatory fields:
 
+:numero: Bill number.
+    - ``convenio`` 4 - (size: 7)
+    - ``convenio`` 6 - (size: 5)
+    - ``convenio`` 7 - (size: 10)
 :agencia: Account keeping agency. (size: 4)
 :conta: Account number. (size: 8)
 :convenio: Number of agreement with the bank. (size: 4, 6 and 7)
+:variacaoCarteira: Bank contracts variation (size: 3)
+
+| Available bank contracts:
+
+==  ========================================
+11  Cobrança com registro Simples
+12  Cobrança com registro Indexada
+15  Cobrança com registro  Prêmios de Seguro
+17  Cobrança com registro Direta Especial
+18  Cobrança com registro Simples
+31  Cobrança com registro Caucionada
+51  Cobrança com registro Descontada
+==  ========================================
 
 .. code-block:: php
 
@@ -17,7 +34,7 @@ This bank has the following mandatory fields:
         ->setNumeroDocumento(1)
         ->setPagador($pagador)
         ->setBeneficiario($beneficiario)
-        ->setCarteira(1)
+        ->setCarteira(11)
         ->setAgencia(1111)
         ->setConvenio(1231237)
         ->setConta(22222)
@@ -33,7 +50,7 @@ Or, Simply:
 
 .. code-block:: php
 
-    $bb = new Eduardokum\LaravelBoleto\Boleto\Banco\Bancoob([
+    $bb = new Eduardokum\LaravelBoleto\Boleto\Banco\Bb([
         'logo' => '/path/to/logo.png',
         'dataVencimento' => '1997-10-07',
         'valor' => 100,
@@ -41,7 +58,7 @@ Or, Simply:
         'numeroDocumento' => 1,
         'pagador' => $pagador,
         'beneficiario' => $beneficiario,
-        'carteira' => 1,
+        'carteira' => 11,
         'agencia' => 1111,
         'convenio' => 1231237,
         'conta' => 22222,
@@ -50,4 +67,4 @@ Or, Simply:
     ]);
 
 .. ATTENTION::
-To render this object see the :ref:`render` session.
+    To render this object see the :ref:`render` session.

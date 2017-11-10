@@ -24,7 +24,7 @@ class Bb extends AbstractBoleto implements BoletoContract
      *
      * @var array
      */
-    protected $carteiras = array('11', '12', '15', '16', '17', '18', '31', '51');
+    protected $carteiras = ['11', '12', '15', '17', '18', '31', '51'];
     /**
      * Espécie do documento, coódigo para remessa
      *

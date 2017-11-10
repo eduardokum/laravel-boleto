@@ -3,9 +3,17 @@ Bancoob
 
 This bank has the following mandatory fields:
 
+:numero: Bill number. (size: 7)
 :agencia: Account keeping agency. (size: 4)
 :conta: Account number. (size: 5)
 :convenio: Number of agreement with the bank. (size: 6)
+
+| Available bank contracts:
+
+=  ====================
+1  Simples Com Registro
+3  Garantida Caucionada
+=  ====================
 
 .. code-block:: php
 
