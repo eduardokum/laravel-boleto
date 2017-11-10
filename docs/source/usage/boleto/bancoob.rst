@@ -3,9 +3,9 @@ Bancoob
 
 This bank has the following mandatory fields:
 
-:agencia: Account keeping agency.
-:conta: Account number.
-:convenio: Number of agreement with the bank.
+:agencia: Account keeping agency. (size: 4)
+:conta: Account number. (size: 5)
+:convenio: Number of agreement with the bank. (size: 6)
 
 .. code-block:: php
 
@@ -13,8 +13,6 @@ This bank has the following mandatory fields:
     $bancoob->setLogo('/path/to/logo.png')
         ->setDataVencimento('1997-10-07')
         ->setValor('100')
-        ->setMulta(false)
-        ->setJuros(false)
         ->setNumero(1)
         ->setNumeroDocumento(1)
         ->setPagador($pagador)
@@ -24,9 +22,7 @@ This bank has the following mandatory fields:
         ->setConvenio('123123')
         ->setConta('22222')
         ->setDescricaoDemonstrativo(['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'])
-        ->setInstrucoes(['instrucao 1', 'instrucao 2', 'instrucao 3'])
-        ->setAceite('S')
-        ->setEspecieDoc('DM');
+        ->setInstrucoes(['instrucao 1', 'instrucao 2', 'instrucao 3']);
 
     // You can add more ``Demonstrativos`` or ``Instrucoes`` on this way:
 
@@ -41,8 +37,6 @@ Or, Simply:
         'logo' => '/path/to/logo.png',
         'dataVencimento' => '1997-10-07',
         'valor' => 100,
-        'multa' => false,
-        'juros' => false,
         'numero' => 1,
         'numeroDocumento' => 1,
         'pagador' => $pagador,
@@ -53,8 +47,6 @@ Or, Simply:
         'conta' => 22222,
         'descricaoDemonstrativo' => ['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'],
         'instrucoes' => ['instrucao 1', 'instrucao 2', 'instrucao 3'],
-        'aceite' => 'S',
-        'especieDoc' => 'DM',
     ]);
 
 .. ATTENTION::

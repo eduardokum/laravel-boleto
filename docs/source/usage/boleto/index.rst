@@ -41,4 +41,4 @@ All banks have information that is shared such as:
     itau
     santander
     sicredi
-    render/index
+    render
