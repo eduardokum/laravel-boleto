@@ -7,7 +7,7 @@ This bank has the following mandatory fields:
 :agencia: Account keeping agency. (size: 4)
 :codigoCliente: Recipient number. (size: 6)
 
-| Available bank contracts:
+| **Available bank contracts:**
 
 ==  ============
 RG  Com Registro

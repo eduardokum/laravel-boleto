@@ -9,7 +9,7 @@ This bank has the following mandatory fields:
 :range: Range to start bill number. (size: 5)
 :contaDv: Account number verification code. (size: 1)
 
-| Available bank contracts:
+| **Available bank contracts:**
 
 ===  ============
 CSB  Carteira CSB

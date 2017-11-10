@@ -12,7 +12,7 @@ This bank has the following mandatory fields:
 :convenio: Number of agreement with the bank. (size: 4, 6 and 7)
 :variacaoCarteira: Bank contracts variation (size: 3)
 
-| Available bank contracts:
+| **Available bank contracts:**
 
 ==  ========================================
 11  Cobrança com registro Simples

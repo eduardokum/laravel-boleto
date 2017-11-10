@@ -9,7 +9,7 @@ This bank has the following mandatory fields:
 :byte: Byte of our Number Generation. (size: 1)
 :posto: ``Posto`` provided by the bank. (size: 2)
 
-| Available bank contracts:
+| **Available bank contracts:**
 
 =  ==========
 1  Simples
