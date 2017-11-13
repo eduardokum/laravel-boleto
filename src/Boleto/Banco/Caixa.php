@@ -78,6 +78,19 @@ class Caixa  extends AbstractBoleto implements BoletoContract
     }
 
     /**
+     * Retorna o campo Agência/Beneficiário-DV do boleto
+     *
+     * @return string
+     */
+     public function getAgenciaCodigoBeneficiario()
+     {
+         $agencia = $this->getAgenciaDv() !== null ? $this->getAgencia() . '-' . $this->getAgenciaDv() : $this->getAgencia();
+         $codigoBeneficiario = $this->getCodigoCliente() . '-' .Util::modulo11($this->getCodigoCliente());
+ 
+         return $agencia . ' / ' . $codigoBeneficiario;
+     }
+
+    /**
      * Gera o Nosso Número.
      *
      * @throws \Exception
