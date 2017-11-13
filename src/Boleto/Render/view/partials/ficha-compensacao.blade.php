@@ -119,7 +119,7 @@
         </td>
         <td>
             <div class="titulo">(+) Mora / Multa</div>
-            <div class="conteudo rtl"></div>
+            <div class="conteudo rtl">{{$juroMulta}}</div>
         </td>
     </tr>
     <tr>
@@ -139,7 +139,7 @@
         </td>
         <td>
             <div class="titulo">(=) Valor cobrado</div>
-            <div class="conteudo rtl"></div>
+            <div class="conteudo rtl">{{$total}}</div>
         </td>
     </tr>
     <tr>

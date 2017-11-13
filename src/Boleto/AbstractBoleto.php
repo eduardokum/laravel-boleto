@@ -51,6 +51,18 @@ abstract class AbstractBoleto implements BoletoContract
      */
     protected $valor;
     /**
+     * Valor total dos juros, multas e taxas somadas boleto
+     *
+     * @var float
+     */
+    protected $juroMulta;
+    /**
+     * Valor total do boleto somando as taxas juros e multas
+     *
+     * @var float
+     */
+    protected $total;
+    /**
      * Desconto total do boleto
      *
      * @var float
@@ -1012,6 +1024,52 @@ abstract class AbstractBoleto implements BoletoContract
     }
 
     /**
+     * Define o valor dos juros, taxas e multas do boleto
+     *
+     * @param  string $juroMulta
+     *
+     * @return AbstractBoleto
+     */
+    public function setJuroMulta($juroMulta)
+    {
+        $this->juroMulta = Util::nFloat($juroMulta, 2, false);
+
+        return $this;
+    }
+    /**
+     * Retorna o valor dos juros, taxas e multas do boleto
+     *
+     * @return string
+     */
+    public function getJuroMulta()
+    {
+        return Util::nFloat($this->juroMulta, 2, false);
+    }
+
+    /**
+     * Define o total do boleto somando as taxas juros e multas
+     *
+     * @param  string $valor
+     *
+     * @return AbstractBoleto
+     */
+    public function setTotal($total)
+    {
+        $this->total = Util::nFloat($total, 2, false);
+
+        return $this;
+    }
+    /**
+     * Retorna o total do boleto somando as taxas juros e multas
+     *
+     * @return string
+     */
+    public function getTotal()
+    {
+        return Util::nFloat($this->total, 2, false);
+    }
+
+    /**
      * Define o desconto total do boleto (incluindo taxas)
      *
      * @param  string $desconto
@@ -1524,6 +1582,8 @@ abstract class AbstractBoleto implements BoletoContract
                 'data_documento' => $this->getDataDocumento(),
                 'data_desconto' => $this->getDataDesconto(),
                 'valor' => Util::nReal($this->getValor(), 2, false),
+                'juroMulta' => Util::nReal($this->getJuroMulta(), 2, false),
+                'total' => Util::nReal($this->getTotal(), 2, false),
                 'desconto' => Util::nReal($this->getDesconto(), 2, false),
                 'multa' => Util::nReal($this->getMulta(), 2, false),
                 'juros' => Util::nReal($this->getJuros(), 2, false),
