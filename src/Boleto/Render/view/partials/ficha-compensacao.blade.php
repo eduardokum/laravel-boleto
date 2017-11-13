@@ -129,7 +129,7 @@
         </td>
         <td>
             <div class="titulo">(+) Outros acréscimos</div>
-            <div class="conteudo rtl"></div>
+            <div class="conteudo rtl">{{ $outros_acrescimos }}</div>
         </td>
     </tr>
     <tr>

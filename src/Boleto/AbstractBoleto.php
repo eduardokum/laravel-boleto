@@ -269,6 +269,13 @@ abstract class AbstractBoleto implements BoletoContract
     protected $campoLinhaDigitavel;
 
     /**
+     * Valor de outros acrescimos no boleto
+     *
+     * @var float
+     */
+     protected $outrosAcrescimos;
+
+    /**
      * Cache do codigo de barras para evitar processamento desnecessário.
      *
      * @var string
@@ -345,6 +352,41 @@ abstract class AbstractBoleto implements BoletoContract
         }
         return $this;
     }
+
+    /**
+     * Retorna o valor de outros acrescimos
+     *
+     * @return float
+     */
+     public function getOtrosAcrescimos()
+     {
+         return $this->outrosAcrescimos;
+     }
+ 
+     /**
+      * Define o valor de outros acrescimos
+      *
+      * @param float $value
+      *
+      * @return AbstractBoleto
+      */
+     public function setOutrosAcrescimos($value)
+     {
+         $this->outrosAcrescimos = $value;
+ 
+         return $this;
+     }
+ 
+     /**
+      * Retorna o valor cobrado pelo boleto,
+      * incluindo acrescimos
+      *
+      * @return float
+      */
+      public function getValorCobrado()
+      {
+          return Util::nFloat(($this->getValor() + $this->getOtrosAcrescimos()), 2, false);
+      }
 
     /**
      * Define a agência
@@ -1373,10 +1415,12 @@ abstract class AbstractBoleto implements BoletoContract
             throw new \Exception('Campos requeridos pelo banco, aparentam estar ausentes ' . $message);
         }
 
+        $valor = ($this->getValorCobrado()) ? $this->getValorCobrado() : $this->getValor();
+
         $codigo = Util::numberFormatGeral($this->getCodigoBanco(), 3)
             . $this->getMoeda()
             . Util::fatorVencimento($this->getDataVencimento())
-            . Util::numberFormatGeral($this->getValor(), 10)
+            . Util::numberFormatGeral($valor)
             . $this->getCampoLivre();
 
         $resto = Util::modulo11($codigo, 2, 9, 0);
@@ -1529,6 +1573,8 @@ abstract class AbstractBoleto implements BoletoContract
                 'juros' => Util::nReal($this->getJuros(), 2, false),
                 'juros_apos' => $this->getJurosApos(),
                 'dias_protesto' => $this->getDiasProtesto(),
+                'outros_acrescimos' => Util::nReal($this->getOtrosAcrescimos(), 2, false),
+                'valor_cobrado' => Util::nReal($this->getValorCobrado(), 2, false),
                 'sacador_avalista' =>
                     $this->getSacadorAvalista()
                         ? [
