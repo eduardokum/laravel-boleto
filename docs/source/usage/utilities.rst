@@ -87,7 +87,7 @@ Converts a date to the expiration factor
 .. code-block:: php
 
     Util::fatorVencimento($date, $format = 'Y-m-d')
-    // Exemplo
+    // Example
     Util::fatorVencimento('2018-01-01')
     // will return
     7391
@@ -102,7 +102,7 @@ Converts an expiration factor to the corresponding date.
 .. code-block:: php
 
     Util::fatorVencimentoBack($factor, $format = 'Y-m-d')
-    // Exemplo
+    // Example
     Util::fatorVencimentoBack('7391')
     // will return
     '2018-01-01'

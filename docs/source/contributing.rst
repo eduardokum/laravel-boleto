@@ -6,3 +6,6 @@ Support follows ``PSR-1`` and ``PSR-4`` PHP coding standards. Additionally the s
 Please report any issue you find in the issues page.
 
 Pull requests are always welcome.
+
+.. warning::
+    All PR's must be made to the ``branch develop``, and later to be incorporated into the ``branch master``.
