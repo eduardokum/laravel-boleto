@@ -18,8 +18,8 @@ PDF
 
 To render in PDF you first need a :ref:`bill` instance.
 
-To render individually
-^^^^^^^^^^^^^^^^^^^^^^
+Render individually
+^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: php
 
@@ -34,8 +34,8 @@ To render individually
     // If you want to hide the print instructions pass false in the second argument
     $boleto->renderPDF(false, false);
 
-To render multiple
-^^^^^^^^^^^^^^^^^^
+Render multiple
+^^^^^^^^^^^^^^^
 
 .. code-block:: php
 
@@ -77,8 +77,8 @@ HTML
 
 To render in HTML you first need a :ref:`bill` instance.
 
-To render individually
-^^^^^^^^^^^^^^^^^^^^^^
+Render individually
+^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: php
 
@@ -93,8 +93,8 @@ To render individually
     // If you want to hide the print instructions pass false in the second argument.
     $boleto->renderHTML(false, false);
 
-To render multiple
-^^^^^^^^^^^^^^^^^^
+Render multiple
+^^^^^^^^^^^^^^^
 
 .. code-block:: php
 

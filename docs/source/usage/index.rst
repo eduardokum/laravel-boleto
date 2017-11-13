@@ -10,6 +10,6 @@ Usage
     beneficiario
     pagador
     boleto/index
-    retorno/index
     remessa/index
+    retorno/index
     utilities
