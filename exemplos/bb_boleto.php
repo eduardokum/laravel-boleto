@@ -32,14 +32,14 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Bb(
         'juros'                  => false,
         'numero'                 => 1,
         'numeroDocumento'        => 1,
-        'pagador'                => $pagador,
-        'beneficiario'           => $beneficiario,
-        'carteira'               => 11,
-        'convenio'               => 1234567,
         'descricaoDemonstrativo' => ['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'],
         'instrucoes'             => ['instrucao 1', 'instrucao 2', 'instrucao 3'],
         'aceite'                 => 'S',
         'especieDoc'             => 'DM',
+        'pagador'                => $pagador,
+        'beneficiario'           => $beneficiario,
+        'carteira'               => 11,
+        'convenio'               => 1234567,
     ]
 );
 
