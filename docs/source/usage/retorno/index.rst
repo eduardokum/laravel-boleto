@@ -191,9 +191,11 @@ In return of 400 positions the object of the bank has the following methods:
 
 .. code-block:: php
 
-    // This return a iterable object, with all returns
+    // This will return a iterable object, with all returns
     $return->getDetalhes();
+    // This will return a object with information
     $return->getHeader();
+    // This will return a object with totals information
     $return->getTrailer();
 
      // To iterate do:
@@ -205,11 +207,15 @@ In return of 240 positions the object of the bank has the following methods:
 
 .. code-block:: php
 
-    // This return a iterable object, with all returns
+    // This will return a iterable object, with all returns
     $return->getDetalhes();
+    // This will return a object with information
     $return->getHeader();
+    // This will return a object with information by lote
     $return->getHeaderLote();
+    // This will return a object with totals information
     $return->getTrailer();
+    // This will return a object with totals information by lote
     $return->getTrailerLote();
 
     // To iterate do:
@@ -228,5 +234,8 @@ The return object implements ``SeekableIterator``, so you can do a foreach on th
 
 .. seealso::
 
-   `API return docs <http://eduardokum.github.io/laravel-boleto/namespace-Eduardokum.LaravelBoleto.Cnab.Retorno.html>`_
+   `API return docs <https://eduardokum.github.io/laravel-boleto/namespace-Eduardokum.LaravelBoleto.Cnab.Retorno.html>`_
       Documentation for return objects.
+
+   `Examples <https://github.com/eduardokum/laravel-boleto/tree/master/exemplos>`_
+      Examples of use
