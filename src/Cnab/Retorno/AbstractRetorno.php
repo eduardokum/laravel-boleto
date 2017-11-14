@@ -135,7 +135,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
     /**
      * @param $i
      *
-     * @return Detalhe240Contract[]|Detalhe400Contract[]
+     * @return Detalhe240Contract|Detalhe400Contract|null
      */
     public function getDetalhe($i)
     {
