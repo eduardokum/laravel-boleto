@@ -34,3 +34,5 @@ tools:
     php_code_sniffer: true
     sensiolabs_security_checker: true
     php_code_coverage: true
+    php_cs_fixer:
+        config: { level: psr2 }

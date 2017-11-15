@@ -945,6 +945,7 @@ final class Util
         $barras = self::IPTE2CodigoBarras($ipte);
 
         $variaveis = [
+            'barras' => $barras,
             'banco' => substr($barras, 0, 3),
             'moeda' => substr($barras, 3, 1),
             'dv' => substr($barras, 4, 1),
@@ -953,7 +954,6 @@ final class Util
             'valor' => ((float) substr($barras, 9, 10)) / 100,
             'campo_livre' => substr($barras, -25),
         ];
-
         $class = __NAMESPACE__ . '\\Boleto\\' . self::getBancoClass($variaveis['banco']);
         if (method_exists($class, 'parseCampoLivre')) {
             $variaveis['campo_livre_parsed'] = $class::parseCampoLivre($variaveis['campo_livre']);
@@ -963,7 +963,6 @@ final class Util
 
         return $variaveis;
     }
-
 
     /**
      * @param $banco

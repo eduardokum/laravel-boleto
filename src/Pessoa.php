@@ -41,7 +41,7 @@ class Pessoa implements PessoaContract
 
     /**
      * Cria a pessoa passando os parametros.
-     *
+     *e
      * @param $nome
      * @param $documento
      * @param null      $endereco

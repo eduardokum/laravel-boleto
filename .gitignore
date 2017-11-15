@@ -3,3 +3,4 @@
 /.idea
 .composer.lock
 /tests/_reports/
+/docs/build/
