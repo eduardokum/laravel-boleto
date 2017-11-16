@@ -11,6 +11,25 @@
 # Laravel Boleto
 Pacote para gerar boletos, remessas e leitura de retorno.
 
+## Índice
+- [Dúvidas](#para-dúvidas-ou-sugestões-utilize-o-nosso-grupo-de-discussão)
+- [Requerimentos](#requerimentos)
+- [Links](#links)
+- [Bancos suportados](#bancos-suportados)
+- [Doações](#doações)
+- [Instalação](#instalação)
+- [Gerar boleto](#gerar-boleto)
+	- [Criando o beneficiário ou pagador](#criando-o-beneficiário-ou-pagador)
+	- [Criando o objeto boleto](#criando-o-objeto-boleto)
+		- [Campos númericos e suas funções](#campos-numéricos-e-suas-funções)
+	- [Gerando o boleto](#gerando-o-boleto)
+		- [Gerando o boleto a partir da instância do objeto (somente um boleto)](#gerando-o-boleto-a-partir-da-instância-do-objeto-somente-um-boleto)
+		- [Gerando boleto a partir da instância do render](#gerando-boleto-a-partir-da-instância-do-render)
+- [Gerar remessa](#gerar-remessa)
+- [Tratar retorno](#tratar-retorno)
+	- [Métodos disponíveis](#métodos-disponíveis)
+
+
 ## Para dúvidas ou sugestões utilize o nosso grupo de discussão
 
 ## Requerimentos
@@ -18,7 +37,6 @@ Pacote para gerar boletos, remessas e leitura de retorno.
 
 
 ## Links
-- [Documentação do Projeto](https://laravel-boleto.readthedocs.io/)
 - [Documentação da API](http://eduardokum.github.io/laravel-boleto/)
 - [Grupo de Discussão](https://groups.google.com/d/forum/laravel-boleto)
 - [Grupo no Telegram](https://t.me/laravelBoleto)
@@ -96,7 +114,7 @@ $pagador = new \Eduardokum\LaravelBoleto\Pessoa([
 
 ### Criando o objeto boleto
 
-#### Campos númericos e suas funções
+#### Campos numéricos e suas funções
 - **numero**: campo numérico utilizado para a criação do nosso numero. (identificação do título no banco)*
 - **numeroControle**: campo de livre utilização. até 25 caracteres. *(identificação do título na empresa)*
 - **numeroDocumento**: campo utilizado para informar ao que o documento se referente *(duplicata, nf, np, ns, etc...)*
@@ -136,7 +154,7 @@ $boleto = new \Eduardokum\LaravelBoleto\Boleto\Banco\Bb($boletoArray);
 
 ### Gerando o boleto
 
-**Gerando o boleto a partir da instância do objeto (somente um boleto)**
+#### Gerando o boleto a partir da instância do objeto (somente um boleto)
 
 ```php
 $boleto->renderPDF();
@@ -165,7 +183,7 @@ return response($boleto->renderHTML());
 
 ```
 
-**Gerando boleto a partir da instância do render**
+#### Gerando boleto a partir da instância do render
 
 
 ```php
@@ -264,7 +282,7 @@ $detalheCollection->each(function ($detalhe, $index) {
 });
 ```
 
-**Métodos disponíveis:**
+### Métodos disponíveis
 
 ```php
 $retorno->getDetalhes();
