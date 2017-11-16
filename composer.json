@@ -26,7 +26,7 @@
         "setasign/fpdf": "^1.8"
     },
     "require-dev": {
-        "phpunit/phpunit": "~5.5",
+        "phpunit/phpunit": "~5.0.0",
         "orchestra/testbench": "3.2"
     },
     "autoload": {
