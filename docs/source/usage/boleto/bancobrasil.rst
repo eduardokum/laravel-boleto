@@ -11,13 +11,12 @@ This bank has the following mandatory fields:
         *  ``convenio 4`` (size: 7)
         *  ``convenio 6`` (size: 5)
         *  ``convenio 7`` (size: 10)
-
 :agencia: Account keeping agency. (size: 4)
 :conta: Account number. (size: 8)
 :convenio: Number of agreement with the bank. (size: 4, 6 and 7)
 :variacaoCarteira: Bank contracts variation (size: 3)
 
-| **Available bank contracts:**
+**Available bank contracts:**
 
 ==  ========================================
 11  Cobrança com registro Simples

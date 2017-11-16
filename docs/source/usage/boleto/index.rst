@@ -42,3 +42,12 @@ All banks have information that is shared such as:
     santander
     sicredi
     render
+
+
+.. seealso::
+
+   `API bill docs <https://eduardokum.github.io/laravel-boleto/namespace-Eduardokum.LaravelBoleto.Boleto.html>`_
+      Documentation for return objects.
+
+   `Examples <https://github.com/eduardokum/laravel-boleto/tree/master/exemplos>`_
+      Examples of use

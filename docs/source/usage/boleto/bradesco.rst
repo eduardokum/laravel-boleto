@@ -8,7 +8,7 @@ This bank has the following mandatory fields:
 :conta: Account number. (size: 7)
 :cip: Code used to identify specific messages to the recipient. [default: 000] (size: 3)
 
-| **Available bank contracts:**
+**Available bank contracts:**
 
 ==  ==========================================
 09  Com Registro

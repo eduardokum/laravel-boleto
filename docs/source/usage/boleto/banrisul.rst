@@ -7,7 +7,7 @@ This bank has the following mandatory fields:
 :agencia: Account keeping agency. (size: 4)
 :conta: Account number. (size: 5)
 
-| **Available bank contracts:**
+**Available bank contracts:**
 
 =  ===========================================
 1  Cobrança Simples

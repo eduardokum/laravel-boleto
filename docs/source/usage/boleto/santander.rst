@@ -6,7 +6,7 @@ This bank has the following mandatory fields:
 :numero: Bill number. (size: 12)
 :codigoCliente: Account number. (size: 7)
 
-| **Available bank contracts:**
+**Available bank contracts:**
 
 ===  ================
 101  Cobrança Simples

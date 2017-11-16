@@ -43,6 +43,22 @@ The constructor accepts as argument:
     ];
 
 
+Factory
+-------
+
+.. code-block:: php
+
+    // The Factory will guess what the return if it is 240 or 400 and which bank and already return the instantiated object
+    $return = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make($argument);
+
+    // To process the file
+    $return->processar();
+
+    // You can know the type of bank after instantiate, using the methods respectively:
+    $return->getTipo();
+    $return->getCodigoBanco();
+
+
 Bancoob
 -------
 

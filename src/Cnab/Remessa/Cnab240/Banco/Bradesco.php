@@ -66,7 +66,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     public function __construct(array $params = [])
     {
         parent::__construct($params);
-        $this->addCampoObrigatorio('codigoCliente', 'idremessa');
+        $this->addCampoObrigatorio('idremessa');
     }
 
     /**
@@ -95,9 +95,17 @@ class Bradesco extends AbstractRemessa implements RemessaContract
      * Retorna o codigo do cliente.
      *
      * @return mixed
+     * @throws \Exception
      */
     public function getCodigoCliente()
     {
+        if (empty($this->codigoCliente)) {
+            $this->codigoCliente = Util::formatCnab('9', $this->getCarteiraNumero(), 4) .
+                Util::formatCnab('9', $this->getAgencia(), 5) .
+                Util::formatCnab('9', $this->getConta(), 7) .
+                Util::formatCnab('9', $this->getContaDv() ?: CalculoDV::bradescoContaCorrente($this->getConta()), 1);
+        }
+
         return $this->codigoCliente;
     }
 

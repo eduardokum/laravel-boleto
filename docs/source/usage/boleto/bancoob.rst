@@ -8,7 +8,7 @@ This bank has the following mandatory fields:
 :conta: Account number. (size: 5)
 :convenio: Number of agreement with the bank. (size: 6)
 
-| **Available bank contracts:**
+**Available bank contracts:**
 
 =  ====================
 1  Simples Com Registro
