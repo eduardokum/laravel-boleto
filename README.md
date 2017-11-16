@@ -11,6 +11,8 @@
 # Laravel Boleto
 Pacote para gerar boletos, remessas e leitura de retorno.
 
+[Documentação do Projeto](https://laravel-boleto.readthedocs.io/)
+
 ## Doações
 
 **Estamos em busca de *doadores* e *patrocinadores* para ajudar a financiar parte do desenvolvimento deste pacote** 
