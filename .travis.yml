@@ -17,7 +17,7 @@ after_script:
   - "php ocular.phar code-coverage:upload --format=php-clover coverage.clover"
 
 after_success:
-  - if  [ $TRAVIS_PHP_VERSION = '5.6' ] && [ $TRAVIS_BRANCH = 'master' ]; then sh generate-api.sh; fi
+  - if  [ $TRAVIS_PHP_VERSION = '7.0' ] && [ $TRAVIS_BRANCH = 'master' ]; then sh generate-api.sh; fi
 
 env:
   global:
