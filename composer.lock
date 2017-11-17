@@ -1157,7 +1157,7 @@
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v3.3.12",
+            "version": "v3.3.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/event-dispatcher.git",
@@ -2598,18 +2598,6 @@
         },
         {
             "name": "phpunit/phpunit",
-<<<<<<< HEAD
-            "version": "5.7.25",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "4b1c822a68ae6577df38a59eb49b046712ec0f6a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/4b1c822a68ae6577df38a59eb49b046712ec0f6a",
-                "reference": "4b1c822a68ae6577df38a59eb49b046712ec0f6a",
-=======
             "version": "5.0.10",
             "source": {
                 "type": "git",
@@ -2620,7 +2608,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/9104a4e2f6a3ebdc4eb036624949a1a2849373dd",
                 "reference": "9104a4e2f6a3ebdc4eb036624949a1a2849373dd",
->>>>>>> master
                 "shasum": ""
             },
             "require": {
@@ -2643,13 +2630,8 @@
                 "sebastian/exporter": "~1.2",
                 "sebastian/global-state": "~1.0",
                 "sebastian/resource-operations": "~1.0",
-<<<<<<< HEAD
-                "sebastian/version": "~1.0.3|~2.0",
-                "symfony/yaml": "~2.1|~3.0|~4.0"
-=======
                 "sebastian/version": "~1.0",
                 "symfony/yaml": "~2.1|~3.0"
->>>>>>> master
             },
             "suggest": {
                 "phpunit/php-invoker": "~1.1"
@@ -2686,11 +2668,7 @@
                 "testing",
                 "xunit"
             ],
-<<<<<<< HEAD
-            "time": "2017-11-14T14:50:51+00:00"
-=======
             "time": "2015-11-30T08:33:35+00:00"
->>>>>>> master
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -3318,7 +3296,7 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v3.3.12",
+            "version": "v3.3.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
