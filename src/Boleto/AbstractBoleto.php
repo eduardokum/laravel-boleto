@@ -1321,7 +1321,8 @@ abstract class AbstractBoleto implements BoletoContract
     public function isValid(&$messages)
     {
         foreach ($this->camposObrigatorios as $campo) {
-            if (call_user_func([$this, 'get' . ucwords($campo)]) == '') {
+            $test = call_user_func([$this, 'get' . ucwords($campo)]);
+            if ($test === '' || is_null($test)) {
                 $messages .= "Campo $campo está em branco";
                 return false;
             }
@@ -1369,8 +1370,8 @@ abstract class AbstractBoleto implements BoletoContract
             return $this->campoCodigoBarras;
         }
 
-        if (!$this->isValid($message)) {
-            throw new \Exception('Campos requeridos pelo banco, aparentam estar ausentes ' . $message);
+        if (!$this->isValid($messages)) {
+            throw new \Exception('Campos requeridos pelo banco, aparentam estar ausentes ' . $messages);
         }
 
         $codigo = Util::numberFormatGeral($this->getCodigoBanco(), 3)

@@ -341,10 +341,12 @@ abstract class AbstractRemessa
      *
      * @return boolean
      */
-    public function isValid()
+    public function isValid(&$messages)
     {
         foreach ($this->camposObrigatorios as $campo) {
-            if (call_user_func([$this, 'get' . ucwords($campo)]) == '') {
+            $test = call_user_func([$this, 'get' . ucwords($campo)]);
+            if ($test === '' || is_null($test)) {
+                $messages .= "Campo $campo está em branco";
                 return false;
             }
         }
