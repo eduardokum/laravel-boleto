@@ -138,7 +138,7 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(77, 79, $this->getCodigoBanco());
         $this->add(80, 94, Util::formatCnab('X', 'SANTANDER', 15));
-        $this->add(95, 100, date('dmy'));
+        $this->add(95, 100, $this->getDataRemessa('dmy'));
         $this->add(101, 116, Util::formatCnab('9', '0', 16));
         $this->add(117, 391, '');
         $this->add(392, 394, '000');
@@ -209,7 +209,7 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(352, 381, Util::formatCnab('X', $boleto->getSacadorAvalista() ? $boleto->getSacadorAvalista()->getNome() : '', 30));
         $this->add(382, 382, '');
         $this->add(383, 383, 'I');
-        $this->add(384, 385, substr($this->getConta(), -1) . CalculoDV::santanderContaCorrente($this->getAgencia(), $this->getConta()));        
+        $this->add(384, 385, substr($this->getConta(), -1) . CalculoDV::santanderContaCorrente($this->getAgencia(), $this->getConta()));
         if (strlen($this->getConta()) == 9) {
             $this->add(384, 385, substr($this->getConta(), -2));
         }

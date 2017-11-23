@@ -63,7 +63,7 @@ class Bnb extends AbstractRemessa implements RemessaContract
      * @var null
      */
     protected $fimArquivo = "\r\n";
-    
+
     /**
      * Retorna o numero da carteira, deve ser override em casos de carteira de letras
      *
@@ -76,7 +76,7 @@ class Bnb extends AbstractRemessa implements RemessaContract
         }
         return '1';
     }
-    
+
     protected function header()
     {
         $this->iniciaHeader();
@@ -94,7 +94,7 @@ class Bnb extends AbstractRemessa implements RemessaContract
         $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(77, 79, $this->getCodigoBanco());
         $this->add(80, 94, Util::formatCnab('X', 'B.DO NORDESTE', 15));
-        $this->add(95, 100, date('dmy'));
+        $this->add(95, 100, $this->getDataRemessa('dmy'));
         $this->add(101, 394, '');
         $this->add(395, 400, Util::formatCnab('9', 1, 6));
 

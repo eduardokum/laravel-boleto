@@ -219,7 +219,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(77, 79, $this->getCodigoBanco());
         $this->add(80, 87, Util::formatCnab('X', 'BANRISUL', 8));
         $this->add(88, 94, '');
-        $this->add(95, 100, date('dmy'));
+        $this->add(95, 100, $this->getDataRemessa('dmy'));
         $this->add(101, 109, '');
         $this->add(110, 113, Util::formatCnab('9', $cod_servico, 4));
         $this->add(114, 114, '');

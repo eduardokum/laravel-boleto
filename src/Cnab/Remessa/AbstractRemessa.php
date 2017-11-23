@@ -86,6 +86,12 @@ abstract class AbstractRemessa
      */
     protected $idremessa;
     /**
+     * A data que será informada no header da remessa
+     *
+     * @var \Carbon\Carbon;
+     */
+    protected $dataRemessa = null;
+    /**
      * Agência
      *
      * @var int
@@ -133,6 +139,25 @@ abstract class AbstractRemessa
         Util::fillClass($this, $params);
     }
 
+ /**
+     * Informa a data da remessa a ser gerada
+     *
+     */
+    public function setDataRemessa($data){
+        $this->dataRemessa = $data;
+    }
+
+    /**
+     * Retorna a data da remessa a ser gerada
+     *
+     * @return \Carbon\Carbon;
+     */
+    public function getDataRemessa($format){
+        if(is_null($this->dataRemessa)){
+            return \Carbon\Carbon::now()->format($format);
+        }
+        return $this->dataRemessa->format($format);
+    }
     /**
      * Seta os campos obrigatórios
      *
