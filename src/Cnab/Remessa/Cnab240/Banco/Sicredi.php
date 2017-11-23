@@ -281,7 +281,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(103, 132, Util::formatCnab('X', 'SICREDI', 30));
         $this->add(133, 142, '');
         $this->add(143, 143, 1);
-        $this->add(144, 151, date('dmY'));
+        $this->add(144, 151, $this->getDataRemessa('dmY'));
         $this->add(152, 157, date('His'));
         $this->add(158, 163, Util::formatCnab('9', $this->getIdremessa(), 6));
         $this->add(164, 166, '081');
