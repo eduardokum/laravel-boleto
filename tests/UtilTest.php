@@ -116,8 +116,8 @@ class UtilTest extends TestCase
         $this->assertEquals('1,000.123', Util::nFloat(1000.123000000, false, true));
         $this->assertEquals('1,000.123000009', Util::nFloat(1000.123000009, false, true));
 
-        $this->assertEquals('', Util::nReal('ABC'));
-        $this->assertEquals('', Util::nReal(null));
+        $this->assertEquals('0,00', Util::nReal('ABC'));
+        $this->assertEquals('0,00', Util::nReal(null));
         $this->assertEquals('R$ 1.000,00', Util::nReal(1000));
         $this->assertEquals('R$ 1.000,000', Util::nReal(1000, 3));
         $this->assertEquals('1.000,000', Util::nReal(1000, 3, false));
