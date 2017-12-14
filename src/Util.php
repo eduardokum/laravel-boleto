@@ -331,7 +331,7 @@ final class Util
     public static function nFloat($number, $decimals = 2, $showThousands = false)
     {
         if (is_null($number) || empty(self::onlyNumbers($number))) {
-            return '';
+            return '0.00';
         }
         $pontuacao = preg_replace('/[0-9]/', '', $number);
         $locale = (mb_substr($pontuacao, -1, 1) == ',') ? "pt-BR" : "en-US";
