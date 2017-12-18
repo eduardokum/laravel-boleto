@@ -330,8 +330,8 @@ final class Util
      */
     public static function nFloat($number, $decimals = 2, $showThousands = false)
     {
-        if (is_null($number) || empty(self::onlyNumbers($number))) {
-            return '';
+        if (is_null($number) || empty(self::onlyNumbers($number)) || floatval($number) == 0) {
+            return 0;
         }
         $pontuacao = preg_replace('/[0-9]/', '', $number);
         $locale = (mb_substr($pontuacao, -1, 1) == ',') ? "pt-BR" : "en-US";
@@ -785,7 +785,7 @@ final class Util
         $t = $f - $i;
 
         $toSplice = $array;
-        
+
         if($toSplice != null)
             return trim(implode('', array_splice($toSplice, $i, $t)));
         else
