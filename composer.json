@@ -1,11 +1,11 @@
 {
-    "name": "devguar/laravel-boleto",
+    "name": "eduardokum/laravel-boleto",
     "description": "Biblioteca com boletos para o laravel",
     "keywords": [
         "eduardokum",
         "laravel-boleto"
     ],
-    "homepage": "https://github.com/devguar/laravel-boleto",
+    "homepage": "https://github.com/eduardokum/laravel-boleto",
     "license": "MIT",
     "authors": [
         {
