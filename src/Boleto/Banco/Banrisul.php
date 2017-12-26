@@ -163,15 +163,4 @@ class Banrisul extends AbstractBoleto implements BoletoContract
 
         return $codigoCliente;
     }
-
-    /**
-     * Retorna um array com a descrição do demonstrativo (máximo 5)
-     *
-     * @return array
-     */
-    public function getDescricaoDemonstrativo()
-    {
-        $this->addDescricaoDemonstrativo("SAC 0800 646 1515 / OUVIDORIA BANRISUL 0800 644 2200");
-        return parent::getDescricaoDemonstrativo();
-    }
 }
