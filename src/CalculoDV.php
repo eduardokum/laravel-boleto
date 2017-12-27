@@ -158,7 +158,7 @@ class CalculoDV
     {
 		$dv1 = Util::modulo10($campo);
 		$dv2 = Util::modulo11($campo . $dv1, 2, 7, 1, 10);
-		
+
 		if ($dv2 == 1){
 			if ($dv1 == 9){
 				$dv1 = 0;
@@ -167,7 +167,7 @@ class CalculoDV
 			}
 			
 			$dv2 = Util::modulo11($campo . $dv1, 2, 7, 0, 10);				
-		}else{
+		}elseif($dv2 != 0){
 			$dv2 = (11 - $dv2);
 		}
 			
