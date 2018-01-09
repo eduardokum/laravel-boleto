@@ -43,6 +43,13 @@ class Banrisul extends AbstractBoleto implements BoletoContract
     protected $carteiras = ['1', '2', '3', '4', '5', '6', '7', '8', 'C', 'D', 'E', 'F', 'H', 'I', 'K', 'M', 'N', 'R', 'S', 'X'];
 
     /**
+     * Codigo do cliente junto ao banco.
+     *
+     * @var string
+     */
+    protected $codigoCliente;
+
+    /**
      * Seta dias para baixa automática
      *
      * @param int $baixaAutomatica
@@ -95,8 +102,7 @@ class Banrisul extends AbstractBoleto implements BoletoContract
 
         $campoLivre = '2';
         $campoLivre .= '1';
-        $campoLivre .= Util::numberFormatGeral($this->getAgencia(), 4);
-        $campoLivre .= Util::numberFormatGeral($this->getConta(), 7);
+        $campoLivre .= Util::numberFormatGeral($this->getCodigoCliente(), 11); //4 digitos da agencia + 7 primeiros digitos pois os ultimos 2 são digitos verificadores
         $campoLivre .= Util::numberFormatGeral($this->getNumero(), 8);
         $campoLivre .= '40';
         $campoLivre .= CalculoDV::banrisulDuploDigito(Util::onlyNumbers($campoLivre));
@@ -120,5 +126,41 @@ class Banrisul extends AbstractBoleto implements BoletoContract
             'nossoNumeroDv' => null,
             'nossoNumeroFull' => substr($campoLivre, 13, 8),
         ];
+    }
+
+    /**
+     * Retorna o codigo do cliente.
+     *
+     * @return mixed
+     */
+    public function getCodigoCliente()
+    {
+        return $this->codigoCliente;
+    }
+
+    /**
+     * Seta o codigo do cliente.
+     *
+     * @param mixed $codigoCliente
+     *
+     * @return Banrisul
+     */
+    public function setCodigoCliente($codigoCliente)
+    {
+        $this->codigoCliente = $codigoCliente;
+
+        return $this;
+    }
+
+    /**
+     * Retorna o campo Agência/Beneficiário do boleto
+     *
+     * @return string
+     */
+    public function getAgenciaCodigoBeneficiario()
+    {
+        $codigoCliente = $this->getCodigoCliente();
+
+        return $codigoCliente;
     }
 }

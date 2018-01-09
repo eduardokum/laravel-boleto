@@ -156,19 +156,22 @@ class CalculoDV
 
     public static function banrisulDuploDigito($campo)
     {
-         $dv1 = Util::modulo10($campo);
-            if ($dv1==9) {
-                $dv1 = 0;
-            }
-            $dv2 = Util::modulo11($campo . $dv1, 2, 7, 0, 10);
-            if ($dv2 == 10 || $dv2 == 1) {
-                $dv1++;
-                $dv2 = Util::modulo11($campo . $dv1, 2, 7, 0, 10);
-                if ($dv1 > 9) {
-                    $dv1 = 0;
-                }
-            }
-            return $dv1 . $dv2;
+		$dv1 = Util::modulo10($campo);
+		$dv2 = Util::modulo11($campo . $dv1, 2, 7, 1, 10);
+
+		if ($dv2 == 1){
+			if ($dv1 == 9){
+				$dv1 = 0;
+			}else{
+				$dv1++;
+			}
+			
+			$dv2 = Util::modulo11($campo . $dv1, 2, 7, 0, 10);				
+		}elseif($dv2 != 0){
+			$dv2 = (11 - $dv2);
+		}
+			
+		return $dv1 . $dv2;
     }
 
     /*
