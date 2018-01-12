@@ -264,6 +264,11 @@ class CalculoDV
         return Util::modulo11($agencia);
     }
 
+    public static function bancoobContaCorrente($contaCorrente)
+    {
+        return Util::modulo11($contaCorrente);
+    }
+
     public static function bancoobNossoNumero($agencia, $convenio, $numero_boleto)
     {
         $n = Util::numberFormatGeral($agencia, 4)

@@ -135,7 +135,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(18, 21, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(22, 22, CalculoDv::bancoobAgencia($this->getAgencia()));
         $this->add(23, 30, Util::formatCnab('9', $this->getConta(), 8));
-        $this->add(31, 31, Util::formatCnab('9', $this->getContaDv(), 1));
+        $this->add(31, 31, Util::formatCnab('9', $this->getContaDv() ?: CalculoDV::bancoobContaCorrente($this->getConta()), 1));
         $this->add(32, 37, '000000');
         $this->add(38, 62, Util::formatCnab('X', $boleto->getNumeroControle(), 25)); // numero de controle
         $this->add(63, 74, Util::formatCnab('9', $boleto->getNossoNumero(), 12));
