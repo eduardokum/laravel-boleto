@@ -2,7 +2,6 @@
 namespace Eduardokum\LaravelBoleto;
 
 use Carbon\Carbon;
-use ForceUTF8\Encoding;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 /**
@@ -769,7 +768,7 @@ final class Util
     public static function remove($i, $f, &$array)
     {
         if (is_string($array)) {
-            $array = str_split(rtrim($array, chr(10) . chr(13) . "\n" . "\r"), 1);
+            $array = preg_split('//u', rtrim($array, chr(10) . chr(13) . "\n" . "\r"), null, PREG_SPLIT_NO_EMPTY);
         }
 
         $i--;
@@ -786,10 +785,11 @@ final class Util
 
         $toSplice = $array;
 
-        if($toSplice != null)
+        if($toSplice != null) {
             return trim(implode('', array_splice($toSplice, $i, $t)));
-        else
-            return;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -836,7 +836,6 @@ final class Util
     public static function isCnab240($content)
     {
         $content = is_array($content) ? $content[0] : $content;
-        $content = Encoding::toUTF8($content);
         return mb_strlen(rtrim($content, "\r\n")) == 240 ? true : false;
     }
 
@@ -849,7 +848,6 @@ final class Util
     public static function isCnab400($content)
     {
         $content = is_array($content) ? $content[0] : $content;
-        $content = Encoding::toUTF8($content);
         return mb_strlen(rtrim($content, "\r\n")) == 400 ? true : false;
     }
 
@@ -860,19 +858,21 @@ final class Util
      */
     public static function file2array($file)
     {
+        $aFile = [];
         if (is_array($file) && isset($file[0]) && is_string($file[0])) {
-            return $file;
+            $aFile = $file;
         } elseif (is_string($file) && is_file($file) && file_exists($file)) {
-            return file($file);
+            $aFile = file($file);
         } elseif (is_string($file) && strstr($file, PHP_EOL) !== false) {
             $file_content = explode(PHP_EOL, $file);
             if (empty(end($file_content))) {
                 array_pop($file_content);
             }
             reset($file_content);
-            return $file_content;
+            $aFile = $file_content;
         }
-        return false;
+
+        return array_map('\ForceUTF8\Encoding::toUTF8', $aFile);
     }
 
     /**
