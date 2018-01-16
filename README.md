@@ -28,8 +28,9 @@ Mas também, caso você ache que qualquer informação obtida aqui, lhe foi úti
         
 *Agradecemos a contribuição.*
 
-## Contribuções
+## Apoiadores
 
 * Leandro Henrique Siqueira
 * Daniela Seco
 * Alberto Yorimasa Kaneto
+* Luciano Martins
