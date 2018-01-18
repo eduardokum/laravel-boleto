@@ -27,3 +27,10 @@ Mas também, caso você ache que qualquer informação obtida aqui, lhe foi úti
 	<img alt="Doar com Pagseguro" src="https://stc.pagseguro.uol.com.br/public/img/botoes/doacoes/120x53-doar.gif"/></a>
         
 *Agradecemos a contribuição.*
+
+## Apoiadores
+
+* Leandro Henrique Siqueira
+* Daniela Seco
+* Alberto Yorimasa Kaneto
+* Luciano Martins

@@ -2,6 +2,7 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240;
 
 use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa as AbstractRemessaGeneric;
+use ForceUTF8\Encoding;
 
 abstract class AbstractRemessa extends AbstractRemessaGeneric
 {
@@ -155,6 +156,6 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
         $this->trailer();
         $stringRemessa .= $this->valida($this->getTrailer()) . $this->fimArquivo;
 
-        return $stringRemessa;
+        return Encoding::toUTF8($stringRemessa);
     }
 }

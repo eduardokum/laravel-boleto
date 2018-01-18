@@ -156,7 +156,7 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(77, 79, $this->getCodigoBanco());
         $this->add(80, 94, Util::formatCnab('X', 'BANCO ITAU SA', 15));
-        $this->add(95, 100, date('dmy'));
+        $this->add(95, 100, $this->getDataRemessa('dmy'));
         $this->add(101, 394, '');
         $this->add(395, 400, Util::formatCnab('9', 1, 6));
 
@@ -231,7 +231,7 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(392, 393, Util::formatCnab('9', $boleto->getDiasProtesto($boleto->getDiasBaixaAutomatica()), 2));
         $this->add(394, 394, '');
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
-        
+
         // Verifica multa
         if ($boleto->getMulta() > 0) {
             // Inicia uma nova linha de detalhe e marca com a atual de edição

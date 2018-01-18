@@ -200,32 +200,33 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     {
         $this->iniciaHeader();
 
-        $cod_servico = '';
-        $tipo_processamento = '';
-        $cod_cliente = '';
-        if ($this->isCarteiraRSX()) {
-            $cod_servico = $this->isTeste() ? '8808' : '0808';
-            $tipo_processamento = $this->isTeste() ? 'X' : 'P';
-            $cod_cliente = $this->getCodigoClienteOfficeBanking();
-        }
-
         $this->add(1, 1, '0');
         $this->add(2, 2, '1');
         $this->add(3, 9, 'REMESSA');
         $this->add(10, 26, '');
-        $this->add(27, 39, Util::formatCnab('9', $this->getCodigoCliente(), 13));
+        $this->add(27, 39, Util::formatCnab('9L', $this->getCodigoCliente(), 13));
         $this->add(40, 46, '');
         $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(77, 79, $this->getCodigoBanco());
         $this->add(80, 87, Util::formatCnab('X', 'BANRISUL', 8));
         $this->add(88, 94, '');
-        $this->add(95, 100, date('dmy'));
+        $this->add(95, 100, $this->getDataRemessa('dmy'));
         $this->add(101, 109, '');
-        $this->add(110, 113, Util::formatCnab('9', $cod_servico, 4));
-        $this->add(114, 114, '');
-        $this->add(115, 115, $tipo_processamento);
-        $this->add(116, 116, '');
-        $this->add(117, 126, Util::formatCnab('9', $cod_cliente, 10));
+
+        if ($this->isCarteiraRSX()) {
+            $cod_servico = $this->isTeste() ? '8808' : '0808';
+            $tipo_processamento = $this->isTeste() ? 'X' : 'P';
+            $cod_cliente = $this->getCodigoClienteOfficeBanking();
+
+            $this->add(110, 113, Util::formatCnab('9', $cod_servico, 4));
+            $this->add(114, 114, '');
+            $this->add(115, 115, $tipo_processamento);
+            $this->add(116, 116, '');
+            $this->add(117, 126, Util::formatCnab('9', $cod_cliente, 10));
+        }else{
+            $this->add(110, 126, '');
+        }
+
         $this->add(127, 394, '');
         $this->add(395, 400, Util::formatCnab('9', 1, 6));
 
@@ -245,7 +246,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
 
         $this->add(1, 1, 1);
         $this->add(2, 17, '');
-        $this->add(18, 30, Util::formatCnab('9', $this->getCodigoCliente(), 13, '0'));
+        $this->add(18, 30, Util::formatCnab('9L', $this->getCodigoCliente(), 13, '0'));
         $this->add(31, 37, '');
         $this->add(38, 62, Util::formatCnab('X', $boleto->getNumeroControle(), 25));
         $this->add(63, 72, Util::formatCnab('9L', $boleto->getNossoNumero(), 10));
