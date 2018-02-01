@@ -295,10 +295,16 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(327, 334, Util::formatCnab('9L', $boleto->getPagador()->getCep(), 8));
         $this->add(335, 349, Util::formatCnab('X', $boleto->getPagador()->getCidade(), 15));
         $this->add(350, 351, Util::formatCnab('X', $boleto->getPagador()->getUf(), 2));
-        $this->add(352, 355, Util::formatCnab('9', 0, 3));
-        $this->add(356, 357, '');
-        $this->add(358, 369, '00');
-        $this->add(370, 371, Util::formatCnab('9', $boleto->getDiasProtesto($boleto->getDiasBaixaAutomatica()), 2));
+
+        if ($this->isCarteiraRSX()){
+            $this->add(352, 371, '');
+        }else{
+            $this->add(352, 355, Util::formatCnab('9', 0, 4));
+            $this->add(356, 357, '');
+            $this->add(358, 369, Util::formatCnab('9', 0, 12));
+            $this->add(370, 371, Util::formatCnab('9', $boleto->getDiasProtesto($boleto->getDiasBaixaAutomatica()), 2));
+        }
+
         $this->add(372, 394, '');
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
 
