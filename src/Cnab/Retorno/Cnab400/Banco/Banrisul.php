@@ -146,6 +146,7 @@ class Banrisul extends AbstractRetorno implements RetornoCnab400
     {
         $this->totais = [
             'liquidados' => 0,
+            'erros' => 0,
             'entradas' => 0,
             'baixados' => 0,
             'protestados' => 0,
