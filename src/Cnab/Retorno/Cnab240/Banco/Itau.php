@@ -347,10 +347,10 @@ class Itau extends AbstractRetorno implements RetornoCnab240
             } elseif ($d->hasOcorrencia('03', '15', '16', '17', '18')) {
                 $this->totais['erros']++;
                 $error = Util::appendStrings(
-                    array_get($this->rejeicoes, $msgAdicional[0], ''),
-                    array_get($this->rejeicoes, $msgAdicional[1], ''),
-                    array_get($this->rejeicoes, $msgAdicional[2], ''),
-                    array_get($this->rejeicoes, $msgAdicional[3], '')
+                    isset($msgAdicional[0]) ? array_get($this->rejeicoes, $msgAdicional[0], '') : '',
+                    isset($msgAdicional[1]) ? array_get($this->rejeicoes, $msgAdicional[1], '') : '',
+                    isset($msgAdicional[2]) ? array_get($this->rejeicoes, $msgAdicional[2], '') : '',
+                    isset($msgAdicional[3]) ? array_get($this->rejeicoes, $msgAdicional[3], '') : ''
                 );
                 $d->setError($error);
             } else {
