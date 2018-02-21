@@ -309,7 +309,7 @@ class Santander extends AbstractRetorno implements RetornoCnab400
             $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
         } elseif ($d->hasOcorrencia('03')) {
             $this->totais['erros']++;
-            $errorsRetorno = str_split(sprintf('%09s', $this->rem(137, 145, $detalhe)), 3);
+            $errorsRetorno = str_split(sprintf('%09s', $this->rem(137, 145, $detalhe)), 3) + array_fill(0, 3, '');
             $error = [];
             $error[] = array_get($this->rejeicoes, $errorsRetorno[0], '');
             $error[] = array_get($this->rejeicoes, $errorsRetorno[1], '');

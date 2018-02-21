@@ -202,7 +202,7 @@ class Banrisul extends AbstractRetorno implements RetornoCnab400
         /**
          * ocorrencias
          */
-        $msgAdicional = str_split(sprintf('%010s', $this->rem(383, 392, $detalhe)), 2);
+        $msgAdicional = str_split(sprintf('%010s', $this->rem(383, 392, $detalhe)), 2) + array_fill(0, 5, '');
         if ($d->hasOcorrencia('06', '25', '08')) {
             $this->totais['liquidados']++;
             $ocorrencia = Util::appendStrings(
