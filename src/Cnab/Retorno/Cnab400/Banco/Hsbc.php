@@ -184,7 +184,8 @@ class Hsbc extends AbstractRetorno implements RetornoCnab400
     protected function processarDetalhe(array $detalhe)
     {
         $d = $this->detalheAtual();
-        $d->setNossoNumero($this->rem(63, 73, $detalhe))
+        $d->setCarteira($this->rem(108, 108, $detalhe))
+            ->setNossoNumero($this->rem(63, 73, $detalhe))
             ->setNumeroDocumento($this->rem(117, 126, $detalhe))
             ->setNumeroControle($this->rem(38, 62, $detalhe))
             ->setOcorrencia($this->rem(109, 110, $detalhe))
