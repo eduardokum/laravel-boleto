@@ -222,7 +222,7 @@ class Santander extends AbstractRetorno implements RetornoCnab240
             /**
              * ocorrencias
             */
-            $msgAdicional = str_split(sprintf('%010s', $this->rem(209, 218, $detalhe)), 2);
+            $msgAdicional = str_split(sprintf('%010s', $this->rem(209, 218, $detalhe)), 2) + array_fill(0, 5, '');
             if ($d->hasOcorrencia('06', '09', '17')) {
                 $this->totais['liquidados']++;
                 $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);

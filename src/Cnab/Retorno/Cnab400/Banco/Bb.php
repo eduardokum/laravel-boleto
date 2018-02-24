@@ -194,7 +194,8 @@ class Bb extends AbstractRetorno implements RetornoCnab400
 
         $d = $this->detalheAtual();
 
-        $d->setNossoNumero($this->rem(64, 80, $detalhe))
+        $d->setCarteira($this->rem(107, 108, $detalhe))
+            ->setNossoNumero($this->rem(64, 80, $detalhe))
             ->setNumeroDocumento($this->rem(117, 126, $detalhe))
             ->setNumeroControle($this->rem(39, 63, $detalhe))
             ->setOcorrencia($this->rem(109, 110, $detalhe))

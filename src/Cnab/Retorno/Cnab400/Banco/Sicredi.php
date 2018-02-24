@@ -258,7 +258,7 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
         }
 
         $stringErrors = sprintf('%010s', $this->rem(319, 328, $detalhe));
-        $errorsRetorno = str_split($stringErrors, 2);
+        $errorsRetorno = str_split($stringErrors, 2) + array_fill(0, 5, '') + array_fill(0, 5, '');
         if (trim($stringErrors, '0') != '') {
             $error = [];
             $error[] = array_get($this->rejeicoes, $errorsRetorno[0], '');

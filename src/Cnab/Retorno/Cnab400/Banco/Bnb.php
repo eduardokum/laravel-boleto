@@ -97,7 +97,8 @@ class Bnb extends AbstractRetorno implements RetornoCnab400
         } else {
             $dataCredito = $this->rem(111, 116, $detalhe);
         }
-        $d->setNossoNumero($this->rem(63, 70, $detalhe)) // Nosso número + digito (no retorno bnb são separados em campos diferentes)
+        $d->setCarteira($this->rem(108, 108, $detalhe))
+            ->setNossoNumero($this->rem(63, 70, $detalhe)) // Nosso número + digito (no retorno bnb são separados em campos diferentes)
             ->setNumeroDocumento($this->rem(117, 126, $detalhe))
             ->setNumeroControle($this->rem(38, 62, $detalhe))
             ->setOcorrencia($this->rem(109, 110, $detalhe))

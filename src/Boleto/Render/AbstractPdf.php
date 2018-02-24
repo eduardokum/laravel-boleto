@@ -81,7 +81,10 @@ abstract class AbstractPdf extends \FPDF
         parent::_beginpage($orientation, $size, $rotation);
         if ($this->NewPageGroup) {
             // start a new group
-            $n = sizeof($this->PageGroups) + 1;
+            if (!is_array($this->PageGroups)) {
+                $this->PageGroups = [];
+            }
+            $n =  sizeof($this->PageGroups) + 1;
             $alias = '{' . $n . '}';
             $this->PageGroups[$alias] = 1;
             $this->CurrPageGroup = $alias;

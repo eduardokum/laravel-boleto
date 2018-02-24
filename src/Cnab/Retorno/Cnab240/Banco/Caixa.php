@@ -444,7 +444,7 @@ class Caixa extends AbstractRetorno implements RetornoCnab240
             /**
              * ocorrencias
             */
-            $msgAdicional = str_split(sprintf('%08s', $this->rem(214, 223, $detalhe)), 2);
+            $msgAdicional = str_split(sprintf('%08s', $this->rem(214, 223, $detalhe)), 2) + array_fill(0, 5, '');
             if ($d->hasOcorrencia('06', '46')) {
                 $this->totais['liquidados']++;
                 $ocorrencia = Util::appendStrings(
