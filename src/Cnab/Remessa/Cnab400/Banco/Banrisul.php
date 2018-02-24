@@ -280,8 +280,15 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         }
         $this->add(161, 161, 0);
         $this->add(162, 173, Util::formatCnab('9', $boleto->getMoraDia(), 12, 2));
-        $this->add(174, 179, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmy') : '000000');
-        $this->add(180, 192, Util::formatCnab('9', $boleto->getDesconto(), 13, 2));
+		
+		if ($boleto->getDesconto() > 0)
+		{
+			$this->add(174, 179,  ? $boleto->getDataDesconto()->format('dmy') : '000000');
+			$this->add(180, 192, Util::formatCnab('9', $boleto->getDesconto(), 13, 2));
+		}else{
+			$this->add(174, 192, '');
+		}
+		
         $this->add(193, 205, Util::formatCnab('9', 0, 13, 2));
         $this->add(206, 218, Util::formatCnab('9', 0, 13, 2));
         $this->add(219, 220, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? '02' : '01');
@@ -299,9 +306,9 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         if ($this->isCarteiraRSX()){
             $this->add(352, 371, '');
         }else{
-            $this->add(352, 355, Util::formatCnab('9', 0, 4));
+            $this->add(352, 355, '');
             $this->add(356, 357, '');
-            $this->add(358, 369, Util::formatCnab('9', 0, 12));
+            $this->add(358, 369, '');
             $this->add(370, 371, Util::formatCnab('9', $boleto->getDiasProtesto($boleto->getDiasBaixaAutomatica()), 2));
         }
 
