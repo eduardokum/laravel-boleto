@@ -306,7 +306,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         if ($this->isCarteiraRSX()){
             $this->add(352, 371, '');
         }else{
-            $this->add(352, 355, Util::formatCnab('9', 0, 4));
+            $this->add(352, 355, '');
             $this->add(356, 357, '');
             $this->add(358, 369, '');
             $this->add(370, 371, Util::formatCnab('9', $boleto->getDiasProtesto($boleto->getDiasBaixaAutomatica()), 2));
