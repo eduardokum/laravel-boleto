@@ -112,9 +112,5 @@
             <div style="clear: both"></div>
             <div class="linha-pontilhada">Corte na linha pontilhada</div>
         </div>
-
-        @if(count($boletos) > 3 && $i % 3 === 0)
-            <div style="page-break-before:always"></div>
-        @endif
     @endforeach
 @endsection
