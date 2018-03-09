@@ -447,7 +447,7 @@ class Pdf extends AbstractPdf implements PdfContract
      * @return string
      * @throws \Exception
      */
-    public function gerarBoleto($dest = self::OUTPUT_STANDARD, $save_path = null)
+    public function gerarBoleto($dest = self::OUTPUT_STANDARD, $save_path = null, $nameFile = null)
     {
         if ($this->totalBoletos == 0) {
             throw new \Exception('Nenhum Boleto adicionado');
@@ -462,7 +462,11 @@ class Pdf extends AbstractPdf implements PdfContract
             $this->Output($save_path, $dest, $this->print);
             return $save_path;
         }
-        return $this->Output(str_random(32) . '.pdf', $dest, $this->print);
+        if ($nameFile == null) {
+            $nameFile = str_random(32);
+        }
+        
+        return $this->Output($nameFile . '.pdf', $dest, $this->print);
     }
 
     /**
