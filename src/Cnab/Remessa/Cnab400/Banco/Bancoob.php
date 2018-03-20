@@ -45,26 +45,6 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->addCampoObrigatorio('convenio');
     }
 
-    private $especie240 = [
-        '01' => '02', // Duplicata Mercantil
-        '02' => '12', // Nota Promissória
-        '03' => '16', // Nota de Seguro
-        '05' => '17', // Recibo
-        '06' => '16', // Duplicata Rural
-        '08' => '17', // Letra de Câmbio
-        '09' => '99', // Warrant - Outros
-        '10' => '01', // Cheque
-        '12' => '04', // Duplicata de Serviço
-        '13' => '19', // Nota de Débito
-        '14' => '14', // Triplicata Mercantil
-        '15' => '15', // Triplicata de Serviço
-        '18' => '18', // Fatura
-        '20' => '20', // Apólice de Seguro
-        '21' => '21', // Mensalidade Escolar
-        '22' => '22', // Parcela de Consórcio
-        '99' => '99', // Outros
-    ];
-
     /**
      * Código do banco
      *
@@ -186,8 +166,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(140, 142, $this->getCodigoBanco());
         $this->add(143, 146, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(147, 147, CalculoDv::bancoobAgencia($this->getAgencia()));
-        $this->add(148, 149, isset($this->especie240[$boleto->getEspecieDocCodigo()]) ? $this->especie240[$boleto->getEspecieDocCodigo()] : '99');
-
+        $this->add(148, 149, $boleto->getEspecieDocCodigo());
         $this->add(150, 150, ($boleto->getAceite() == 'N' ? '0' : '1'));
         $this->add(151, 156, $boleto->getDataDocumento()->format('dmy'));
         $this->add(157, 158, $boleto->getStatus() == $boleto::STATUS_BAIXA ? self::OCORRENCIA_BAIXAR : self::INSTRUCAO_SEM);
