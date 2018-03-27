@@ -101,6 +101,12 @@ class Caixa extends AbstractRetorno implements RetornoCnab400
         ];
     }
 
+    /**
+     * @param array $header
+     *
+     * @return bool
+     * @throws \Exception
+     */
     protected function processarHeader(array $header)
     {
         $this->getHeader()
@@ -115,6 +121,12 @@ class Caixa extends AbstractRetorno implements RetornoCnab400
         return true;
     }
 
+    /**
+     * @param array $detalhe
+     *
+     * @return bool
+     * @throws \Exception
+     */
     protected function processarDetalhe(array $detalhe)
     {
         $d = $this->detalheAtual();
@@ -163,6 +175,11 @@ class Caixa extends AbstractRetorno implements RetornoCnab400
         return true;
     }
 
+    /**
+     * @param array $trailer
+     *
+     * @return bool
+     */
     protected function processarTrailer(array $trailer)
     {
         $this->getTrailer()
