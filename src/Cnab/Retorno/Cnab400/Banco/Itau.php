@@ -105,6 +105,69 @@ class Itau extends AbstractRetorno implements RetornoCnab400
     ];
 
     /**
+     * Array com as possiveis rejeicoes do banco.
+     *
+     * @var array
+     */
+    private $rejeicoes = [
+        '03' => 'Cep sem atendimento de protesto no momento',
+        '04' => 'Sigla do estado inválida',
+        '05' => 'Pprazo da operação menor que prazo mínimo ou maior que o máximo',
+        '07' => 'Valor do título maior que 10.000.000,00',
+        '08' => 'Não informado ou deslocado',
+        '09' => 'Agência encerrada',
+        '10' => 'Não informado ou deslocado',
+        '11' => 'Cep não numérico ou cep inválido',
+        '12' => 'Nome não informado ou deslocado (bancos correspondentes)',
+        '13' => 'Cep incompatível com a sigla do estado',
+        '14' => 'Nosso número já registrado no cadastro do banco ou fora da faixa',
+        '15' => 'Nosso número em duplicidade no mesmo movimento',
+        '18' => 'Data de entrada inválida para operar com esta carteira',
+        '19' => 'Ocorrência inválida',
+        '21' => 'Carteira não aceita depositária correspondente estado da agência diferente do estado do pagador ag. cobradora não consta no cadastro ou encerrando',
+        '22' => 'Não permitida (necessário cadastrar faixa livre)',
+        '26' => 'Agência/conta não liberada para operar com cobrança',
+        '27' => 'Cnpj do beneficiário inapto devolução de título em garantia',
+        '29' => 'Categoria da conta inválida',
+        '30' => 'Entradas bloqueadas, conta suspensa em cobrança',
+        '31' => 'Cnta não tem permissão para protestar (contate seu gerente)',
+        '35' => 'Iof maior que 5%',
+        '36' => 'Quantidade de moeda incompatível com valor do título',
+        '37' => 'Cnpj/cpf do pagador não numérico ou igual a zeros',
+        '42' => 'Nosso número fora de faixa',
+        '52' => 'Ag. cobradora empresa não aceita banco correspondente',
+        '53' => 'Ag. cobradora empresa não aceita banco correspondente - cobrança mensagem',
+        '54' => 'Data de vencto banco correspondente - título com vencimento inferior a 15 dias',
+        '55' => 'Cep não pertence à depositária informada',
+        '56' => 'Vencto superior a 180 dias da data de entrada',
+        '57' => 'Cep só depositária bco do brasil com vencto inferior a 8 dias',
+        '60' => 'Valor do abatimento inválido',
+        '61' => 'Juros de mora maior que o permitido',
+        '62' => 'Valor do desconto maior que valor do título',
+        '63' => 'Valor da importância por dia de desconto (idd) não permitido',
+        '64' => 'Data de emissão do título inválida',
+        '65' => 'taxa financto inválida (vendor)',
+        '66' => 'Data de vencto invalida/fora de prazo de operação (mínimo ou máximo)',
+        '67' => 'valor do título/quantidade de moeda inválido',
+        '68' => 'Carteira inválida ou não cadastrada no intercâmbio da cobrança',
+        '69' => 'Carteira inválida para títulos com rateio de crédito',
+        '70' => 'Agência/conta beneficiário não cadastrado para fazer rateio de crédito',
+        '78' => 'Agência/conta duplicidade de agência/conta beneficiária do rateio de crédito',
+        '80' => 'Agência/conta quantidade de contas beneficiárias do rateio maior do que o permitido (máximo de 30 contas por título)',
+        '81' => 'Agência/conta para rateio de crédito inválida / não pertence ao itaú',
+        '82' => 'Desconto/abatimento não permitido para títulos com rateio de crédito',
+        '83' => 'Valor do título menor que a soma dos valores estipulados para rateio',
+        '84' => 'Agência/conta beneficiária do rateio é a centralizadora de crédito do beneficiário',
+        '85' => 'Agência/conta do beneficiário é contratual / rateio de crédito não permitido',
+        '86' => 'Código do tipo de valor inválido / não previsto para títulos com rateio de crédito',
+        '87' => 'Agência/conta registro tipo 4 sem informação de agências/contas beneficiárias do rateio',
+        '90' => 'Nro da linha cobrança mensagem - número da linha da mensagem inválido ou quantidade de linhas excedidas',
+        '97' => 'Sem mensagem (só de campos fixos), porém com registro do tipo 7 ou 8',
+        '98' => 'Registro mensagem sem flash cadastrado ou flash informado diferente do cadastrado',
+        '99' => 'Conta de cobrança com flash cadastrado e sem registro de mensagem correspondente',
+    ];
+
+    /**
      * Roda antes dos metodos de processar
      */
     protected function init()
@@ -119,6 +182,12 @@ class Itau extends AbstractRetorno implements RetornoCnab400
         ];
     }
 
+    /**
+     * @param array $header
+     *
+     * @return bool
+     * @throws \Exception
+     */
     protected function processarHeader(array $header)
     {
         $this->getHeader()
@@ -134,6 +203,12 @@ class Itau extends AbstractRetorno implements RetornoCnab400
         return true;
     }
 
+    /**
+     * @param array $detalhe
+     *
+     * @return bool
+     * @throws \Exception
+     */
     protected function processarDetalhe(array $detalhe)
     {
         $d = $this->detalheAtual();
@@ -156,6 +231,7 @@ class Itau extends AbstractRetorno implements RetornoCnab400
             ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe) / 100, 2, false))
             ->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe) / 100, 2, false));
 
+        $msgAdicional = str_split(sprintf('%08s', $this->rem(378, 385, $detalhe)), 2) + array_fill(0, 4, '');
         if ($d->hasOcorrencia('06', '07', '08', '10', '59')) {
             $this->totais['liquidados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
@@ -171,9 +247,15 @@ class Itau extends AbstractRetorno implements RetornoCnab400
         } elseif ($d->hasOcorrencia('14')) {
             $this->totais['alterados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
-        } elseif ($d->hasOcorrencia('03', '15', '16', '60', '03')) {
+        } elseif ($d->hasOcorrencia('03', '15', '16', '17', '18', '60')) {
             $this->totais['erros']++;
-            $d->setError('Consulte seu Internet Banking');
+            $error = Util::appendStrings(
+                array_get($this->rejeicoes, $msgAdicional[0], ''),
+                array_get($this->rejeicoes, $msgAdicional[1], ''),
+                array_get($this->rejeicoes, $msgAdicional[2], ''),
+                array_get($this->rejeicoes, $msgAdicional[3], '')
+            );
+            $d->setError($error);
         } else {
             $d->setOcorrenciaTipo($d::OCORRENCIA_OUTROS);
         }
@@ -181,6 +263,12 @@ class Itau extends AbstractRetorno implements RetornoCnab400
         return true;
     }
 
+    /**
+     * @param array $trailer
+     *
+     * @return bool
+     * @throws \Exception
+     */
     protected function processarTrailer(array $trailer)
     {
         $this->getTrailer()
