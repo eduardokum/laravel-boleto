@@ -175,6 +175,14 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
     }
 
     /**
+     * @return array
+     */
+    public function getTotais()
+    {
+        return $this->totais;
+    }
+
+    /**
      * Retorna o detalhe atual.
      *
      * @return Detalhe240Contract|Detalhe400Contract
