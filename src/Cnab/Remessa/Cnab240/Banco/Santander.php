@@ -79,7 +79,7 @@ class Santander extends AbstractRemessa implements RemessaContract
      *
      * @var string
      */
-    protected $tipo_cobranca;
+    protected $tipoCobranca;
 
     /**
      * Retorna o tipo da cobrança
@@ -88,7 +88,7 @@ class Santander extends AbstractRemessa implements RemessaContract
      */
     public function getTipoCobranca()
     {
-      return $this->tipo_cobranca;
+      return $this->tipoCobranca;
     }
 
     /**
@@ -96,7 +96,7 @@ class Santander extends AbstractRemessa implements RemessaContract
      */
     public function setTipoCobranca($tipo_cobranca)
     {
-      $this->tipo_cobranca = $tipo_cobranca;
+      $this->tipoCobranca = $tipo_cobranca;
     }
 
     /**
