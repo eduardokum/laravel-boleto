@@ -23,6 +23,31 @@ class Santander extends AbstractRemessa implements RemessaContract
     }
 
     /**
+     *
+     * 02 DM - DUPLICATA MERCANTIL
+     * 04 DS - DUPLICATA DE SERVICO
+     * 07 LC - LETRA DE CÂMBIO (SOMENTE PARA BANCO 353)
+     * 30 LC - LETRA DE CÂMBIO (SOMENTE PARA BANCO 008)
+     * 12 NP - NOTA PROMISSORIA
+     * 13 NR - NOTA PROMISSORIA RURAL
+     * 17 RC - RECIBO
+     * 20 AP – APOLICE DE SEGURO
+     * 97 CH – CHEQUE
+     * 98 ND - NOTA PROMISSORIA DIRETA
+     * @var array
+     */
+    protected $especieDoc = [
+      'DM' => '02',
+      'DS' => '04',
+      'NP' => '12',
+      'NR' => '13',
+      'RC' => '17',
+      'AP' => '20',
+      'CH' => '97',
+      'ND' => '98',
+    ];
+
+    /**
      * Código do banco
      *
      * @var string
@@ -147,7 +172,7 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(101, 104, Util::formatCnab('9', 0, 4));
         $this->add(105, 105, Util::formatCnab('9', 0, 1));
         $this->add(106, 106, '');
-        $this->add(107, 108, Util::formatCnab('9', $boleto->getEspecieDocCodigo(), 2));
+        $this->add(107, 108, Util::formatCnab('9', $this->especieDoc[$boleto->getEspecieDoc()], 2));
         $this->add(109, 109, Util::formatCnab('9', 'N', 1));
         $this->add(110, 117, $boleto->getDataDocumento()->format('dmY'));
         $this->add(118, 118, 1);
