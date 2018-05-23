@@ -44,7 +44,13 @@ class Santander extends AbstractRemessa implements RemessaContract
     protected $codigoCliente;
 
     /**
-     * Codigo do cliente junto ao banco.
+     *  Tipo da cobrança.
+     *
+     * '1' = Cobrança Simples (Sem Registro e Eletrônica com Registro)
+     * '3' = Cobrança Caucionada (Eletrônica com Registro e Convencional com Registro)
+     * ‘4’ = Cobrança Descontada (Eletrônica com Registro)
+     * '5' = Cobrança Simples (Rápida com Registro)
+     * ‘6’ = Cobrança Caucionada (Rápida com Registro)
      *
      * @var string
      */
@@ -52,12 +58,6 @@ class Santander extends AbstractRemessa implements RemessaContract
 
     /**
      * Retorna o tipo da cobrança
-     *
-     * '1' = Cobrança Simples (Sem Registro e Eletrônica com Registro)
-     * '3' = Cobrança Caucionada (Eletrônica com Registro e Convencional com Registro)
-     * ‘4’ = Cobrança Descontada (Eletrônica com Registro)
-     * '5' = Cobrança Simples (Rápida com Registro)
-     * ‘6’ = Cobrança Caucionada (Rápida com Registro)
      *
      * @return string
      */
