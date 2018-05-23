@@ -6,7 +6,7 @@ This bank has the following mandatory fields:
 :agencia: Account keeping agency. (size: 4)
 :conta: Account number. (size: 8)
 :codigoCliente: Account number. (size: 7)
-:tipoCobranca: Colletion type. (size: 1)
+:tipoCobranca: Collection type. (size: 1)
 
 .. code-block:: php
 
