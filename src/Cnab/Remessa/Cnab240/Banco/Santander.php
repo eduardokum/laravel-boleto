@@ -44,6 +44,37 @@ class Santander extends AbstractRemessa implements RemessaContract
     protected $codigoCliente;
 
     /**
+     * Codigo do cliente junto ao banco.
+     *
+     * @var string
+     */
+    protected $tipo_cobranca;
+
+    /**
+     * Retorna o tipo da cobrança
+     *
+     * '1' = Cobrança Simples (Sem Registro e Eletrônica com Registro)
+     * '3' = Cobrança Caucionada (Eletrônica com Registro e Convencional com Registro)
+     * ‘4’ = Cobrança Descontada (Eletrônica com Registro)
+     * '5' = Cobrança Simples (Rápida com Registro)
+     * ‘6’ = Cobrança Caucionada (Rápida com Registro)
+     *
+     * @return string
+     */
+    public function getTipoCobranca()
+    {
+      return $this->tipo_cobranca;
+    }
+
+    /**
+     * @param string $tipo_cobranca
+     */
+    public function setTipoCobranca($tipo_cobranca)
+    {
+      $this->tipo_cobranca = $tipo_cobranca;
+    }
+
+    /**
      * Retorna o codigo do cliente.
      *
      * @return string
@@ -105,7 +136,7 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(42, 42, $this->getContaDv() ?: CalculoDV::santanderContaCorrente($this->getAgencia(), $this->getConta()));
         $this->add(43, 44, '');
         $this->add(45, 57, Util::formatCnab('9', $boleto->getNossoNumero(), 13));
-        $this->add(58, 58, Util::formatCnab('9', $this->getCarteira(), 1));
+        $this->add(58, 58, Util::formatCnab('9', Util::onlyNumbers($this->getTipoCobranca()), 1));
         $this->add(59, 59, Util::formatCnab('9', 1, 1));
         $this->add(60, 60, Util::formatCnab('9', 2, 1));
         $this->add(61, 61, '');

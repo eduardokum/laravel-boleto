@@ -2,6 +2,7 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240;
 
 use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa as AbstractRemessaGeneric;
+use Eduardokum\LaravelBoleto\Util;
 use ForceUTF8\Encoding;
 
 abstract class AbstractRemessa extends AbstractRemessaGeneric
@@ -76,6 +77,8 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
           return '9';
       }
     }
+
+
 
     /**
      * Retorna o header do lote.
