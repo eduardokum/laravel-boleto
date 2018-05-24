@@ -98,6 +98,13 @@ abstract class AbstractRemessa
      * @var int
      */
     protected $agencia;
+
+    /**
+     * Digito verificador da agência
+     *
+     * @var int
+     */
+    protected $agenciaDv;
     /**
      * Conta
      *
@@ -269,7 +276,33 @@ abstract class AbstractRemessa
         return $this->agencia;
     }
 
+
     /**
+     * Define o digito verificador da agência
+     *
+     * @param  int $agenciaDv
+     *
+     * @return AbstractRemessa
+     */
+    public function setAgenciaDv($agenciaDv)
+    {
+      $this->agenciaDv = (string) $agenciaDv;
+
+      return $this;
+    }
+
+    /**
+     * Retorna o digito verificador da agência
+     *
+     * @return int
+     */
+    public function getAgenciaDv()
+    {
+      return $this->agenciaDv;
+    }
+
+
+  /**
      * Define o número da conta
      *
      * @param  int $conta

@@ -154,7 +154,7 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(15, 15, '');
         $this->add(16, 17, Util::formatCnab('9', 01, 2));
         $this->add(18, 21, Util::formatCnab('9', $this->getAgencia(), 4));
-        $this->add(22, 22, Util::formatCnab('9', '', 1));
+        $this->add(22, 22, Util::formatCnab('9', $this->getAgenciaDv(), 1));
         $this->add(23, 31, Util::formatCnab('9', $this->getConta(), 9));
         $this->add(32, 32, $this->getContaDv() ?: CalculoDV::santanderContaCorrente($this->getAgencia(), $this->getConta()));
         $this->add(33, 41, Util::formatCnab('9', $this->getConta(), 9));
