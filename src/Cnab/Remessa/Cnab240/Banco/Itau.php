@@ -252,7 +252,7 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(143, 143, 1);
         $this->add(144, 151, $this->getDataRemessa('dmY'));
         $this->add(152, 157, date('His'));
-        $this->add(158, 163, '000000');
+        $this->add(158, 163, Util::formatCnab('9', $this->getIdremessa(), 6));
         $this->add(164, 166, '040');
         $this->add(167, 171, '00000');
         $this->add(172, 225, '');

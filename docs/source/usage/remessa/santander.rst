@@ -6,6 +6,7 @@ This bank has the following mandatory fields:
 :agencia: Account keeping agency. (size: 4)
 :conta: Account number. (size: 8)
 :codigoCliente: Account number. (size: 7)
+:tipoCobranca: Collection type. (size: 1)
 
 .. code-block:: php
 
@@ -20,6 +21,7 @@ This bank has the following mandatory fields:
         ->setAgencia(1111)
         ->setCodigoCliente(2222222)
         ->setConta(22222222);
+        ->setTipoCobranca(1);
 
 Or, Simply:
 
@@ -31,6 +33,7 @@ Or, Simply:
         'agencia' => 1111,
         'codigoCliente' => 2222222,
         'conta' => 22222222,
+        'tipoCobranca' => 1,
     ];
 
     // for 400 positions

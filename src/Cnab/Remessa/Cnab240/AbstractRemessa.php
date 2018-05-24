@@ -2,6 +2,7 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240;
 
 use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa as AbstractRemessaGeneric;
+use Eduardokum\LaravelBoleto\Util;
 use ForceUTF8\Encoding;
 
 abstract class AbstractRemessa extends AbstractRemessaGeneric
@@ -54,6 +55,30 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
      * @return mixed
      */
     abstract protected function trailerLote();
+
+    /**
+     * Retorna o tipo de inscrição do documento
+     * 1 = CPF
+     * 2 = CGC
+     * 0 = Não informado
+     * 9 = Outros
+     * @param String $documento - Documento do pagador
+     * @return string - string do documento do pagado
+     */
+    protected function getInscricao(String $documento){
+      switch (strlen(Util::onlyNumbers($documento))){
+        case 14:
+          return '2';
+        case 11:
+          return '1';
+        case 0:
+          return '0';
+        default:
+          return '9';
+      }
+    }
+
+
 
     /**
      * Retorna o header do lote.
