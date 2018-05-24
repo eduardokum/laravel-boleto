@@ -339,12 +339,18 @@ class Santander extends AbstractRemessa implements RemessaContract
     {
         $this->iniciaTrailer();
 
+        $totalRegistros = $this->aRegistros[self::HEADER] +
+                          $this->aRegistros[self::HEADER_LOTE] +
+                          $this->aRegistros[self::DETALHE] +
+                          $this->aRegistros[self::TRAILER_LOTE] +
+                          $this->aRegistros[self::TRAILER] +
+
         $this->add(1, 3, Util::onlyNumbers($this->getCodigoBanco()));
         $this->add(4, 7, '9999');
         $this->add(8, 8, '9');
         $this->add(9, 17, '');
         $this->add(18, 23, '000001');
-        $this->add(24, 29, Util::formatCnab('9', count($this->aRegistros) + 1, 6));
+        $this->add(24, 29, Util::formatCnab('9', count($totalRegistros) + 1, 6));
         $this->add(30, 240, '');
 
         return $this;
