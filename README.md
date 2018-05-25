@@ -34,3 +34,4 @@ Mas também, caso você ache que qualquer informação obtida aqui, lhe foi úti
 * Daniela Seco
 * Alberto Yorimasa Kaneto
 * Luciano Martins
+* Luiz Lins Monteiro Junior

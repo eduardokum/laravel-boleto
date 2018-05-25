@@ -125,6 +125,10 @@ class Santander extends AbstractRemessa implements RemessaContract
      */
     private $total = 0;
 
+    /**
+     * @return $this
+     * @throws \Exception
+     */
     protected function header()
     {
         $this->iniciaHeader();
@@ -147,6 +151,12 @@ class Santander extends AbstractRemessa implements RemessaContract
         return $this;
     }
 
+    /**
+     * @param BoletoContract $boleto
+     *
+     * @return $this
+     * @throws \Exception
+     */
     public function addBoleto(BoletoContract $boleto)
     {
         $this->boletos[] = $boleto;
@@ -221,6 +231,10 @@ class Santander extends AbstractRemessa implements RemessaContract
         return $this;
     }
 
+    /**
+     * @return $this
+     * @throws \Exception
+     */
     protected function trailer()
     {
         $this->iniciaTrailer();

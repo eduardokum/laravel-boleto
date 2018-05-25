@@ -46,7 +46,6 @@ class Sicredi extends AbstractRemessa implements RemessaContract
      * @param string $carteira
      *
      * @return AbstractRemessa
-     * @throws \Exception
      */
     public function setCarteira($carteira)
     {
@@ -82,6 +81,10 @@ class Sicredi extends AbstractRemessa implements RemessaContract
      */
     protected $fimArquivo = "\r\n";
 
+    /**
+     * @return $this
+     * @throws \Exception
+     */
     protected function header()
     {
         $this->iniciaHeader();
@@ -106,6 +109,12 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         return $this;
     }
 
+    /**
+     * @param BoletoContract $boleto
+     *
+     * @return $this
+     * @throws \Exception
+     */
     public function addBoleto(BoletoContract $boleto)
     {
         $this->boletos[] = $boleto;
@@ -171,7 +180,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(326, 326, ' ');
         $this->add(327, 334, Util::formatCnab('9L', $boleto->getPagador()->getCep(), 8));
         $this->add(335, 339, '00000');
-        $this->add(340, 353, Util::formatCnab('9L', $boleto->getSacadorAvalista() ? $boleto->getSacadorAvalista()->getDocumento() : '', 14));
+        $this->add(340, 353, $boleto->getSacadorAvalista() ? Util::formatCnab('9L', $boleto->getSacadorAvalista()->getDocumento(), 14) : Util::formatCnab('X', '', 14));
         $this->add(354, 394, Util::formatCnab('X', $boleto->getSacadorAvalista() ? $boleto->getSacadorAvalista()->getNome() : '', 41));
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
 
@@ -193,6 +202,10 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         return $this;
     }
 
+    /**
+     * @return $this
+     * @throws \Exception
+     */
     protected function trailer()
     {
         $this->iniciaTrailer();
