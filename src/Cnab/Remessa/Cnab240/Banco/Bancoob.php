@@ -68,7 +68,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
      *
      * @var null
      */
-    protected $fimArquivo = "\r\n";
+    protected $fimArquivo = "\n";
 
     /**
      * @param BoletoContract $boleto
@@ -146,7 +146,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(222, 223, Util::formatCnab('9', $boleto->getDiasProtesto(), 2));
         $this->add(224, 224, '0');
         $this->add(225, 227, '');
-        $this->add(227, 229, '09');
+        $this->add(228, 229, '09');
         $this->add(230, 239, '0000000000');
         $this->add(240, 240, '');
 
@@ -186,14 +186,14 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(152, 153, Util::formatCnab('X', $boleto->getPagador()->getUf(), 2));
         $this->add(154, 154, '0');
         $this->add(155, 169, '000000000000000');
-        $this->add(170, 209, '');
+        $this->add(170, 209, Util::formatCnab('X', '', 40));
         $this->add(210, 212, '000');
-        $this->add(213, 240, '');
+        $this->add(213, 240, Util::formatCnab('X', '', 28));
 
         if($boleto->getSacadorAvalista()) {
             $this->add(154, 154, strlen(Util::onlyNumbers($boleto->getSacadorAvalista()->getDocumento())) == 14 ? 2 : 1);
             $this->add(155, 169, Util::formatCnab('9', Util::onlyNumbers($boleto->getSacadorAvalista()->getDocumento()), 15));
-            $this->add(170, 209, Util::formatCnab('X', $boleto->getSacadorAvalista()->getNome(), 30));
+            $this->add(170, 209, Util::formatCnab('X', $boleto->getSacadorAvalista()->getNome(), 40));
         }
 
         return $this;

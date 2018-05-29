@@ -100,6 +100,10 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         return $this;
     }
 
+    /**
+     * @return $this|mixed
+     * @throws \Exception
+     */
     protected function header()
     {
         $this->iniciaHeader();
@@ -108,7 +112,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(2, 2, '1');
         $this->add(3, 9, 'REMESSA');
         $this->add(10, 11, '01');
-        $this->add(12, 26, 'COBRANÇA      ');
+        $this->add(12, 26, Util::formatCnab('X', 'COBRANÇA', 15));
         $this->add(27, 30, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(31, 31, CalculoDv::bancoobAgencia($this->getAgencia()));
         $this->add(32, 40, Util::formatCnab('9', $this->getConvenio(), 9));
@@ -124,6 +128,12 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         return $this;
     }
 
+    /**
+     * @param BoletoContract $boleto
+     *
+     * @return mixed|void
+     * @throws \Exception
+     */
     public function addBoleto(BoletoContract $boleto)
     {
         $this->boletos[] = $boleto;
@@ -204,6 +214,10 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
     }
 
+    /**
+     * @return $this|mixed
+     * @throws \Exception
+     */
     protected function trailer()
     {
         $this->iniciaTrailer();

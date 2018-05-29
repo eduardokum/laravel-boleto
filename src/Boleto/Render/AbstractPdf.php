@@ -7,6 +7,10 @@ abstract class AbstractPdf extends \FPDF
     protected $javascript;
     protected $n_js;
     protected $angle = 0;
+    // PAGE GROUP
+    protected $NewPageGroup; // variable indicating whether a new group was requested
+    protected $PageGroups = []; // variable containing the number of pages of the groups
+    protected $CurrPageGroup; // variable containing the alias of the current page group
 
     protected function IncludeJS($script)
     {
@@ -52,11 +56,6 @@ abstract class AbstractPdf extends \FPDF
             $this->_out('/Names <</JavaScript ' . ($this->n_js) . ' 0 R>>');
         }
     }
-
-    // PAGE GROUP
-    protected $NewPageGroup; // variable indicating whether a new group was requested
-    protected $PageGroups; // variable containing the number of pages of the groups
-    protected $CurrPageGroup; // variable containing the alias of the current page group
 
     // create a new page group; call this before calling AddPage()
     public function StartPageGroup()

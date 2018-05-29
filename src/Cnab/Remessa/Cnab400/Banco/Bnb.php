@@ -77,6 +77,10 @@ class Bnb extends AbstractRemessa implements RemessaContract
         return '1';
     }
 
+    /**
+     * @return $this
+     * @throws \Exception
+     */
     protected function header()
     {
         $this->iniciaHeader();
@@ -101,6 +105,12 @@ class Bnb extends AbstractRemessa implements RemessaContract
         return $this;
     }
 
+    /**
+     * @param BoletoContract $boleto
+     *
+     * @return $this
+     * @throws \Exception
+     */
     public function addBoleto(BoletoContract $boleto)
     {
         $this->boletos[] = $boleto;
@@ -162,6 +172,10 @@ class Bnb extends AbstractRemessa implements RemessaContract
         return $this;
     }
 
+    /**
+     * @return $this
+     * @throws \Exception
+     */
     protected function trailer()
     {
         $this->iniciaTrailer();

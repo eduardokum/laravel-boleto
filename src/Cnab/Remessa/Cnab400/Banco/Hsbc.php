@@ -106,7 +106,10 @@ class Hsbc extends AbstractRemessa implements RemessaContract
         return 1;
     }
 
-
+    /**
+     * @return $this
+     * @throws \Exception
+     */
     protected function header()
     {
         $this->iniciaHeader();
@@ -137,6 +140,12 @@ class Hsbc extends AbstractRemessa implements RemessaContract
         return $this;
     }
 
+    /**
+     * @param BoletoContract $boleto
+     *
+     * @return mixed|void
+     * @throws \Exception
+     */
     public function addBoleto(BoletoContract $boleto)
     {
         $this->boletos[] = $boleto;
@@ -207,6 +216,10 @@ class Hsbc extends AbstractRemessa implements RemessaContract
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
     }
 
+    /**
+     * @return $this
+     * @throws \Exception
+     */
     protected function trailer()
     {
         $this->iniciaTrailer();

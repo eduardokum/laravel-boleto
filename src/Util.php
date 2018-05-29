@@ -2,6 +2,7 @@
 namespace Eduardokum\LaravelBoleto;
 
 use Carbon\Carbon;
+use Illuminate\Http\UploadedFile;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 /**
@@ -822,7 +823,7 @@ final class Util
         }
 
         $value = sprintf("%{$t}s", $value);
-        $value = preg_split('//u', $value, -1, PREG_SPLIT_NO_EMPTY);
+        $value = preg_split('//u', $value, -1, PREG_SPLIT_NO_EMPTY) + array_fill(0, $t, '');
 
         return array_splice($line, $i, $t, $value);
     }
@@ -859,7 +860,9 @@ final class Util
     public static function file2array($file)
     {
         $aFile = [];
-        if (is_array($file) && isset($file[0]) && is_string($file[0])) {
+        if ($file instanceof UploadedFile) {
+            $aFile = file($file->getRealPath());
+        } elseif (is_array($file) && isset($file[0]) && is_string($file[0])) {
             $aFile = $file;
         } elseif (is_string($file) && is_file($file) && file_exists($file)) {
             $aFile = file($file);
