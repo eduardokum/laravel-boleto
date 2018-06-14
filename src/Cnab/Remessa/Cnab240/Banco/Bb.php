@@ -360,7 +360,7 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(4, 7, '0001');
         $this->add(8, 8, '5');
         $this->add(9, 17, '');
-        $this->add(18, 23, Util::formatCnab('9', count($this->boletos) * 2 + 2, 6));
+        $this->add(18, 23, Util::formatCnab('9', $this->getCount() + 2, 6));
         $this->add(24, 240, '');
 
         return $this;
