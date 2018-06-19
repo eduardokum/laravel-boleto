@@ -32,7 +32,7 @@ class Bb extends AbstractBoleto implements BoletoContract
      */
     protected $especiesCodigo = [
 	'CH' => '01', // Cheque
-        'DM' => '02', // Duplicata Mercantil
+	'DM' => '02', // Duplicata Mercantil
 	'DS' => '04', // Duplicata de Serviço
 	'DR' => '06', // Duplicata Rural
 	'LC' => '07', // Letra de Cambio
