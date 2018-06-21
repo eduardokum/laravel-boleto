@@ -265,7 +265,7 @@ class Pdf extends AbstractPdf implements PdfContract
 
         $this->Cell(12, $this->desc, $this->_('Espécie'), 'TR');
         $this->Cell(28, $this->desc, $this->_('Quantidade'), 'TR');
-        $this->Cell(25, $this->desc, $this->_('Valor Documento'), 'TR');
+        $this->Cell(25, $this->desc, $this->_('Valor'), 'TR');
         $this->Cell(50, $this->desc, $this->_('Valor Documento'), 'TR', 1);
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
@@ -304,7 +304,7 @@ class Pdf extends AbstractPdf implements PdfContract
         $this->Cell(50, $this->cell, $this->_(''), 'R', 1);
 
         $this->Cell(120, $this->desc, $this->_(''), 'LR');
-        $this->Cell(50, $this->desc, $this->_('(+) Mora / Multa'), 'TR', 1);
+        $this->Cell(50, $this->desc, $this->_('(+) Mora / Multa / Juros'), 'TR', 1);
 
         $this->Cell(120, $this->cell, $this->_(''), 'LR');
         $this->Cell(50, $this->cell, $this->_(''), 'R', 1);
