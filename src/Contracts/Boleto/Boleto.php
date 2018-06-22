@@ -19,7 +19,7 @@ interface Boleto
     const STATUS_REGISTRO = 1;
     const STATUS_ALTERACAO = 2;
     const STATUS_BAIXA = 3;
-
+    const STATUS_DATA_ALTERADA = 4;
     /**
      * Render PDF.
      *
@@ -246,7 +246,12 @@ interface Boleto
      * @return mixed
      */
     public function alterarBoleto();
-
+    
+    /**
+    * @return mixed
+    */
+    public function alterarDataDeVencimento();
+    
     /**
      * @return mixed
      */

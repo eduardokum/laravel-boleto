@@ -104,8 +104,11 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         if ($boleto->getStatus() == $boleto::STATUS_BAIXA) {
             $this->add(16, 17, self::OCORRENCIA_PEDIDO_BAIXA);
         }
-        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
+        else if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
             $this->add(16, 17, self::OCORRENCIA_ALT_OUTROS_DADOS);
+        }
+        else if ($boleto->getStatus() == $boleto::STATUS_DATA_ALTERADA) {
+            $this->add(16, 17, self::OCORRENCIA_ALT_VENCIMENTO);
         }
         $this->add(18, 22, Util::formatCnab('9', $this->getAgencia(), 5));
         $this->add(23, 23, CalculoDv::bancoobAgencia($this->getAgencia()));
@@ -172,8 +175,11 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         if ($boleto->getStatus() == $boleto::STATUS_BAIXA) {
             $this->add(16, 17, self::OCORRENCIA_PEDIDO_BAIXA);
         }
-        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
+        else if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
             $this->add(16, 17, self::OCORRENCIA_ALT_OUTROS_DADOS);
+        }
+        else if ($boleto->getStatus() == $boleto::STATUS_DATA_ALTERADA) {
+            $this->add(16, 17, self::OCORRENCIA_ALT_VENCIMENTO);
         }
         $this->add(18, 18, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? 2 : 1);
         $this->add(19, 33, Util::formatCnab('9', Util::onlyNumbers($boleto->getPagador()->getDocumento()), 15));
@@ -218,8 +224,11 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         if ($boleto->getStatus() == $boleto::STATUS_BAIXA) {
             $this->add(16, 17, self::OCORRENCIA_PEDIDO_BAIXA);
         }
-        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
+        else if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
             $this->add(16, 17, self::OCORRENCIA_ALT_OUTROS_DADOS);
+        }
+        else if ($boleto->getStatus() == $boleto::STATUS_DATA_ALTERADA) {
+            $this->add(16, 17, self::OCORRENCIA_ALT_VENCIMENTO);
         }
         $this->add(18, 18, '0');
         $this->add(19, 26, '00000000');
