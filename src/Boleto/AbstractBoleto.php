@@ -1242,6 +1242,17 @@ abstract class AbstractBoleto implements BoletoContract
 
         return $this;
     }
+    /**
+     * Marca o boleto para ser alterada data de vencimento no banco
+     *
+     * @return AbstractBoleto
+     */
+    public function alterarDataDeVencimento()
+    {
+      $this->status = BoletoContract::STATUS_DATA_ALTERADA;
+
+      return $this;
+    }
 
     /**
      * Marca o boleto para ser baixado no banco
