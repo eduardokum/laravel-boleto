@@ -133,6 +133,14 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
     }
 
     /**
+     * @return mixed
+     */
+    public function getFileContent()
+    {
+        return implode(PHP_EOL, $this->file);
+    }
+
+    /**
      * @return Collection
      */
     public function getDetalhes()
@@ -164,6 +172,14 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
     public function getTrailer()
     {
         return $this->trailer;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTotais()
+    {
+        return $this->totais;
     }
 
     /**

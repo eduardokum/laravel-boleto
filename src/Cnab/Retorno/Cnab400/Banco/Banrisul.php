@@ -146,6 +146,7 @@ class Banrisul extends AbstractRetorno implements RetornoCnab400
     {
         $this->totais = [
             'liquidados' => 0,
+            'erros' => 0,
             'entradas' => 0,
             'baixados' => 0,
             'protestados' => 0,
@@ -183,7 +184,8 @@ class Banrisul extends AbstractRetorno implements RetornoCnab400
     {
         $d = $this->detalheAtual();
 
-        $d->setNossoNumero($this->rem(63, 72, $detalhe))
+        $d->setCarteira($this->rem(108, 108, $detalhe))
+            ->setNossoNumero($this->rem(63, 72, $detalhe))
             ->setNumeroDocumento($this->rem(117, 126, $detalhe))
             ->setNumeroControle($this->rem(38, 62, $detalhe))
             ->setOcorrencia($this->rem(109, 110, $detalhe))
@@ -201,7 +203,7 @@ class Banrisul extends AbstractRetorno implements RetornoCnab400
         /**
          * ocorrencias
          */
-        $msgAdicional = str_split(sprintf('%010s', $this->rem(383, 392, $detalhe)), 2);
+        $msgAdicional = str_split(sprintf('%010s', $this->rem(383, 392, $detalhe)), 2) + array_fill(0, 5, '');
         if ($d->hasOcorrencia('06', '25', '08')) {
             $this->totais['liquidados']++;
             $ocorrencia = Util::appendStrings(
@@ -237,7 +239,7 @@ class Banrisul extends AbstractRetorno implements RetornoCnab400
             $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
         } elseif ($d->hasOcorrencia('03', '24')) {
             $this->totais['erros']++;
-            $d->setError(array_get($this->rejeicoes, $d->getOcorrencia(), 'Consulte seu Internet Banking'));
+            $d->setError(array_get($this->rejeicoes, $this->rem(383, 392, $detalhe), 'Consulte seu Internet Banking'));
         } else {
             $d->setOcorrenciaTipo($d::OCORRENCIA_OUTROS);
         }

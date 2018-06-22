@@ -101,6 +101,12 @@ class Caixa extends AbstractRetorno implements RetornoCnab400
         ];
     }
 
+    /**
+     * @param array $header
+     *
+     * @return bool
+     * @throws \Exception
+     */
     protected function processarHeader(array $header)
     {
         $this->getHeader()
@@ -115,10 +121,17 @@ class Caixa extends AbstractRetorno implements RetornoCnab400
         return true;
     }
 
+    /**
+     * @param array $detalhe
+     *
+     * @return bool
+     * @throws \Exception
+     */
     protected function processarDetalhe(array $detalhe)
     {
         $d = $this->detalheAtual();
-        $d->setNossoNumero($this->rem(57, 73, $detalhe))
+        $d->setCarteira($this->rem(107, 108, $detalhe))
+            ->setNossoNumero($this->rem(57, 73, $detalhe))
             ->setNumeroDocumento($this->rem(117, 126, $detalhe))
             ->setNumeroControle($this->rem(32, 56, $detalhe))
             ->setOcorrencia($this->rem(109, 110, $detalhe))
@@ -162,6 +175,11 @@ class Caixa extends AbstractRetorno implements RetornoCnab400
         return true;
     }
 
+    /**
+     * @param array $trailer
+     *
+     * @return bool
+     */
     protected function processarTrailer(array $trailer)
     {
         $this->getTrailer()

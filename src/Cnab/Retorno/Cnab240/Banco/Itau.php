@@ -325,7 +325,7 @@ class Itau extends AbstractRetorno implements RetornoCnab240
             /**
              * ocorrencias
             */
-            $msgAdicional = str_split(sprintf('%08s', $this->rem(214, 221, $detalhe)), 2);
+            $msgAdicional = str_split(sprintf('%08s', $this->rem(214, 221, $detalhe)), 2) + array_fill(0, 5, '');
             if ($d->hasOcorrencia('06', '08', '10')) {
                 $this->totais['liquidados']++;
                 $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);

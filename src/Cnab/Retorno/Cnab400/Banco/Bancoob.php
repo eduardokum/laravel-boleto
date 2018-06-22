@@ -34,6 +34,39 @@ class Bancoob extends AbstractRetorno implements RetornoCnab400
         '27' => 'Confirmação Alteração Dados.',
         '48' => 'Confirmação de instrução de transferência de carteira/modalidade de cobrança"'
     ];
+    /**
+     * Array com as possiveis rejeicoes do banco.
+     *
+     * @var array
+     */
+    private $rejeicoes = [
+        '02' => 'Código do registro detalhe inválido',
+        '03' => 'Código da ocorrência inválida',
+        '04' => 'Código de ocorrência não permitida para a carteira',
+        '05' => 'Código de ocorrência não numérico',
+        '07' => 'Agência/conta/Digito – |Inválido',
+        '08' => 'Nosso número inválido',
+        '09' => 'Nosso número duplicado',
+        '10' => 'Carteira inválida',
+        '16' => 'Data de vencimento inválida',
+        '18' => 'Vencimento fora do prazo de operação',
+        '20' => 'Valor do Título inválido',
+        '21' => 'Espécie do Título inválida',
+        '22' => 'Espécie não permitida para a carteira',
+        '24' => 'Data de emissão inválida',
+        '38' => 'Prazo para protesto inválido',
+        '44' => 'Agência Cedente não prevista',
+        '50' => 'CEP irregular – Banco Correspondente',
+        '63' => 'Entrada para Título já cadastrado',
+        '68' => 'Débito não agendado – erro nos dados de remessa',
+        '69' => 'Débito não agendado – Pagador não consta no cadastro de autorizante',
+        '70' => 'Débito não agendado – Cedente não autorizado pelo Pagador',
+        '71' => 'Débito não agendado – Cedente não participa da modalidade de débito automático',
+        '72' => 'Débito não agendado – Código de moeda diferente de R$',
+        '73' => 'Débito não agendado – Data de vencimento inválida',
+        '74' => 'Débito não agendado – Conforme seu pedido, Título não registrado',
+        '75' => 'Débito não agendado – Tipo de número de inscrição do debitado inválido',
+];
 
     /**
      * Roda antes dos metodos de processar
@@ -49,6 +82,12 @@ class Bancoob extends AbstractRetorno implements RetornoCnab400
         ];
     }
 
+    /**
+     * @param array $header
+     *
+     * @return bool
+     * @throws \Exception
+     */
     protected function processarHeader(array $header)
     {
         $this->getHeader()
@@ -66,11 +105,18 @@ class Bancoob extends AbstractRetorno implements RetornoCnab400
         return true;
     }
 
+    /**
+     * @param array $detalhe
+     *
+     * @return bool
+     * @throws \Exception
+     */
     protected function processarDetalhe(array $detalhe)
     {
         $d = $this->detalheAtual();
 
-        $d->setNossoNumero($this->rem(63, 73, $detalhe))
+        $d->setCarteira($this->rem(108, 108, $detalhe))
+            ->setNossoNumero($this->rem(63, 73, $detalhe))
             ->setNumeroDocumento($this->rem(117, 126, $detalhe))
             ->setNumeroControle($this->rem(38, 62, $detalhe))
             ->setOcorrencia($this->rem(109, 110, $detalhe))
@@ -87,6 +133,7 @@ class Bancoob extends AbstractRetorno implements RetornoCnab400
             ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe)/100, 2, false))
             ->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe)/100, 2, false));
 
+        $msgAdicional = str_split(sprintf('%08s', $this->rem(319, 328, $detalhe)), 2) + array_fill(0, 5, '');
         if ($d->hasOcorrencia('05', '06')) {
             $this->totais['liquidados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
@@ -102,6 +149,16 @@ class Bancoob extends AbstractRetorno implements RetornoCnab400
         } elseif ($d->hasOcorrencia('14')) {
             $this->totais['alterados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
+        }  elseif ($d->hasOcorrencia('03', '24', '27', '30', '32')) {
+            $this->totais['erros']++;
+            $error = Util::appendStrings(
+                array_get($this->rejeicoes, $msgAdicional[0], ''),
+                array_get($this->rejeicoes, $msgAdicional[1], ''),
+                array_get($this->rejeicoes, $msgAdicional[2], ''),
+                array_get($this->rejeicoes, $msgAdicional[3], ''),
+                array_get($this->rejeicoes, $msgAdicional[4], '')
+            );
+            $d->setError($error);
         } else {
             $d->setOcorrenciaTipo($d::OCORRENCIA_OUTROS);
         }
@@ -109,6 +166,12 @@ class Bancoob extends AbstractRetorno implements RetornoCnab400
         return true;
     }
 
+    /**
+     * @param array $trailer
+     *
+     * @return bool
+     * @throws \Exception
+     */
     protected function processarTrailer(array $trailer)
     {
         $this->getTrailer()

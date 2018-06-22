@@ -184,7 +184,7 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(24, 35, Util::formatCnab('9', $this->getConta(), 12));
         $this->add(36, 36, CalculoDV::bbContaCorrente($this->getConta()));
         $this->add(37, 37, '');
-        $this->add(38, 57, Util::formatCnab('X', $this->nossoNumero($boleto), 20));
+        $this->add(38, 57, Util::formatCnab('9', $this->nossoNumero($boleto), 20));
         $this->add(58, 58, '1'); //'1' = Cobrança Simples
         $this->add(59, 59, '');
         $this->add(60, 60, '');
@@ -243,8 +243,8 @@ class Bb extends AbstractRemessa implements RemessaContract
         if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
             $this->add(16, 17, self::OCORRENCIA_ALT_OUTROS_DADOS);
         }
-        $this->add(18, 18, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? 2 : 1);
-        $this->add(19, 33, Util::formatCnab('9', Util::onlyNumbers($this->getBeneficiario()->getDocumento()), 15));
+        $this->add(18, 18, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? 2 : 1);
+        $this->add(19, 33, Util::formatCnab('9', Util::onlyNumbers($boleto->getPagador()->getDocumento()), 15));
         $this->add(34, 73, Util::formatCnab('X', $boleto->getPagador()->getNome(), 40));
         $this->add(74, 113, Util::formatCnab('X', $boleto->getPagador()->getEndereco(), 40));
         $this->add(114, 128, Util::formatCnab('X', $boleto->getPagador()->getBairro(), 15));
