@@ -171,7 +171,7 @@ class Caixa extends AbstractRemessa implements RemessaContract
             $this->add(221, 221, self::PROTESTO_DIAS_UTEIS);
         }
         $this->add(222, 223, Util::formatCnab('9', $boleto->getDiasProtesto(), 2));
-        $this->add(224, 224, '2'); // '2' = Não Baixar / Não Devolver (NÃO TRATADO PELO BANCO)
+        $this->add(224, 224, $boleto->getDiasProtesto() > 0 ? '2' : '1'); // '2' = Não Baixar / Não Devolver (NÃO TRATADO PELO BANCO)
         $this->add(225, 227, '000');
         $this->add(228, 229, Util::formatCnab('9', $boleto->getMoeda(), 2));
         $this->add(230, 239, '0000000000');
