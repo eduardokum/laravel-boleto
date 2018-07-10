@@ -1518,6 +1518,7 @@ abstract class AbstractBoleto implements BoletoContract
                 'logo' => $this->getLogo(),
                 'logo_banco_base64' => $this->getLogoBancoBase64(),
                 'logo_banco' => $this->getLogoBanco(),
+                'codigo_banco' => $this->getCodigoBanco(),
                 'codigo_banco_com_dv' => $this->getCodigoBancoComDv(),
                 'especie' => 'R$',
                 'data_vencimento' => $this->getDataVencimento(),

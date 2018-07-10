@@ -189,6 +189,10 @@ class Bb extends AbstractRemessa implements RemessaContract
         return $this;
     }
 
+    /**
+     * @return $this
+     * @throws \Exception
+     */
     protected function header()
     {
         $this->iniciaHeader();
@@ -217,6 +221,12 @@ class Bb extends AbstractRemessa implements RemessaContract
         return $this;
     }
 
+    /**
+     * @param BoletoContract $boleto
+     *
+     * @return mixed|void
+     * @throws \Exception
+     */
     public function addBoleto(BoletoContract $boleto)
     {
         $this->boletos[] = $boleto;
@@ -302,6 +312,10 @@ class Bb extends AbstractRemessa implements RemessaContract
         }
     }
 
+    /**
+     * @return $this
+     * @throws \Exception
+     */
     protected function trailer()
     {
         $this->iniciaTrailer();

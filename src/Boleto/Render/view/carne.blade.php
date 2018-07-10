@@ -1,6 +1,10 @@
 @extends('BoletoHtmlRender::layout')
 @section('boleto')
-
+    <style>
+        .table-boleto .conteudo {
+            height: 11px;
+        }
+    </style>
     @foreach($boletos as $i => $boleto)
         @php extract($boleto, EXTR_OVERWRITE); @endphp
         <div style="width: 863px">
@@ -113,7 +117,7 @@
             <div class="linha-pontilhada">Corte na linha pontilhada</div>
         </div>
 
-        @if(count($boletos) > 3 && $i > 0 && $i % 3 === 0)
+        @if(count($boletos) > 3 && $i > 0 && ($i+1) % 3 === 0)
             <div style="page-break-before:always"></div>
         @endif
     @endforeach

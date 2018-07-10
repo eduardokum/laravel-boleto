@@ -81,6 +81,11 @@ interface Boleto
     /**
      * @return mixed
      */
+    public function getCodigoBanco();
+
+    /**
+     * @return mixed
+     */
     public function getCodigoBancoComDv();
 
     /**

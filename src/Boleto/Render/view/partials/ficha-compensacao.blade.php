@@ -118,7 +118,7 @@
             <div class="conteudo">{{ $instrucoes[3] }}</div>
         </td>
         <td>
-            <div class="titulo">(+) Mora / Multa</div>
+            <div class="titulo">(+) Mora / Multa {{ $codigo_banco == '104' ? '/ Juros' : '' }}</div>
             <div class="conteudo rtl"></div>
         </td>
     </tr>

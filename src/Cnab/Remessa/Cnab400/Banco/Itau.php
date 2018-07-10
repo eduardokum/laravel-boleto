@@ -151,7 +151,7 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(27, 30, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(31, 32, '00');
         $this->add(33, 37, Util::formatCnab('9', $this->getConta(), 5));
-        $this->add(38, 38, $this->getContaDv() ?: CalculoDV::itauContaCorrente($this->getAgencia(), $this->getContaDv()));
+        $this->add(38, 38, $this->getContaDv() ?: CalculoDV::itauContaCorrente($this->getAgencia(), $this->getConta()));
         $this->add(39, 46, '');
         $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(77, 79, $this->getCodigoBanco());
