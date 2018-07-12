@@ -206,9 +206,7 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(181, 195, Util::formatCnab('9', 0, 15, 2));
         $this->add(196, 220, Util::formatCnab('X', $boleto->getNumeroControle(), 25));
         $this->add(221, 221, self::PROTESTO_SEM);
-        if ($boleto->getDiasProtesto() > 0) {
-            $this->add(221, 221, self::PROTESTO_DIAS_UTEIS);
-        }
+        $this->add(221, 221, $boleto->getDiasProtesto() > 0? self::PROTESTO_DIAS_UTEIS : 3);
         $this->add(222, 223, Util::formatCnab('9', $boleto->getDiasProtesto(), 2));
         $this->add(224, 224, '0');
         $this->add(225, 227, '000');
@@ -360,7 +358,7 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(4, 7, '0001');
         $this->add(8, 8, '5');
         $this->add(9, 17, '');
-        $this->add(18, 23, Util::formatCnab('9', $this->getCount() + 2, 6));
+        $this->add(18, 23, Util::formatCnab('9', $this->getCount(), 6));
         $this->add(24, 240, '');
 
         return $this;
