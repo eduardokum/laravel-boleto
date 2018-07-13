@@ -144,7 +144,7 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(118, 118, ($boleto->getJuros() !== null && $boleto->getJuros() > 0) ? '2' : '0');    //0 = ISENTO | 1 = R$ ao dia | 2 = % ao mês
         $this->add(119, 126, Util::formatCnab('9', $boleto->getDataVencimento()->format('dmY'), 8));
         $this->add(127, 141, Util::formatCnab('9', $boleto->getJuros(), 15, 2));
-        $this->add(142, 142, Util::formatCnab('9', '', 1));
+        $this->add(142, 142, $boleto->getDesconto() > 0  ? '1' : '0'); //0 = SEM DESCONTO | 1 = VALOR FIXO | 2 = PERCENTUAL
         $this->add(143, 150, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmY') : '00000000');
         $this->add(151, 165, Util::formatCnab('9', $boleto->getDesconto(), 15, 2));
         $this->add(166, 180, Util::formatCnab('9', 0, 15, 2));
