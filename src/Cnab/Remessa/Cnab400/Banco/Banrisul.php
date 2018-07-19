@@ -128,13 +128,13 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     /**
      * Define se é teste
      *
-     * @param  bool $teste
+     * @param  boolean $teste
      * @return $this
      */
 
-    public function setTeste(bool $teste)
+    public function setTeste($teste)
     {
-        $this->teste = $teste;
+        $this->teste = (boolean) $teste;
         return $this;
     }
     /**
@@ -259,7 +259,13 @@ class Banrisul extends AbstractRemessa implements RemessaContract
             $this->add(109, 110, self::OCORRENCIA_PEDIDO_BAIXA); // BAIXA
         }
         if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
-            $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO); // ALTERAR VENCIMENTO
+            throw new \Exception('Banrisul não suporta alteração geral, use o comando `comandarInstrucao` no boleto para enviar uma solicitação especifica');
+        }
+        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO_DATA) {
+            $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO);
+        }
+        if ($boleto->getStatus() == $boleto::STATUS_CUSTOM) {
+            $this->add(109, 110, sprintf('%2.02s', $boleto->getComando()));
         }
         $this->add(111, 120, Util::formatCnab('X', $boleto->getNumeroDocumento(), 10));
         $this->add(121, 126, $boleto->getDataVencimento()->format('dmy'));

@@ -185,15 +185,19 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(102, 105, '');
         $this->add(106, 106, '2'); //Tipo de Emissão: 1 - Cooperativa 2 - Cliente
         $this->add(107, 108, Util::formatCnab('9', $this->getCarteira(), 2));
-
         $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
         if ($boleto->getStatus() == $boleto::STATUS_BAIXA) {
             $this->add(109, 110, self::OCORRENCIA_PEDIDO_BAIXA); // BAIXA
         }
         if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
-            $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO); // ALTERAR VENCIMENTO
+            $this->add(109, 110, self::OCORRENCIA_ALT_OUTROS_DADOS); // ALTERAR VENCIMENTO
         }
-
+        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO_DATA) {
+            $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO);
+        }
+        if ($boleto->getStatus() == $boleto::STATUS_CUSTOM) {
+            $this->add(109, 110, sprintf('%2.02s', $boleto->getComando()));
+        }
         $this->add(111, 120, Util::formatCnab('X', $boleto->getNumeroDocumento(), 10));
         $this->add(121, 126, $boleto->getDataVencimento()->format('dmy'));
         $this->add(127, 139, Util::formatCnab('9', $boleto->getValor(), 13, 2));

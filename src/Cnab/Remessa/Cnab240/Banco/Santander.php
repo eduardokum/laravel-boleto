@@ -30,6 +30,7 @@ class Santander extends AbstractRemessa implements RemessaContract
     const OCORRENCIA_PROTESTAR = '09';
     const OCORRENCIA_NAO_PROTESTAR = '10';
     const OCORRENCIA_SUSTAR_PROTESTO = '18';
+    const OCORRENCIA_ALT_OUTROS_DADOS = '31';
 
     public function __construct(array $params = [])
     {
@@ -118,6 +119,12 @@ class Santander extends AbstractRemessa implements RemessaContract
         }
         if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
             $this->add(16, 17, self::OCORRENCIA_ALT_OUTROS_DADOS);
+        }
+        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO_DATA) {
+            $this->add(16, 17, self::OCORRENCIA_ALT_VENCIMENTO);
+        }
+        if ($boleto->getStatus() == $boleto::STATUS_CUSTOM) {
+            $this->add(16, 17, sprintf('%2.02s', $boleto->getComando()));
         }
         $this->add(18, 21, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(22, 22, Util::formatCnab('9', '', 1));

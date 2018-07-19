@@ -5,6 +5,7 @@ namespace Eduardokum\LaravelBoleto\Boleto;
 use Carbon\Carbon;
 use Eduardokum\LaravelBoleto\Boleto\Render\Html;
 use Eduardokum\LaravelBoleto\Boleto\Render\Pdf;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto;
 use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
@@ -281,6 +282,11 @@ abstract class AbstractBoleto implements BoletoContract
      * @var int
      */
     protected $status = BoletoContract::STATUS_REGISTRO;
+
+    /**
+     * @var int
+     */
+    private $status_custom = null;
 
     /**
      * Construtor
@@ -1241,6 +1247,39 @@ abstract class AbstractBoleto implements BoletoContract
         $this->status = BoletoContract::STATUS_ALTERACAO;
 
         return $this;
+    }
+
+    /**
+     * Marca o boleto para alterar data vecimento no banco
+     *
+     * @return AbstractBoleto
+     */
+    public function alterarDataDeVencimento()
+    {
+        $this->status = BoletoContract::STATUS_ALTERACAO_DATA;
+
+        return $this;
+    }
+
+    /**
+     * Comandar instrução custom
+     *
+     * @return AbstractBoleto
+     */
+    public function comandarInstrucao($instrucao)
+    {
+        $this->status = BoletoContract::STATUS_CUSTOM;
+        $this->status_custom = $instrucao;
+
+        return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getComando()
+    {
+        return $this->status == Boleto::STATUS_CUSTOM ? $this->status_custom : null;
     }
 
     /**
