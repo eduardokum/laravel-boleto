@@ -83,12 +83,13 @@ class Banrisul extends AbstractRemessa implements RemessaContract
      * M -> Cobrança Partilhada
      * N -> Capital de Giro CGB ICM
      * R -> Desconto de Duplicata
-     * S -> Vendor Eletrônico – Valor Final (Corrigido)
-     * X -> Vendor BDL – Valor Inicial (Valor da NF)
+     * S -> Vendor Eletrônico
+     * X -> Vendor BDL
+     *
      *
      * @var array
      */
-    protected $carteiras = ['1', '2', '3', '4', '5', '6', '7', '8', 'C', 'D', 'E', 'F', 'H', 'I', 'K', 'M', '9', 'R', 'S', 'X'];
+    protected $carteiras =['1', '3', '4', '5', '6', '7', '8', 'C', 'D', 'E', 'F', 'H', 'I', 'K', 'M', 'N', 'R', 'S', 'X'];
 
     /**
      * Caracter de fim de linha

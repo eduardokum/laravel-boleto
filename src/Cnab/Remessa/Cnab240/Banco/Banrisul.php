@@ -49,10 +49,27 @@ class Banrisul extends AbstractRemessa implements RemessaContract
 
     /**
      * Define as carteiras disponíveis para cada banco
-     *
+     * 1 -> Cobrança Simples
+     * 2 -> Cobrança Vinculada
+     * 3 -> Cobrança Caucionada
+     * B -> Cobrança Caucionada CGB Especial
+     * D -> Cobrança CSB
+     * E -> Cobrança Caucionada Câmbio
+     * F -> Cobrança Vendor
+     * G -> BBH Reservado
+     * H -> Cobrança Caucionada em Dólar
+     * I -> Cobrança Caucionada Compror
+     * J -> Cobrança Caucionada NPR
+     * K -> Cobrança simples INCC-M
+     * N -> Capital de Giro CGB ICM
+     * P -> CDCI Eletrônico – PF
+     * R -> Desconto de Duplicada
+     * S -> Vendor Eletrônico
+     * T -> Leasing
+     * U -> CSB e CCB sem registro
      * @var array
      */
-    protected $carteiras = ['1', '2', '3', '4', '5', '6', '7', '8', 'C', 'D', 'E', 'F', 'H', 'I', 'K', 'M', '9', 'R', 'S', 'X'];
+    protected $carteiras = ['1','2', '3', 'B', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'N', 'P', 'R', 'S', 'T', 'U'];
 
     /**
      * Codigo do cliente junto ao banco.
@@ -130,7 +147,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(36, 36, CalculoDV::banrisulContaCorrente($this->getConta()));
         $this->add(37, 37, '');
         $this->add(38, 57, Util::formatCnab('9', $boleto->getNossoNumero(), 20));
-        $this->add(58, 58, '1'); //'1' = Cobrança Simples
+        $this->add(58, 58, $this->getCarteira());
         $this->add(59, 59, '1'); //'1' = Com Cadastramento
         $this->add(60, 60, '');
         $this->add(61, 61, '2'); //2 – Cliente emite o bloqueto
