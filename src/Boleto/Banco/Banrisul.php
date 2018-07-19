@@ -19,28 +19,50 @@ class Banrisul extends AbstractBoleto implements BoletoContract
     /**
      * Define as carteiras disponíveis para este banco
      * 1 -> Cobrança Simples
+     * 2 -> Cobrança Vinculada
      * 3 -> Cobrança Caucionada
      * 4 -> Cobrança em IGPM
      * 5 -> Cobrança Caucionada CGB Especial
      * 6 -> Cobrança Simples Seguradora
      * 7 -> Cobrança em UFIR
      * 8 -> Cobrança em IDTR
+     * B -> Cobrança Caucionada CGB Especial
      * C -> Cobrança Vinculada
      * D -> Cobrança CSB
      * E -> Cobrança Caucionada Câmbio
      * F -> Cobrança Vendor
+     * G -> BBH
      * H -> Cobrança Caucionada Dólar
      * I -> Cobrança Caucionada Compror
+     * J -> Cobrança Caucionada NPR
      * K -> Cobrança Simples INCC-M
      * M -> Cobrança Partilhada
      * N -> Capital de Giro CGB ICM
+     * P -> Capital de Giro CGB ICM
      * R -> Desconto de Duplicata
-     * S -> Vendor Eletrônico – Valor Final (Corrigido)
-     * X -> Vendor BDL – Valor Inicial (Valor da NF)
+     * S -> Vendor Eletrônico
+     * T -> Leasing
+     * U -> CSB e CCB sem registro
+     * X -> Vendor BDL
      *
      * @var array
      */
-    protected $carteiras = ['1', '2', '3', '4', '5', '6', '7', '8', 'C', 'D', 'E', 'F', 'H', 'I', 'K', 'M', 'N', 'R', 'S', 'X'];
+    protected $carteiras = ['1', '2', '3', '4', '5', '6', '7', '8', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'M', 'N', 'P', 'R', 'S', 'T', 'U', 'X'];
+
+    /**
+     * Espécie do documento, código para remessa do CNAB240
+     * @var string
+     */
+    protected $especiesCodigo = [
+        'DM'  => '02', //Duplicata Mercantil – Banco emite bloqueto franqueado. Se a posição 61 for igual a 2 o Banco transformará “espécie do título” para AA
+        'DS'  => '04', //Duplicata de Serviço
+        'LC'  => '07', //Letra de Câmbio
+        'NP'  => '12', //Nota Promissória
+        'CCB' => 'AA', //O Banco não emite o bloqueto
+        'CD'  => 'AB', //Cobrança Direta
+        'CE'  => 'AC', //Cobrança Escritural
+        'TT'  => 'AD', //Título de terceiros
+    ];
 
     /**
      * Codigo do cliente junto ao banco.
