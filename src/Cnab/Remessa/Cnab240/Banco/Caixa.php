@@ -148,7 +148,7 @@ class Caixa extends AbstractRemessa implements RemessaContract
         $this->add(60, 60, '1'); //'2’ - Escritural
         $this->add(61, 61, '2'); //‘2’ = Cliente Emite
         $this->add(62, 62, '0'); //‘0’ = Postagem pelo Beneficiário
-        $this->add(63, 73, Util::formatCnab('9', $boleto->getNumero(), 11));
+        $this->add(63, 73, Util::formatCnab('9', $boleto->getNumeroDocumento(), 11));
         $this->add(74, 77, '');
         $this->add(78, 85, $boleto->getDataVencimento()->format('dmY'));
         $this->add(86, 100, Util::formatCnab('9', $boleto->getValor(), 15, 2));
