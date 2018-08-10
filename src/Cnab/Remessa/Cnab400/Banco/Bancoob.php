@@ -45,24 +45,28 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->addCampoObrigatorio('convenio');
     }
 
-    private $especie240 = [
-        '01' => '02', // Duplicata Mercantil
-        '02' => '12', // Nota Promissória
-        '03' => '16', // Nota de Seguro
-        '05' => '17', // Recibo
-        '06' => '16', // Duplicata Rural
-        '08' => '17', // Letra de Câmbio
-        '09' => '99', // Warrant - Outros
-        '10' => '01', // Cheque
-        '12' => '04', // Duplicata de Serviço
-        '13' => '19', // Nota de Débito
-        '14' => '14', // Triplicata Mercantil
-        '15' => '15', // Triplicata de Serviço
-        '18' => '18', // Fatura
-        '20' => '20', // Apólice de Seguro
-        '21' => '21', // Mensalidade Escolar
-        '22' => '22', // Parcela de Consórcio
-        '99' => '99', // Outros
+    /**
+     * Mapeamento das espécies de documento do CNAB240 para o CNAB400
+     * @var array
+     */
+    private $especie400 = [
+        '01'  => '10', //Cheque
+        '02'  => '01', //Duplicata Mercantil
+        '04'  => '12', //Duplicata de Serviço
+        '06'  => '06', //Duplicata Rural
+        '07'  => '08', //Letra de Câmbio
+        '12'  => '02', //Nota Promissória
+        '14'  => '14', //Triplicata Mercantil
+        '15'  => '15', //Triplicata de Serviço
+        '16'  => '03', //Nota de Seguro
+        '17'  => '05', //Recibo
+        '18'  => '18', //Fatura
+        '19'  => '13', //Nota de Débito
+        '20'  => '20', //Apólice de Seguro
+        '21'  => '21', //Mensalidade Escolar
+        '22'  => '22', //Parcela de Consórcio
+        '99'  => '99', //Outros
+        '100' => '09', //Warrant
     ];
 
     /**
@@ -181,22 +185,26 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(102, 105, '');
         $this->add(106, 106, '2'); //Tipo de Emissão: 1 - Cooperativa 2 - Cliente
         $this->add(107, 108, Util::formatCnab('9', $this->getCarteira(), 2));
-
         $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
         if ($boleto->getStatus() == $boleto::STATUS_BAIXA) {
             $this->add(109, 110, self::OCORRENCIA_PEDIDO_BAIXA); // BAIXA
         }
         if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
-            $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO); // ALTERAR VENCIMENTO
+            $this->add(109, 110, self::OCORRENCIA_ALT_OUTROS_DADOS); // ALTERAR VENCIMENTO
         }
-
+        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO_DATA) {
+            $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO);
+        }
+        if ($boleto->getStatus() == $boleto::STATUS_CUSTOM) {
+            $this->add(109, 110, sprintf('%2.02s', $boleto->getComando()));
+        }
         $this->add(111, 120, Util::formatCnab('X', $boleto->getNumeroDocumento(), 10));
         $this->add(121, 126, $boleto->getDataVencimento()->format('dmy'));
         $this->add(127, 139, Util::formatCnab('9', $boleto->getValor(), 13, 2));
         $this->add(140, 142, $this->getCodigoBanco());
         $this->add(143, 146, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(147, 147, CalculoDv::bancoobAgencia($this->getAgencia()));
-        $this->add(148, 149, isset($this->especie240[$boleto->getEspecieDocCodigo()]) ? $this->especie240[$boleto->getEspecieDocCodigo()] : '99');
+        $this->add(148, 149, isset($this->especie400[$boleto->getEspecieDocCodigo()]) ? $this->especie400[$boleto->getEspecieDocCodigo()] : '99');
 
         $this->add(150, 150, ($boleto->getAceite() == 'N' ? '0' : '1'));
         $this->add(151, 156, $boleto->getDataDocumento()->format('dmy'));
