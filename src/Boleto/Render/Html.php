@@ -35,8 +35,8 @@ class Html implements HtmlContract
         if (!is_null($this->blade)) {
             return $this->blade;
         }
-
-        if (!is_null(\Illuminate\Container\Container::getInstance()))  {
+        $instance = \Illuminate\Container\Container::getInstance();
+        if (!is_null($instance) && $instance->resolved(\Illuminate\Contracts\View\Factory::class))  {
             view()->addNamespace('BoletoHtmlRender', realpath(__DIR__ . '/view/'));
             $this->blade = view();
         } else {
@@ -46,10 +46,10 @@ class Html implements HtmlContract
         }
         $blade = $this->blade->getEngineResolver()->resolve('blade')->getCompiler();
         $blade->directive('php', function($expression) {
-                    return $expression ? "<?php {$expression}; ?>" : '<?php ';
+            return $expression ? "<?php {$expression}; ?>" : '<?php ';
         });
         $blade->directive('endphp', function($expression) {
-                    return ' ?>';
+            return ' ?>';
         });
         return $this->blade;
     }
@@ -167,7 +167,7 @@ class Html implements HtmlContract
      * função para gerar o boleto
      *
      * @return string
-     * @throws \Throwable'
+     * @throws \Exception
      */
     public function gerarBoleto()
     {
@@ -183,11 +183,11 @@ class Html implements HtmlContract
         ])->render();
     }
 
-      /**
+    /**
      * função para gerar o carne
      *
      * @return string
-     * @throws \Throwable'
+     * @throws \Exception
      */
     public function gerarCarne()
     {
