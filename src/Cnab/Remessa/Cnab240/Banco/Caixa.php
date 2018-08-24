@@ -112,6 +112,7 @@ class Caixa extends AbstractRemessa implements RemessaContract
         $this->boletos[] = $boleto;
         $this->segmentoP($boleto);
         $this->segmentoQ($boleto);
+        $this->segmentoR($boleto);
         return $this;
     }
 
@@ -229,6 +230,42 @@ class Caixa extends AbstractRemessa implements RemessaContract
             $this->add(155, 169, Util::formatCnab('9', Util::onlyNumbers($boleto->getSacadorAvalista()->getDocumento()), 15));
             $this->add(170, 209, Util::formatCnab('X', $boleto->getSacadorAvalista()->getNome(), 30));
         }
+
+        return $this;
+    }
+
+    /**
+     * @param BoletoContract $boleto
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    public function segmentoR(BoletoContract $boleto)
+    {
+        $this->iniciaDetalhe();
+        $this->add(1, 3, Util::onlyNumbers($this->getCodigoBanco()));
+        $this->add(4, 7, '0001');
+        $this->add(8, 8, '3');
+        $this->add(9, 13, Util::formatCnab('9', $this->iRegistrosLote, 5));
+        $this->add(14, 14, 'R');
+        $this->add(15, 15, '');
+        $this->add(16, 17, self::OCORRENCIA_REMESSA);
+        if ($boleto->getStatus() == $boleto::STATUS_BAIXA) {
+            $this->add(16, 17, self::OCORRENCIA_PEDIDO_BAIXA);
+        }
+        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
+            $this->add(16, 17, self::OCORRENCIA_ALT_OUTROS_DADOS);
+        }
+        $this->add(18, 18, '0');
+        $this->add(19, 26, '00000000');
+        $this->add(27, 41, '000000000000000');
+        $this->add(42, 42, '0');
+        $this->add(43, 50, '00000000');
+        $this->add(51, 65, '000000000000000');
+        $this->add(66, 66, $boleto->getMulta() > 0 ? '2' : '0'); //0 = ISENTO | 1 = VALOR FIXO | 2 = PERCENTUAL
+        $this->add(67, 74, $boleto->getDataVencimento()->format('dmY'));
+        $this->add(75, 89, Util::formatCnab('9', $boleto->getMulta(), 15, 2));  //2,20 = 0000000000220
+        $this->add(90, 240, '');
 
         return $this;
     }
