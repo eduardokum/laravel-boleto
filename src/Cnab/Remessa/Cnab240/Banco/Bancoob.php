@@ -68,7 +68,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
      *
      * @var null
      */
-    protected $fimArquivo = "\n";
+    protected $fimArquivo = "";
 
     /**
      * @param BoletoContract $boleto
