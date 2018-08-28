@@ -409,16 +409,6 @@ abstract class AbstractRemessa
     abstract protected function trailer();
 
     /**
-     * Função que mostra a quantidade de linhas do arquivo.
-     *
-     * @return int
-     */
-    protected function getCount()
-    {
-        return count($this->aRegistros[self::DETALHE]) + 2;
-    }
-
-    /**
      * Função para adicionar multiplos boletos.
      *
      * @param array $boletos
