@@ -220,7 +220,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(134, 136, Util::formatCnab('9', Util::onlyNumbers(substr($boleto->getPagador()->getCep(), 6, 9)), 3));
         $this->add(137, 151, Util::formatCnab('X', $boleto->getPagador()->getCidade(), 15));
         $this->add(152, 153, Util::formatCnab('X', $boleto->getPagador()->getUf(), 2));
-        $this->add(154, 154, '1');
+        $this->add(154, 154, '0');
         $this->add(155, 169, '000000000000000');
         $this->add(170, 209, '');
         $this->add(210, 212, '000');
