@@ -149,7 +149,7 @@ class Caixa extends AbstractRemessa implements RemessaContract
         $this->add(60, 60, '2'); //'2’ - Escritural
         $this->add(61, 61, '2'); //‘2’ = Cliente Emite
         $this->add(62, 62, '0'); //‘0’ = Postagem pelo Beneficiário
-        $this->add(63, 73, Util::formatCnab('9', $boleto->getNumeroDocumento(), 11));
+        $this->add(63, 73, Util::formatCnab('X', $boleto->getNumeroDocumento(), 11));
         $this->add(74, 77, '');
         $this->add(78, 85, $boleto->getDataVencimento()->format('dmY'));
         $this->add(86, 100, Util::formatCnab('9', $boleto->getValor(), 15, 2));
@@ -158,9 +158,9 @@ class Caixa extends AbstractRemessa implements RemessaContract
         $this->add(107, 108, Util::formatCnab('9', $boleto->getEspecieDocCodigo(), 2));
         $this->add(109, 109, Util::formatCnab('9', $boleto->getAceite(), 1));
         $this->add(110, 117, $boleto->getDataDocumento()->format('dmY'));
-        $this->add(118, 118, $boleto->getJuros() ? '1' : '3'); //'1' = Valor por Dia, '3' = Isento
+        $this->add(118, 118, $boleto->getJuros() ? '2' : '3'); //'1' = Percentual Mensal, '3' = Isento
         $this->add(119, 126, $boleto->getDataVencimento()->format('dmY'));
-        $this->add(127, 141, Util::formatCnab('9', $boleto->getMoraDia(), 15, 2)); //Valor da mora/dia ou Taxa mensal
+        $this->add(127, 141, Util::formatCnab('9', $boleto->getJuros(), 15, 2)); //Taxa mensal
         $this->add(142, 142, $boleto->getDesconto() > 0 ? '1' : '0'); // 0 = Sem Desconto, 1 = Valor Fixo até a data informada, 2 = Percentual até a data informada
         $this->add(143, 150, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmY') : '00000000');
         $this->add(151, 165, Util::formatCnab('9', $boleto->getDesconto(), 15, 2));
