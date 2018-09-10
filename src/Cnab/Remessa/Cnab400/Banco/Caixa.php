@@ -51,7 +51,7 @@ class Caixa  extends AbstractRemessa implements RemessaContract
      *
      * @var array
      */
-    protected $carteiras = ['RG'];
+    protected $carteiras = ['RG', 'SR'];
 
     /**
      * Caracter de fim de linha
