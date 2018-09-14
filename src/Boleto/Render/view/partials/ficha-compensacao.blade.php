@@ -25,6 +25,7 @@
         <td colspan="7">
             <div class="titulo">Beneficiário</div>
             <div class="conteudo">{{ $beneficiario['nome_documento'] }}</div>
+            <div class="conteudo">{{ $beneficiario['nome_documento'] }}</div>
         </td>
         <td>
             <div class="titulo">Agência/Código beneficiário</div>

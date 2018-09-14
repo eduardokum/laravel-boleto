@@ -289,6 +289,13 @@ abstract class AbstractBoleto implements BoletoContract
     private $status_custom = null;
 
     /**
+     * Mostrar o endereço do beneficiário abaixo da razão e CNPJ na ficha de compensação
+     *
+     * @var boolean
+     */
+    protected $mostrarEnderecoFichaCompensacao = false;
+
+    /**
      * Construtor
      *
      * @param array $params Parâmetros iniciais para construção do objeto
@@ -1471,6 +1478,26 @@ abstract class AbstractBoleto implements BoletoContract
         $s5 = substr($codigo, 5, 14);
 
         return $this->campoLinhaDigitavel = sprintf('%s %s %s %s %s', $s1, $s2, $s3, $s4, $s5);
+    }
+
+    /**
+     * Retorna se a segunda linha contendo o endereço do beneficiário deve ser exibida na ficha de compensação
+     *
+     * @return bool
+     */
+    public function getMostrarEnderecoFichaCompensacao()
+    {
+        return $this->mostrarEnderecoFichaCompensacao;
+    }
+
+    /**
+     * Seta se a segunda linha contendo o endereço do beneficiário deve ser exibida na ficha de compensação
+     *
+     * @param bool $mostrarEnderecoFichaCompensacao
+     */
+    public function setMostrarEnderecoFichaCompensacao($mostrarEnderecoFichaCompensacao)
+    {
+        $this->mostrarEnderecoFichaCompensacao = $mostrarEnderecoFichaCompensacao;
     }
 
     /**
