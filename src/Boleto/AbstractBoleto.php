@@ -1579,6 +1579,7 @@ abstract class AbstractBoleto implements BoletoContract
                     'documento' => $this->getBeneficiario()->getDocumento(),
                     'nome_documento' => $this->getBeneficiario()->getNomeDocumento(),
                     'endereco2' => $this->getBeneficiario()->getCepCidadeUf(),
+                    'endereco_completo' => $this->getBeneficiario()->getEnderecoCompleto(),
                 ],
                 'logo_base64' => $this->getLogoBase64(),
                 'logo' => $this->getLogo(),
@@ -1639,6 +1640,7 @@ abstract class AbstractBoleto implements BoletoContract
                 'carteira_nome' => $this->getCarteiraNome(),
                 'uso_banco' => $this->getUsoBanco(),
                 'status' => $this->getStatus(),
+                'mostrar_endereco_ficha_compensacao' => $this->getMostrarEnderecoFichaCompensacao()
             ], $this->variaveis_adicionais
         );
     }

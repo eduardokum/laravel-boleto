@@ -41,6 +41,7 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Bradesco(
     'instrucoes' =>  ['instrucao 1', 'instrucao 2', 'instrucao 3'],
     'aceite' => 'S',
     'especieDoc' => 'DM',
+    'mostrarEnderecoFichaCompensacao' => true
     ]
 );
 
