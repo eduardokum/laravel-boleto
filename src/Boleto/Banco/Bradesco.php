@@ -55,6 +55,12 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
         'DS' => '12',
     ];
     /**
+     * Mostrar o endereço do beneficiário abaixo da razão e CNPJ na ficha de compensação
+     *
+     * @var boolean
+     */
+    protected $mostrarEnderecoFichaCompensacao = true;
+    /**
      * Gera o Nosso Número.
      *
      * @return string
