@@ -255,6 +255,19 @@ class Pessoa implements PessoaContract
     }
 
     /**
+     * Retorna o endereço completo em uma única string
+     *
+     * Ex.: Rua um, 123 - Bairro Industrial - Brasília - DF - 71000-000
+     *
+     * @return string
+     */
+    public function getEnderecoCompleto()
+    {
+        $dados = array_filter(array($this->getEndereco(), $this->getBairro(), $this->getCidade(), $this->getUf(), $this->getCep()));
+        return implode(' - ', $dados);
+    }
+
+    /**
      * @return bool
      */
     public function isDda() {
