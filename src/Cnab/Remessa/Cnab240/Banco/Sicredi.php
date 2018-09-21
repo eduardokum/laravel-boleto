@@ -67,6 +67,19 @@ class Sicredi extends AbstractRemessa implements RemessaContract
     protected $codigoCliente;
 
     /**
+     * Define o código da carteira (Com ou sem registro)
+     *
+     * @param string $carteira
+     *
+     * @return AbstractRemessa
+     */
+    public function setCarteira($carteira)
+    {
+        $this->carteira = 'A';
+        return $this;
+    }
+
+    /**
      * Retorna o codigo do cliente.
      *
      * @return mixed
