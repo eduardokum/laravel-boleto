@@ -286,4 +286,10 @@ interface Boleto
      * @return array
      */
     static public function parseCampoLivre($campoLivre);
+
+
+    /**
+     * @return mixed
+     */
+    public function getMostrarEnderecoFichaCompensacao();
 }
