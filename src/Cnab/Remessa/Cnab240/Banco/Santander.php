@@ -32,6 +32,12 @@ class Santander extends AbstractRemessa implements RemessaContract
     const OCORRENCIA_SUSTAR_PROTESTO = '18';
     const OCORRENCIA_ALT_OUTROS_DADOS = '31';
 
+    const PROTESTO_SEM = '0';
+    const PROTESTO_DIAS_CORRIDOS = '1';
+    const PROTESTO_DIAS_UTEIS = '2';
+    const PROTESTO_PERFIL_BENEFICIARIO = '3';
+    const PROTESTO_AUTOMATICO = '9';
+
     public function __construct(array $params = [])
     {
         parent::__construct($params);
@@ -157,12 +163,15 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(166, 180, Util::formatCnab('9', 0, 15, 2));
         $this->add(181, 195, Util::formatCnab('9', 0, 15, 2));
         $this->add(196, 220, '');
-        $this->add(221, 221, Util::formatCnab('9', 0, 1));
-        $this->add(222, 223, Util::formatCnab('9', 0, 2));
-        $this->add(224, 224, Util::formatCnab('9', 2, 1));
-        $this->add(225, 225, Util::formatCnab('9', 0, 1));
-        $this->add(226, 227, Util::formatCnab('9', 0, 2));
-        $this->add(228, 229, Util::formatCnab('9', 0, 2));
+        $this->add(221, 221, self::PROTESTO_SEM);
+        if ($boleto->getDiasProtesto() > 0) {
+            $this->add(221, 221, self::PROTESTO_DIAS_UTEIS);
+        }
+        $this->add(222, 223, Util::formatCnab('9', $boleto->getDiasProtesto(), 2));
+        $this->add(224, 224, $boleto->getDiasBaixaAutomatica() > 0 ? '1' : '3'); // 1 = Baixar/Devolver / 2 = Não Baixar / 3 = Perfil do Benefíciario (Configuração do Banco)
+        $this->add(225, 225, Util::formatCnab('9', 0, 1));  //Zero Fixo
+        $this->add(226, 227, Util::formatCnab('9', $boleto->getDiasBaixaAutomatica(), 2));  //Dias para Baixa
+        $this->add(228, 229, Util::formatCnab('9', 0, 2));  // 00 = Real
         $this->add(230, 240, '');
 
         return $this;
