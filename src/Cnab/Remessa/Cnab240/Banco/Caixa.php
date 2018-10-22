@@ -143,7 +143,7 @@ class Caixa extends AbstractRemessa implements RemessaContract
         $this->add(24, 29, Util::formatCnab('9', $this->getCodigoCliente(), 6));
         $this->add(30, 37, '00000000');
         $this->add(38, 39, '00');
-        $this->add(40, 57, Util::formatCnab('9', $boleto->getNossoNumero(), 17));
+        $this->add(40, 57, Util::formatCnab('9', $boleto->getNossoNumero(), 18));
         $this->add(58, 58, '1'); //'1' = Cobrança Simples
         $this->add(59, 59, '1'); //'1' - Cobrança Registrada
         $this->add(60, 60, '2'); //'2’ - Escritural
@@ -159,7 +159,7 @@ class Caixa extends AbstractRemessa implements RemessaContract
         $this->add(109, 109, Util::formatCnab('9', $boleto->getAceite(), 1));
         $this->add(110, 117, $boleto->getDataDocumento()->format('dmY'));
         $this->add(118, 118, $boleto->getJuros() ? '2' : '3'); //'2' = Percentual Mensal '3' = Isento
-        $this->add(119, 126, $boleto->getDataVencimento()->format('dmY'));
+        $this->add(119, 126, $boleto->getDataVencimento()->addDays(1)->format('dmY'));
         $this->add(127, 141, Util::formatCnab('9', $boleto->getJuros(), 15, 2)); //Taxa mensal
         $this->add(142, 142, $boleto->getDesconto() > 0 ? '1' : '0'); // 0 = Sem Desconto, 1 = Valor Fixo até a data informada, 2 = Percentual até a data informada
         $this->add(143, 150, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmY') : '00000000');
