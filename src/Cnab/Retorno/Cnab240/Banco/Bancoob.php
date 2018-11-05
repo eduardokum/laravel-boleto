@@ -282,7 +282,7 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
         if ($this->getSegmentType($detalhe) == 'T') {
             $d->setOcorrencia($this->rem(16, 17, $detalhe))
                 ->setOcorrenciaDescricao(array_get($this->ocorrencias, $this->detalheAtual()->getOcorrencia(), 'Desconhecida'))
-                ->setNossoNumero($this->rem(38, 57, $detalhe))
+                ->setNossoNumero($this->rem(38, 47, $detalhe))
                 ->setCarteira($this->rem(58, 58, $detalhe))
                 ->setNumeroDocumento($this->rem(59, 73, $detalhe))
                 ->setDataVencimento($this->rem(74, 81, $detalhe))
@@ -297,7 +297,7 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
             /**
              * ocorrencias
             */
-            $msgAdicional = str_split(sprintf('%010s', $this->rem(214, 223, $detalhe)), 2);
+            $msgAdicional = str_split(sprintf('%010s', $this->rem(214, 223, $detalhe)), 2) + array_fill(0, 5, '');
             if ($d->hasOcorrencia('06', '17', '50')) {
                 $this->totais['liquidados']++;
                 $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);

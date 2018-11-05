@@ -56,7 +56,7 @@
                 <td valign="bottom" colspan="8" class="noborder nopadding">
                     <div class="logocontainer">
                         <div class="logobanco">
-                            <img src="{{ $logo_banco_base64 }}" alt="logo do banco">
+                            <img src="{{ isset($logo_banco_base64) && !empty($logo_banco_base64) ? $logo_banco_base64 : 'https://dummyimage.com/150x75/fff/000000.jpg&text=+' }}" alt="logo do banco">
                         </div>
                         <div class="codbanco">{{ $codigo_banco_com_dv }}</div>
                     </div>

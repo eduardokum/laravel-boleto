@@ -5,6 +5,7 @@ namespace Eduardokum\LaravelBoleto\Boleto;
 use Carbon\Carbon;
 use Eduardokum\LaravelBoleto\Boleto\Render\Html;
 use Eduardokum\LaravelBoleto\Boleto\Render\Pdf;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto;
 use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
@@ -281,6 +282,11 @@ abstract class AbstractBoleto implements BoletoContract
      * @var int
      */
     protected $status = BoletoContract::STATUS_REGISTRO;
+
+    /**
+     * @var int
+     */
+    private $status_custom = null;
 
     /**
      * Construtor
@@ -1244,6 +1250,39 @@ abstract class AbstractBoleto implements BoletoContract
     }
 
     /**
+     * Marca o boleto para alterar data vecimento no banco
+     *
+     * @return AbstractBoleto
+     */
+    public function alterarDataDeVencimento()
+    {
+        $this->status = BoletoContract::STATUS_ALTERACAO_DATA;
+
+        return $this;
+    }
+
+    /**
+     * Comandar instrução custom
+     *
+     * @return AbstractBoleto
+     */
+    public function comandarInstrucao($instrucao)
+    {
+        $this->status = BoletoContract::STATUS_CUSTOM;
+        $this->status_custom = $instrucao;
+
+        return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getComando()
+    {
+        return $this->status == Boleto::STATUS_CUSTOM ? $this->status_custom : null;
+    }
+
+    /**
      * Marca o boleto para ser baixado no banco
      *
      * @return AbstractBoleto
@@ -1518,6 +1557,7 @@ abstract class AbstractBoleto implements BoletoContract
                 'logo' => $this->getLogo(),
                 'logo_banco_base64' => $this->getLogoBancoBase64(),
                 'logo_banco' => $this->getLogoBanco(),
+                'codigo_banco' => $this->getCodigoBanco(),
                 'codigo_banco_com_dv' => $this->getCodigoBancoComDv(),
                 'especie' => 'R$',
                 'data_vencimento' => $this->getDataVencimento(),

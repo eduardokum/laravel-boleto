@@ -1,9 +1,10 @@
 <?php
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa;
 
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
+use Carbon\Carbon;
 use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 abstract class AbstractRemessa
 {
@@ -88,7 +89,7 @@ abstract class AbstractRemessa
     /**
      * A data que será informada no header da remessa
      *
-     * @var \Carbon\Carbon;
+     * @var Carbon;
      */
     protected $dataRemessa = null;
     /**
@@ -139,9 +140,10 @@ abstract class AbstractRemessa
         Util::fillClass($this, $params);
     }
 
- /**
+    /**
      * Informa a data da remessa a ser gerada
      *
+     * @param $data
      */
     public function setDataRemessa($data){
         $this->dataRemessa = $data;
@@ -150,11 +152,13 @@ abstract class AbstractRemessa
     /**
      * Retorna a data da remessa a ser gerada
      *
-     * @return \Carbon\Carbon;
+     * @param $format
+     *
+     * @return string;
      */
     public function getDataRemessa($format){
         if(is_null($this->dataRemessa)){
-            return \Carbon\Carbon::now()->format($format);
+            return Carbon::now()->format($format);
         }
         return $this->dataRemessa->format($format);
     }
@@ -364,6 +368,8 @@ abstract class AbstractRemessa
     /**
      * Método que valida se o banco tem todos os campos obrigadotorios preenchidos
      *
+     * @param $messages
+     *
      * @return boolean
      */
     public function isValid(&$messages)
@@ -401,16 +407,6 @@ abstract class AbstractRemessa
      * @return mixed
      */
     abstract protected function trailer();
-
-    /**
-     * Função que mostra a quantidade de linhas do arquivo.
-     *
-     * @return int
-     */
-    protected function getCount()
-    {
-        return count($this->aRegistros[self::DETALHE]) + 2;
-    }
 
     /**
      * Função para adicionar multiplos boletos.
@@ -487,7 +483,7 @@ abstract class AbstractRemessa
             throw new \Exception('Classe remessa deve informar o tamanho da linha');
         }
 
-        $a = array_filter($a, 'strlen');
+        $a = array_filter($a, 'mb_strlen');
         if (count($a) != $this->tamanho_linha) {
             throw new \Exception(sprintf('$a não possui %s posições, possui: %s', $this->tamanho_linha, count($a)));
         }

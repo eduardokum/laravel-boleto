@@ -83,12 +83,13 @@ class Banrisul extends AbstractRemessa implements RemessaContract
      * M -> Cobrança Partilhada
      * N -> Capital de Giro CGB ICM
      * R -> Desconto de Duplicata
-     * S -> Vendor Eletrônico – Valor Final (Corrigido)
-     * X -> Vendor BDL – Valor Inicial (Valor da NF)
+     * S -> Vendor Eletrônico
+     * X -> Vendor BDL
+     *
      *
      * @var array
      */
-    protected $carteiras = ['1', '2', '3', '4', '5', '6', '7', '8', 'C', 'D', 'E', 'F', 'H', 'I', 'K', 'M', '9', 'R', 'S', 'X'];
+    protected $carteiras =['1', '3', '4', '5', '6', '7', '8', 'C', 'D', 'E', 'F', 'H', 'I', 'K', 'M', 'N', 'R', 'S', 'X'];
 
     /**
      * Caracter de fim de linha
@@ -127,13 +128,13 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     /**
      * Define se é teste
      *
-     * @param  bool $teste
+     * @param  boolean $teste
      * @return $this
      */
 
-    public function setTeste(bool $teste)
+    public function setTeste($teste)
     {
-        $this->teste = $teste;
+        $this->teste = (boolean) $teste;
         return $this;
     }
     /**
@@ -223,7 +224,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
             $this->add(115, 115, $tipo_processamento);
             $this->add(116, 116, '');
             $this->add(117, 126, Util::formatCnab('9', $cod_cliente, 10));
-        }else{
+        } else {
             $this->add(110, 126, '');
         }
 
@@ -258,7 +259,13 @@ class Banrisul extends AbstractRemessa implements RemessaContract
             $this->add(109, 110, self::OCORRENCIA_PEDIDO_BAIXA); // BAIXA
         }
         if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
-            $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO); // ALTERAR VENCIMENTO
+            throw new \Exception('Banrisul não suporta alteração geral, use o comando `comandarInstrucao` no boleto para enviar uma solicitação especifica');
+        }
+        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO_DATA) {
+            $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO);
+        }
+        if ($boleto->getStatus() == $boleto::STATUS_CUSTOM) {
+            $this->add(109, 110, sprintf('%2.02s', $boleto->getComando()));
         }
         $this->add(111, 120, Util::formatCnab('X', $boleto->getNumeroDocumento(), 10));
         $this->add(121, 126, $boleto->getDataVencimento()->format('dmy'));
@@ -280,8 +287,13 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         }
         $this->add(161, 161, 0);
         $this->add(162, 173, Util::formatCnab('9', $boleto->getMoraDia(), 12, 2));
-        $this->add(174, 179, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmy') : '000000');
-        $this->add(180, 192, Util::formatCnab('9', $boleto->getDesconto(), 13, 2));
+        $this->add(174, 192, '');
+
+		if ($boleto->getDesconto() > 0) {
+			$this->add(174, 179, $boleto->getDataDesconto()->format('dmy'));
+			$this->add(180, 192, Util::formatCnab('9', $boleto->getDesconto(), 13, 2));
+		}
+
         $this->add(193, 205, Util::formatCnab('9', 0, 13, 2));
         $this->add(206, 218, Util::formatCnab('9', 0, 13, 2));
         $this->add(219, 220, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? '02' : '01');
@@ -295,10 +307,16 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(327, 334, Util::formatCnab('9L', $boleto->getPagador()->getCep(), 8));
         $this->add(335, 349, Util::formatCnab('X', $boleto->getPagador()->getCidade(), 15));
         $this->add(350, 351, Util::formatCnab('X', $boleto->getPagador()->getUf(), 2));
-        $this->add(352, 355, Util::formatCnab('9', 0, 3));
-        $this->add(356, 357, '');
-        $this->add(358, 369, '00');
-        $this->add(370, 371, Util::formatCnab('9', $boleto->getDiasProtesto($boleto->getDiasBaixaAutomatica()), 2));
+
+        if ($this->isCarteiraRSX()){
+            $this->add(352, 371, '');
+        }else{
+            $this->add(352, 355, '');
+            $this->add(356, 357, '');
+            $this->add(358, 369, '');
+            $this->add(370, 371, Util::formatCnab('9', $boleto->getDiasProtesto($boleto->getDiasBaixaAutomatica()), 2));
+        }
+
         $this->add(372, 394, '');
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
 

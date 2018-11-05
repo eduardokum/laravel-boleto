@@ -124,6 +124,26 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
     }
 
     /**
+     * Função que mostra a quantidade de linhas do arquivo.
+     *
+     * @return int
+     */
+    protected function getCountDetalhes()
+    {
+        return count($this->aRegistros[self::DETALHE]);
+    }
+
+    /**
+     * Função que mostra a quantidade de linhas do arquivo.
+     *
+     * @return int
+     */
+    protected function getCount()
+    {
+        return $this->getCountDetalhes() + 4;
+    }
+
+    /**
      * Gera o arquivo, retorna a string.
      *
      * @return string

@@ -7,6 +7,10 @@ abstract class AbstractPdf extends \FPDF
     protected $javascript;
     protected $n_js;
     protected $angle = 0;
+    // PAGE GROUP
+    protected $NewPageGroup; // variable indicating whether a new group was requested
+    protected $PageGroups = []; // variable containing the number of pages of the groups
+    protected $CurrPageGroup; // variable containing the alias of the current page group
 
     protected function IncludeJS($script)
     {
@@ -53,11 +57,6 @@ abstract class AbstractPdf extends \FPDF
         }
     }
 
-    // PAGE GROUP
-    protected $NewPageGroup; // variable indicating whether a new group was requested
-    protected $PageGroups; // variable containing the number of pages of the groups
-    protected $CurrPageGroup; // variable containing the alias of the current page group
-
     // create a new page group; call this before calling AddPage()
     public function StartPageGroup()
     {
@@ -81,7 +80,10 @@ abstract class AbstractPdf extends \FPDF
         parent::_beginpage($orientation, $size, $rotation);
         if ($this->NewPageGroup) {
             // start a new group
-            $n = sizeof($this->PageGroups) + 1;
+            if (!is_array($this->PageGroups)) {
+                $this->PageGroups = [];
+            }
+            $n =  sizeof($this->PageGroups) + 1;
             $alias = '{' . $n . '}';
             $this->PageGroups[$alias] = 1;
             $this->CurrPageGroup = $alias;

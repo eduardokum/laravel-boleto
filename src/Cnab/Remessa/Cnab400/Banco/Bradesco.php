@@ -71,7 +71,8 @@ class Bradesco extends AbstractRemessa implements RemessaContract
      *
      * @var array
      */
-    protected $carteiras = ['09', '26'];
+
+    protected $carteiras = ['04', '09', '28'];
 
     /**
      * Caracter de fim de linha
@@ -193,6 +194,12 @@ class Bradesco extends AbstractRemessa implements RemessaContract
         }
         if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
             $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO); // ALTERAR VENCIMENTO
+        }
+        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO_DATA) {
+            $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO);
+        }
+        if ($boleto->getStatus() == $boleto::STATUS_CUSTOM) {
+            $this->add(109, 110, sprintf('%2.02s', $boleto->getComando()));
         }
         $this->add(111, 120, Util::formatCnab('X', $boleto->getNumeroDocumento(), 10));
         $this->add(121, 126, $boleto->getDataVencimento()->format('dmy'));

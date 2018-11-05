@@ -68,7 +68,7 @@ class Bb extends AbstractRetorno implements RetornoCnab400
      *
      * @var array
      */
-    private $rejeicoes = array(
+    private $rejeicoes = [
         '01' => 'identificação inválida',
         '02' => 'variação da carteira inválida',
         '03' => 'valor dos juros por um dia inválido',
@@ -152,7 +152,7 @@ class Bb extends AbstractRetorno implements RetornoCnab400
         '83' => 'Carteira/variação não localizada no cedente',
         '84' => 'Titulo não localizado na existência',
         '99' => 'Outros motivos',
-    );
+    ];
 
     /**
      * Roda antes dos metodos de processar
@@ -169,6 +169,12 @@ class Bb extends AbstractRetorno implements RetornoCnab400
         ];
     }
 
+    /**
+     * @param array $header
+     *
+     * @return bool
+     * @throws \Exception
+     */
     protected function processarHeader(array $header)
     {
         $this->getHeader()
@@ -186,6 +192,12 @@ class Bb extends AbstractRetorno implements RetornoCnab400
         return true;
     }
 
+    /**
+     * @param array $detalhe
+     *
+     * @return bool
+     * @throws \Exception
+     */
     protected function processarDetalhe(array $detalhe)
     {
         if ($this->rem(1, 1, $detalhe) != '7') {
@@ -194,7 +206,8 @@ class Bb extends AbstractRetorno implements RetornoCnab400
 
         $d = $this->detalheAtual();
 
-        $d->setNossoNumero($this->rem(64, 80, $detalhe))
+        $d->setCarteira($this->rem(107, 108, $detalhe))
+            ->setNossoNumero($this->rem(64, 80, $detalhe))
             ->setNumeroDocumento($this->rem(117, 126, $detalhe))
             ->setNumeroControle($this->rem(39, 63, $detalhe))
             ->setOcorrencia($this->rem(109, 110, $detalhe))
@@ -228,7 +241,7 @@ class Bb extends AbstractRetorno implements RetornoCnab400
             $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
         } elseif ($d->hasOcorrencia('03')) {
             $this->totais['erros']++;
-            $d->setError(array_get($this->rejeicoes, $d->getOcorrencia(), 'Consulte seu Internet Banking'));
+            $d->setError(array_get($this->rejeicoes, $this->rem(383, 392, $detalhe), 'Consulte seu Internet Banking'));
         } else {
             $d->setOcorrenciaTipo($d::OCORRENCIA_OUTROS);
         }
@@ -236,6 +249,12 @@ class Bb extends AbstractRetorno implements RetornoCnab400
         return true;
     }
 
+    /**
+     * @param array $trailer
+     *
+     * @return bool
+     * @throws \Exception
+     */
     protected function processarTrailer(array $trailer)
     {
         $this->getTrailer()

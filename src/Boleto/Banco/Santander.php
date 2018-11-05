@@ -32,19 +32,28 @@ class Santander  extends AbstractBoleto implements BoletoContract
      * @var string
      */
     protected $especiesCodigo = [
-        'DM' => '01',
-        'NP' => '02',
-        'NS' => '03',
-        'REC' => '05',
-        'DS' => '06',
+        'DM' => '02',
+        'DS' => '04',
         'LC' => '07',
+        'NP' => '12',
+        'NR' => '13',
+        'RC' => '17',
+        'AP' => '20',
+        'BCC'=> '31',
+        'BDP'=> '32',
+        'CH' => '97',
+        'ND' => '98'
     ];
     /**
      * Define os nomes das carteiras para exibição no boleto
      *
      * @var array
      */
-    protected $carteirasNomes = ['101' => 'Cobrança Simples ECR', '102' => 'Cobrança Simples CSR', '201' => 'Penhor'];
+    protected $carteirasNomes = [
+        '101' => 'Cobrança Simples ECR',
+        '102' => 'Cobrança Simples CSR',
+        '201' => 'Penhor'
+    ];
     /**
      * Define o valor do IOS - Seguradoras (Se 7% informar 7. Limitado a 9%) - Demais clientes usar 0 (zero)
      *
@@ -78,6 +87,26 @@ class Santander  extends AbstractBoleto implements BoletoContract
         $codigoCliente = $this->getCodigoCliente();
 
         return $agencia . ' / ' . $codigoCliente;
+    }
+
+    /**
+     * Retorna o código da carteira
+     * @return string
+     */
+    public function getCarteiraNumero(){
+        switch ($this->carteira) {
+            case '101':
+                $carteira = '5';
+                break;
+            case '201':
+                $carteira = '1';
+                break;
+            default:
+                $carteira = $this->carteira;
+                break;
+        }
+
+        return $carteira;
     }
 
     /**
