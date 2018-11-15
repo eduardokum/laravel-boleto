@@ -33,6 +33,10 @@ class Pessoa implements PessoaContract
      * @var string
      */
     protected $documento;
+	/**
+     * @var array
+     */
+    protected $outros;
 
     /**
      * @var boolean
@@ -51,7 +55,7 @@ class Pessoa implements PessoaContract
      *
      * @return Pessoa
      */
-    public static function create($nome, $documento, $endereco = null, $bairro = null, $cep = null, $cidade = null, $uf = null)
+    public static function create($nome, $documento, $endereco = null, $bairro = null, $cep = null, $cidade = null, $uf = null, $outros = null)
     {
         return new static([
             'nome' => $nome,
@@ -61,6 +65,7 @@ class Pessoa implements PessoaContract
             'uf' => $uf,
             'cidade' => $cidade,
             'documento' => $documento,
+			'outros' => $outros,
         ]);
     }
 
@@ -266,6 +271,25 @@ class Pessoa implements PessoaContract
         $dados = array_filter(array($this->getEndereco(), $this->getBairro(), $this->getCidade(), $this->getUf(), $this->getCep()));
         return implode(' - ', $dados);
     }
+	
+	/**
+     * Define outros dados
+     *
+     * @param array $outros
+     */
+    public function setOutros($outros)
+    {
+        $this->outros = $outros;
+    }
+    /**
+     * Retorna outros dados
+     *
+     * @return array
+     */
+    public function getOutros()
+    {
+        return $this->outros;
+    }
 
     /**
      * @return bool
@@ -299,6 +323,8 @@ class Pessoa implements PessoaContract
             'documento' => $this->getDocumento(),
             'nome_documento' => $this->getNomeDocumento(),
             'endereco2' => $this->getCepCidadeUf(),
+			'endereco_completo' => $this->getEnderecoCompleto(),
+			'outros' => $this->getOutros(),
             'dda' => $this->isDda(),
         ];
     }
