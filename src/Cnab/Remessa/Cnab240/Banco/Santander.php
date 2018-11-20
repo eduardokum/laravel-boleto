@@ -42,6 +42,7 @@ class Santander extends AbstractRemessa implements RemessaContract
     {
         parent::__construct($params);
         $this->addCampoObrigatorio('codigoCliente');
+        $this->addCampoObrigatorio('idremessa');
     }
 
     /**
@@ -154,8 +155,8 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(107, 108, Util::formatCnab('9', $boleto->getEspecieDocCodigo(), 2));
         $this->add(109, 109, Util::formatCnab('9', 'N', 1));
         $this->add(110, 117, $boleto->getDataDocumento()->format('dmY'));
-        $this->add(118, 118, ($boleto->getJuros() !== null && $boleto->getJuros() > 0) ? '2' : '0');    //0 = ISENTO | 1 = R$ ao dia | 2 = % ao mês
-        $this->add(119, 126, Util::formatCnab('9', $boleto->getDataVencimento()->format('dmY'), 8));
+        $this->add(118, 118, ($boleto->getJuros() !== null && $boleto->getJuros() > 0) ? '2' : '3');    //3 = ISENTO | 1 = R$ ao dia | 2 = % ao mês
+        $this->add(119, 126, Util::formatCnab('9', ($boleto->getJuros() !== null && $boleto->getJuros() > 0) ? $boleto->getDataVencimento()->format('dmY') : 0, 8));
         $this->add(127, 141, Util::formatCnab('9', $boleto->getJuros(), 15, 5));
         $this->add(142, 142, $boleto->getDesconto() > 0  ? '1' : '0'); //0 = SEM DESCONTO | 1 = VALOR FIXO | 2 = PERCENTUAL
         $this->add(143, 150, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmY') : '00000000');
@@ -253,7 +254,7 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(19, 26, '00000000');
         $this->add(27, 41, '000000000000000');
         $this->add(42, 65, '');
-        $this->add(66, 66, $boleto->getMulta() > 0 ? '2' : '0'); //0 = ISENTO | 1 = VALOR FIXO | 2 = PERCENTUAL
+        $this->add(66, 66, '2'); //1 = VALOR FIXO | 2 = PERCENTUAL
         $this->add(67, 74, $boleto->getDataVencimento()->format('dmY'));
         $this->add(75, 89, Util::formatCnab('9', $boleto->getMulta(), 15, 2));  //2,20 = 0000000000220
         $this->add(90, 240, '');
@@ -286,7 +287,7 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(143, 143, '1');
         $this->add(144, 151, $this->getDataRemessa('dmY'));
         $this->add(152, 157, '');
-        $this->add(158, 163, Util::formatCnab('9', 0, 6));
+        $this->add(158, 163, Util::formatCnab('9', $this->getIdremessa(), 6));
         $this->add(164, 166, Util::formatCnab('9', '040', 3));
         $this->add(164, 166, Util::formatCnab('9', '040', 3));
         $this->add(167, 240, '');
