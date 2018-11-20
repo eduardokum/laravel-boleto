@@ -98,8 +98,11 @@ class Santander extends AbstractRemessa implements RemessaContract
     {
         $this->boletos[] = $boleto;
         $this->segmentoP($boleto);
-        $this->segmentoQ($boleto);
-        $this->segmentoR($boleto);
+
+        if ($boleto->getStatus() != $boleto::STATUS_ALTERACAO_DATA) {
+            $this->segmentoQ($boleto);
+            $this->segmentoR($boleto);
+        }
 
         return $this;
     }
