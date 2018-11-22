@@ -893,7 +893,8 @@ final class Util
         if (self::isCnab400($header) && mb_substr($header, 0, 9) != '02RETORNO') {
             return false;
         }
-        if (self::isCnab240($header) && mb_substr($header, 142, 1) != '2') {
+        $tipo = mb_substr($header, 142, 1);
+        if (self::isCnab240($header) && $tipo != '2' && $tipo != '3') {
             return false;
         }
         return true;
