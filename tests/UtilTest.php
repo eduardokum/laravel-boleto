@@ -12,6 +12,7 @@ class UtilTest extends TestCase
         $this->assertFalse(Util::isHeaderRetorno(''));
         $this->assertFalse(Util::isHeaderRetorno(str_pad('', 400, ' ')));
         $this->assertFalse(Util::isHeaderRetorno(str_pad('', 240, ' ')));
+        $this->assertTrue(Util::isHeaderRetorno(str_pad('10400000         210598765000101000000000000000000000245673004310000000ABCDEF GHI                    CAIXA ECONOMICA FEDERAL                 322', 240, " ")));
     }
 
     public function testFuncoesString(){
