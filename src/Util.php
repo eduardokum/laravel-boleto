@@ -894,7 +894,8 @@ final class Util
             return false;
         }
         $tipo = mb_substr($header, 142, 1);
-        if (self::isCnab240($header) && $tipo != '2' && $tipo != '3') {
+        $banco = mb_substr($header, 0, 3);
+        if (self::isCnab240($header) && $tipo != '2' && ($tipo != '3' && $banco == Contracts\Boleto\Boleto::COD_BANCO_CEF)) {
             return false;
         }
         return true;
