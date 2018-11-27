@@ -1474,6 +1474,24 @@ abstract class AbstractBoleto implements BoletoContract
     }
 
     /**
+     * seta o código de barras
+     * @param $codigoBarras
+     */
+    public function setCodigoBarras($codigoBarras)
+    {
+        $this->campoCodigoBarras = $codigoBarras;
+    }
+
+    /**
+     * seta a linha digitável
+     * @param $linhaDigitavel
+     */
+    public function setLinhaDigitavel($linhaDigitavel)
+    {
+        $this->campoLinhaDigitavel = $linhaDigitavel;
+    }
+
+    /**
      * Render PDF
      *
      * @param bool $print

@@ -483,4 +483,18 @@ class BoletoTest extends TestCase
         $this->assertNotNull($boleto->renderHTML());
         $this->assertNotNull($boleto->renderPDF());
     }
+
+    public function testBoletoBarrasDigitavel()
+    {
+        $cb = '10499650500000110005281784000100040000002410';
+        $ld = '10495.28175 84000.100044 00000.024109 9 65050000011000';
+        $boleto = new Boleto\Itau();
+        $boleto->setCodigoBarras($cb);
+        $this->assertEquals($cb, $boleto->getCodigoBarras());
+        $this->assertEquals($ld, $boleto->getLinhaDigitavel());
+
+        // setando linha digitavel
+        $boleto->setLinhaDigitavel($ld);
+        $this->assertEquals($ld, $boleto->getLinhaDigitavel());
+    }
 }
