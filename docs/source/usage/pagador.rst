@@ -17,7 +17,8 @@ To create a ``Pagador`` you need to create an instance of the ``Pessoa`` object.
         ->setEndereco('Street name, 123')
         ->setBairro('district')
         ->setUf('UF')
-        ->setCidade('City');
+        ->setCidade('City')
+		    ->setOutros(['phone' => '(99) 99999-9999', 'email' => 'person@domain.com']);
 
 Or, Simply:
 
@@ -31,6 +32,7 @@ Or, Simply:
         'bairro' => 'district',
         'uf'        => 'UF',
         'cidade'    => 'City',
+		    'outros'    => ['phone' => '+55 99 99999-9999', 'email' => 'person@domain.com'],
     ]);
 
 

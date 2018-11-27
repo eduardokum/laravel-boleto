@@ -151,7 +151,9 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->boletos[] = $boleto;
         $this->segmentoP($boleto);
         $this->segmentoQ($boleto);
-        $this->segmentoR($boleto);
+		if($boleto->getStatus() == $boleto::STATUS_REGISTRO) {
+			$this->segmentoR($boleto);
+		}
         return $this;
     }
 
@@ -197,9 +199,9 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(107, 108, Util::formatCnab('9', $boleto->getEspecieDocCodigo(), 2));
         $this->add(109, 109, Util::formatCnab('9', $boleto->getAceite(), 1));
         $this->add(110, 117, $boleto->getDataDocumento()->format('dmY'));
-        $this->add(118, 118, $boleto->getJuros() ? '1' : '3'); //'1' = Valor por Dia, '3' = Isento
+        $this->add(118, 118, $boleto->getJuros() ? '2' : '3'); //'1' = Valor por Dia, '2' = Taxa Mensal, '3' = Isento
         $this->add(119, 126, $boleto->getDataVencimento()->format('dmY'));
-        $this->add(127, 141, Util::formatCnab('9', $boleto->getMoraDia(), 15, 2)); //Valor da mora/dia ou Taxa mensal
+        $this->add(127, 141, Util::formatCnab('9', $boleto->getJuros(), 15, 2)); //Valor da mora/dia ou Taxa mensal
         $this->add(142, 142, $boleto->getDesconto() > 0 ? '1' : '0'); // Se houver desconto '1' = Valor Fixo Até a Data Informada, Se não houver envia o 0
         $this->add(143, 150, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmY') : '00000000');
         $this->add(151, 165, Util::formatCnab('9', $boleto->getDesconto(), 15, 2));
@@ -257,7 +259,7 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(134, 136, Util::formatCnab('9', Util::onlyNumbers(substr($boleto->getPagador()->getCep(), 6, 9)), 3));
         $this->add(137, 151, Util::formatCnab('X', $boleto->getPagador()->getCidade(), 15));
         $this->add(152, 153, Util::formatCnab('X', $boleto->getPagador()->getUf(), 2));
-        $this->add(154, 154, '1');
+        $this->add(154, 154, '0');
         $this->add(155, 169, '000000000000000');
         $this->add(170, 209, '');
         $this->add(210, 212, '000');

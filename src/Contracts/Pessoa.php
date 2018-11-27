@@ -9,8 +9,10 @@ interface Pessoa
     public function getBairro();
     public function getEndereco();
     public function getCepCidadeUf();
+    public function getEnderecoCompleto();
     public function getCep();
     public function getCidade();
     public function getUf();
+	public function getOutros();
     public function toArray();
 }

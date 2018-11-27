@@ -16,8 +16,9 @@ To create a ``Beneficário`` you need to create an instance of the ``Pessoa`` ob
         ->setCep('00000-000')
         ->setEndereco('Street name, 123')
         ->setBairro('district')
-        ->setUf('UF')
-        ->setCidade('City');
+        ->setUf('UF');
+        ->setCidade('City')
+		    ->setOutros(['phone' => '(99) 99999-9999', 'email' => 'person@domain.com']);
 
 Or, Simply:
 
@@ -31,6 +32,7 @@ Or, Simply:
         'bairro' => 'district',
         'uf'        => 'UF',
         'cidade'    => 'City',
+		    'outros'    => ['phone' => '+55 99 99999-9999', 'email' => 'person@domain.com'],
     ]);
 
 

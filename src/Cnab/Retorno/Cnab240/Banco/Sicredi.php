@@ -238,7 +238,7 @@ class Sicredi extends AbstractRetorno implements RetornoCnab240
                 ->setValorAbatimento(Util::nFloat($this->rem(48, 62, $detalhe)/100, 2, false))
                 ->setValorIOF(Util::nFloat($this->rem(63, 77, $detalhe)/100, 2, false))
                 ->setValorRecebido(Util::nFloat($this->rem(78, 92, $detalhe)/100, 2, false))
-                ->setValorRecebido(Util::nFloat($this->rem(93, 107, $detalhe)/100, 2, false))
+                ->setValorTarifa($d->getValorRecebido() - Util::nFloat($this->rem(93, 107, $detalhe)/100, 2, false))
                 ->setDataOcorrencia($this->rem(138, 145, $detalhe))
                 ->setDataCredito($this->rem(146, 153, $detalhe));
         }
