@@ -289,6 +289,13 @@ abstract class AbstractBoleto implements BoletoContract
     private $status_custom = null;
 
     /**
+     * Mostrar o endereço do beneficiário abaixo da razão e CNPJ na ficha de compensação
+     *
+     * @var boolean
+     */
+    protected $mostrarEnderecoFichaCompensacao = false;
+
+    /**
      * Construtor
      *
      * @param array $params Parâmetros iniciais para construção do objeto
@@ -1490,6 +1497,27 @@ abstract class AbstractBoleto implements BoletoContract
     {
         $this->campoLinhaDigitavel = $linhaDigitavel;
     }
+  
+    /*
+     * Retorna se a segunda linha contendo o endereço do beneficiário deve ser exibida na ficha de compensação
+     *
+     * @return bool
+    */
+    public function getMostrarEnderecoFichaCompensacao()
+    {
+        return $this->mostrarEnderecoFichaCompensacao;
+    }
+
+    /**
+     * Seta se a segunda linha contendo o endereço do beneficiário deve ser exibida na ficha de compensação
+     *
+     * @param bool $mostrarEnderecoFichaCompensacao
+     */
+    public function setMostrarEnderecoFichaCompensacao($mostrarEnderecoFichaCompensacao)
+    {
+        $this->mostrarEnderecoFichaCompensacao = $mostrarEnderecoFichaCompensacao;
+
+    }
 
     /**
      * Render PDF
@@ -1557,6 +1585,9 @@ abstract class AbstractBoleto implements BoletoContract
     public function toArray()
     {
         return array_merge(
+          
+          
+          
             [
                 'linha_digitavel' => $this->getLinhaDigitavel(),
                 'codigo_barras' => $this->getCodigoBarras(),
@@ -1570,6 +1601,8 @@ abstract class AbstractBoleto implements BoletoContract
                     'documento' => $this->getBeneficiario()->getDocumento(),
                     'nome_documento' => $this->getBeneficiario()->getNomeDocumento(),
                     'endereco2' => $this->getBeneficiario()->getCepCidadeUf(),
+                    'endereco_completo' => $this->getBeneficiario()->getEnderecoCompleto(),
+					'outros' => $this->getBeneficiario()->getOutros(),
                 ],
                 'logo_base64' => $this->getLogoBase64(),
                 'logo' => $this->getLogo(),
@@ -1600,6 +1633,8 @@ abstract class AbstractBoleto implements BoletoContract
                         'documento' => $this->getSacadorAvalista()->getDocumento(),
                         'nome_documento' => $this->getSacadorAvalista()->getNomeDocumento(),
                         'endereco2' => $this->getSacadorAvalista()->getCepCidadeUf(),
+						'endereco_completo' => $this->getSacadorAvalista()->getEnderecoCompleto(),
+						'outros' => $this->getSacadorAvalista()->getOutros(),
                     ]
                         : [],
                 'pagador' => [
@@ -1612,6 +1647,8 @@ abstract class AbstractBoleto implements BoletoContract
                     'documento' => $this->getPagador()->getDocumento(),
                     'nome_documento' => $this->getPagador()->getNomeDocumento(),
                     'endereco2' => $this->getPagador()->getCepCidadeUf(),
+					'endereco_completo' => $this->getPagador()->getEnderecoCompleto(),
+					'outros' => $this->getPagador()->getOutros(),
                 ],
                 'demonstrativo' => $this->getDescricaoDemonstrativo(),
                 'instrucoes' => $this->getInstrucoes(),
@@ -1630,6 +1667,7 @@ abstract class AbstractBoleto implements BoletoContract
                 'carteira_nome' => $this->getCarteiraNome(),
                 'uso_banco' => $this->getUsoBanco(),
                 'status' => $this->getStatus(),
+                'mostrar_endereco_ficha_compensacao' => $this->getMostrarEnderecoFichaCompensacao()
             ], $this->variaveis_adicionais
         );
     }

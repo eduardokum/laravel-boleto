@@ -25,7 +25,7 @@ class Caixa  extends AbstractBoleto implements BoletoContract
      *
      * @var array
      */
-    protected $carteiras = ['RG','SR'];
+    protected $carteiras = ['RG'];
     /**
      * Espécie do documento, coódigo para remessa
      *
@@ -105,6 +105,16 @@ class Caixa  extends AbstractBoleto implements BoletoContract
     public function getNossoNumeroBoleto()
     {
         return $this->getNossoNumero() . '-' . CalculoDV::cefNossoNumero($this->getNossoNumero());
+    }
+
+    /**
+     * Na CEF deve retornar agência (sem o DV) / código beneficiário (com DV)
+     * @return [type] [description]
+     */
+    public function getAgenciaCodigoBeneficiario(){
+        return $this->getAgencia() . ' / ' . 
+               $this->getCodigoCliente() . '-' . 
+               Util::modulo11($this->getCodigoCliente());
     }
 
     /**
