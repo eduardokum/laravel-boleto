@@ -157,6 +157,13 @@ class Pdf extends AbstractPdf implements PdfContract
         $this->Cell(35, $this->cell, $this->_($this->boleto[$i]->getNossoNumeroBoleto()), 'R', 1, 'R');
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
+        $this->Cell(170, $this->desc, $this->_('Endereco Beneficiario / Sacador Avalista'), 'TLR', 1);
+
+        $this->SetFont($this->PadraoFont, 'B', $this->fcel);
+        $this->Cell(170, $this->cell, $this->_(sprintf('%s - %s %s - %s CEP %s', $this->boleto[$i]->getBeneficiario()->getEndereco(), $this->boleto[$i]->getBeneficiario()->getBairro(),
+            $this->boleto[$i]->getBeneficiario()->getCidade(), $this->boleto[$i]->getBeneficiario()->getUf(), $this->boleto[$i]->getBeneficiario()->getCep())), 'LR', 1, 'L');
+        -
+        $this->SetFont($this->PadraoFont, '', $this->fdes);
         $this->Cell(50, $this->desc, $this->_('Número do Documento'), 'TLR');
         $this->Cell(40, $this->desc, $this->_('CPF/CNPJ'), 'TR');
         $this->Cell(30, $this->desc, $this->_('Vencimento'), 'TR');
@@ -467,7 +474,7 @@ class Pdf extends AbstractPdf implements PdfContract
         if ($nameFile == null) {
             $nameFile = str_random(32);
         }
-        
+
         return $this->Output($nameFile . '.pdf', $dest, $this->print);
     }
 

@@ -82,6 +82,12 @@
                 </td>
             </tr>
             <tr>
+                <td colspan="5">
+                    <div class="titulo">Endereco Beneficiario / Sacador Avalista</div>
+                    <div class="conteudo">{{ $beneficiario['endereco'] }} {{ $beneficiario['endereco2'] }} </div>
+                </td>
+            </tr>
+            <tr>
                 <td colspan="3">
                     <div class="titulo">Pagador</div>
                     <div class="conteudo">{{ $pagador['nome_documento'] }} </div>
