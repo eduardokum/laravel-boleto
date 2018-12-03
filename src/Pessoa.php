@@ -266,7 +266,7 @@ class Pessoa implements PessoaContract
         $dados = array_filter(array($this->getEndereco(), $this->getBairro(), $this->getCidade(), $this->getUf(), $this->getCep()));
         return implode(' - ', $dados);
     }
-
+	
     /**
      * @return bool
      */
@@ -299,6 +299,7 @@ class Pessoa implements PessoaContract
             'documento' => $this->getDocumento(),
             'nome_documento' => $this->getNomeDocumento(),
             'endereco2' => $this->getCepCidadeUf(),
+			'endereco_completo' => $this->getEnderecoCompleto(),
             'dda' => $this->isDda(),
         ];
     }

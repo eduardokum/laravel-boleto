@@ -17,7 +17,7 @@ To create a ``Beneficário`` you need to create an instance of the ``Pessoa`` ob
         ->setEndereco('Street name, 123')
         ->setBairro('district')
         ->setUf('UF');
-        ->setCidade('City')
+        ->setCidade('City');
 
 Or, Simply:
 
