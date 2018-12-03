@@ -268,7 +268,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
      */
     protected function Bottom($i)
     {
-        $this->Image($this->boleto[$i]->getLogoBanco(), 20, ($this->GetY() - 2), 28);
+        $this->Image($this->boleto[$i]->getLogoBanco(), 20, ($this->GetY()), 20);
         $this->Cell(29, 6, '', 'B');
         $this->SetFont($this->PadraoFont, 'B', 13);
         $this->Cell(15, 6, $this->boleto[$i]->getCodigoBancoComDv(), 'LBR', 0, 'C');
@@ -298,17 +298,17 @@ class PdfCaixa extends AbstractPdf implements PdfContract
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
         $this->Cell(30, $this->desc, $this->_('Data do documento'), 'TLR');
-        $this->Cell(40, $this->desc, $this->_('Número do documento'), 'TR');
-        $this->Cell(15, $this->desc, $this->_('Espécie Doc.'), 'TR');
-        $this->Cell(10, $this->desc, $this->_('Aceite'), 'TR');
+        $this->Cell(25, $this->desc, $this->_('Nr. do documento'), 'TR');
+        $this->Cell(20, $this->desc, $this->_('Espécie Doc.'), 'TR');
+        $this->Cell(20, $this->desc, $this->_('Aceite'), 'TR');
         $this->Cell(25, $this->desc, $this->_('Data processamento'), 'TR');
         $this->Cell(50, $this->desc, $this->_('Nosso número'), 'TR', 1);
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
         $this->Cell(30, $this->cell, $this->_($this->boleto[$i]->getDataDocumento()->format('d/m/Y')), 'LR');
-        $this->Cell(40, $this->cell, $this->_($this->boleto[$i]->getNumeroDocumento()), 'R');
-        $this->Cell(15, $this->cell, $this->_($this->boleto[$i]->getEspecieDoc()), 'R');
-        $this->Cell(10, $this->cell, $this->_($this->boleto[$i]->getAceite()), 'R');
+        $this->Cell(25, $this->cell, $this->_($this->boleto[$i]->getNumeroDocumento()), 'R');
+        $this->Cell(20, $this->cell, $this->_($this->boleto[$i]->getEspecieDoc()), 'R');
+        $this->Cell(20, $this->cell, $this->_($this->boleto[$i]->getAceite()), 'R');
         $this->Cell(25, $this->cell, $this->_($this->boleto[$i]->getDataProcessamento()->format('d/m/Y')), 'R');
         $this->Cell(50, $this->cell, $this->_($this->boleto[$i]->getNossoNumeroBoleto()), 'R', 1, 'R');
 
@@ -326,8 +326,8 @@ class PdfCaixa extends AbstractPdf implements PdfContract
             $this->Cell(25, $this->desc, $this->_('Carteira'), 'TR');
         }
 
-        $this->Cell(12, $this->desc, $this->_('Espécie'), 'TR');
-        $this->Cell(28, $this->desc, $this->_('Quantidade'), 'TR');
+        $this->Cell(20, $this->desc, $this->_('Espécie Moeda'), 'TR');
+        $this->Cell(20, $this->desc, $this->_('Qtde Moeda'), 'TR');
         $this->Cell(25, $this->desc, $this->_(($this->boleto[$i]->getCodigoBanco() == '104') ? 'xValor' : 'Valor Documento'), 'TR');
         $this->Cell(50, $this->desc, $this->_('(=) Valor Documento'), 'TR', 1);
 
@@ -344,14 +344,14 @@ class PdfCaixa extends AbstractPdf implements PdfContract
             $this->Cell(25, $this->cell, $this->_(strtoupper($this->boleto[$i]->getCarteiraNome())), 'R');
         }
 
-        $this->Cell(12, $this->cell, $this->_('R$'), 'R');
-        $this->Cell(28, $this->cell, $this->_(''), 'R');
+        $this->Cell(20, $this->cell, $this->_('R$'), 'R');
+        $this->Cell(20, $this->cell, $this->_(''), 'R');
         $this->Cell(25, $this->cell, $this->_(''), 'R');
         $this->Cell(50, $this->cell, $this->_(Util::nReal($this->boleto[$i]->getValor())), 'R', 1, 'R');
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
         $this->Cell(120, $this->desc, $this->_("Instruções de responsabilidade do beneficiário. Qualquer dúvida sobre este boleto, contate o beneficiário"), 'TLR');
-        $this->Cell(50, $this->desc, $this->_('(-) Desconto / Abatimentos)'), 'TR', 1);
+        $this->Cell(50, $this->desc, $this->_('(-) Desconto'), 'TR', 1);
 
         $xInstrucoes = $this->GetX();
         $yInstrucoes = $this->GetY();
@@ -367,7 +367,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
         $this->Cell(50, $this->cell, $this->_(''), 'R', 1);
 
         $this->Cell(120, $this->desc, $this->_(''), 'LR');
-        $this->Cell(50, $this->desc, $this->_('(+) Mora / Multa' . ($this->boleto[$i]->getCodigoBanco() == '104') ? ' / Juros' : ''), 'TR', 1);
+        $this->Cell(50, $this->desc, $this->_('(+) Mora / Multa / Juros'), 'TR', 1);
 
         $this->Cell(120, $this->cell, $this->_(''), 'LR');
         $this->Cell(50, $this->cell, $this->_(''), 'R', 1);
