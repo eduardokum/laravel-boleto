@@ -1482,9 +1482,13 @@ abstract class AbstractBoleto implements BoletoContract
      * @return string
      * @throws \Exception
      */
-    public function renderPDF($print = false, $instrucoes = true)
+     public function renderPDF($print = false, $instrucoes = true)
     {
-        $pdf = new Pdf();
+        if($this->codigoBanco == 104){
+           $pdf = new PdfCaixa();
+        }else{
+           $pdf = new Pdf();
+        }
         $pdf->addBoleto($this);
         !$print || $pdf->showPrint();
         $instrucoes || $pdf->hideInstrucoes();
