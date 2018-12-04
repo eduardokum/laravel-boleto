@@ -361,7 +361,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
         $this->Cell(50, $this->cell, $this->_(''), 'R', 1);
 
         $this->Cell(120, $this->desc, $this->_(''), 'LR');
-        $this->Cell(50, $this->desc, $this->_('(-) Outras deduções'), 'TR', 1);
+        $this->Cell(50, $this->desc, $this->_('(-) Outras deduções / Abatimentos'), 'TR', 1);
 
         $this->Cell(120, $this->cell, $this->_(''), 'LR');
         $this->Cell(50, $this->cell, $this->_(''), 'R', 1);
