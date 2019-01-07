@@ -162,7 +162,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
          $this->SetFont($this->PadraoFont, 'B', $this->fcel);
          $this->textFitCell(101, $this->cell, $this->_($this->boleto[$i]->getBeneficiario()->getNome()), 'LR', 0, 'L');
          $this->Cell(34, $this->cell, $this->_($this->boleto[$i]->getBeneficiario()->getDocumento(), '##.###.###/####-##'), 'R');
-         $this->Cell(35, $this->cell, $this->_($this->boleto[$i]->getAgencia(). '/' .$this->boleto[$i]->getConta()), 'R',1);
+         $this->Cell(35, $this->cell, $this->_($this->boleto[$i]->getAgencia(). '/' .$this->boleto[$i]->getConta() . '-' .$this->boleto[$i]->getContaDv()), 'R',1);
 
          //terceira linha
          $this->SetFont($this->PadraoFont, '', $this->fdes);
@@ -292,7 +292,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
         $this->Cell(120, $this->cell, $this->_($this->boleto[$i]->getBeneficiario()->getNome() . '                ' .$this->boleto[$i]->getBeneficiario()->getDocumento()),'LR');
 
-        $this->Cell(50, $this->cell, $this->_($this->boleto[$i]->getAgencia(). '/' .$this->boleto[$i]->getConta()), 'LR', 1,'R');
+        $this->Cell(50, $this->cell, $this->_($this->boleto[$i]->getAgencia(). '/' .$this->boleto[$i]->getConta().'-' .$this->boleto[$i]->getContaDv()), 'LR', 1,'R');
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
         $this->Cell(120, $this->desc, $this->_($this->boleto[$i]->getBeneficiario()->getEndereco() . ' - '. $this->boleto[$i]->getBeneficiario()->getBairro()), 'LR');
         $this->Cell(50, $this->desc, $this->_(''), 'LR', 1);
