@@ -5,6 +5,7 @@ namespace Eduardokum\LaravelBoleto\Boleto;
 use Carbon\Carbon;
 use Eduardokum\LaravelBoleto\Boleto\Render\Html;
 use Eduardokum\LaravelBoleto\Boleto\Render\Pdf;
+use Eduardokum\LaravelBoleto\Boleto\Render\PdfCaixa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto;
 use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
