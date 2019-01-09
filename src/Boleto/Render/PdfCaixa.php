@@ -162,7 +162,30 @@ class PdfCaixa extends AbstractPdf implements PdfContract
          $this->SetFont($this->PadraoFont, 'B', $this->fcel);
          $this->textFitCell(101, $this->cell, $this->_($this->boleto[$i]->getBeneficiario()->getNome()), 'LR', 0, 'L');
          $this->Cell(34, $this->cell, $this->_($this->boleto[$i]->getBeneficiario()->getDocumento(), '##.###.###/####-##'), 'R');
-         $this->Cell(35, $this->cell, $this->_($this->boleto[$i]->getAgencia(). '/' .$this->boleto[$i]->getConta() . '-' .$this->boleto[$i]->getContaDv()), 'R',1);
+
+         //algoritmo que calcula digito verificador beneficiario
+         $codBenefCaixa = strVal($this->boleto[$i]->getConta());
+         if(!empty($codBenefCaixa)){
+            $j = 2;
+            $aux = -1;
+            $soma = 0;
+            $comprimento = strlen($codBenefCaixa);
+            for($i = $comprimento; $i > 0; $i--){
+               $calculo = substr($codBenefCaixa,$aux,1);
+               $soma = $soma + (int)$calculo * (int)$j;
+               $j++;
+               $aux--;
+            }
+            $divisao = $soma % 11;
+            $resultado = 11 - $divisao;
+            if($resultado > 9){
+             $codVerificador = 0;
+            }else{
+             $codVerificador = $resultado;
+            }
+         }
+
+         $this->Cell(35, $this->cell, $this->_($this->boleto[$i]->getAgencia(). '/' .$this->boleto[$i]->getConta() . '-' .$codVerificador), 'R',1);
 
          //terceira linha
          $this->SetFont($this->PadraoFont, '', $this->fdes);
@@ -292,7 +315,29 @@ class PdfCaixa extends AbstractPdf implements PdfContract
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
         $this->Cell(120, $this->cell, $this->_($this->boleto[$i]->getBeneficiario()->getNome() . '                ' .$this->boleto[$i]->getBeneficiario()->getDocumento()),'LR');
 
-        $this->Cell(50, $this->cell, $this->_($this->boleto[$i]->getAgencia(). '/' .$this->boleto[$i]->getConta().'-' .$this->boleto[$i]->getContaDv()), 'LR', 1,'R');
+        //algoritmo que calcula digito verificador beneficiario
+        $codBenefCaixa = strVal($this->boleto[$i]->getConta());
+        if(!empty($codBenefCaixa)){
+           $j = 2;
+           $aux = -1;
+           $soma = 0;
+           $comprimento = strlen($codBenefCaixa);
+           for($i = $comprimento; $i > 0; $i--){
+              $calculo = substr($codBenefCaixa,$aux,1);
+              $soma = $soma + (int)$calculo * (int)$j;
+              $j++;
+              $aux--;
+           }
+           $divisao = $soma % 11;
+           $resultado = 11 - $divisao;
+           if($resultado > 9){
+             $codVerificador = 0;
+           }else{
+             $codVerificador = $resultado;
+           }
+         }
+
+        $this->Cell(50, $this->cell, $this->_($this->boleto[$i]->getAgencia(). '/' .$this->boleto[$i]->getConta().'-' .$codVerificador), 'LR', 1,'R');
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
         $this->Cell(120, $this->desc, $this->_($this->boleto[$i]->getBeneficiario()->getEndereco() . ' - '. $this->boleto[$i]->getBeneficiario()->getBairro()), 'LR');
         $this->Cell(50, $this->desc, $this->_(''), 'LR', 1);
