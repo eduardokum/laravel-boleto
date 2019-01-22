@@ -299,7 +299,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
         $this->add(216, 216, '');
         $this->add(217, 228, '000000000000');
         $this->add(229, 230, '');
-        $this->add(231, 231, '0');
+        $this->add(231, 231, '2');  //Não emite Aviso
         $this->add(232, 240, '');
 
         return $this;
@@ -409,7 +409,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
         $this->add(104, 183, '');
         $this->add(184, 191, Util::formatCnab('9', $this->getIdremessa(), 8));
         $this->add(192, 199, date('dmY'));
-        $this->add(200, 207, date('dmY'));
+        $this->add(200, 207, '00000000');   //Zerado (Informação exclusiva do retorno)
         $this->add(208, 240, '');
 
         return $this;
@@ -460,7 +460,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
         $this->add(9, 17, '');
         $this->add(18, 23, Util::formatCnab('9', 1, 6));
         $this->add(24, 29, Util::formatCnab('9', $this->getCount(), 6));
-        $this->add(30, 35, '000001');
+        $this->add(30, 35, '000000');   //Deve ser informado zeros (exclusivo para conciliação bancária)
         $this->add(36, 240, '');
 
         return $this;
