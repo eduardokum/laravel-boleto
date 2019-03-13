@@ -4,7 +4,7 @@
         <td valign="bottom" colspan="8" class="noborder nopadding">
             <div class="logocontainer">
                 <div class="logobanco">
-                    <img src="{{ $logo_banco_base64 }}" alt="logo do banco">
+                    <img src="{{ isset($logo_banco_base64) && !empty($logo_banco_base64) ? $logo_banco_base64 : 'https://dummyimage.com/150x75/fff/000000.jpg&text=+' }}" alt="logo do banco">
                 </div>
                 <div class="codbanco">{{ $codigo_banco_com_dv }}</div>
             </div>
@@ -21,10 +21,11 @@
             <div class="conteudo rtl">{{ $data_vencimento->format('d/m/Y') }}</div>
         </td>
     </tr>
-    <tr>
+    <tr class="@if($mostrar_endereco_ficha_compensacao) duas-linhas @endif">
         <td colspan="7">
             <div class="titulo">Beneficiário</div>
             <div class="conteudo">{{ $beneficiario['nome_documento'] }}</div>
+            @if($mostrar_endereco_ficha_compensacao)<div class="conteudo">{{ $beneficiario['endereco_completo'] }}</div>@endif
         </td>
         <td>
             <div class="titulo">Agência/Código beneficiário</div>
@@ -118,7 +119,7 @@
             <div class="conteudo">{{ $instrucoes[3] }}</div>
         </td>
         <td>
-            <div class="titulo">(+) Mora / Multa</div>
+            <div class="titulo">(+) Mora / Multa {{ $codigo_banco == '104' ? '/ Juros' : '' }}</div>
             <div class="conteudo rtl"></div>
         </td>
     </tr>

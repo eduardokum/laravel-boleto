@@ -106,7 +106,7 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(41, 49, Util::formatCnab('9', $boleto->getNossoNumero(), 9));
         $this->add(50, 57, '');
         $this->add(58, 62, '00000');
-        $this->add(63, 72, Util::formatCnab('9', $boleto->getNumero(), 10));
+        $this->add(63, 72, Util::formatCnab('9', $boleto->getNumeroDocumento(), 10));
         $this->add(73, 77, '');
         $this->add(78, 85, $boleto->getDataVencimento()->format('dmY'));
         $this->add(86, 100, Util::formatCnab('9', $boleto->getValor(), 15, 2));
@@ -159,6 +159,12 @@ class Itau extends AbstractRemessa implements RemessaContract
         if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
             $this->add(16, 17, self::OCORRENCIA_ALT_OUTROS_DADOS);
         }
+        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO_DATA) {
+            $this->add(16, 17, self::OCORRENCIA_ALT_VENCIMENTO);
+        }
+        if ($boleto->getStatus() == $boleto::STATUS_CUSTOM) {
+            $this->add(16, 17, sprintf('%2.02s', $boleto->getComando()));
+        }
         $this->add(18, 18, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? 2 : 1);
         $this->add(19, 33, Util::formatCnab('9', Util::onlyNumbers($this->getBeneficiario()->getDocumento()), 15));
         $this->add(34, 63, Util::formatCnab('X', $boleto->getPagador()->getNome(), 30));
@@ -169,7 +175,7 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(134, 136, Util::formatCnab('9', Util::onlyNumbers(substr($boleto->getPagador()->getCep(), 6, 9)), 3));
         $this->add(137, 151, Util::formatCnab('X', $boleto->getPagador()->getCidade(), 15));
         $this->add(152, 153, Util::formatCnab('X', $boleto->getPagador()->getUf(), 2));
-        $this->add(154, 154, '1');
+        $this->add(154, 154, '0');
         $this->add(155, 169, '000000000000000');
         $this->add(170, 199, '');
         $this->add(200, 209, '');
@@ -316,7 +322,7 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(4, 7, '0001');
         $this->add(8, 8, '5');
         $this->add(9, 17, '');
-        $this->add(18, 23, Util::formatCnab('9', count($this->boletos) + 2, 6));
+        $this->add(18, 23, Util::formatCnab('9', $this->getCountDetalhes() + 2, 6));
         $this->add(24, 29, Util::formatCnab('9', count($this->boletos), 6));
         $this->add(30, 46, Util::formatCnab('9', $valor, 17, 2));
         $this->add(47, 52, Util::formatCnab('9', 0, 6));
@@ -341,7 +347,7 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(8, 8, '9');
         $this->add(9, 17, '');
         $this->add(18, 23, Util::formatCnab('9', 1, 6));
-        $this->add(24, 29, Util::formatCnab('9', count($this->aRegistros) + 1, 6));
+        $this->add(24, 29, Util::formatCnab('9', $this->getCount(), 6));
         $this->add(30, 35, '000000');
         $this->add(36, 240, '');
 

@@ -31,15 +31,20 @@ class Bb extends AbstractBoleto implements BoletoContract
      * @var string
      */
     protected $especiesCodigo = [
-        'DM' => '01',
-        'NP' => '02',
-        'NS' => '03',
-        'REC' => '05',
-        'LC' => '08',
-        'W' => '09',
-        'CH' => '10',
-        'DS' => '12',
-        'ND' => '13',
+	'CH' => '01', // Cheque
+	'DM' => '02', // Duplicata Mercantil
+	'DS' => '04', // Duplicata de Serviço
+	'DR' => '06', // Duplicata Rural
+	'LC' => '07', // Letra de Cambio
+	'NP' => '12', // Nota Provisoria
+	'NS' => '16', // Nota de Seguro
+	'REC' => '17', // Recibo
+	'ND' => '19', // Nota de Débito
+	'AS' => '20', // Apolice de Seguro
+	'W' => '26', // Warrant
+	'DAE' => '27', // Divida Ativa de Estado
+	'DAM' => '28', // Divida Ativa de Municipio
+	'DAU' => '29' // Divida Ativa União
     ];
     /**
      * Define o número do convênio (4, 6 ou 7 caracteres)

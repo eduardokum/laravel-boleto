@@ -16,8 +16,8 @@ To create a ``Pagador`` you need to create an instance of the ``Pessoa`` object.
         ->setCep('00000-000')
         ->setEndereco('Street name, 123')
         ->setBairro('district')
-        ->setUf('UF');
-        ->setCidade('City')
+        ->setUf('UF')
+        ->setCidade('City');
 
 Or, Simply:
 

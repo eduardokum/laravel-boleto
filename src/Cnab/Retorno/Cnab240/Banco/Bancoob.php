@@ -282,7 +282,7 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
         if ($this->getSegmentType($detalhe) == 'T') {
             $d->setOcorrencia($this->rem(16, 17, $detalhe))
                 ->setOcorrenciaDescricao(array_get($this->ocorrencias, $this->detalheAtual()->getOcorrencia(), 'Desconhecida'))
-                ->setNossoNumero($this->rem(38, 57, $detalhe))
+                ->setNossoNumero($this->rem(38, 47, $detalhe))
                 ->setCarteira($this->rem(58, 58, $detalhe))
                 ->setNumeroDocumento($this->rem(59, 73, $detalhe))
                 ->setDataVencimento($this->rem(74, 81, $detalhe))
@@ -337,7 +337,7 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
                 ->setValorAbatimento(Util::nFloat($this->rem(48, 62, $detalhe)/100, 2, false))
                 ->setValorIOF(Util::nFloat($this->rem(63, 77, $detalhe)/100, 2, false))
                 ->setValorRecebido(Util::nFloat($this->rem(78, 92, $detalhe)/100, 2, false))
-                ->setValorRecebido(Util::nFloat($this->rem(93, 107, $detalhe)/100, 2, false))
+                ->setValorTarifa($d->getValorRecebido() - Util::nFloat($this->rem(93, 107, $detalhe)/100, 2, false))
                 ->setDataOcorrencia($this->rem(138, 145, $detalhe))
                 ->setDataCredito($this->rem(146, 153, $detalhe));
         }

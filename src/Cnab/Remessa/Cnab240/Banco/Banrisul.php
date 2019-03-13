@@ -49,10 +49,27 @@ class Banrisul extends AbstractRemessa implements RemessaContract
 
     /**
      * Define as carteiras disponíveis para cada banco
-     *
+     * 1 -> Cobrança Simples
+     * 2 -> Cobrança Vinculada
+     * 3 -> Cobrança Caucionada
+     * B -> Cobrança Caucionada CGB Especial
+     * D -> Cobrança CSB
+     * E -> Cobrança Caucionada Câmbio
+     * F -> Cobrança Vendor
+     * G -> BBH Reservado
+     * H -> Cobrança Caucionada em Dólar
+     * I -> Cobrança Caucionada Compror
+     * J -> Cobrança Caucionada NPR
+     * K -> Cobrança simples INCC-M
+     * N -> Capital de Giro CGB ICM
+     * P -> CDCI Eletrônico – PF
+     * R -> Desconto de Duplicada
+     * S -> Vendor Eletrônico
+     * T -> Leasing
+     * U -> CSB e CCB sem registro
      * @var array
      */
-    protected $carteiras = ['1', '2', '3', '4', '5', '6', '7', '8', 'C', 'D', 'E', 'F', 'H', 'I', 'K', 'M', '9', 'R', 'S', 'X'];
+    protected $carteiras = ['1','2', '3', 'B', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'N', 'P', 'R', 'S', 'T', 'U'];
 
     /**
      * Codigo do cliente junto ao banco.
@@ -124,18 +141,24 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
             $this->add(16, 17, self::OCORRENCIA_ALT_OUTROS_DADOS);
         }
+        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO_DATA) {
+            $this->add(16, 17, self::OCORRENCIA_ALT_VENCIMENTO);
+        }
+        if ($boleto->getStatus() == $boleto::STATUS_CUSTOM) {
+            $this->add(16, 17, sprintf('%2.02s', $boleto->getComando()));
+        }
         $this->add(18, 22, Util::formatCnab('9', $this->getAgencia(), 5));
         $this->add(23, 23, '');
         $this->add(24, 35, Util::formatCnab('9', $this->getConta(), 12));
         $this->add(36, 36, CalculoDV::banrisulContaCorrente($this->getConta()));
         $this->add(37, 37, '');
         $this->add(38, 57, Util::formatCnab('9', $boleto->getNossoNumero(), 20));
-        $this->add(58, 58, '1'); //'1' = Cobrança Simples
+        $this->add(58, 58, $this->getCarteira());
         $this->add(59, 59, '1'); //'1' = Com Cadastramento
         $this->add(60, 60, '');
         $this->add(61, 61, '2'); //2 – Cliente emite o bloqueto
         $this->add(62, 62, '');
-        $this->add(63, 77, Util::formatCnab('9', $boleto->getNumero(), 15));
+        $this->add(63, 77, Util::formatCnab('9', $boleto->getNumeroDocumento(), 15));
         $this->add(78, 85, $boleto->getDataVencimento()->format('dmY'));
         $this->add(86, 100, Util::formatCnab('9', $boleto->getValor(), 15, 2));
         $this->add(101, 105, '00000');
@@ -197,7 +220,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(134, 136, Util::formatCnab('9', Util::onlyNumbers(substr($boleto->getPagador()->getCep(), 6, 9)), 3));
         $this->add(137, 151, Util::formatCnab('X', $boleto->getPagador()->getCidade(), 15));
         $this->add(152, 153, Util::formatCnab('X', $boleto->getPagador()->getUf(), 2));
-        $this->add(154, 154, '1');
+        $this->add(154, 154, '0');
         $this->add(155, 169, '000000000000000');
         $this->add(170, 209, '');
         $this->add(210, 212, '000');
@@ -347,7 +370,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(4, 7, '0001');
         $this->add(8, 8, '5');
         $this->add(9, 17, '');
-        $this->add(18, 23, Util::formatCnab('9', count($this->boletos) + 2, 6));
+        $this->add(18, 23, Util::formatCnab('9', $this->getCountDetalhes() + 2, 6));
         $this->add(24, 29, Util::formatCnab('9', count($this->boletos), 6));
         $this->add(30, 46, Util::formatCnab('9', $valor, 17, 2));
         $this->add(47, 52, Util::formatCnab('9', 0, 6));
@@ -375,7 +398,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(8, 8, '9');
         $this->add(9, 17, '');
         $this->add(18, 23, Util::formatCnab('9', 1, 6));
-        $this->add(24, 29, Util::formatCnab('9', count($this->aRegistros) + 1, 6));
+        $this->add(24, 29, Util::formatCnab('9', $this->getCount(), 6));
         $this->add(30, 35, '000001');
         $this->add(36, 240, '');
 

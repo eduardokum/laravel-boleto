@@ -83,12 +83,13 @@ class Banrisul extends AbstractRemessa implements RemessaContract
      * M -> Cobrança Partilhada
      * N -> Capital de Giro CGB ICM
      * R -> Desconto de Duplicata
-     * S -> Vendor Eletrônico – Valor Final (Corrigido)
-     * X -> Vendor BDL – Valor Inicial (Valor da NF)
+     * S -> Vendor Eletrônico
+     * X -> Vendor BDL
+     *
      *
      * @var array
      */
-    protected $carteiras = ['1', '2', '3', '4', '5', '6', '7', '8', 'C', 'D', 'E', 'F', 'H', 'I', 'K', 'M', '9', 'R', 'S', 'X'];
+    protected $carteiras =['1', '3', '4', '5', '6', '7', '8', 'C', 'D', 'E', 'F', 'H', 'I', 'K', 'M', 'N', 'R', 'S', 'X'];
 
     /**
      * Caracter de fim de linha
@@ -127,13 +128,13 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     /**
      * Define se é teste
      *
-     * @param  bool $teste
+     * @param  boolean $teste
      * @return $this
      */
 
-    public function setTeste(bool $teste)
+    public function setTeste($teste)
     {
-        $this->teste = $teste;
+        $this->teste = (boolean) $teste;
         return $this;
     }
     /**
@@ -258,7 +259,13 @@ class Banrisul extends AbstractRemessa implements RemessaContract
             $this->add(109, 110, self::OCORRENCIA_PEDIDO_BAIXA); // BAIXA
         }
         if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
-            $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO); // ALTERAR VENCIMENTO
+            throw new \Exception('Banrisul não suporta alteração geral, use o comando `comandarInstrucao` no boleto para enviar uma solicitação especifica');
+        }
+        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO_DATA) {
+            $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO);
+        }
+        if ($boleto->getStatus() == $boleto::STATUS_CUSTOM) {
+            $this->add(109, 110, sprintf('%2.02s', $boleto->getComando()));
         }
         $this->add(111, 120, Util::formatCnab('X', $boleto->getNumeroDocumento(), 10));
         $this->add(121, 126, $boleto->getDataVencimento()->format('dmy'));
