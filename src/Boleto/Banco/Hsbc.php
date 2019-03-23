@@ -131,13 +131,32 @@ class Hsbc  extends AbstractBoleto implements BoletoContract
             return $this->campoLivre;
         }
 
-        $ag = Util::numberFormatGeral($this->getAgencia(), 4);
-        $cc = Util::numberFormatGeral($this->getConta(), 6);
-        $agCc = $ag . $cc . ($this->getContaDv() ? $this->getContaDv() : Util::modulo11($ag . $cc));
+        $campoLivre = $this->getNossoNumero();
+        $campoLivre .= Util::numberFormatGeral($this->getAgencia(), 4);
+        $campoLivre .= Util::numberFormatGeral($this->getConta(), 6);
+        $campoLivre .= $this->getContaDv() ? $this->getContaDv() : Util::modulo11(Util::numberFormatGeral($this->getAgencia(), 4) . Util::numberFormatGeral($this->getConta(), 6));
+        $campoLivre .= '001';
 
-        return $this->campoLivre = $this->getNossoNumero() .
-            $agCc .
-            '00' . // Codigo da carteira
-            '1'; // Codigo do aplicativo
+        return $this->campoLivre = $campoLivre;
+    }
+
+    /**
+     * Método onde qualquer boleto deve extender para gerar o código da posição de 20 a 44
+     *
+     * @param $campoLivre
+     *
+     * @return array
+     */
+    public static function parseCampoLivre($campoLivre) {
+        return [
+            'convenio' => null,
+            'agenciaDv' => null,
+            'nossoNumero' => substr($campoLivre, 0, 10),
+            'nossoNumeroDv' => substr($campoLivre, 10, 1),
+            'nossoNumeroFull' => substr($campoLivre, 0, 11),
+            'agencia' => substr($campoLivre, 11, 4),
+            'contaCorrente' => substr($campoLivre, 15, 6),
+            'contaCorrenteDv' => substr($campoLivre, 21, 1),
+        ];
     }
 }

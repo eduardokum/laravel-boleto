@@ -24,22 +24,27 @@ class Bb extends AbstractBoleto implements BoletoContract
      *
      * @var array
      */
-    protected $carteiras = array('11', '12', '15', '16', '17', '18', '31', '51');
+    protected $carteiras = ['11', '12', '15', '17', '18', '31', '51'];
     /**
      * Espécie do documento, coódigo para remessa
      *
      * @var string
      */
     protected $especiesCodigo = [
-        'DM' => '01',
-        'NP' => '02',
-        'NS' => '03',
-        'REC' => '05',
-        'LC' => '08',
-        'W' => '09',
-        'CH' => '10',
-        'DS' => '12',
-        'ND' => '13',
+	'CH' => '01', // Cheque
+	'DM' => '02', // Duplicata Mercantil
+	'DS' => '04', // Duplicata de Serviço
+	'DR' => '06', // Duplicata Rural
+	'LC' => '07', // Letra de Cambio
+	'NP' => '12', // Nota Provisoria
+	'NS' => '16', // Nota de Seguro
+	'REC' => '17', // Recibo
+	'ND' => '19', // Nota de Débito
+	'AS' => '20', // Apolice de Seguro
+	'W' => '26', // Warrant
+	'DAE' => '27', // Divida Ativa de Estado
+	'DAM' => '28', // Divida Ativa de Municipio
+	'DAU' => '29' // Divida Ativa União
     ];
     /**
      * Define o número do convênio (4, 6 ou 7 caracteres)
@@ -130,7 +135,7 @@ class Bb extends AbstractBoleto implements BoletoContract
     public function getNossoNumeroBoleto()
     {
         $nn = $this->getNossoNumero() . CalculoDV::bbNossoNumero($this->getNossoNumero());
-        return strlen($nn) <= 17 ? substr_replace($nn, '-', -1, 0) : $nn;
+        return strlen($nn) < 17 ? substr_replace($nn, '-', -1, 0) : $nn;
     }
     /**
      * Método para gerar o código da posição de 20 a 44
@@ -160,5 +165,42 @@ class Bb extends AbstractBoleto implements BoletoContract
             return $this->campoLivre = '000000' . $nossoNumero . Util::numberFormatGeral($this->getCarteira(), 2);
         }
         throw new \Exception('O código do convênio precisa ter 4, 6 ou 7 dígitos!');
+    }
+
+    /**
+     * Método onde qualquer boleto deve extender para gerar o código da posição de 20 a 44
+     *
+     * @param $campoLivre
+     *
+     * @return array
+     */
+    public static function parseCampoLivre($campoLivre) {
+        $convenio = substr($campoLivre, 0, 6);
+        $nossoNumero = substr($campoLivre, 6, 5);
+        if ($convenio == '000000') {
+            $convenio = substr($campoLivre, 6, 7);
+            $nossoNumero = substr($campoLivre, 13, 10);
+        }
+        if ($convenio == '0000000' && in_array(substr($campoLivre, -2), ['16', '18']) ) {
+            $convenio = substr($campoLivre, 0, 4);
+            $nossoNumero = substr($campoLivre, 4, 7);
+        }
+        if ($convenio == '0000000' && !in_array(substr($campoLivre, -2), ['16', '18']) ) {
+            $convenio = null;
+            $nossoNumero = substr($campoLivre, 0, 17);
+        }
+
+        return [
+            'codigoCliente' => null,
+            'agencia' => null,
+            'agenciaDv' => null,
+            'contaCorrente' => null,
+            'contaCorrenteDv' => null,
+            'carteira' => substr($campoLivre, -2),
+            'convenio' => $convenio,
+            'nossoNumero' => $nossoNumero,
+            'nossoNumeroDv' => null,
+            'nossoNumeroFull' => $nossoNumero,
+        ];
     }
 }

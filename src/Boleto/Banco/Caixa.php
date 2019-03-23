@@ -25,7 +25,7 @@ class Caixa  extends AbstractBoleto implements BoletoContract
      *
      * @var array
      */
-    protected $carteiras = ['RG', 'SR'];
+    protected $carteiras = ['RG'];
     /**
      * Espécie do documento, coódigo para remessa
      *
@@ -85,7 +85,7 @@ class Caixa  extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        $numero_boleto = $this->getNumero();
+        $numero_boleto = Util::numberFormatGeral($this->getNumero(), 15);
         $composicao = '1';
         if ($this->getCarteira() == 'SR') {
             $composicao = '2';
@@ -105,6 +105,16 @@ class Caixa  extends AbstractBoleto implements BoletoContract
     public function getNossoNumeroBoleto()
     {
         return $this->getNossoNumero() . '-' . CalculoDV::cefNossoNumero($this->getNossoNumero());
+    }
+
+    /**
+     * Na CEF deve retornar agência (sem o DV) / código beneficiário (com DV)
+     * @return [type] [description]
+     */
+    public function getAgenciaCodigoBeneficiario(){
+        return $this->getAgencia() . ' / ' . 
+               $this->getCodigoCliente() . '-' . 
+               Util::modulo11($this->getCodigoCliente());
     }
 
     /**
@@ -136,24 +146,39 @@ class Caixa  extends AbstractBoleto implements BoletoContract
         if ($this->campoLivre) {
             return $this->campoLivre;
         }
+
         $nossoNumero = Util::numberFormatGeral($this->gerarNossoNumero(), 17);
         $beneficiario = Util::numberFormatGeral($this->getCodigoCliente(), 6);
-        // Código do beneficiário + DV]
+
         $campoLivre = $beneficiario . Util::modulo11($beneficiario);
-        // Sequencia 1 (posições 3-5 NN) + Constante 1 (1 => registrada, 2 => sem registro)
-        $carteira = $this->getCarteira();
-        if ($carteira == 'SR') {
-            $constante = '2';
-        } else {
-            $constante = '1';
-        }
-        $campoLivre .= substr($nossoNumero, 2, 3) . $constante;
-        // Sequencia 2 (posições 6-8 NN) + Constante 2 (4-Beneficiário)
-        $campoLivre .= substr($nossoNumero, 5, 3) . '4';
-        // Sequencia 3 (posições 9-17 NN)
+        $campoLivre .= substr($nossoNumero, 2, 3);
+        $campoLivre .= substr($nossoNumero, 0, 1);
+        $campoLivre .= substr($nossoNumero, 5, 3);
+        $campoLivre .= substr($nossoNumero, 1, 1);
         $campoLivre .= substr($nossoNumero, 8, 9);
-        // DV do Campo Livre
         $campoLivre .= Util::modulo11($campoLivre);
         return $this->campoLivre = $campoLivre;
+    }
+
+    /**
+     * Método onde qualquer boleto deve extender para gerar o código da posição de 20 a 44
+     *
+     * @param $campoLivre
+     *
+     * @return array
+     */
+    public static function parseCampoLivre($campoLivre) {
+        return [
+            'convenio' => null,
+            'agencia' => null,
+            'agenciaDv' => null,
+            'contaCorrente' => null,
+            'contaCorrenteDv' => null,
+            'codigoCliente' => substr($campoLivre, 0, 6),
+            'carteira' => substr($campoLivre, 10, 1),
+            'nossoNumero' => substr($campoLivre, 7, 3) . substr($campoLivre, 11, 3) . substr($campoLivre, 15, 8),
+            'nossoNumeroDv' => substr($campoLivre, 23, 1),
+            'nossoNumeroFull' => substr($campoLivre, 7, 3) . substr($campoLivre, 11, 3) . substr($campoLivre, 15, 8),
+        ];
     }
 }

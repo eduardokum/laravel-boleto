@@ -2,10 +2,25 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240;
 
 use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa as AbstractRemessaGeneric;
+use ForceUTF8\Encoding;
 
 abstract class AbstractRemessa extends AbstractRemessaGeneric
 {
     protected $tamanho_linha = 240;
+
+    /**
+     * Caracter de fim de linha
+     *
+     * @var string
+     */
+    protected $fimLinha = "\r\n";
+
+    /**
+     * Caracter de fim de arquivo
+     *
+     * @var null
+     */
+    protected $fimArquivo = "\r\n";
 
     /**
      * Array contendo o cnab.
@@ -19,6 +34,11 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
         self::TRAILER_LOTE => [],
         self::TRAILER => [],
     ];
+
+    /**
+     * Quantidade de registros do lote.
+     */
+    protected $iRegistrosLote;
 
     /**
      * Função para gerar o cabeçalho do arquivo.
@@ -60,7 +80,7 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
      */
     protected function iniciaHeader()
     {
-        $this->aRegistros[self::HEADER] = array_fill(0, 240, ' ');
+        $this->aRegistros[self::HEADER] = array_fill(0, $this->tamanho_linha, ' ');
         $this->atual = &$this->aRegistros[self::HEADER];
     }
 
@@ -69,7 +89,8 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
      */
     protected function iniciaHeaderLote()
     {
-        $this->aRegistros[self::HEADER_LOTE] = array_fill(0, 240, ' ');
+        $this->iRegistrosLote = 0;
+        $this->aRegistros[self::HEADER_LOTE] = array_fill(0, $this->tamanho_linha, ' ');
         $this->atual = &$this->aRegistros[self::HEADER_LOTE];
     }
 
@@ -78,7 +99,7 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
      */
     protected function iniciaTrailerLote()
     {
-        $this->aRegistros[self::TRAILER_LOTE] = array_fill(0, 240, ' ');
+        $this->aRegistros[self::TRAILER_LOTE] = array_fill(0, $this->tamanho_linha, ' ');
         $this->atual = &$this->aRegistros[self::TRAILER_LOTE];
     }
 
@@ -87,7 +108,7 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
      */
     protected function iniciaTrailer()
     {
-        $this->aRegistros[self::TRAILER] = array_fill(0, 240, ' ');
+        $this->aRegistros[self::TRAILER] = array_fill(0, $this->tamanho_linha, ' ');
         $this->atual = &$this->aRegistros[self::TRAILER];
     }
 
@@ -97,8 +118,29 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
     protected function iniciaDetalhe()
     {
         $this->iRegistros++;
-        $this->aRegistros[self::DETALHE][$this->iRegistros] = array_fill(0, 240, ' ');
+        $this->iRegistrosLote++;
+        $this->aRegistros[self::DETALHE][$this->iRegistros] = array_fill(0, $this->tamanho_linha, ' ');
         $this->atual = &$this->aRegistros[self::DETALHE][$this->iRegistros];
+    }
+
+    /**
+     * Função que mostra a quantidade de linhas do arquivo.
+     *
+     * @return int
+     */
+    protected function getCountDetalhes()
+    {
+        return count($this->aRegistros[self::DETALHE]);
+    }
+
+    /**
+     * Função que mostra a quantidade de linhas do arquivo.
+     *
+     * @return int
+     */
+    protected function getCount()
+    {
+        return $this->getCountDetalhes() + 4;
     }
 
     /**
@@ -109,8 +151,8 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
      */
     public function gerar()
     {
-        if (!$this->isValid()) {
-            throw new \Exception('Campos requeridos pelo banco, aparentam estar ausentes');
+        if (!$this->isValid($messages)) {
+            throw new \Exception('Campos requeridos pelo banco, aparentam estar ausentes ' . $messages);
         }
 
         $stringRemessa = '';
@@ -134,6 +176,6 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
         $this->trailer();
         $stringRemessa .= $this->valida($this->getTrailer()) . $this->fimArquivo;
 
-        return $stringRemessa;
+        return Encoding::toUTF8($stringRemessa);
     }
 }

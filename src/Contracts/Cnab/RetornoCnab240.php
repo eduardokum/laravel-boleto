@@ -4,7 +4,7 @@ namespace Eduardokum\LaravelBoleto\Contracts\Cnab;
 
 use Illuminate\Support\Collection;
 
-interface RetornoCnab240 extends Cnab
+interface RetornoCnab240 extends Retorno
 {
     /**
      * @return mixed

@@ -62,7 +62,6 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
         '08' => 'Nosso número inválido',
         '09' => 'Nosso número duplicado',
         '10' => 'Carteira inválida',
-        '14' => 'Título protestado',
         '15' => 'Cooperativa/carteira/agência/conta/nosso número inválidos',
         '16' => 'Data de vencimento inválida',
         '17' => 'Data de vencimento anterior à data de emissão',
@@ -96,7 +95,6 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
         'A5' => 'Pagador não cadastrado',
         'A6' => 'Data da instrução/ocorrência inválida',
         'A7' => 'Ocorrência não pode ser comandada',
-        'A8' => 'Recebimento da liquidação fora da rede Sicredi - via compensação eletrônica',
         'B4' => 'Tipo de moeda inválido',
         'B5' => 'Tipo de desconto/juros inválido',
         'B6' => 'Mensagem padrão não cadastrada',
@@ -150,10 +148,7 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
         'H2' => 'Sustação judicial',
         'H3' => 'Pagador não encontrado',
         'H4' => 'Alteração de carteira',
-        'H5' => 'Recebimento de liquidação fora da rede Sicredi – VLB Inferior – Via Compensação',
-        'H6' => 'Recebimento de liquidação fora da rede Sicredi – VLB Superior – Via Compensação',
         'H7' => 'Espécie de documento necessita beneficiário ou avalista PJ',
-        'H8' => 'Recebimento de liquidação fora da rede Sicredi – Contingência Via Compe',
         'H9' => 'Dados do título não conferem com disquete',
         'I1' => 'Pagador e Sacador Avalista são a mesma pessoa',
         'I2' => 'Aguardar um dia útil após o vencimento para protestar',
@@ -187,20 +182,7 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
         'L3' => 'Apresentante não aceita publicação de edital',
         'L4' => 'Dados do Pagador em Branco ou inválido',
         'L5' => 'Código do Pagador na agência beneficiária está duplicado',
-        'M1' => 'Reconhecimento da dívida pelo pagador',
         'M2' => 'Não reconhecimento da dívida pelo pagador',
-        'X1' => 'Regularização centralizadora – Rede Sicredi',
-        'X2' => 'Regularização centralizadora – Compensação',
-        'X3' => 'Regularização centralizadora – Banco correspondente',
-        'X4' => 'Regularização centralizadora - VLB Inferior - via compensação',
-        'X5' => 'Regularização centralizadora - VLB Superior - via compensação',
-        'X0' => 'Pago com cheque',
-        'X6' => 'Pago com cheque – bloqueado 24 horas',
-        'X7' => 'Pago com cheque – bloqueado 48 horas',
-        'X8' => 'Pago com cheque – bloqueado 72 horas',
-        'X9' => 'Pago com cheque – bloqueado 96 horas',
-        'XA' => 'Pago com cheque – bloqueado 120 horas',
-        'XB' => 'Pago com cheque – bloqueado 144 horas',
     ];
 
     /**
@@ -236,24 +218,25 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
     protected function processarDetalhe(array $detalhe)
     {
         $d = $this->detalheAtual();
+		
         $d->setNossoNumero($this->rem(48, 62, $detalhe))
+            ->setNumeroControle($this->rem(117, 126, $detalhe))
             ->setNumeroDocumento($this->rem(117, 126, $detalhe))
             ->setOcorrencia($this->rem(109, 110, $detalhe))
             ->setOcorrenciaDescricao(array_get($this->ocorrencias, $d->getOcorrencia(), 'Desconhecida'))
             ->setDataOcorrencia($this->rem(111, 116, $detalhe))
             ->setDataVencimento($this->rem(147, 152, $detalhe))
-            ->setValor(Util::nFloat($this->rem(153, 165, $detalhe)/100, 2, false))
-            ->setValorTarifa(Util::nFloat($this->rem(176, 188, $detalhe)/100, 2, false))
-            ->setValorAbatimento(Util::nFloat($this->rem(228, 240, $detalhe)/100, 2, false))
-            ->setValorDesconto(Util::nFloat($this->rem(241, 253, $detalhe)/100, 2, false))
-            ->setValorRecebido(Util::nFloat($this->rem(254, 266, $detalhe)/100, 2, false))
-            ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe)/100, 2, false))
-            ->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe)/100, 2, false))
-            ->setDataCredito(Util::nFloat($this->rem(329, 336, $detalhe)/100, 2, false));
-
-        $this->totais['valor_recebido'] += $d->getValorRecebido();
+            ->setValor(Util::nFloat($this->rem(153, 165, $detalhe), 2, false) / 100)
+            ->setValorTarifa(Util::nFloat($this->rem(176, 188, $detalhe), 2, false) / 100)
+            ->setValorAbatimento(Util::nFloat($this->rem(228, 240, $detalhe), 2, false) / 100)
+            ->setValorDesconto(Util::nFloat($this->rem(241, 253, $detalhe), 2, false) / 100)
+            ->setValorRecebido(Util::nFloat($this->rem(254, 266, $detalhe), 2, false) / 100)
+            ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe), 2, false) / 100)
+            ->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe), 2, false) / 100)
+            ->setDataCredito($this->rem(329, 336, $detalhe), 'Ymd');
 
         if ($d->hasOcorrencia('06', '15', '16')) {
+			$this->totais['valor_recebido'] += $d->getValorRecebido();
             $this->totais['liquidados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
         } elseif ($d->hasOcorrencia('02')) {
@@ -275,14 +258,20 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
         }
 
         $stringErrors = sprintf('%010s', $this->rem(319, 328, $detalhe));
-        $errorsRetorno = str_split($stringErrors, 2);
+        $errorsRetorno = str_split($stringErrors, 2) + array_fill(0, 5, '') + array_fill(0, 5, '');
         if (trim($stringErrors, '0') != '') {
             $error = [];
             $error[] = array_get($this->rejeicoes, $errorsRetorno[0], '');
             $error[] = array_get($this->rejeicoes, $errorsRetorno[1], '');
             $error[] = array_get($this->rejeicoes, $errorsRetorno[2], '');
+            $error[] = array_get($this->rejeicoes, $errorsRetorno[3], '');
             $error[] = array_get($this->rejeicoes, $errorsRetorno[4], '');
-            $d->setError(implode(PHP_EOL, $error));
+
+            $error = array_filter($error);
+
+            if (count($error) > 0){
+                $d->setError(implode(PHP_EOL, $error));
+            }
         }
 
         return true;

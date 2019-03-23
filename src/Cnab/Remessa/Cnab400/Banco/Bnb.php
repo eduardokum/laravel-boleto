@@ -63,7 +63,7 @@ class Bnb extends AbstractRemessa implements RemessaContract
      * @var null
      */
     protected $fimArquivo = "\r\n";
-    
+
     /**
      * Retorna o numero da carteira, deve ser override em casos de carteira de letras
      *
@@ -76,7 +76,11 @@ class Bnb extends AbstractRemessa implements RemessaContract
         }
         return '1';
     }
-    
+
+    /**
+     * @return $this
+     * @throws \Exception
+     */
     protected function header()
     {
         $this->iniciaHeader();
@@ -94,15 +98,22 @@ class Bnb extends AbstractRemessa implements RemessaContract
         $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(77, 79, $this->getCodigoBanco());
         $this->add(80, 94, Util::formatCnab('X', 'B.DO NORDESTE', 15));
-        $this->add(95, 100, date('dmy'));
+        $this->add(95, 100, $this->getDataRemessa('dmy'));
         $this->add(101, 394, '');
         $this->add(395, 400, Util::formatCnab('9', 1, 6));
 
         return $this;
     }
 
+    /**
+     * @param BoletoContract $boleto
+     *
+     * @return $this
+     * @throws \Exception
+     */
     public function addBoleto(BoletoContract $boleto)
     {
+        $this->boletos[] = $boleto;
         $this->iniciaDetalhe();
         $this->add(1, 1, '1');
         $this->add(2, 17, '');
@@ -126,6 +137,12 @@ class Bnb extends AbstractRemessa implements RemessaContract
         if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
             $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO); // ALTERAR VENCIMENTO
         }
+        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO_DATA) {
+            $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO);
+        }
+        if ($boleto->getStatus() == $boleto::STATUS_CUSTOM) {
+            $this->add(109, 110, sprintf('%2.02s', $boleto->getComando()));
+        }
         $this->add(111, 120, Util::formatCnab('X', $boleto->getNumeroDocumento(), 10));
         $this->add(121, 126, $boleto->getDataVencimento()->format('dmy'));
         $this->add(127, 139, Util::formatCnab('9', $boleto->getValor(), 13));
@@ -136,11 +153,7 @@ class Bnb extends AbstractRemessa implements RemessaContract
         $this->add(150, 150, $boleto->getAceite());
         $this->add(151, 156, $boleto->getDataDocumento()->format('dmy'));
         $this->add(157, 160, Util::formatCnab('9', self::INSTRUCAO_SEM, 4));
-        $juros = 0;
-        if ($boleto->getJuros() > 0) {
-            $juros = Util::percent($boleto->getValor(), $boleto->getJuros()) / 30; // Valor por dia
-        }
-        $this->add(161, 173, Util::formatCnab('9', $juros, 13, 2));
+        $this->add(161, 173, Util::formatCnab('9', $boleto->getMoraDia(), 13, 2));
         $this->add(174, 179, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmy') : '000000');
         $this->add(180, 192, Util::formatCnab('9', $boleto->getDesconto(), 13, 2));
         $this->add(193, 205, Util::formatCnab('9', 0, 13, 2));
@@ -165,6 +178,10 @@ class Bnb extends AbstractRemessa implements RemessaContract
         return $this;
     }
 
+    /**
+     * @return $this
+     * @throws \Exception
+     */
     protected function trailer()
     {
         $this->iniciaTrailer();

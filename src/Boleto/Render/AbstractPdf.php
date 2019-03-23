@@ -1,14 +1,16 @@
 <?php
 namespace Eduardokum\LaravelBoleto\Boleto\Render;
 
-use fpdf\FPDF;
-
-abstract class AbstractPdf extends FPDF
+abstract class AbstractPdf extends \FPDF
 {
     // INCLUDE JS
     protected $javascript;
     protected $n_js;
     protected $angle = 0;
+    // PAGE GROUP
+    protected $NewPageGroup; // variable indicating whether a new group was requested
+    protected $PageGroups = []; // variable containing the number of pages of the groups
+    protected $CurrPageGroup; // variable containing the alias of the current page group
 
     protected function IncludeJS($script)
     {
@@ -55,11 +57,6 @@ abstract class AbstractPdf extends FPDF
         }
     }
 
-    // PAGE GROUP
-    protected $NewPageGroup; // variable indicating whether a new group was requested
-    protected $PageGroups; // variable containing the number of pages of the groups
-    protected $CurrPageGroup; // variable containing the alias of the current page group
-
     // create a new page group; call this before calling AddPage()
     public function StartPageGroup()
     {
@@ -78,12 +75,15 @@ abstract class AbstractPdf extends FPDF
         return $this->CurrPageGroup;
     }
 
-    public function _beginpage($orientation, $size)
+    public function _beginpage($orientation, $size, $rotation)
     {
-        parent::_beginpage($orientation, $size);
+        parent::_beginpage($orientation, $size, $rotation);
         if ($this->NewPageGroup) {
             // start a new group
-            $n = sizeof($this->PageGroups) + 1;
+            if (!is_array($this->PageGroups)) {
+                $this->PageGroups = [];
+            }
+            $n =  sizeof($this->PageGroups) + 1;
             $alias = '{' . $n . '}';
             $this->PageGroups[$alias] = 1;
             $this->CurrPageGroup = $alias;
@@ -138,11 +138,13 @@ abstract class AbstractPdf extends FPDF
     /**
      * BarCode
      *
-     * @param $xpos
-     * @param $ypos
-     * @param $code
-     * @param int  $basewidth
-     * @param int  $height
+     * @param     $xpos
+     * @param     $ypos
+     * @param     $code
+     * @param int $basewidth
+     * @param int $height
+     *
+     * @throws \Exception
      */
     public function i25($xpos, $ypos, $code, $basewidth = 1, $height = 10)
     {
@@ -222,7 +224,7 @@ abstract class AbstractPdf extends FPDF
      * F: save to a local<br>
      * S: return as a string. name is ignored.
      * @param bool   $print 1 imprime 0 nao imprime
-     * @return string|void
+     * @return string
      */
     public function Output($name = '', $dest = 'I', $print = false)
     {

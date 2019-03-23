@@ -189,6 +189,10 @@ class Bb extends AbstractRemessa implements RemessaContract
         return $this;
     }
 
+    /**
+     * @return $this
+     * @throws \Exception
+     */
     protected function header()
     {
         $this->iniciaHeader();
@@ -207,7 +211,7 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(77, 79, $this->getCodigoBanco());
         $this->add(80, 94, Util::formatCnab('X', 'BANCODOBRASIL', 15));
-        $this->add(95, 100, date('dmy'));
+        $this->add(95, 100, $this->getDataRemessa('dmy'));
         $this->add(101, 107, Util::formatCnab('9', $this->getIdremessa(), 7));
         $this->add(108, 129, '');
         $this->add(130, 136, Util::formatCnab('9', $this->getConvenioLider(), 7));
@@ -217,8 +221,15 @@ class Bb extends AbstractRemessa implements RemessaContract
         return $this;
     }
 
+    /**
+     * @param BoletoContract $boleto
+     *
+     * @return mixed|void
+     * @throws \Exception
+     */
     public function addBoleto(BoletoContract $boleto)
     {
+        $this->boletos[] = $boleto;
         $this->iniciaDetalhe();
 
         $this->add(1, 1, 7);
@@ -248,6 +259,12 @@ class Bb extends AbstractRemessa implements RemessaContract
         if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
             $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO); // ALTERAR VENCIMENTO
         }
+        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO_DATA) {
+            $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO);
+        }
+        if ($boleto->getStatus() == $boleto::STATUS_CUSTOM) {
+            $this->add(109, 110, sprintf('%2.02s', $boleto->getComando()));
+        }
         $this->add(111, 120, Util::formatCnab('X', $boleto->getNumeroDocumento(), 10));
         $this->add(121, 126, $boleto->getDataVencimento()->format('dmy'));
         $this->add(127, 139, Util::formatCnab('9', $boleto->getValor(), 13, 2));
@@ -261,9 +278,6 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(159, 160, self::INSTRUCAO_SEM);
         $diasProtesto = '00';
         $const = sprintf('self::INSTRUCAO_PROTESTAR_VENC_%02s', $boleto->getDiasProtesto());
-
-        $juros = 0;
-
         if ($boleto->getStatus() != $boleto::STATUS_BAIXA) {
             if (defined($const)) {
                 $this->add(157, 158, constant($const));
@@ -271,13 +285,8 @@ class Bb extends AbstractRemessa implements RemessaContract
                 $this->add(157, 158, self::INSTRUCAO_PROTESTAR_VENC_XX);
                 $diasProtesto = Util::formatCnab('9', $boleto->getDiasProtesto(), 2, 0);
             }
-
-            if ($boleto->getJuros() > 0) {
-                $juros = Util::percent($boleto->getValor(), $boleto->getJuros())/30;
-            }
         }
-
-        $this->add(161, 173, Util::formatCnab('9', $juros, 13, 2));
+        $this->add(161, 173, Util::formatCnab('9', $boleto->getMoraDia(), 13, 2));
         $this->add(174, 179, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmy') : '000000');
         $this->add(180, 192, Util::formatCnab('9', $boleto->getDesconto(), 13, 2));
         $this->add(193, 205, Util::formatCnab('9', 0, 13, 2));
@@ -309,6 +318,10 @@ class Bb extends AbstractRemessa implements RemessaContract
         }
     }
 
+    /**
+     * @return $this
+     * @throws \Exception
+     */
     protected function trailer()
     {
         $this->iniciaTrailer();

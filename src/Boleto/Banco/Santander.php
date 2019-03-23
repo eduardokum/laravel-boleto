@@ -11,7 +11,7 @@ class Santander  extends AbstractBoleto implements BoletoContract
     public function __construct(array $params = [])
     {
         parent::__construct($params);
-        $this->setCamposObrigatorios('numero', 'conta', 'carteira');
+        $this->setCamposObrigatorios('numero', 'codigoCliente', 'carteira');
     }
 
     /**
@@ -32,19 +32,28 @@ class Santander  extends AbstractBoleto implements BoletoContract
      * @var string
      */
     protected $especiesCodigo = [
-        'DM' => '01',
-        'NP' => '02',
-        'NS' => '03',
-        'REC' => '05',
-        'DS' => '06',
+        'DM' => '02',
+        'DS' => '04',
         'LC' => '07',
+        'NP' => '12',
+        'NR' => '13',
+        'RC' => '17',
+        'AP' => '20',
+        'BCC'=> '31',
+        'BDP'=> '32',
+        'CH' => '97',
+        'ND' => '98'
     ];
     /**
      * Define os nomes das carteiras para exibição no boleto
      *
      * @var array
      */
-    protected $carteirasNomes = ['101' => 'Cobrança Simples ECR', '102' => 'Cobrança Simples CSR'];
+    protected $carteirasNomes = [
+        '101' => 'Cobrança Simples ECR',
+        '102' => 'Cobrança Simples CSR',
+        '201' => 'Penhor'
+    ];
     /**
      * Define o valor do IOS - Seguradoras (Se 7% informar 7. Limitado a 9%) - Demais clientes usar 0 (zero)
      *
@@ -59,6 +68,71 @@ class Santander  extends AbstractBoleto implements BoletoContract
     public $variaveis_adicionais = [
         'esconde_uso_banco' => true,
     ];
+
+    /**
+     * Código do cliente.
+     *
+     * @var int
+     */
+    protected $codigoCliente;
+
+    /**
+     * Retorna o campo Agência/Beneficiário do boleto
+     *
+     * @return string
+     */
+    public function getAgenciaCodigoBeneficiario()
+    {
+        $agencia = $this->getAgenciaDv() !== null ? $this->getAgencia() . '-' . $this->getAgenciaDv() : $this->getAgencia();
+        $codigoCliente = $this->getCodigoCliente();
+
+        return $agencia . ' / ' . $codigoCliente;
+    }
+
+    /**
+     * Retorna o código da carteira
+     * @return string
+     */
+    public function getCarteiraNumero(){
+        switch ($this->carteira) {
+            case '101':
+                $carteira = '5';
+                break;
+            case '201':
+                $carteira = '1';
+                break;
+            default:
+                $carteira = $this->carteira;
+                break;
+        }
+
+        return $carteira;
+    }
+
+    /**
+     * Retorna o código do cliente.
+     *
+     * @return int
+     */
+    public function getCodigoCliente()
+    {
+        return $this->codigoCliente;
+    }
+
+    /**
+     * Define o código do cliente.
+     *
+     * @param int $codigoCliente
+     *
+     * @return AbstractBoleto
+     */
+    public function setCodigoCliente($codigoCliente)
+    {
+        $this->codigoCliente = $codigoCliente;
+
+        return $this;
+    }
+
     /**
      * Define o código da carteira (Com ou sem registro)
      *
@@ -139,9 +213,31 @@ class Santander  extends AbstractBoleto implements BoletoContract
         if ($this->campoLivre) {
             return $this->campoLivre;
         }
-        return $this->campoLivre = '9' . Util::numberFormatGeral($this->getConta(), 7)
+        return $this->campoLivre = '9' . Util::numberFormatGeral($this->getCodigoCliente(), 7)
             . Util::numberFormatGeral($this->getNossoNumero(), 13)
             . Util::numberFormatGeral($this->getIos(), 1)
             . Util::numberFormatGeral($this->getCarteira(), 3);
+    }
+
+    /**
+     * Método onde qualquer boleto deve extender para gerar o código da posição de 20 a 44
+     *
+     * @param $campoLivre
+     *
+     * @return array
+     */
+    public static function parseCampoLivre($campoLivre) {
+        return [
+            'convenio' => null,
+            'agencia' => null,
+            'agenciaDv' => null,
+            'contaCorrente' => null,
+            'contaCorrenteDv' => null,
+            'codigoCliente' => substr($campoLivre, 1, 7),
+            'nossoNumero' => substr($campoLivre, 8, 12),
+            'nossoNumeroDv' => substr($campoLivre, 20, 1),
+            'nossoNumeroFull' => substr($campoLivre, 8, 13),
+            'carteira' => substr($campoLivre, 22, 3),
+        ];
     }
 }

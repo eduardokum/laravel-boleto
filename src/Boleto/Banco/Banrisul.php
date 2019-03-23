@@ -19,28 +19,57 @@ class Banrisul extends AbstractBoleto implements BoletoContract
     /**
      * Define as carteiras disponíveis para este banco
      * 1 -> Cobrança Simples
+     * 2 -> Cobrança Vinculada
      * 3 -> Cobrança Caucionada
      * 4 -> Cobrança em IGPM
      * 5 -> Cobrança Caucionada CGB Especial
      * 6 -> Cobrança Simples Seguradora
      * 7 -> Cobrança em UFIR
      * 8 -> Cobrança em IDTR
+     * B -> Cobrança Caucionada CGB Especial
      * C -> Cobrança Vinculada
      * D -> Cobrança CSB
      * E -> Cobrança Caucionada Câmbio
      * F -> Cobrança Vendor
+     * G -> BBH
      * H -> Cobrança Caucionada Dólar
      * I -> Cobrança Caucionada Compror
+     * J -> Cobrança Caucionada NPR
      * K -> Cobrança Simples INCC-M
      * M -> Cobrança Partilhada
      * N -> Capital de Giro CGB ICM
+     * P -> Capital de Giro CGB ICM
      * R -> Desconto de Duplicata
-     * S -> Vendor Eletrônico – Valor Final (Corrigido)
-     * X -> Vendor BDL – Valor Inicial (Valor da NF)
+     * S -> Vendor Eletrônico
+     * T -> Leasing
+     * U -> CSB e CCB sem registro
+     * X -> Vendor BDL
      *
      * @var array
      */
-    protected $carteiras = ['1', '2', '3', '4', '5', '6', '7', '8', 'C', 'D', 'E', 'F', 'H', 'I', 'K', 'M', 'N', 'R', 'S', 'X'];
+    protected $carteiras = ['1', '2', '3', '4', '5', '6', '7', '8', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'M', 'N', 'P', 'R', 'S', 'T', 'U', 'X'];
+
+    /**
+     * Espécie do documento, código para remessa do CNAB240
+     * @var string
+     */
+    protected $especiesCodigo = [
+        'DM'  => '02', //Duplicata Mercantil – Banco emite bloqueto franqueado. Se a posição 61 for igual a 2 o Banco transformará “espécie do título” para AA
+        'DS'  => '04', //Duplicata de Serviço
+        'LC'  => '07', //Letra de Câmbio
+        'NP'  => '12', //Nota Promissória
+        'CCB' => 'AA', //O Banco não emite o bloqueto
+        'CD'  => 'AB', //Cobrança Direta
+        'CE'  => 'AC', //Cobrança Escritural
+        'TT'  => 'AD', //Título de terceiros
+    ];
+
+    /**
+     * Codigo do cliente junto ao banco.
+     *
+     * @var string
+     */
+    protected $codigoCliente;
 
     /**
      * Seta dias para baixa automática
@@ -93,26 +122,67 @@ class Banrisul extends AbstractBoleto implements BoletoContract
             return $this->campoLivre;
         }
 
-        // Carteira     => 20 - 20 | Valor: 1(Com registro) ou 2(Sem registro)
-        $this->campoLivre  = '2';
+        $campoLivre = '2';
+        $campoLivre .= '1';
+        $campoLivre .= Util::numberFormatGeral($this->getCodigoCliente(), 11); //4 digitos da agencia + 7 primeiros digitos pois os ultimos 2 são digitos verificadores
+        $campoLivre .= Util::numberFormatGeral($this->getNumero(), 8);
+        $campoLivre .= '40';
+        $campoLivre .= CalculoDV::banrisulDuploDigito(Util::onlyNumbers($campoLivre));
 
-        // Constante    => 21 - 21 | Valor: 1(Constante)
-        $this->campoLivre .= '1';
+        return $this->campoLivre = $campoLivre;
+    }
 
-        // Agencia      => 22 a 25 | Valor: dinâmico(0000) ´4´
-        $this->campoLivre .= Util::numberFormatGeral($this->getAgencia(), 4);
+    /**
+     * Método onde qualquer boleto deve extender para gerar o código da posição de 20 a 44
+     *
+     * @param $campoLivre
+     *
+     * @return array
+     */
+    public static function parseCampoLivre($campoLivre) {
+        return [
+            'carteira' => substr($campoLivre, 0, 1),
+            'agencia' => substr($campoLivre, 2, 4),
+            'contaCorrente' => substr($campoLivre, 6, 7),
+            'nossoNumero' => substr($campoLivre, 13, 8),
+            'nossoNumeroDv' => null,
+            'nossoNumeroFull' => substr($campoLivre, 13, 8),
+        ];
+    }
 
-        // Cod. Cedente => 26 a 32 | Valor: dinâmico(0000000) ´7´
-        $this->campoLivre .= Util::numberFormatGeral($this->getConta(), 7);
+    /**
+     * Retorna o codigo do cliente.
+     *
+     * @return mixed
+     */
+    public function getCodigoCliente()
+    {
+        return $this->codigoCliente;
+    }
 
-        // Nosso numero => 33 a 40 | Valor: dinâmico(00000000) ´8´
-        $this->campoLivre .= Util::numberFormatGeral($this->getNumero(), 8);
+    /**
+     * Seta o codigo do cliente.
+     *
+     * @param mixed $codigoCliente
+     *
+     * @return Banrisul
+     */
+    public function setCodigoCliente($codigoCliente)
+    {
+        $this->codigoCliente = $codigoCliente;
 
-        // Constante    => 41 - 42 | Valor: 40(Constante)
-        $this->campoLivre .= '40';
+        return $this;
+    }
 
-        // Duplo digito => 43 - 44 | Valor: calculado(00) ´2´
-        $this->campoLivre .= CalculoDV::banrisulDuploDigito(Util::onlyNumbers($this->campoLivre));
-        return $this->campoLivre;
+    /**
+     * Retorna o campo Agência/Beneficiário do boleto
+     *
+     * @return string
+     */
+    public function getAgenciaCodigoBeneficiario()
+    {
+        $codigoCliente = $this->getCodigoCliente();
+
+        return $codigoCliente;
     }
 }

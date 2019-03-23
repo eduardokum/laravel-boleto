@@ -1,15 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Eduardo
- * Date: 05/01/2017
- * Time: 16:49
- */
-
 namespace Eduardokum\LaravelBoleto;
 
 trait MagicTrait
 {
+    protected $trash = [];
+
     /**
      * Fast set method.
      *
@@ -20,6 +15,8 @@ trait MagicTrait
     {
         if (property_exists($this, $name)) {
             $this->$name = $value;
+        } else {
+            $this->trash[$name] = $value;
         }
     }
 
@@ -35,6 +32,8 @@ trait MagicTrait
         if (property_exists($this, $name)) {
             $method = 'get' . ucwords($name);
             return $this->{$method}();
+        } elseif (isset($this->trash[$name])) {
+            return $this->trash[$name];
         }
 
         return null;
@@ -48,7 +47,7 @@ trait MagicTrait
      */
     public function __isset($key)
     {
-        return isset($this->$key);
+        return isset($this->$key) || isset($this->trash[$key]);
     }
 
     /**

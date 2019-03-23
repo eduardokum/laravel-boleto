@@ -19,6 +19,8 @@ interface Boleto
     const STATUS_REGISTRO = 1;
     const STATUS_ALTERACAO = 2;
     const STATUS_BAIXA = 3;
+    const STATUS_ALTERACAO_DATA = 4;
+    const STATUS_CUSTOM = 99;
 
     /**
      * Render PDF.
@@ -81,6 +83,11 @@ interface Boleto
     /**
      * @return mixed
      */
+    public function getCodigoBanco();
+
+    /**
+     * @return mixed
+     */
     public function getCodigoBancoComDv();
 
     /**
@@ -127,6 +134,11 @@ interface Boleto
      * @return mixed
      */
     public function getJuros();
+
+    /**
+     * @return mixed
+     */
+    public function getMoraDia();
 
     /**
      * @return mixed
@@ -208,6 +220,8 @@ interface Boleto
     public function getEspecieDoc();
 
     /**
+     * @param int $default
+     *
      * @return mixed
      */
     public function getEspecieDocCodigo($default = 99);
@@ -246,4 +260,36 @@ interface Boleto
      * @return mixed
      */
     public function baixarBoleto();
+
+    /**
+    * @return mixed
+    */
+    public function alterarDataDeVencimento();
+
+    /**
+     * @param $instrucao
+     *
+     * @return mixed
+     */
+    public function comandarInstrucao($instrucao);
+
+    /**
+     * @return mixed
+     */
+    public function getComando();
+
+    /**
+     * Método onde qualquer boleto deve extender para gerar o código da posição de 20 a 44
+     *
+     * @param $campoLivre
+     *
+     * @return array
+     */
+    static public function parseCampoLivre($campoLivre);
+
+
+    /**
+     * @return mixed
+     */
+    public function getMostrarEnderecoFichaCompensacao();
 }

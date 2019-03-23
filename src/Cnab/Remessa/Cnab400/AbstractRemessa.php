@@ -2,6 +2,7 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400;
 
 use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa as AbstractRemessaGeneric;
+use ForceUTF8\Encoding;
 
 abstract class AbstractRemessa extends AbstractRemessaGeneric
 {
@@ -12,7 +13,7 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
      */
     protected function iniciaHeader()
     {
-        $this->aRegistros[self::HEADER] = array_fill(0, 400, ' ');
+        $this->aRegistros[self::HEADER] = array_fill(0, $this->tamanho_linha, ' ');
         $this->atual = &$this->aRegistros[self::HEADER];
     }
 
@@ -21,8 +22,28 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
      */
     protected function iniciaTrailer()
     {
-        $this->aRegistros[self::TRAILER] = array_fill(0, 400, ' ');
+        $this->aRegistros[self::TRAILER] = array_fill(0, $this->tamanho_linha, ' ');
         $this->atual = &$this->aRegistros[self::TRAILER];
+    }
+
+    /**
+     * Função que mostra a quantidade de linhas do arquivo.
+     *
+     * @return int
+     */
+    protected function getCountDetalhes()
+    {
+        return count($this->aRegistros[self::DETALHE]);
+    }
+
+    /**
+     * Função que mostra a quantidade de linhas do arquivo.
+     *
+     * @return int
+     */
+    protected function getCount()
+    {
+        return $this->getCountDetalhes() + 2;
     }
 
     /**
@@ -31,7 +52,7 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
     protected function iniciaDetalhe()
     {
         $this->iRegistros++;
-        $this->aRegistros[self::DETALHE][$this->iRegistros] = array_fill(0, 400, ' ');
+        $this->aRegistros[self::DETALHE][$this->iRegistros] = array_fill(0, $this->tamanho_linha, ' ');
         $this->atual = &$this->aRegistros[self::DETALHE][$this->iRegistros];
     }
 
@@ -43,8 +64,8 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
      */
     public function gerar()
     {
-        if (!$this->isValid()) {
-            throw new \Exception('Campos requeridos pelo banco, aparentam estar ausentes');
+        if (!$this->isValid($messages)) {
+            throw new \Exception('Campos requeridos pelo banco, aparentam estar ausentes ' . $messages);
         }
 
         $stringRemessa = '';
@@ -62,6 +83,6 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
         $this->trailer();
         $stringRemessa .= $this->valida($this->getTrailer()) . $this->fimArquivo;
 
-        return $stringRemessa;
+        return Encoding::toUTF8($stringRemessa);
     }
 }

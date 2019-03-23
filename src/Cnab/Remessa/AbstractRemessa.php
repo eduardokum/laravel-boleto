@@ -1,9 +1,10 @@
 <?php
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa;
 
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
+use Carbon\Carbon;
 use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 abstract class AbstractRemessa
 {
@@ -27,6 +28,11 @@ abstract class AbstractRemessa
         'conta',
         'beneficiario',
     ];
+
+    /**
+     * @var array
+     */
+    protected $boletos = [];
 
     /**
      * Código do banco
@@ -81,6 +87,12 @@ abstract class AbstractRemessa
      */
     protected $idremessa;
     /**
+     * A data que será informada no header da remessa
+     *
+     * @var Carbon;
+     */
+    protected $dataRemessa = null;
+    /**
      * Agência
      *
      * @var int
@@ -128,6 +140,28 @@ abstract class AbstractRemessa
         Util::fillClass($this, $params);
     }
 
+    /**
+     * Informa a data da remessa a ser gerada
+     *
+     * @param $data
+     */
+    public function setDataRemessa($data){
+        $this->dataRemessa = $data;
+    }
+
+    /**
+     * Retorna a data da remessa a ser gerada
+     *
+     * @param $format
+     *
+     * @return string;
+     */
+    public function getDataRemessa($format){
+        if(is_null($this->dataRemessa)){
+            return Carbon::now()->format($format);
+        }
+        return $this->dataRemessa->format($format);
+    }
     /**
      * Seta os campos obrigatórios
      *
@@ -334,12 +368,16 @@ abstract class AbstractRemessa
     /**
      * Método que valida se o banco tem todos os campos obrigadotorios preenchidos
      *
+     * @param $messages
+     *
      * @return boolean
      */
-    public function isValid()
+    public function isValid(&$messages)
     {
         foreach ($this->camposObrigatorios as $campo) {
-            if (call_user_func([$this, 'get' . ucwords($campo)]) == '') {
+            $test = call_user_func([$this, 'get' . ucwords($campo)]);
+            if ($test === '' || is_null($test)) {
+                $messages .= "Campo $campo está em branco";
                 return false;
             }
         }
@@ -369,16 +407,6 @@ abstract class AbstractRemessa
      * @return mixed
      */
     abstract protected function trailer();
-
-    /**
-     * Função que mostra a quantidade de linhas do arquivo.
-     *
-     * @return int
-     */
-    protected function getCount()
-    {
-        return count($this->aRegistros[self::DETALHE]) + 2;
-    }
 
     /**
      * Função para adicionar multiplos boletos.
@@ -455,7 +483,7 @@ abstract class AbstractRemessa
             throw new \Exception('Classe remessa deve informar o tamanho da linha');
         }
 
-        $a = array_filter($a, 'strlen');
+        $a = array_filter($a, 'mb_strlen');
         if (count($a) != $this->tamanho_linha) {
             throw new \Exception(sprintf('$a não possui %s posições, possui: %s', $this->tamanho_linha, count($a)));
         }
@@ -469,10 +497,7 @@ abstract class AbstractRemessa
      * @return string
      * @throws \Exception
      */
-    public function gerar()
-    {
-        throw new \Exception('Método não implementado');
-    }
+    abstract public function gerar();
 
     /**
      * Salva o arquivo no path informado

@@ -34,7 +34,7 @@ class Bnb extends AbstractBoleto implements BoletoContract
      *
      * @var array
      */
-    protected $carteiras = ['21'];
+    protected $carteiras = ['21', '31', '41'];
     /**
      * Espécie do documento, coódigo para remessa
      *
@@ -97,12 +97,36 @@ class Bnb extends AbstractBoleto implements BoletoContract
         if ($this->campoLivre) {
             return $this->campoLivre;
         }
-        $nosso_numero = $this->getNossoNumero();
-        $carteira = Util::numberFormatGeral($this->getCarteira(), 2);
-        $agencia = Util::numberFormatGeral($this->getAgencia(), 4);
-        $conta = Util::numberFormatGeral($this->getConta(), 7);
-        $dvContaCedente = $this->getContaDv() ?: CalculoDV::bnbContaCorrente($this->getAgencia(), $this->getConta());
 
-        return $this->campoLivre = $agencia . $conta . $dvContaCedente . $nosso_numero . $carteira . '000';
+        $campoLivre = Util::numberFormatGeral($this->getAgencia(), 4);
+        $campoLivre .= Util::numberFormatGeral($this->getConta(), 7);
+        $campoLivre .= $this->getContaDv() ?: CalculoDV::bnbContaCorrente($this->getAgencia(), $this->getConta());
+        $campoLivre .= $this->getNossoNumero();
+        $campoLivre .= Util::numberFormatGeral($this->getCarteira(), 2);
+        $campoLivre .= '000';
+
+        return $this->campoLivre = $campoLivre;
+    }
+
+    /**
+     * Método onde qualquer boleto deve extender para gerar o código da posição de 20 a 44
+     *
+     * @param $campoLivre
+     *
+     * @return array
+     */
+    public static function parseCampoLivre($campoLivre) {
+        return [
+            'codigoCliente' => null,
+            'convenio' => null,
+            'agenciaDv' => null,
+            'agencia' => substr($campoLivre, 0, 4),
+            'contaCorrente' => substr($campoLivre, 4, 7),
+            'contaCorrenteDv' => substr($campoLivre, 11, 1),
+            'nossoNumero' => substr($campoLivre, 12, 7),
+            'nossoNumeroDv' => substr($campoLivre, 19, 1),
+            'nossoNumeroFull' => substr($campoLivre, 12, 8),
+            'carteira' => substr($campoLivre, 20, 2),
+        ];
     }
 }

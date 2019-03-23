@@ -100,7 +100,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
             throw new \Exception(sprintf("Arquivo de retorno inválido"));
         }
 
-        $banco = Util::isCnab400($this->file[0]) ? substr($this->file[0], 76, 3) : substr($this->file[0], 0, 3);
+        $banco = Util::isCnab400($this->file[0]) ? mb_substr($this->file[0], 76, 3) : mb_substr($this->file[0], 0, 3);
         if (!in_array($banco, $bancosDisponiveis)) {
             throw new \Exception(sprintf("Banco: %s, inválido", $banco));
         }
@@ -125,6 +125,22 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
     }
 
     /**
+     * @return mixed
+     */
+    public function getTipo()
+    {
+        return Util::isCnab400($this->file[0]) ? 400 : 240;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFileContent()
+    {
+        return implode(PHP_EOL, $this->file);
+    }
+
+    /**
      * @return Collection
      */
     public function getDetalhes()
@@ -135,7 +151,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
     /**
      * @param $i
      *
-     * @return Detalhe240Contract[]|Detalhe400Contract[]
+     * @return Detalhe240Contract|Detalhe400Contract|null
      */
     public function getDetalhe($i)
     {
@@ -156,6 +172,14 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
     public function getTrailer()
     {
         return $this->trailer;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTotais()
+    {
+        return $this->totais;
     }
 
     /**
