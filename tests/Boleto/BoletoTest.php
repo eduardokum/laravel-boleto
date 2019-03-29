@@ -483,4 +483,32 @@ class BoletoTest extends TestCase
         $this->assertNotNull($boleto->renderHTML());
         $this->assertNotNull($boleto->renderPDF());
     }
+
+    public function testBoletoUniprime()
+    {
+        $boleto = new Boleto\Uniprime(
+            [
+                'logo'                   => realpath(__DIR__ . '/../../logos/') . DIRECTORY_SEPARATOR . '087.png',
+                'dataVencimento'         => new \Carbon\Carbon(),
+                'valor'                  => 100,
+                'multa'                  => 3.0,
+                'juros'                  => 1.5,
+                'numero'                 => 1,
+                'numeroDocumento'        => 1,
+                'pagador'                => self::$pagador,
+                'beneficiario'           => self::$beneficiario,
+                'carteira'               => '09',
+                'agencia'                => 1111,
+                'conta'                  => 11111,
+                'contaDv'                => 1,
+                'descricaoDemonstrativo' => ['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'],
+                'instrucoes'             => ['instrucao 1', 'instrucao 2', 'instrucao 3'],
+                'aceite'                 => 'S',
+                'especieDoc'             => 'DM',
+            ]
+        );
+        $this->assertInternalType('array', $boleto->toArray());
+        $this->assertNotNull($boleto->renderHTML());
+        $this->assertNotNull($boleto->renderPDF());
+    }
 }
