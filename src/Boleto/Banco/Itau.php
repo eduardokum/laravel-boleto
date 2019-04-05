@@ -147,6 +147,8 @@ class Itau extends AbstractBoleto implements BoletoContract
      * @return int
      */
     public function getContaDv(){
+        if($this->contaDv !== NULL)
+            return $this->contaDv;
         return  CalculoDV::itauContaCorrente($this->getAgencia(), $this->getConta());
     }
 }
