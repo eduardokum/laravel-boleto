@@ -23,6 +23,7 @@ class Uniprime extends AbstractRemessa implements RemessaContract
     const ESPECIE_LETRAS_CAMBIO = '10';
     const ESPECIE_NOTA_DEBITO = '11';
     const ESPECIE_DUPLICATA_SERVICO = '12';
+    const ESPECIE_BOLETO_PROPOSTA = '30';
     const ESPECIE_OUTROS = '99';
 
     const OCORRENCIA_REMESSA = '01';
@@ -148,7 +149,7 @@ class Uniprime extends AbstractRemessa implements RemessaContract
         $this->add(27, 46, Util::formatCnab('9', $this->getCodigoCliente(), 20));
         $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(77, 79, $this->getCodigoBanco());
-        $this->add(80, 94, Util::formatCnab('X', 'Bradesco', 15));
+        $this->add(80, 94, Util::formatCnab('X', 'UNIPRIME', 15));
         $this->add(95, 100, $this->getDataRemessa('dmy'));
         $this->add(101, 108, '');
         $this->add(109, 110, 'MX');
