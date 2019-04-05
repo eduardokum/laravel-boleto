@@ -180,6 +180,12 @@ class Bb extends AbstractRemessa implements RemessaContract
         if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
             $this->add(16, 17, self::OCORRENCIA_ALT_OUTROS_DADOS);
         }
+        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO_DATA) {
+            $this->add(16, 17, self::OCORRENCIA_ALT_VENCIMENTO);
+        }
+        if ($boleto->getStatus() == $boleto::STATUS_CUSTOM) {
+            $this->add(16, 17, sprintf('%2.02s', $boleto->getComando()));
+        }
         $this->add(18, 22, Util::formatCnab('9', $this->getAgencia(), 5));
         $this->add(23, 23, CalculoDV::bbAgencia($this->getAgencia()));
         $this->add(24, 35, Util::formatCnab('9', $this->getConta(), 12));
