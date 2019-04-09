@@ -26,25 +26,46 @@ class Bb extends AbstractBoleto implements BoletoContract
      */
     protected $carteiras = ['11', '12', '15', '17', '18', '31', '51'];
     /**
-     * Espécie do documento, coódigo para remessa
+     * Espécie do documento, coódigo para remessa CNAB240
      *
      * @var string
      */
     protected $especiesCodigo = [
-	'CH' => '01', // Cheque
-	'DM' => '02', // Duplicata Mercantil
-	'DS' => '04', // Duplicata de Serviço
-	'DR' => '06', // Duplicata Rural
-	'LC' => '07', // Letra de Cambio
-	'NP' => '12', // Nota Provisoria
-	'NS' => '16', // Nota de Seguro
-	'REC' => '17', // Recibo
-	'ND' => '19', // Nota de Débito
-	'AS' => '20', // Apolice de Seguro
-	'W' => '26', // Warrant
-	'DAE' => '27', // Divida Ativa de Estado
-	'DAM' => '28', // Divida Ativa de Municipio
-	'DAU' => '29' // Divida Ativa União
+        'CH' => '01', // Cheque
+        'DM' => '02', // Duplicata Mercantil
+        'DS' => '04', // Duplicata de Serviço
+        'DR' => '06', // Duplicata Rural
+        'LC' => '07', // Letra de Cambio
+        'NP' => '12', // Nota Provisoria
+        'NS' => '16', // Nota de Seguro
+        'REC' => '17', // Recibo
+        'ND' => '19', // Nota de Débito
+        'AS' => '20', // Apolice de Seguro
+        'W' => '26', // Warrant
+        'DAE' => '27', // Divida Ativa de Estado
+        'DAM' => '28', // Divida Ativa de Municipio
+        'DAU' => '29' // Divida Ativa União
+    ];
+
+    /**
+     * Espécie do documento, coódigo para remessa CNAB400
+     *
+     * @var string
+     */
+    protected $especiesCodigo400 = [
+        'DM'  => '01', // Duplicata Mercantil
+        'NP'  => '02', // Nota Promissoria
+        'NS'  => '03', // Nota de Seguro
+        'REC' => '05', // Recibo
+        'LC'  => '08', // Letra de Cambio
+        'W'   => '09', // Warrant
+        'CH'  => '10', // Cheque
+        'DS'  => '12', // Duplicata de Serviço
+        'ND'  => '13', // Nota de Débito
+        'AS'  => '15', // Apolice de Seguro
+        'DAE' => '25', // Divida Ativa de Estado
+        'DAM' => '26', // Divida Ativa de Municipio
+        'DAU' => '27'  // Divida Ativa União
     ];
     /**
      * Define o número do convênio (4, 6 ou 7 caracteres)
@@ -203,4 +224,19 @@ class Bb extends AbstractBoleto implements BoletoContract
             'nossoNumeroFull' => $nossoNumero,
         ];
     }
+
+    /**
+     * Retorna o codigo da Espécie Doc para remessa 400
+     *
+     * @param int $default
+     *
+     * @return string
+     */
+    public function getEspecieDocCodigo400($default = 99)
+    {
+        return key_exists(strtoupper($this->especieDoc), $this->especiesCodigo400)
+            ? $this->especiesCodigo400[strtoupper($this->getEspecieDoc())]
+            : $default;
+    }
+
 }
