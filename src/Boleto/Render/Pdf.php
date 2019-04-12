@@ -490,7 +490,7 @@ class Pdf extends AbstractPdf implements PdfContract
     {
         foreach ($lista as $d) {
             $pulaLinha -= 2;
-            $this->MultiCell(0, $this->cell - 0.2, $this->_(preg_replace('/(%)/', '%$1', $d)), 0, 1);
+            $this->MultiCell(120, $this->cell - 0.2, $this->_(preg_replace('/(%)/', '%$1', $d)), 0, 1);
         }
 
         return $pulaLinha;
