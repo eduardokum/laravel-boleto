@@ -73,14 +73,19 @@ class Pessoa implements PessoaContract
     {
         Util::fillClass($this, $params);
     }
+
     /**
      * Define o CEP
      *
      * @param string $cep
+     *
+     * @return Pessoa
      */
     public function setCep($cep)
     {
         $this->cep = $cep;
+
+        return $this;
     }
     /**
      * Retorna o CEP
@@ -91,14 +96,20 @@ class Pessoa implements PessoaContract
     {
         return Util::maskString(Util::onlyNumbers($this->cep), '#####-###');
     }
+
     /**
      * Define a cidade
      *
      * @param string $cidade
+     *
+     * @return Pessoa
      */
     public function setCidade($cidade)
     {
         $this->cidade = $cidade;
+
+
+        return $this;
     }
     /**
      * Retorna a cidade
@@ -139,14 +150,19 @@ class Pessoa implements PessoaContract
         }
         return Util::maskString(Util::onlyNumbers($this->documento), '##.###.###/####-##');
     }
+
     /**
      * Define o endereço
      *
      * @param string $endereco
+     *
+     * @return Pessoa
      */
     public function setEndereco($endereco)
     {
         $this->endereco = $endereco;
+
+        return $this;
     }
     /**
      * Retorna o endereço
@@ -157,14 +173,19 @@ class Pessoa implements PessoaContract
     {
         return $this->endereco;
     }
+
     /**
      * Define o bairro
      *
      * @param string $bairro
+     *
+     * @return Pessoa
      */
     public function setBairro($bairro)
     {
         $this->bairro = $bairro;
+
+        return $this;
     }
     /**
      * Retorna o bairro
@@ -175,14 +196,19 @@ class Pessoa implements PessoaContract
     {
         return $this->bairro;
     }
+
     /**
      * Define o nome
      *
      * @param string $nome
+     *
+     * @return Pessoa
      */
     public function setNome($nome)
     {
         $this->nome = $nome;
+
+        return $this;
     }
     /**
      * Retorna o nome
@@ -193,14 +219,19 @@ class Pessoa implements PessoaContract
     {
         return $this->nome;
     }
+
     /**
      * Define a UF
      *
      * @param string $uf
+     *
+     * @return Pessoa
      */
     public function setUf($uf)
     {
         $this->uf = $uf;
+
+        return $this;
     }
     /**
      * Retorna a UF
@@ -255,6 +286,19 @@ class Pessoa implements PessoaContract
     }
 
     /**
+     * Retorna o endereço completo em uma única string
+     *
+     * Ex.: Rua um, 123 - Bairro Industrial - Brasília - DF - 71000-000
+     *
+     * @return string
+     */
+    public function getEnderecoCompleto()
+    {
+        $dados = array_filter(array($this->getEndereco(), $this->getBairro(), $this->getCidade(), $this->getUf(), $this->getCep()));
+        return implode(' - ', $dados);
+    }
+	
+    /**
      * @return bool
      */
     public function isDda() {
@@ -286,6 +330,7 @@ class Pessoa implements PessoaContract
             'documento' => $this->getDocumento(),
             'nome_documento' => $this->getNomeDocumento(),
             'endereco2' => $this->getCepCidadeUf(),
+			'endereco_completo' => $this->getEnderecoCompleto(),
             'dda' => $this->isDda(),
         ];
     }

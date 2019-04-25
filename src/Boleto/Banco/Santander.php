@@ -50,8 +50,8 @@ class Santander  extends AbstractBoleto implements BoletoContract
      * @var array
      */
     protected $carteirasNomes = [
-        '101' => 'Cobrança Simples ECR', 
-        '102' => 'Cobrança Simples CSR', 
+        '101' => 'Cobrança Simples ECR',
+        '102' => 'Cobrança Simples CSR',
         '201' => 'Penhor'
     ];
     /**
