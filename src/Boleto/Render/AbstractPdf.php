@@ -209,10 +209,6 @@ abstract class AbstractPdf extends \FPDF
     public function __construct($orientation = 'P', $unit = 'mm', $size = 'A4')
     {
         parent::__construct($orientation, $unit, $size);
-        $this->SetCreator($this->_('Intrasis Desenvolvimento de Sistemas'));
-        $this->SetAuthor($this->_('Intrasis Desenvolvimento de Sistemas'));
-        $this->SetSubject($this->_('Visualização gerada pelo Sismanager'));
-        $this->SetKeywords($this->_('Visualização visualização Visualizacao visualizacao sismanger Sismanger Intrasis intrasis'));
         $this->AliasNbPages('{1}');
     }
 
