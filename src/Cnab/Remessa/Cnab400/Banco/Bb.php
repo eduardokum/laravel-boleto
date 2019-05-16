@@ -271,7 +271,7 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(140, 142, $this->getCodigoBanco());
         $this->add(143, 146, '0000');
         $this->add(147, 147, '');
-        $this->add(148, 149, $boleto->getEspecieDocCodigo());
+        $this->add(148, 149, $boleto->getEspecieDocCodigo('01', 400));
         $this->add(150, 150, $boleto->getAceite());
         $this->add(151, 156, $boleto->getDataDocumento()->format('dmy'));
         $this->add(157, 158, $boleto->getStatus() == $boleto::STATUS_BAIXA ? self::INSTRUCAO_BAIXAR : self::INSTRUCAO_SEM);
