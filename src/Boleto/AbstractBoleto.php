@@ -651,13 +651,21 @@ abstract class AbstractBoleto implements BoletoContract
      * Retorna o codigo da Espécie Doc
      *
      * @param int $default
+     * @param int $tipo
      *
      * @return string
      */
-    public function getEspecieDocCodigo($default = 99)
+    public function getEspecieDocCodigo($default = 99, $tipo = 240)
     {
-        return key_exists(strtoupper($this->especieDoc), $this->especiesCodigo)
-            ? $this->especiesCodigo[strtoupper($this->getEspecieDoc())]
+        if (property_exists($this, 'especiesCodigo240') && $tipo == 240) {
+            $especie = $this->especiesCodigo240;
+        } elseif(property_exists($this, 'especiesCodigo400') && $tipo == 400) {
+            $especie = $this->especiesCodigo400;
+        } else {
+            $especie = $this->especiesCodigo;
+        }
+        return key_exists(strtoupper($this->especieDoc), $especie)
+            ? $especie[strtoupper($this->getEspecieDoc())]
             : $default;
     }
 

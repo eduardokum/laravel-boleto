@@ -37,7 +37,25 @@ class Sicredi extends AbstractBoleto implements BoletoContract
      *
      * @var string
      */
-    protected $especiesCodigo = [
+    protected $especiesCodigo240 = [
+        'DMI' => '03', // Duplicata Mercantil por Indicação
+        'DM' => '05', // Duplicata Mercantil por Indicação
+        'DR' => '06', // Duplicata Rural
+        'NP' => '12', // Nota Promissória
+        'NR' => '13', // Nota Promissória Rural
+        'NS' => '16', // Nota de Seguros
+        'RC' => '17', // Recibo
+        'LC' => '07', // Letra de Câmbio
+        'ND' => '19', // Nota de Débito
+        'DSI' => '99', // Duplicata de Serviço por Indicação
+        'OS' => '99', // Outros
+    ];
+    /**
+     * Espécie do documento, coódigo para remessa
+     *
+     * @var string
+     */
+    protected $especiesCodigo400 = [
         'DMI' => 'A', // Duplicata Mercantil por Indicação
         'DM' => 'A', // Duplicata Mercantil por Indicação
         'DR' => 'B', // Duplicata Rural
