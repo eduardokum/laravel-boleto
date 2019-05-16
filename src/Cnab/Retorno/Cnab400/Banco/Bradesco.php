@@ -188,6 +188,11 @@ class Bradesco extends AbstractRetorno implements RetornoCnab400
                 array_get($this->rejeicoes, $msgAdicional[3], ''),
                 array_get($this->rejeicoes, $msgAdicional[4], '')
             );
+            if($d->hasOcorrencia('03')) {
+               if(isset($this->rejeicoes[$this->rem(319, 320, $detalhe)])){
+                  $d->setRejeicao($this->rejeicoes[$this->rem(319, 320, $detalhe)]);
+               }
+            }
             $d->setError($error);
         } else {
             $d->setOcorrenciaTipo($d::OCORRENCIA_OUTROS);
