@@ -272,6 +272,26 @@ class Detalhe implements DetalheContract
 
         return $this;
     }
+    
+     /**
+    * @return string
+    */
+     public function getRejeicao()
+     {
+         return $this->rejeicao;
+     }
+
+     /**
+       * @param string $ocorrenciaTipo
+       *
+       * @return Detalhe
+       */
+     public function setRejeicao($rejeicao)
+     {
+         $this->rejeicao = $rejeicao;
+
+         return $this;
+     }
 
     /**
      * @param string $format

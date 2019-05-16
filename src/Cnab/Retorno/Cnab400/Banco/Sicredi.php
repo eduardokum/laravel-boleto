@@ -253,6 +253,11 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
             $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
         } elseif ($d->hasOcorrencia('03', '27', '30')) {
             $this->totais['erros']++;
+	    if($d->hasOcorrencia('03')) {
+               if(isset($this->rejeicoes[$this->rem(319, 320, $detalhe)])){
+                  $d->setRejeicao($this->rejeicoes[$this->rem(319, 320, $detalhe)]);
+               }
+            }
         } else {
             $d->setOcorrenciaTipo($d::OCORRENCIA_OUTROS);
         }
