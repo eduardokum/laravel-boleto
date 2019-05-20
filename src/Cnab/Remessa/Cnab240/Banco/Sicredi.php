@@ -42,7 +42,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
     {
         parent::__construct($params);
         $this->setCarteira('A'); //Carteira Simples 'A'
-        $this->addCampoObrigatorio('codigoCliente', 'idremessa');
+        $this->addCampoObrigatorio('idremessa');
     }
 
     /**
@@ -76,30 +76,6 @@ class Sicredi extends AbstractRemessa implements RemessaContract
     public function setCarteira($carteira)
     {
         $this->carteira = 'A';
-        return $this;
-    }
-
-    /**
-     * Retorna o codigo do cliente.
-     *
-     * @return mixed
-     */
-    public function getCodigoCliente()
-    {
-        return $this->codigoCliente;
-    }
-
-    /**
-     * Seta o codigo do cliente.
-     *
-     * @param mixed $codigoCliente
-     *
-     * @return Sicredi
-     */
-    public function setCodigoCliente($codigoCliente)
-    {
-        $this->codigoCliente = $codigoCliente;
-
         return $this;
     }
 
@@ -173,8 +149,8 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(221, 221, self::PROTESTO_SEM);
         if ($boleto->getDiasProtesto() > 0) {
             $this->add(221, 221, self::PROTESTO_DIAS_CORRIDOS);
-            $this->add(222, 223, Util::formatCnab('9', $boleto->getDiasProtesto(), 2));
         }
+        $this->add(222, 223, Util::formatCnab('9', $boleto->getDiasProtesto(), 2));
         $this->add(224, 224, '1'); // '1' = Baixar / devolver - Utilizar sempre domínio ‘1’ para esse campo.
         $this->add(225, 227, '060'); // Utilizar sempre, nesse campo, 60 dias para baixa/devolução.
         $this->add(228, 229, Util::formatCnab('9', $boleto->getMoeda(), 2));
@@ -290,7 +266,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(9, 17, '');
         $this->add(18, 18, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? 2 : 1);
         $this->add(19, 32, Util::formatCnab('9', Util::onlyNumbers($this->getBeneficiario()->getDocumento()), 14));
-        $this->add(33, 52, Util::formatCnab('9', Util::onlyNumbers($this->getCodigoCliente()), 20));
+        $this->add(33, 52, Util::formatCnab('X', '', 20));
         $this->add(53, 57, Util::formatCnab('9', $this->getAgencia(), 5));
         $this->add(58, 58, '');
         $this->add(59, 70, Util::formatCnab('9', $this->getConta(), 12));
@@ -334,7 +310,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(17, 17, '');
         $this->add(18, 18, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? 2 : 1);
         $this->add(19, 33, Util::formatCnab('9', Util::onlyNumbers($this->getBeneficiario()->getDocumento()), 15));
-        $this->add(34, 53, Util::formatCnab('9', Util::onlyNumbers($this->getCodigoCliente()), 20));
+        $this->add(34, 53, Util::formatCnab('X', '', 20));
         $this->add(54, 58, Util::formatCnab('9', $this->getAgencia(), 5));
         $this->add(59, 59, '');
         $this->add(60, 71, Util::formatCnab('9', $this->getConta(), 12));
@@ -367,8 +343,8 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(8, 8, '5');
         $this->add(9, 17, '');
         $this->add(18, 23, Util::formatCnab('9', $this->getCountDetalhes() + 2, 6));
-        $this->add(24, 29, Util::formatCnab('9', count($this->boletos), 6));
-        $this->add(30, 46, Util::formatCnab('9', $valor, 17, 2));
+        $this->add(24, 29, Util::formatCnab('9', 0, 6));
+        $this->add(30, 46, Util::formatCnab('9', 0, 17, 2));
         $this->add(47, 52, Util::formatCnab('9', 0, 6));
         $this->add(53, 69, Util::formatCnab('9', 0, 17, 2));
         $this->add(70, 75, Util::formatCnab('9', 0, 6));
@@ -395,7 +371,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(9, 17, '');
         $this->add(18, 23, Util::formatCnab('9', 1, 6));
         $this->add(24, 29, Util::formatCnab('9', $this->getCount(), 6));
-        $this->add(30, 35, '000001');
+        $this->add(30, 35, '000000');
         $this->add(36, 240, '');
 
         return $this;
