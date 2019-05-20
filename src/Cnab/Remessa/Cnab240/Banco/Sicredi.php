@@ -123,7 +123,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(24, 35, Util::formatCnab('9', $this->getConta(), 12));
         $this->add(36, 36, Util::modulo11($this->getConta()));
         $this->add(37, 37, '');
-        $this->add(38, 57, Util::formatCnab('9', $boleto->getNossoNumero(), 20));
+        $this->add(38, 57, Util::formatCnab('X', $boleto->getNossoNumero(), 20));
         $this->add(58, 58, '1'); //'1' = Cobrança Simples
         $this->add(59, 59, '1'); //'1' = Com cadastramento (cobrança registrada)
         $this->add(60, 60, '1'); //'1' = Tradicional
