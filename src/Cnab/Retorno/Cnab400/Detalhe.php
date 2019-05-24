@@ -29,6 +29,10 @@ class Detalhe implements DetalheContract
     /**
      * @var string
      */
+    protected $codigoLiquidacao;
+    /**
+     * @var string
+     */
     protected $ocorrencia;
     /**
      * @var string
@@ -168,6 +172,29 @@ class Detalhe implements DetalheContract
     }
 
     /**
+     * Getter for codigoLiquidacao
+     *
+     * @return string
+     */
+    public function getCodigoLiquidacao()
+    {
+        return $this->codigoLiquidacao;
+    }
+
+    /**
+     * Setter for codigoLiquidacao
+     *
+     * @param string $codigoLiquidacao
+     * @return Detalhe
+     */
+    public function setCodigoLiquidacao($codigoLiquidacao)
+    {
+        $this->codigoLiquidacao = $codigoLiquidacao;
+
+        return $this;
+    }
+
+    /**
      * @return boolean
      */
     public function hasOcorrencia()
@@ -272,7 +299,7 @@ class Detalhe implements DetalheContract
 
         return $this;
     }
-    
+
      /**
     * @return string
     */

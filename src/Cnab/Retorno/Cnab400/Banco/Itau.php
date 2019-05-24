@@ -222,6 +222,7 @@ class Itau extends AbstractRetorno implements RetornoCnab400
             ->setDataOcorrencia($this->rem(111, 116, $detalhe))
             ->setDataVencimento($this->rem(147, 152, $detalhe))
             ->setDataCredito($this->rem(296, 301, $detalhe))
+            ->setCodigoLiquidacao($this->rem(393, 394, $detalhe))
             ->setValor(Util::nFloat($this->rem(153, 165, $detalhe) / 100, 2, false))
             ->setValorTarifa(Util::nFloat($this->rem(176, 188, $detalhe) / 100, 2, false))
             ->setValorIOF(Util::nFloat($this->rem(215, 227, $detalhe) / 100, 2, false))
