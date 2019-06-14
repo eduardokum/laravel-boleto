@@ -28,6 +28,10 @@ Mas também, caso você ache que qualquer informação obtida aqui, lhe foi úti
         
 *Agradecemos a contribuição.*
 
+## Apoiadores
+<a target="_blank" href=" https://www.jetbrains.com/?from=LaravelBoleto">
+         <img alt="Jetbrains" width="100" src="https://account.jetbrains.com/static/images/jetbrains-logo-inv.svg"/></a>
+
 ## Apoiadores (Doações)
 
 * Leandro Henrique Siqueira
