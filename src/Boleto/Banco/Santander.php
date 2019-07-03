@@ -61,6 +61,12 @@ class Santander extends AbstractBoleto implements BoletoContract
         'BCC' => '19',
     ];
     /**
+     * Mostrar o endereço do beneficiário abaixo da razão e CNPJ na ficha de compensação
+     *
+     * @var boolean
+     */
+    protected $mostrarEnderecoFichaCompensacao = true;
+    /**
      * Define os nomes das carteiras para exibição no boleto
      *
      * @var array
