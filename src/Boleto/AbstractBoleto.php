@@ -1112,7 +1112,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getMoraDia()
     {
-        if (!$this->getJuros() > 0) {
+        if ($this->getJuros() <= 0) {
            return 0;
         }
         return Util::percent($this->getValor(), $this->getJuros())/30;

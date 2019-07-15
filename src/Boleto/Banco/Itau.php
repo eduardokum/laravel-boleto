@@ -141,4 +141,14 @@ class Itau extends AbstractBoleto implements BoletoContract
             'contaCorrenteDv' => substr($campoLivre, 21, 1),
         ];
     }
+    /**
+     * Método que retorna o digito da conta do Itau
+     *
+     * @return int
+     */
+    public function getContaDv(){
+        if($this->contaDv !== NULL)
+            return $this->contaDv;
+        return  CalculoDV::itauContaCorrente($this->getAgencia(), $this->getConta());
+    }
 }
