@@ -78,6 +78,20 @@ class Bb extends AbstractBoleto implements BoletoContract
      * @var string
      */
     protected $variacao_carteira;
+
+    /**
+     * Retorna o campo Agência/Beneficiário do boleto
+     *
+     * @return string
+     */
+    public function getAgenciaCodigoBeneficiario()
+    {
+        $agencia = $this->getAgencia() . '-' . CalculoDV::bbAgencia($this->getAgencia());
+        $codigoCliente = $this->getConvenio();
+
+        return $agencia . ' / ' . $codigoCliente;
+    }
+
     /**
      * Define o número do convênio. Sempre use string pois a quantidade de caracteres é validada.
      *
