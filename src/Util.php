@@ -543,6 +543,7 @@ final class Util
     public static function modulo11($n, $factor = 2, $base = 9, $x10 = 0, $resto10 = 0)
     {
         $sum = 0;
+        $n = (int) $n;
         for ($i = mb_strlen($n); $i > 0; $i--) {
             $sum += mb_substr($n, $i - 1, 1)*$factor;
             if ($factor == $base) {
@@ -705,7 +706,7 @@ final class Util
             case Contracts\Boleto\Boleto::COD_BANCO_BB:
                 if (self::remove(1, 1, $detalhe) != 7) {
                     unset($retorno[$i]);
-                    break;
+                    continue 2;
                 }
                 self::adiciona($retorno[$i], 1, 1, '7');
                 self::adiciona($retorno[$i], 64, 80, self::remove(64, 80, $detalhe));
