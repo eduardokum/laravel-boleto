@@ -539,8 +539,7 @@ final class Util
      */
     public static function modulo11($n, $factor = 2, $base = 9, $x10 = 0, $resto10 = 0)
     {
-        $sum = 0;
-        $n = (int) $n;
+        $sum = 0;        
         for ($i = mb_strlen($n); $i > 0; $i--) {
             $sum += mb_substr($n, $i - 1, 1)*$factor;
             if ($factor == $base) {
