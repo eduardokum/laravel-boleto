@@ -22,6 +22,7 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
      * @var array
      */
     protected $carteiras = ['04', '09', '21', '26'];
+
     /**
      * Trata-se de código utilizado para identificar mensagens especificas ao cedente, sendo
      * que o mesmo consta no cadastro do Banco, quando não houver código cadastrado preencher
@@ -39,6 +40,7 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
         'cip' => '000',
         'mostra_cip' => true,
     ];
+
     /**
      * Espécie do documento, coódigo para remessa
      *

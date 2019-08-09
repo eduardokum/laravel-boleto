@@ -5,6 +5,7 @@ namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
 use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
 
@@ -12,8 +13,16 @@ use Eduardokum\LaravelBoleto\Util;
 class Unicred extends AbstractBoleto implements BoletoContract
 {
 
-    protected $codigoBanco = self::COD_BANCO_UNICRED;
+    protected $codigoBanco = Boleto::COD_BANCO_UNICRED;
 
+    /**
+     * Trata-se de código utilizado para identificar mensagens especificas ao cedente, sendo
+     * que o mesmo consta no cadastro do Banco, quando não houver código cadastrado preencher
+     * com zeros "000".
+     *
+     * @var int
+     */
+    protected $cip = '000';
 
     /**
      * Local de pagamento
@@ -30,20 +39,19 @@ class Unicred extends AbstractBoleto implements BoletoContract
     public $variaveis_adicionais = [
         'carteira_nome' => '',
     ];
+
     /**
      * Define as carteiras disponíveis para este banco
      *
      * @var array
      */
-    protected $carteiras = ['112', '115', '188', '109', '121', '180', '110', '111'];
+    protected $carteiras = [ '21' ];
+
     /**
-     * Espécie do documento, coódigo para remessa
-     *
+     * Define a espécie do documento
      * @var string
      */
-    protected $especiesCodigo = [
-        "Duplicata Mercantil" => "DM"
-    ];
+    protected $especieDoc = "DM";
 
     /**
      * Método onde o Boleto deverá gerar o Nosso Número.
@@ -52,9 +60,19 @@ class Unicred extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        $quantidadeCaracteresNossoNumero = 11;
-        $digitoVerificador = CalculoDV::unicredNossoNumero(Util::numberFormatGeral($this->numeroDocumento, 10));
-        return Util::numberFormatGeral($this->numeroDocumento . $digitoVerificador, $quantidadeCaracteresNossoNumero);
+        $quantidadeCaracteresNossoNumero = 10;
+        $digitoVerificador = CalculoDV::unicredNossoNumero($this->numeroDocumento);
+        return Util::numberFormatGeral($this->numeroDocumento, $quantidadeCaracteresNossoNumero) . $digitoVerificador;
+    }
+
+    /**
+     * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
+     *
+     * @return string
+     */
+    public function getNossoNumeroBoleto()
+    {
+        return Util::maskString($this->getNossoNumero(), '##########-#');
     }
 
     /**
@@ -62,7 +80,7 @@ class Unicred extends AbstractBoleto implements BoletoContract
      *
      * @return string
      */
-    protected function getCampoLivre()
+    public function getCampoLivre()
     {
 
         if ($this->campoLivre) {
@@ -75,8 +93,6 @@ class Unicred extends AbstractBoleto implements BoletoContract
 
         return $this->campoLivre = $campoLivre;
     }
-
-
 
     /**
      * Método onde qualquer boleto deve extender para gerar o código da posição de 20 a 44
@@ -92,12 +108,28 @@ class Unicred extends AbstractBoleto implements BoletoContract
             'agenciaDv' => null,
             'codigoCliente' => null,
             'carteira' => null,
-            'nossoNumero' => substr($campoLivre, 15, 9),
+            'nossoNumero' => substr($campoLivre, 14, 10),
             'nossoNumeroDv' => substr($campoLivre, 24, 1),
-            'nossoNumeroFull' => substr($campoLivre, 15, 10),
+            'nossoNumeroFull' => substr($campoLivre, 14),
             'agencia' => substr($campoLivre, 0, 4),
-            'contaCorrente' => substr($campoLivre, 5, 10),
+            'contaCorrente' => substr($campoLivre, 4, 10),
             'contaCorrenteDv' => null
         ];
+    }
+
+    /**
+     * @return int
+     */
+    public function getCip()
+    {
+        return $this->cip;
+    }
+
+    /**
+     * @param int $cip
+     */
+    public function setCip($cip)
+    {
+        $this->cip = $cip;
     }
 }
