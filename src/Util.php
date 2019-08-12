@@ -377,9 +377,10 @@ final class Util
             $formater->setPattern($pattern);
         } else {
             // ESPAÇO DEPOIS DO SIMBOLO
-            $pattern = str_replace("¤", "¤ ", $formater->getPattern());
+            $pattern = str_replace("¤", "¤", $formater->getPattern());
             $formater->setPattern($pattern);
         }
+
         return $formater->formatCurrency($number, $formater->getTextAttribute(\NumberFormatter::CURRENCY_CODE));
     }
 

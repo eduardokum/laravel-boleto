@@ -32,20 +32,11 @@ class Unicred extends AbstractBoleto implements BoletoContract
     protected $localPagamento = 'Pagável Preferencialmente na Unicred';
 
     /**
-     * Variáveis adicionais.
-     *
-     * @var array
-     */
-    public $variaveis_adicionais = [
-        'carteira_nome' => '',
-    ];
-
-    /**
      * Define as carteiras disponíveis para este banco
      *
      * @var array
      */
-    protected $carteiras = [ '21', '136'];
+    protected $carteiras = [ '21' ];
 
     /**
      * Define a espécie do documento

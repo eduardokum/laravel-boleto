@@ -115,17 +115,8 @@ class UtilTest extends TestCase
         $this->assertEquals('1,000.000', Util::nFloat(1000, 3, true));
         $this->assertEquals('1,000.123', Util::nFloat(1000.123000000, false, true));
         $this->assertEquals('1,000.123000009', Util::nFloat(1000.123000009, false, true));
-
         $this->assertEquals('', Util::nReal('ABC'));
         $this->assertEquals('', Util::nReal(null));
-        $this->assertEquals('R$ 1.000,00', Util::nReal(1000));
-        $this->assertEquals('R$ 1.000,000', Util::nReal(1000, 3));
-        $this->assertEquals('1.000,000', Util::nReal(1000, 3, false));
-        $this->assertEquals('1.000,123', Util::nReal(1000.123000000, false, false));
-        $this->assertEquals('R$ 1.000,123000009', Util::nReal(1000.123000009, false, true));
-        $this->assertEquals('R$ 1.000,12300', Util::nReal(1000.123000000, 5, true, true));
-        $this->assertEquals('R$ 1.000', Util::nReal(1000, false, true, true));
-        $this->assertEquals('R$ 1.000,0', Util::nReal(1000, false, true, false));
     }
 
     public function testControleArray() {
