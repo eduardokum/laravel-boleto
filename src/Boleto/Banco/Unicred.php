@@ -45,7 +45,7 @@ class Unicred extends AbstractBoleto implements BoletoContract
      *
      * @var array
      */
-    protected $carteiras = [ '21' ];
+    protected $carteiras = [ '21', '136'];
 
     /**
      * Define a espécie do documento
@@ -60,9 +60,9 @@ class Unicred extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        $quantidadeCaracteresNossoNumero = 10;
+        $quantidadeCaracteresNossoNumero = 11;
         $digitoVerificador = CalculoDV::unicredNossoNumero($this->numeroDocumento);
-        return Util::numberFormatGeral($this->numeroDocumento, $quantidadeCaracteresNossoNumero) . $digitoVerificador;
+        return Util::numberFormatGeral($this->numeroDocumento . $digitoVerificador, $quantidadeCaracteresNossoNumero);
     }
 
     /**
@@ -88,7 +88,7 @@ class Unicred extends AbstractBoleto implements BoletoContract
         }
 
         $campoLivre = Util::numberFormatGeral($this->agencia, 4);
-        $campoLivre .= Util::numberFormatGeral($this->conta, 10);
+        $campoLivre .= Util::numberFormatGeral($this->conta . $this->contaDv, 10);
         $campoLivre .= $this->getNossoNumero();
 
         return $this->campoLivre = $campoLivre;
@@ -115,6 +115,32 @@ class Unicred extends AbstractBoleto implements BoletoContract
             'contaCorrente' => substr($campoLivre, 4, 10),
             'contaCorrenteDv' => null
         ];
+    }
+
+    /**
+     * Retorna o codigo de barras
+     *
+     * @return string
+     * @throws \Exception
+     */
+    public function getCodigoBarras()
+    {
+        if (!empty($this->campoCodigoBarras)) {
+            return $this->campoCodigoBarras;
+        }
+
+        if (!$this->isValid($messages)) {
+            throw new \Exception('Campos requeridos pelo banco, aparentam estar ausentes ' . $messages);
+        }
+
+        $codigo = Util::numberFormatGeral($this->getCodigoBanco(), 3)
+            . $this->getMoeda()
+            . Util::fatorVencimento($this->getDataVencimento())
+            . Util::numberFormatGeral($this->getValor(), 10)
+            . $this->getCampoLivre();
+
+        $dv = CalculoDV::unicredCodigoBarra($codigo);
+        return $this->campoCodigoBarras = substr($codigo, 0, 4) . $dv . substr($codigo, 4);
     }
 
     /**

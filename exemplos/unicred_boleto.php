@@ -24,23 +24,25 @@ $pagador = new \Eduardokum\LaravelBoleto\Pessoa(
     ]
 );
 
+
 $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Unicred(
     [
         'logo'                   => null,
-        'dataVencimento'         => new \Carbon\Carbon(),
-        'valor'                  => 100,
+        'dataVencimento'         => \Carbon\Carbon::create(2019, 02, 15),
+        'valor'                  => 300,
         'multa'                  => false,
         'juros'                  => false,
         'numero'                 => 1,
-        'numeroDocumento'        => 1,
+        'numeroDocumento'        => 2002,
         'pagador'                => $pagador,
         'beneficiario'           => $beneficiario,
-        'carteira'               => 21,
-        'agencia'                => 1111,
-        "contaDv"              => "1",
-        'convenio'               => 123123,
-        'contaCorrente'          => \Eduardokum\LaravelBoleto\Util::numberFormatGeral(22222, 9),
-        'conta'                  => \Eduardokum\LaravelBoleto\Util::numberFormatGeral(22222, 9),
+        'carteira'               => 136,
+        "agenciaDv"              => 4,
+        'agencia'                => 5811,
+//        "contaDv"              => "1",
+        'convenio'               => 80004288,
+        'contaCorrente'          => \Eduardokum\LaravelBoleto\Util::numberFormatGeral(818321, 9),
+        'conta'                  => \Eduardokum\LaravelBoleto\Util::numberFormatGeral(818321, 9),
         'descricaoDemonstrativo' => ['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'],
         'instrucoes'             => ['instrucao 1', 'instrucao 2', 'instrucao 3'],
         'aceite'                 => 'N',

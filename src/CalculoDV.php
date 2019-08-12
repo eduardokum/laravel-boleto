@@ -299,20 +299,11 @@ class CalculoDV
 
     public static function unicredCodigoBarra($numero)
     {
-        $variavelParaOCalculo = Util::numberFormatGeral($numero, 10);
-        $constanteParaCalculo = '3298765432';
 
-        $soma = 0;
-        for ($contador = 0; $contador < 10; $contador++) {
-            $soma += $variavelParaOCalculo[$contador] * $constanteParaCalculo[$contador];
-        }
-
-        $restoDivisao = $soma % 11;
-        $resultado = 11 - $restoDivisao;
-        if ($resultado == 0 || $resultado == 10 || $resultado == 1)
-            return 1;
-        else
-            return $resultado;
+        $digitoVerificador = Util::modulo11($numero);
+        if ($digitoVerificador == 0 || $digitoVerificador > 9)
+            $digitoVerificador = 1;
+        return $digitoVerificador;
     }
 
     public static function unicredNossoNumero($numero)
