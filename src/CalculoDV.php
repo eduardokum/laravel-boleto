@@ -317,11 +317,12 @@ class CalculoDV
         }
 
         $restoDivisao = $soma % 11;
-        $resultado = 11 - $restoDivisao;
-        if ($resultado == 0 || $resultado == 10)
-            return 0;
+
+        if ($restoDivisao == 1 || $restoDivisao == 0)
+            $digitoVerificador = 0;
         else
-            return $resultado;
+            $digitoVerificador = 11 - $restoDivisao;
+        return $digitoVerificador;
     }
 
 }
