@@ -23,7 +23,8 @@
         "illuminate/view": "~5.1.0",
         "illuminate/events": "~5.1.0",
         "neitanod/forceutf8": "^2.0",
-        "setasign/fpdf": "^1.8"
+        "setasign/fpdf": "^1.8",
+        "doctrine/inflector": "1.2.*"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.0.0",
