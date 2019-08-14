@@ -9,6 +9,9 @@ build:
         php71:
             environment:
                 php: 7.1
+    dependencies:
+        override:
+            - composer install --no-interaction
 checks:
     php:
         remove_extra_empty_lines: true

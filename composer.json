@@ -17,14 +17,13 @@
         "php": ">=5.5.0",
         "ext-intl": "*",
         "ext-mbstring": "*",
-        "nesbot/carbon": "1.*",
-        "illuminate/contracts": "~5.1.0",
-        "illuminate/support": "~5.1.0",
-        "illuminate/view": "~5.1.0",
-        "illuminate/events": "~5.1.0",
+        "nesbot/carbon": "^1.0||^2.0",
+        "illuminate/contracts": "^5.1.0",
+        "illuminate/support": "^5.1.0",
+        "illuminate/view": "^5.1.0",
+        "illuminate/events": "^5.1.0",
         "neitanod/forceutf8": "^2.0",
-        "setasign/fpdf": "^1.8",
-        "doctrine/inflector": "1.2.*"
+        "setasign/fpdf": "^1.8"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.0.0",
