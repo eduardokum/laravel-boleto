@@ -90,7 +90,7 @@ class UtilTest extends TestCase
         $this->assertEquals('0000123400', Util::formatCnab('9', '1234', 10, 2));
         $this->assertEquals('ABC       ', Util::formatCnab('X', 'ABC', 10));
 
-        $this->setExpectedException(\Exception::class);
+        $this->expectException(\Exception::class);
         Util::formatCnab('J', '123', 10);
     }
 
