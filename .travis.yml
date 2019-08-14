@@ -7,7 +7,7 @@ php:
 before_script:
   - "composer self-update"
   - "composer --version"
-  - "composer install --verbose --ignore-platform-reqs"
+  - "composer install --verbose"
 
 script:
   - "vendor/bin/phpunit -c phpunit.xml --coverage-clover=coverage.clover"
