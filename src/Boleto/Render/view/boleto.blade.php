@@ -28,7 +28,7 @@
                 </ul>
                 <span class="header">Linha Digitável: {{ $linha_digitavel }}</span>
                 <span class="header">Número: {{ $numero }}</span>
-                {!! $valor ? '<span class="header">Valor: R$' . $valor . '</span>' : '' !!}
+                {!! $valor ? '<span class="header">Valor: ' . $valor . '</span>' : '' !!}
                 <br>
             </div>
         @endif
