@@ -41,6 +41,12 @@ class Bancoob extends AbstractRemessa implements RemessaContract
     const PROTESTO_NEGATIVAR_DIAS_CORRIDOS = '7';
     const PROTESTO_NAO_NEGATIVAR = '8';
 
+    public function __construct(array $params = [])
+    {
+        parent::__construct($params);
+        $this->addCampoObrigatorio('idremessa');
+    }
+
     /**
      * Código do banco
      *

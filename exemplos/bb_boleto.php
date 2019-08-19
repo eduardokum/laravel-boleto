@@ -38,6 +38,7 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Bb(
         'especieDoc'             => 'DM',
         'pagador'                => $pagador,
         'beneficiario'           => $beneficiario,
+        'carteira'               => 1111,
         'carteira'               => 11,
         'convenio'               => 1234567,
     ]

@@ -372,15 +372,12 @@ final class Util
             }
         }
         $formater->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, $decimals);
-        if (!$symbol) {
-            $pattern = preg_replace("/[¤]/", '', $formater->getPattern());
-            $formater->setPattern($pattern);
-        } else {
-            // ESPAÇO DEPOIS DO SIMBOLO
-            $pattern = str_replace("¤", "¤ ", $formater->getPattern());
-            $formater->setPattern($pattern);
+        $pattern = substr($formater->getPattern(), strpos($formater->getPattern(), '#'));
+        if ($symbol) {
+            $pattern = "¤ " . $pattern;
         }
-        return $formater->formatCurrency($number, $formater->getTextAttribute(\NumberFormatter::CURRENCY_CODE));
+        $formater->setPattern($pattern);
+        return trim($formater->formatCurrency($number, $formater->getTextAttribute(\NumberFormatter::CURRENCY_CODE)));
     }
 
     /**
@@ -544,7 +541,7 @@ final class Util
     {
         $sum = 0;
         for ($i = mb_strlen($n); $i > 0; $i--) {
-            $sum += mb_substr($n, $i - 1, 1)*$factor;
+            $sum += ((int) mb_substr($n, $i - 1, 1))*$factor;
             if ($factor == $base) {
                 $factor = 1;
             }
@@ -705,7 +702,7 @@ final class Util
             case Contracts\Boleto\Boleto::COD_BANCO_BB:
                 if (self::remove(1, 1, $detalhe) != 7) {
                     unset($retorno[$i]);
-                    break;
+                    continue 2;
                 }
                 self::adiciona($retorno[$i], 1, 1, '7');
                 self::adiciona($retorno[$i], 64, 80, self::remove(64, 80, $detalhe));
