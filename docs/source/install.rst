@@ -15,5 +15,5 @@ At the command line::
 Or, Put in your composer.json file::
 
     {
-        "eduardokum/laravel-boleto": "~0.7"
+        "eduardokum/laravel-boleto": "~0.8"
     }
