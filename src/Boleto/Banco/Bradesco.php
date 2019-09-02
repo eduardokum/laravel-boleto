@@ -17,11 +17,11 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
     protected $codigoBanco = Boleto::COD_BANCO_BRADESCO;
     /**
      * Define as carteiras disponíveis para este banco
-     * '09' => Com registro | '06' => Sem Registro | '21' => Com Registro - Pagável somente no Bradesco | '22' => Sem Registro - Pagável somente no Bradesco | '25' => Sem Registro - Emissão na Internet | '26' => Com Registro - Emissão na Internet
+     * '02' => Com registro | '09' => Com registro | '06' => Sem Registro | '21' => Com Registro - Pagável somente no Bradesco | '22' => Sem Registro - Pagável somente no Bradesco | '25' => Sem Registro - Emissão na Internet | '26' => Com Registro - Emissão na Internet
      *
      * @var array
      */
-    protected $carteiras = ['04', '09', '21', '26'];
+    protected $carteiras = ['02', '04', '09', '21', '26'];
     /**
      * Trata-se de código utilizado para identificar mensagens especificas ao cedente, sendo
      * que o mesmo consta no cadastro do Banco, quando não houver código cadastrado preencher
