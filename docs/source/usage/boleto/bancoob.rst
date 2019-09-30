@@ -53,7 +53,7 @@ Or, Simply:
         'agencia' => 1111,
         'convenio' => 123123,
         'conta' => 22222,
-        'juros' => 1, // 1% do valor do boleto após o vencimento
+        'multa' => 1, // 1% do valor do boleto após o vencimento
         'juros' => 1, // 1% ao mês do valor do boleto
         'jurosApos' => 0 // quant. de dias para começar a cobrança de juros,
         'descricaoDemonstrativo' => ['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'],
