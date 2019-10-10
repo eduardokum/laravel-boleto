@@ -18,7 +18,7 @@
         "ext-intl": "*",
         "ext-mbstring": "*",
         "nesbot/carbon": ">=1.0,<3.0",
-        "laravel/framework": "^5.0",
+        "laravel/framework": "^5.0||^6.0",
         "neitanod/forceutf8": "^2.0",
         "setasign/fpdf": "^1.8"
     },
