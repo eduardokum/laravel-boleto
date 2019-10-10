@@ -55,6 +55,9 @@ Or, Simply:
         'conta' => 222222,
         'contaDv' => 2,
         'range' => 99999,
+        'multa' => 1, // 1% do valor do boleto após o vencimento
+        'juros' => 1, // 1% ao mês do valor do boleto
+        'jurosApos' => 0 // quant. de dias para começar a cobrança de juros,
         'descricaoDemonstrativo' => ['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'],
         'instrucoes' => ['instrucao 1', 'instrucao 2', 'instrucao 3'],
     ]);

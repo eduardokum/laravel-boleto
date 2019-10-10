@@ -157,7 +157,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
          $this->SetFont($this->PadraoFont, '', $this->fdes);
          $this->Cell(101, $this->desc, $this->_('Beneficiário'), 'TLR');
          $this->Cell(34, $this->desc, $this->_('CPF/CNPJ'), 'TR');
-         $this->Cell(35, $this->desc, $this->_('Agencia/Codigo do beneficiário'), 'TR',1);
+         $this->Cell(35, $this->desc, $this->_('Agência/Código do beneficiário'), 'TR',1);
 
          $this->SetFont($this->PadraoFont, 'B', $this->fcel);
          $this->textFitCell(101, $this->cell, $this->_($this->boleto[$i]->getBeneficiario()->getNome()), 'LR', 0, 'L');
