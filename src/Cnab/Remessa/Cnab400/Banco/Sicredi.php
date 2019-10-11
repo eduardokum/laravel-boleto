@@ -166,8 +166,8 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(149, 149, $boleto->getEspecieDocCodigo('A', 400));
         $this->add(150, 150, $boleto->getAceite());
         $this->add(151, 156, $boleto->getDataDocumento()->format('dmy'));
-        $this->add(157, 158, self::INSTRUCAO_SEM);
-        $this->add(159, 160, self::INSTRUCAO_SEM);
+        $this->add(157, 158, $boleto->getInstrucaoCobranca1() ?: self::INSTRUCAO_SEM);
+        $this->add(159, 160, $boleto->getInstrucaoCobranca2() ?: self::INSTRUCAO_VALOR_SOMA_MORA);
         if ($boleto->getDiasProtesto() > 0) {
             $this->add(157, 158, self::INSTRUCAO_PROTESTO);
             $this->add(159, 160, Util::formatCnab('9', $boleto->getDiasProtesto(), 2));

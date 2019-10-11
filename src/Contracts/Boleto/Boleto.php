@@ -182,6 +182,16 @@ interface Boleto
     /**
      * @return mixed
      */
+    public function getInstrucaoCobranca1();
+
+    /**
+     * @return mixed
+     */
+    public function getInstrucaoCobranca2();
+
+    /**
+     * @return mixed
+     */
     public function getLocalPagamento();
 
     /**

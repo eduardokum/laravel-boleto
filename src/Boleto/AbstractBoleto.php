@@ -239,6 +239,18 @@ abstract class AbstractBoleto implements BoletoContract
      */
     protected $instrucoes_impressao = [];
     /**
+     * String com a instrução de cobrança 1
+     *
+     * @var string
+     */
+    protected $instrucao_cobranca_1 = '';
+    /**
+     * String com a instrução de cobrança 2
+     *
+     * @var string
+     */
+    protected $instrucao_cobranca_2 = '';
+    /**
      * Localização do logotipo do banco, referente ao diretório de imagens
      *
      * @var string
@@ -911,6 +923,56 @@ abstract class AbstractBoleto implements BoletoContract
     public function getDescricaoDemonstrativo()
     {
         return array_slice((array)$this->descricaoDemonstrativo + [null, null, null, null, null], 0, 5);
+    }
+
+    /**
+     * Define uma string com a instrução de cobrança 1
+     *
+     * @param string $instrucao_cobranca_1
+     *
+     * @return AbstractBoleto
+     * @throws \Exception
+     */
+    public function setInstrucaoCobranca1(string $instrucao_cobranca_1)
+    {
+        $this->instrucao_cobranca_1 = $instrucao_cobranca_1;
+
+        return $this;
+    }
+
+    /**
+     * Retorna uma string com a instrução de cobrança 1
+     *
+     * @return string
+     */
+    public function getInstrucaoCobranca1()
+    {
+        return $this->instrucao_cobranca_1;
+    }
+
+    /**
+     * Define uma string com a instrução de cobrança 2
+     *
+     * @param string $instrucao_cobranca_2
+     *
+     * @return AbstractBoleto
+     * @throws \Exception
+     */
+    public function setInstrucaoCobranca2(string $instrucao_cobranca_2)
+    {
+        $this->instrucao_cobranca_2 = $instrucao_cobranca_2;
+
+        return $this;
+    }
+
+    /**
+     * Retorna uma string com a instrução de cobrança 2
+     *
+     * @return string
+     */
+    public function getInstrucaoCobranca2()
+    {
+        return $this->instrucao_cobranca_2;
     }
 
     /**
