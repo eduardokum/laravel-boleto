@@ -237,6 +237,11 @@ interface Boleto
      */
     public function getCarteira();
 
+      /**
+     * @return mixed
+     */
+    public function getParcela();
+
     /**
      * @return mixed
      */

@@ -426,6 +426,22 @@ abstract class AbstractBoleto implements BoletoContract
         return $this;
     }
 
+     /**
+     * Define a quantidade de parcelas
+     *
+     * @param  string $parcela
+     *
+     * @return AbstractBoleto
+     * @throws \Exception
+     */
+    public function setParcela($parcela)
+    {
+
+        $this->parcela = $parcela;
+
+        return $this;
+    }
+
     /**
      * Retorna o código da carteira (Com ou sem registro)
      *
@@ -444,6 +460,16 @@ abstract class AbstractBoleto implements BoletoContract
     public function getCarteiras()
     {
         return $this->carteiras;
+    }
+
+    /**
+     * Retorna a quantidade de parcelas
+     *
+     * @return array
+     */
+    public function getParcela()
+    {
+        return $this->parcela;
     }
 
     /**

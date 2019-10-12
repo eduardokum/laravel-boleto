@@ -38,6 +38,7 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Bancoob(
         'agencia'                => 1111,
         'convenio'               => 123123,
         'conta'                  => 22222,
+        'parcela'                => 10,
         'descricaoDemonstrativo' => ['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'],
         'instrucoes'             => ['instrucao 1', 'instrucao 2', 'instrucao 3'],
         'aceite'                 => 'S',
