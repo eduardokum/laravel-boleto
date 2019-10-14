@@ -125,6 +125,7 @@ class Pessoa implements PessoaContract
      *
      * @param string $documento
      *
+     * @return Pessoa
      * @throws \Exception
      */
     public function setDocumento($documento)
@@ -134,6 +135,8 @@ class Pessoa implements PessoaContract
             throw new \Exception('Documento inválido');
         }
         $this->documento = $documento;
+
+        return $this;
     }
     /**
      * Retorna o documento (CPF ou CNPJ)
