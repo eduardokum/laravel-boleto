@@ -40,14 +40,13 @@ class Pessoa implements PessoaContract
     protected $dda = false;
 
     /**
-     * Cria a pessoa passando os parametros.
-     *e
-     * @param $nome
-     * @param $documento
-     * @param null      $endereco
-     * @param null      $cep
-     * @param null      $cidade
-     * @param null      $uf
+     * @param      $nome
+     * @param      $documento
+     * @param null $endereco
+     * @param null $bairro
+     * @param null $cep
+     * @param null $cidade
+     * @param null $uf
      *
      * @return Pessoa
      */

@@ -5,6 +5,7 @@ use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\AbstractRetorno;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Illuminate\Support\Arr;
 
 class Itau extends AbstractRetorno implements RetornoCnab400
 {
@@ -218,7 +219,7 @@ class Itau extends AbstractRetorno implements RetornoCnab400
             ->setNumeroDocumento($this->rem(117, 126, $detalhe))
             ->setNumeroControle($this->rem(38, 62, $detalhe))
             ->setOcorrencia($this->rem(109, 110, $detalhe))
-            ->setOcorrenciaDescricao(array_get($this->ocorrencias, $d->getOcorrencia(), 'Desconhecida'))
+            ->setOcorrenciaDescricao(Arr::get($this->ocorrencias, $d->getOcorrencia(), 'Desconhecida'))
             ->setDataOcorrencia($this->rem(111, 116, $detalhe))
             ->setDataVencimento($this->rem(147, 152, $detalhe))
             ->setDataCredito($this->rem(296, 301, $detalhe))
@@ -251,10 +252,10 @@ class Itau extends AbstractRetorno implements RetornoCnab400
         } elseif ($d->hasOcorrencia('03', '15', '16', '17', '18', '60')) {
             $this->totais['erros']++;
             $error = Util::appendStrings(
-                array_get($this->rejeicoes, $msgAdicional[0], ''),
-                array_get($this->rejeicoes, $msgAdicional[1], ''),
-                array_get($this->rejeicoes, $msgAdicional[2], ''),
-                array_get($this->rejeicoes, $msgAdicional[3], '')
+                Arr::get($this->rejeicoes, $msgAdicional[0], ''),
+                Arr::get($this->rejeicoes, $msgAdicional[1], ''),
+                Arr::get($this->rejeicoes, $msgAdicional[2], ''),
+                Arr::get($this->rejeicoes, $msgAdicional[3], '')
             );
             $d->setError($error);
         } else {

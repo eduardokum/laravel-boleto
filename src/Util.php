@@ -492,9 +492,10 @@ final class Util
 
     /**
      * @param        Carbon|string $date
-     * @param string $format
+     * @param string               $format
      *
      * @return integer
+     * @throws \Exception
      */
     public static function fatorVencimento($date, $format = 'Y-m-d')
     {
@@ -511,7 +512,7 @@ final class Util
     public static function dataJuliano($date, $format = 'Y-m-d')
     {
         $date = ($date instanceof Carbon) ? $date : Carbon::createFromFormat($format, $date);
-        $dateDiff = $date->copy()->day(31)->month(12)->subYear(1)->diffInDays($date);
+        $dateDiff = $date->copy()->day(31)->month(12)->subYear()->diffInDays($date);
         return $dateDiff . mb_substr($date->year, -1);
     }
 
@@ -523,7 +524,7 @@ final class Util
      */
     public static function fatorVencimentoBack($factor, $format = 'Y-m-d')
     {
-        $date = Carbon::create(1997, 10, 7, 0, 0, 0)->addDay($factor);
+        $date = Carbon::create(1997, 10, 7, 0, 0, 0)->addDays($factor);
         return $format ? $date->format($format) : $date;
     }
 
@@ -605,11 +606,11 @@ final class Util
     /**
      * @param $controle
      *
-     * @return null|string
+     * @return array
      */
     public static function controle2array($controle)
     {
-        $matches = '';
+        $matches = [];
         $matches_founded = [];
         preg_match_all('/(([A-Za-zÀ-Úà-ú]+)([0-9]*))/', $controle, $matches, PREG_SET_ORDER);
         if ($matches) {
@@ -624,7 +625,7 @@ final class Util
     /**
      * Pela remessa cria um retorno fake para testes.
      *
-     * @param $file Remessa
+     * @param $file
      * @param string       $ocorrencia
      *
      * @return string
