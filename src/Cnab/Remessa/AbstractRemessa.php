@@ -124,6 +124,20 @@ abstract class AbstractRemessa
     protected $beneficiario;
 
     /**
+     * Tipo de juros. (A: Valor, B: Percentual)
+     *
+     * @var
+     */
+    protected $tipoJuros = 'A';
+
+    /**
+     * Tipo de desconto. (A: Valor, B: Percentual)
+     *
+     * @var
+     */
+    protected $tipoDesconto = 'A';
+
+    /**
      * Construtor
      *
      * @param array $params Parâmetros iniciais para construção do objeto
@@ -334,6 +348,54 @@ abstract class AbstractRemessa
     public function getCarteiras()
     {
         return $this->carteiras;
+    }
+
+    /**
+     * Define o tipo de juros
+     *
+     * @return string
+     */
+    public function setTipoJuros($tipoJuros)
+    {
+        if (! in_array($tipoJuros, ['A', 'B'])) {
+            throw new \Exception("Tipo de juros incorreto!");
+        }
+        $this->tipoJuros = $tipoJuros;
+        return $this;
+    }
+
+    /**
+     * Retorna o tipo de juros
+     *
+     * @return string
+     */
+    public function getTipoJuros()
+    {
+        return $this->tipoJuros;
+    }
+
+    /**
+     * Define o tipo de desconto
+     *
+     * @return string
+     */
+    public function setTipoDesconto($tipoDesconto)
+    {
+        if (! in_array($tipoDesconto, ['A', 'B'])) {
+            throw new \Exception("Tipo de desconto incorreto!");
+        }
+        $this->tipoDesconto = $tipoDesconto;
+        return $this;
+    }
+
+    /**
+     * Retorna o tipo de desconto
+     *
+     * @return string
+     */
+    public function getTipoDesconto()
+    {
+        return $this->tipoDesconto;
     }
 
     /**
