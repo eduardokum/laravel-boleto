@@ -474,7 +474,7 @@ class Pdf extends AbstractPdf implements PdfContract
             return $save_path;
         }
         if ($nameFile == null) {
-            $nameFile = str_random(32);
+            $nameFile = \Illuminate\Support\Str::random(32);
         }
         
         return $this->Output($nameFile . '.pdf', $dest, $this->print);
