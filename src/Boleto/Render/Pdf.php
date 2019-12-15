@@ -366,20 +366,26 @@ class Pdf extends AbstractPdf implements PdfContract
     }
 
     /**
-     * @param      string $texto
+     * @param string $texto
      * @param integer $ln
      * @param integer $ln2
+     * @param $posicaoTexto
+     * @param $alinhamentoTexto
+     * @param $tamanho
      */
-    protected function traco($texto, $ln = null, $ln2 = null)
+    protected function traco($texto, $ln = null, $ln2 = null, $posicaoTexto = 1, $alinhamentoTexto = 'R', $tamanho = 261)
     {
         if ($ln == 1 || $ln) {
             $this->Ln($ln);
         }
         $this->SetFont($this->PadraoFont, '', $this->fdes);
-        if ($texto) {
-            $this->Cell(0, 2, $this->_($texto), 0, 1, 'R');
+        if ($texto && $posicaoTexto !== -1) {
+            $this->Cell(0, 2, $this->_($texto), 0, 1, $alinhamentoTexto);
         }
-        $this->Cell(0, 2, str_pad('-', '261', ' -', STR_PAD_RIGHT), 0, 1);
+        $this->Cell(0,  2, str_pad('-', $tamanho, ' -', STR_PAD_RIGHT), 0, 1);
+        if ($texto && $posicaoTexto === -1) {
+            $this->Cell(0, 2, $this->_($texto), 0, 1, $alinhamentoTexto);
+        }
         if ($ln2 == 1 || $ln2) {
             $this->Ln($ln2);
         }
