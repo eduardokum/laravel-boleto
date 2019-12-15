@@ -13,29 +13,28 @@ class Pdf extends AbstractPdf implements PdfContract
     const OUTPUT_SAVE = 'F';
     const OUTPUT_STRING = 'S';
 
-    private $PadraoFont = 'Arial';
+    protected $PadraoFont = 'Arial';
     /**
      * @var BoletoContract[]
      */
-    private $boleto = array();
+    protected $boleto = [];
 
     /**
      * @var bool
      */
-    private $print = false;
+    protected $print = false;
 
     /**
      * @var bool
      */
-    private $showInstrucoes = true;
+    protected $showInstrucoes = true;
 
-
-    private $desc = 3; // tamanho célula descrição
-    private $cell = 4; // tamanho célula dado
-    private $fdes = 6; // tamanho fonte descrição
-    private $fcel = 8; // tamanho fonte célula
-    private $small = 0.2; // tamanho barra fina
-    private $totalBoletos = 0;
+    protected $desc = 3; // tamanho célula descrição
+    protected $cell = 4; // tamanho célula dado
+    protected $fdes = 6; // tamanho fonte descrição
+    protected $fcel = 8; // tamanho fonte célula
+    protected $small = 0.2; // tamanho barra fina
+    protected $totalBoletos = 0;
 
     public function __construct()
     {
