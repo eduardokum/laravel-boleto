@@ -485,7 +485,7 @@ class Pdf extends AbstractPdf implements PdfContract
      *
      * @return int
      */
-    private function listaLinhas($lista, $pulaLinha)
+    protected function listaLinhas($lista, $pulaLinha)
     {
         foreach ($lista as $d) {
             $pulaLinha -= 2;
