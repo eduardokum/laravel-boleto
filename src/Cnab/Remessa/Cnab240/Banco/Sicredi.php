@@ -169,7 +169,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
      */
     protected function segmentoR(BoletoContract $boleto)
     {
-        if ($boleto->getMulta() > 0 && !$boleto->getDesconto() > 0) {
+        if (!$boleto->getMulta() > 0 && !$boleto->getDesconto() > 0) {
             return $this;
         }
 
@@ -207,7 +207,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(43, 50, Util::formatCnab('X', '', 8));
         $this->add(51, 65, Util::formatCnab('x', '', 15));
         $this->add(66, 66, '0');
-        $this->add(67, 74, '000000000');
+        $this->add(67, 74, '00000000');
         $this->add(75, 89, Util::formatCnab('9', 0, 13, 2));
         if ($boleto->getMulta() > 0) {
             $percentualMulta = number_format((($boleto->getMulta() * 100) / $boleto->getValor()), 2);
