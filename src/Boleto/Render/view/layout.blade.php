@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<div style="width: 666px">
+<div class="wrapper">
     @yield('boleto')
 </div>
 
