@@ -613,6 +613,16 @@ abstract class AbstractBoleto implements BoletoContract
     {
         return $this->dataDocumento;
     }
+	
+   /**
+     * Retorna a data do juros após
+     *
+     * @return \Carbon\Carbon
+     */
+    public function getDataVencimentoApos()
+    {
+        return $this->getDataVencimento()->addDays((int) $this->getJurosApos());
+    }
 
     /**
      * Define o campo aceite
