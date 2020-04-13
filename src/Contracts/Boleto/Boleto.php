@@ -99,6 +99,11 @@ interface Boleto
      * @return \Carbon\Carbon
      */
     public function getDataVencimento();
+    
+    /**
+     * @return \Carbon\Carbon
+     */
+    public function getDataVencimentoApos();
 
     /**
      * @return \Carbon\Carbon
