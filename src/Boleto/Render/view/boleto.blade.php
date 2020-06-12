@@ -110,7 +110,7 @@
                 </td>
                 <td>
                     <div class="titulo">(-) Descontos / Abatimentos</div>
-                    <div class="conteudo rtl"></div>
+                    <div class="conteudo rtl">{{ $desconto }}</div>
                 </td>
                 <td>
                     <div class="titulo">(=) Valor Documento</div>
