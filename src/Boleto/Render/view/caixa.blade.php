@@ -97,7 +97,7 @@
                 </td>
                 <td width="130">
                     <div class="titulo">(-) Descontos / Abatimentos</div>
-                    <div class="conteudo rtl"></div>
+                    <div class="conteudo rtl">{{ $desconto }}</div>
                 </td>
             </tr>
             <tr>
