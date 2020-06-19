@@ -5,3 +5,4 @@
 /tests/_reports/
 /docs/build/
 /composer.lock
+.phpunit.result.cache
