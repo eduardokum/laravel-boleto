@@ -88,7 +88,23 @@ class Sicredi extends AbstractRemessa implements RemessaContract
      */
     protected $codigoCliente;
 
-     /**
+
+    /**
+     * Tipo de juros, A = Valor; B = Porcentagem.
+     *
+     * @var string
+     */
+    protected $tipoJuros = 'A';
+
+
+    /**
+     * Tipo de desconto, A = Valor; B = Porcentagem.
+     *
+     * @var string
+     */
+    protected $tipoDesconto = 'A';
+
+    /**
      * Retorna o codigo do cliente.
      *
      * @return mixed
@@ -110,6 +126,57 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->codigoCliente = $codigoCliente;
 
         return $this;
+    }
+
+    /**
+     * Seta o tipo de juros do boleto.
+     *
+     * @param mixed $tipoJuros
+     *
+     * @return Sicredi
+     */
+    public function setTipoJuros($tipoJuros)
+    {
+        if (!in_array($tipoJuros, ['A', 'B'])) {
+            throw new \Exception("Tipo de juros incorreto!");
+        }
+        $this->tipoJuros = $tipoJuros;
+        return $this;
+    }
+
+    /**
+     * Seta o tipo de desconto.
+     *
+     * @param mixed $tipoDesconto
+     *
+     * @return Sicredi
+     */
+    public function setTipoDesconto($tipoDesconto)
+    {
+        if (!in_array($tipoDesconto, ['A', 'B'])) {
+            throw new \Exception("Tipo de desconto incorreto!");
+        }
+        $this->tipoDesconto = $tipoDesconto;
+        return $this;
+    }
+
+
+    /**
+     * Retorna tipo de juros
+     * @return string
+     */
+    public function getTipoJuros()
+    {
+        return $this->tipoJuros;
+    }
+
+    /**
+     * Retorna tipo de desconto
+     * @return string
+     */
+    public function getTipoDesconto()
+    {
+        return $this->tipoDesconto;
     }
 
     /**
@@ -161,8 +228,8 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(4, 4, 'A');
         $this->add(5, 16, '');
         $this->add(17, 17, 'A');
-        $this->add(18, 18, 'A');
-        $this->add(19, 19, 'A');
+        $this->add(18, 18, $this->getTipoDesconto());
+        $this->add(19, 19, $this->getTipoJuros());
         $this->add(20, 47, '');
         $this->add(48, 56, Util::formatCnab('9', $boleto->getNossoNumero(), 9));
         $this->add(57, 62, '');
