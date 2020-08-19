@@ -4,6 +4,7 @@ $beneficiario = new \Eduardokum\LaravelBoleto\Pessoa(
     [
         'nome'      => 'ACME',
         'endereco'  => 'Rua um, 123',
+        'bairro'    => 'Bairro',
         'cep'       => '99999-999',
         'uf'        => 'UF',
         'cidade'    => 'CIDADE',
@@ -39,7 +40,6 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Bb(
         'pagador'                => $pagador,
         'beneficiario'           => $beneficiario,
         'carteira'               => 1111,
-        'carteira'               => 11,
         'convenio'               => 1234567,
     ]
 );
