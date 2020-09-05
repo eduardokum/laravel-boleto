@@ -193,7 +193,7 @@ class Pdf extends AbstractPdf implements PdfContract
         $this->Cell(0, $this->desc, $this->_('Autenticação mecânica'), 0, 1, 'R');
         $this->Ln(2);
 
-        $pulaLinha = 26;
+        $pulaLinha = 15;
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
         if (count($this->boleto[$i]->getDescricaoDemonstrativo()) > 0) {
