@@ -1,6 +1,6 @@
 .. _recipient:
 
-Beneficário
+Beneficiário
 ===========
 
 To create a ``Beneficiário`` you need to create an instance of the ``Pessoa`` object.
