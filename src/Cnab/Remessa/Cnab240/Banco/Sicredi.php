@@ -90,6 +90,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->boletos[] = $boleto;
         $this->segmentoP($boleto);
         $this->segmentoQ($boleto);
+        $this->segmentoR($boleto);
         if($boleto->getSacadorAvalista()) {
             $this->segmentoY01($boleto);
         }
@@ -121,7 +122,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(18, 22, Util::formatCnab('9', $this->getAgencia(), 5));
         $this->add(23, 23, '');
         $this->add(24, 35, Util::formatCnab('9', $this->getConta(), 12));
-        $this->add(36, 36, Util::modulo11($this->getConta()));
+        $this->add(36, 36, Util::formatCnab('9', $this->getContaDv(), 1));
         $this->add(37, 37, '');
         $this->add(38, 57, Util::formatCnab('X', $boleto->getNossoNumero(), 20));
         $this->add(58, 58, '1'); //'1' = Cobrança Simples
@@ -138,7 +139,8 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(109, 109, Util::formatCnab('9', $boleto->getAceite(), 1));
         $this->add(110, 117, $boleto->getDataDocumento()->format('dmY'));
         $this->add(118, 118, $boleto->getJuros() ? '1' : '3'); //'1' = Valor por Dia, '3' = Isento
-        $this->add(119, 126, $boleto->getDataVencimento()->format('dmY'));
+        $this->add(119, 126, $boleto->getJurosApos() == 0 ? '00000000' :
+               $boleto->getDataVencimentoApos()->format('dmY'));
         $this->add(127, 141, Util::formatCnab('9', $boleto->getMoraDia(), 15, 2)); //Valor da mora/dia ou Taxa mensal
         $this->add(142, 142, '1'); // '1' = Valor Fixo Até a Data Informada
         $this->add(143, 150, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmY') : '00000000');
@@ -156,6 +158,77 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(228, 229, Util::formatCnab('9', $boleto->getMoeda(), 2));
         $this->add(230, 239, '0000000000');
         $this->add(240, 240, '');
+
+        return $this;
+    }
+
+    /**
+     * @param BoletoContract $boleto
+     *
+     * @return $this
+     * @throws \Exception
+     */
+    protected function segmentoR(BoletoContract $boleto)
+    {
+        if (!$boleto->getMulta() > 0 && !$boleto->getDesconto() > 0) {
+            return $this;
+        }
+
+        $this->iniciaDetalhe();
+        $this->add(1, 3, Util::onlyNumbers($this->getCodigoBanco()));
+        $this->add(4, 7, '0001');
+        $this->add(8, 8, '3');
+        $this->add(9, 13, Util::formatCnab('9', $this->iRegistrosLote, 5));
+        $this->add(14, 14, 'R');
+        $this->add(15, 15, '');
+        $this->add(16, 17, self::OCORRENCIA_REMESSA);
+        if ($boleto->getStatus() == $boleto::STATUS_BAIXA) {
+            $this->add(16, 17, self::OCORRENCIA_PEDIDO_BAIXA);
+        }
+        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
+            $this->add(16, 17, self::OCORRENCIA_ALT_OUTROS_DADOS);
+        }
+        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO_DATA) {
+            $this->add(16, 17, self::OCORRENCIA_ALT_VENCIMENTO);
+        }
+        if ($boleto->getStatus() == $boleto::STATUS_CUSTOM) {
+            $this->add(16, 17, sprintf('%2.02s', $boleto->getComando()));
+        }
+
+        $this->add(18, 18, '0');
+        $this->add(19, 26, '00000000');
+        $this->add(27, 41, Util::formatCnab('9', 0, 13, 2));
+        if ($boleto->getDesconto() > 0) {
+            $this->add(18, 18, '1'); // '1' = Valor fixo até a data informada
+            $this->add(19, 26, $boleto->getDataDesconto() ? $boleto->getDataDesconto()->format('dmY') : $boleto->getDataVencimento()->format('dmY'));
+            $this->add(27, 41, Util::formatCnab('9', $boleto->getMulta(), 13, 2));
+        }
+
+        $this->add(42, 42, '');
+        $this->add(43, 50, Util::formatCnab('X', '', 8));
+        $this->add(51, 65, Util::formatCnab('x', '', 15));
+        $this->add(66, 66, '0');
+        $this->add(67, 74, '00000000');
+        $this->add(75, 89, Util::formatCnab('9', 0, 13, 2));
+        if ($boleto->getMulta() > 0) {
+            $percentualMulta = number_format((($boleto->getMulta() * 100) / $boleto->getValor()), 2);
+            $this->add(66, 66, '2'); // '2' = Percentual
+            $this->add(67, 74, $boleto->getDataVencimento()->format('dmY'));
+            $this->add(75, 89, Util::formatCnab('9', $percentualMulta, 13, 2));
+        }
+        $this->add(90, 99, Util::formatCnab('X', '', 10));
+        $this->add(100, 139, Util::formatCnab('X', '', 40));
+        $this->add(140, 179, Util::formatCnab('X', '', 40));
+        $this->add(180, 199, Util::formatCnab('X', '', 20));
+        $this->add(200, 207, Util::formatCnab('9', 0, 8));
+        $this->add(208, 210, Util::formatCnab('9', Util::onlyNumbers($this->getCodigoBanco()), 3));
+        $this->add(211, 215, Util::formatCnab('9', $this->getAgencia(), 5));
+        $this->add(216, 216, '');
+        $this->add(217, 228, Util::formatCnab('9', $this->getConta(), 12));
+        $this->add(229, 229, Util::modulo11($this->getConta()));
+        $this->add(230, 230, '');
+        $this->add(231, 231, '');
+        $this->add(232, 240, Util::formatCnab('X', '', 9));
 
         return $this;
     }
@@ -188,8 +261,8 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         if ($boleto->getStatus() == $boleto::STATUS_CUSTOM) {
             $this->add(16, 17, sprintf('%2.02s', $boleto->getComando()));
         }
-        $this->add(18, 18, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? 2 : 1);
-        $this->add(19, 33, Util::formatCnab('9', Util::onlyNumbers($this->getBeneficiario()->getDocumento()), 15));
+        $this->add(18, 18, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? 2 : 1);
+        $this->add(19, 33, Util::formatCnab('9', Util::onlyNumbers($boleto->getPagador()->getDocumento()), 15));
         $this->add(34, 73, Util::formatCnab('X', $boleto->getPagador()->getNome(), 40));
         $this->add(74, 113, Util::formatCnab('X', $boleto->getPagador()->getEndereco(), 40));
         $this->add(114, 128, Util::formatCnab('X', $boleto->getPagador()->getBairro(), 15));
@@ -270,7 +343,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(53, 57, Util::formatCnab('9', $this->getAgencia(), 5));
         $this->add(58, 58, '');
         $this->add(59, 70, Util::formatCnab('9', $this->getConta(), 12));
-        $this->add(71, 71, Util::modulo11($this->getConta()));
+        $this->add(71, 71, Util::formatCnab('9', $this->getContaDv(), 1));
         $this->add(72, 72, '');
         $this->add(73, 102, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(103, 132, Util::formatCnab('X', 'SICREDI', 30));
@@ -314,7 +387,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(54, 58, Util::formatCnab('9', $this->getAgencia(), 5));
         $this->add(59, 59, '');
         $this->add(60, 71, Util::formatCnab('9', $this->getConta(), 12));
-        $this->add(72, 72, Util::modulo11($this->getConta()));
+        $this->add(72, 72, Util::formatCnab('9', $this->getContaDv(), 1));
         $this->add(73, 73, '');
         $this->add(74, 103, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(104, 183, '');

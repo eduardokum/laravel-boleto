@@ -13,7 +13,8 @@ class RemessaCnab240Test extends TestCase
     protected static $pagador;
     protected static $beneficiario;
 
-    public static function setUpBeforeClass(){
+    public static function setUpBeforeClass() : void
+    {
         self::$beneficiario = new Pessoa(
             [
                 'nome' => 'ACME',
@@ -38,7 +39,7 @@ class RemessaCnab240Test extends TestCase
         );
     }
 
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass() : void
     {
         $aFiles = [
             __DIR__,

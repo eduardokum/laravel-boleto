@@ -5,6 +5,7 @@ use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\AbstractRetorno;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
 use Eduardokum\LaravelBoleto\Util;
+use Illuminate\Support\Arr;
 
 class Sicredi extends AbstractRetorno implements RetornoCnab400
 {
@@ -201,6 +202,12 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
         ];
     }
 
+    /**
+     * @param array $header
+     *
+     * @return bool
+     * @throws \Exception
+     */
     protected function processarHeader(array $header)
     {
         $this->getHeader()
@@ -215,6 +222,12 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
         return true;
     }
 
+    /**
+     * @param array $detalhe
+     *
+     * @return bool
+     * @throws \Exception
+     */
     protected function processarDetalhe(array $detalhe)
     {
         $d = $this->detalheAtual();
@@ -223,7 +236,7 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
             ->setNumeroControle($this->rem(117, 126, $detalhe))
             ->setNumeroDocumento($this->rem(117, 126, $detalhe))
             ->setOcorrencia($this->rem(109, 110, $detalhe))
-            ->setOcorrenciaDescricao(array_get($this->ocorrencias, $d->getOcorrencia(), 'Desconhecida'))
+            ->setOcorrenciaDescricao(Arr::get($this->ocorrencias, $d->getOcorrencia(), 'Desconhecida'))
             ->setDataOcorrencia($this->rem(111, 116, $detalhe))
             ->setDataVencimento($this->rem(147, 152, $detalhe))
             ->setValor(Util::nFloat($this->rem(153, 165, $detalhe), 2, false) / 100)
@@ -266,11 +279,11 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
         $errorsRetorno = str_split($stringErrors, 2) + array_fill(0, 5, '') + array_fill(0, 5, '');
         if (trim($stringErrors, '0') != '') {
             $error = [];
-            $error[] = array_get($this->rejeicoes, $errorsRetorno[0], '');
-            $error[] = array_get($this->rejeicoes, $errorsRetorno[1], '');
-            $error[] = array_get($this->rejeicoes, $errorsRetorno[2], '');
-            $error[] = array_get($this->rejeicoes, $errorsRetorno[3], '');
-            $error[] = array_get($this->rejeicoes, $errorsRetorno[4], '');
+            $error[] = Arr::get($this->rejeicoes, $errorsRetorno[0], '');
+            $error[] = Arr::get($this->rejeicoes, $errorsRetorno[1], '');
+            $error[] = Arr::get($this->rejeicoes, $errorsRetorno[2], '');
+            $error[] = Arr::get($this->rejeicoes, $errorsRetorno[3], '');
+            $error[] = Arr::get($this->rejeicoes, $errorsRetorno[4], '');
 
             $error = array_filter($error);
 
@@ -282,6 +295,11 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
         return true;
     }
 
+    /**
+     * @param array $trailer
+     *
+     * @return bool
+     */
     protected function processarTrailer(array $trailer)
     {
         $this->getTrailer()

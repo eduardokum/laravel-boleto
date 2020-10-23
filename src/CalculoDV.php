@@ -243,11 +243,11 @@ class CalculoDV
     | 748 - Sicredi - Falta o calculo agencia e conta
     |--------------------------------------------------------------------------
     */
-    public static function sicrediNossoNumero($agencia, $posto, $conta, $ano, $byte, $numero_boleto)
+    public static function sicrediNossoNumero($agencia, $posto, $codigoCliente, $ano, $byte, $numero_boleto)
     {
         $n = Util::numberFormatGeral($agencia, 4)
             . Util::numberFormatGeral($posto, 2)
-            . Util::numberFormatGeral($conta, 5)
+            . Util::numberFormatGeral($codigoCliente, 5)
             . Util::numberFormatGeral($ano, 2)
             . Util::numberFormatGeral($byte, 1)
             . Util::numberFormatGeral($numero_boleto, 5);

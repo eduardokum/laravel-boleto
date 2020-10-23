@@ -40,14 +40,13 @@ class Pessoa implements PessoaContract
     protected $dda = false;
 
     /**
-     * Cria a pessoa passando os parametros.
-     *e
-     * @param $nome
-     * @param $documento
-     * @param null      $endereco
-     * @param null      $cep
-     * @param null      $cidade
-     * @param null      $uf
+     * @param      $nome
+     * @param      $documento
+     * @param null $endereco
+     * @param null $bairro
+     * @param null $cep
+     * @param null $cidade
+     * @param null $uf
      *
      * @return Pessoa
      */
@@ -126,6 +125,7 @@ class Pessoa implements PessoaContract
      *
      * @param string $documento
      *
+     * @return Pessoa
      * @throws \Exception
      */
     public function setDocumento($documento)
@@ -135,6 +135,8 @@ class Pessoa implements PessoaContract
             throw new \Exception('Documento inválido');
         }
         $this->documento = $documento;
+
+        return $this;
     }
     /**
      * Retorna o documento (CPF ou CNPJ)

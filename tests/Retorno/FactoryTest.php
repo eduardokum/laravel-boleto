@@ -44,11 +44,13 @@ class FactoryTest extends TestCase
     {
         $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make(__DIR__ . '/files/cnab400/bradesco.ret');
         $retorno->processar();
+        $this->assertTrue(true);
     }
 
     public function testCriarComString()
     {
         $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make(file_get_contents(__DIR__ . '/files/cnab400/bradesco.ret'));
         $retorno->processar();
+        $this->assertTrue(true);
     }
 }

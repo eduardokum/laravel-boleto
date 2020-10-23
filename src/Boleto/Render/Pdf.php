@@ -5,6 +5,7 @@ namespace Eduardokum\LaravelBoleto\Boleto\Render;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Render\Pdf as PdfContract;
 use Eduardokum\LaravelBoleto\Util;
+use Illuminate\Support\Str;
 
 class Pdf extends AbstractPdf implements PdfContract
 {
@@ -13,29 +14,28 @@ class Pdf extends AbstractPdf implements PdfContract
     const OUTPUT_SAVE = 'F';
     const OUTPUT_STRING = 'S';
 
-    private $PadraoFont = 'Arial';
+    protected $PadraoFont = 'Arial';
     /**
      * @var BoletoContract[]
      */
-    private $boleto = array();
+    protected $boleto = [];
 
     /**
      * @var bool
      */
-    private $print = false;
+    protected $print = false;
 
     /**
      * @var bool
      */
-    private $showInstrucoes = true;
+    protected $showInstrucoes = true;
 
-
-    private $desc = 3; // tamanho célula descrição
-    private $cell = 4; // tamanho célula dado
-    private $fdes = 6; // tamanho fonte descrição
-    private $fcel = 8; // tamanho fonte célula
-    private $small = 0.2; // tamanho barra fina
-    private $totalBoletos = 0;
+    protected $desc = 3; // tamanho célula descrição
+    protected $cell = 4; // tamanho célula dado
+    protected $fdes = 6; // tamanho fonte descrição
+    protected $fcel = 8; // tamanho fonte célula
+    protected $small = 0.2; // tamanho barra fina
+    protected $totalBoletos = 0;
 
     public function __construct()
     {
@@ -142,10 +142,10 @@ class Pdf extends AbstractPdf implements PdfContract
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
         $this->Cell(75, $this->desc, $this->_('Beneficiário'), 'TLR');
-        $this->Cell(35, $this->desc, $this->_('Agencia/Codigo do beneficiário'), 'TR');
+        $this->Cell(35, $this->desc, $this->_('Agência/Código do beneficiário'), 'TR');
         $this->Cell(10, $this->desc, $this->_('Espécie'), 'TR');
         $this->Cell(15, $this->desc, $this->_('Quantidade'), 'TR');
-        $this->Cell(35, $this->desc, $this->_('Nosso Numero'), 'TR', 1);
+        $this->Cell(35, $this->desc, $this->_('Nosso Número'), 'TR', 1);
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
 
@@ -367,20 +367,26 @@ class Pdf extends AbstractPdf implements PdfContract
     }
 
     /**
-     * @param      string $texto
+     * @param string $texto
      * @param integer $ln
      * @param integer $ln2
+     * @param $posicaoTexto
+     * @param $alinhamentoTexto
+     * @param $tamanho
      */
-    protected function traco($texto, $ln = null, $ln2 = null)
+    protected function traco($texto, $ln = null, $ln2 = null, $posicaoTexto = 1, $alinhamentoTexto = 'R', $tamanho = 261)
     {
         if ($ln == 1 || $ln) {
             $this->Ln($ln);
         }
         $this->SetFont($this->PadraoFont, '', $this->fdes);
-        if ($texto) {
-            $this->Cell(0, 2, $this->_($texto), 0, 1, 'R');
+        if ($texto && $posicaoTexto !== -1) {
+            $this->Cell(0, 2, $this->_($texto), 0, 1, $alinhamentoTexto);
         }
-        $this->Cell(0, 2, str_pad('-', '261', ' -', STR_PAD_RIGHT), 0, 1);
+        $this->Cell(0,  2, str_pad('-', $tamanho, ' -', STR_PAD_RIGHT), 0, 1);
+        if ($texto && $posicaoTexto === -1) {
+            $this->Cell(0, 2, $this->_($texto), 0, 1, $alinhamentoTexto);
+        }
         if ($ln2 == 1 || $ln2) {
             $this->Ln($ln2);
         }
@@ -474,7 +480,7 @@ class Pdf extends AbstractPdf implements PdfContract
             return $save_path;
         }
         if ($nameFile == null) {
-            $nameFile = str_random(32);
+            $nameFile = Str::random(32);
         }
         
         return $this->Output($nameFile . '.pdf', $dest, $this->print);
@@ -486,7 +492,7 @@ class Pdf extends AbstractPdf implements PdfContract
      *
      * @return int
      */
-    private function listaLinhas($lista, $pulaLinha)
+    protected function listaLinhas($lista, $pulaLinha)
     {
         foreach ($lista as $d) {
             $pulaLinha -= 2;
