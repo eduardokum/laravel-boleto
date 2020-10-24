@@ -14,7 +14,8 @@ class RemessaCnab400Test extends TestCase
     protected static $pagador;
     protected static $beneficiario;
 
-    public static function setUpBeforeClass(){
+    public static function setUpBeforeClass() : void
+    {
         self::$beneficiario = new Pessoa(
             [
                 'nome' => 'ACME',
@@ -39,7 +40,7 @@ class RemessaCnab400Test extends TestCase
         );
     }
 
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass() : void
     {
         $aFiles = [
             __DIR__,
@@ -53,10 +54,8 @@ class RemessaCnab400Test extends TestCase
         }
     }
 
-    /**
-     * @expectedException     \Exception
-     */
     public function testRemessaCamposInvalidos(){
+        $this->expectException(\Exception::class);
         $remessa = new Remessa\Banrisul([
             'codigoCliente' => 11112222222,
             'beneficiario' => self::$beneficiario,
@@ -64,10 +63,8 @@ class RemessaCnab400Test extends TestCase
         $remessa->gerar();
     }
 
-    /**
-     * @expectedException     \Exception
-     */
     public function testRemessaCarteiraIndisponivel(){
+        $this->expectException(\Exception::class);
         $remessa = new Remessa\Banrisul([
             'agencia' => 1111,
             'conta' => 22222,

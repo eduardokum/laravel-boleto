@@ -13,8 +13,8 @@ All banks have information that is shared such as:
 :dataProcessamento: Creation date bill. [default: today]
 :desconto: Bill discount amount.
 :valor: Bill amount.
-:multa: Percentage of fee to be charged. [default: false]
-:juros: Percentage of interest to be charged. [default: false]
+:multa: Percentage of fee to be charged (per month). [default: false]
+:juros: Percentage of interest to be charged (per month). [default: false]
 :jurosApos: How many days after expired will be charged the interest. [default: 0]
 :diasProtesto: How many days after expired will be protested. [default: 0]
 :numero: Bill number. (Will be used to generate the ``Nosso Número``)

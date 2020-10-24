@@ -82,6 +82,37 @@ class Sicredi extends AbstractRemessa implements RemessaContract
     protected $fimArquivo = "\r\n";
 
     /**
+     * Codigo do cliente junto ao banco.
+     *
+     * @var string
+     */
+    protected $codigoCliente;
+
+     /**
+     * Retorna o codigo do cliente.
+     *
+     * @return mixed
+     */
+    public function getCodigoCliente()
+    {
+        return $this->codigoCliente;
+    }
+
+    /**
+     * Seta o codigo do cliente.
+     *
+     * @param mixed $codigoCliente
+     *
+     * @return Sicredi
+     */
+    public function setCodigoCliente($codigoCliente)
+    {
+        $this->codigoCliente = $codigoCliente;
+
+        return $this;
+    }
+
+    /**
      * @return $this
      * @throws \Exception
      */
@@ -94,7 +125,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(3, 9, 'REMESSA');
         $this->add(10, 11, '01');
         $this->add(12, 26, Util::formatCnab('X', 'COBRANCA', 15));
-        $this->add(27, 31, Util::formatCnab('9', $this->getConta(), 5));
+        $this->add(27, 31, Util::formatCnab('9', $this->getCodigoCliente(), 5));
         $this->add(32, 45, Util::formatCnab('9L', $this->getBeneficiario()->getDocumento(), 14, 0, 0));
         $this->add(46, 76, '');
         $this->add(77, 79, $this->getCodigoBanco());
@@ -219,7 +250,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(1, 1, '9');
         $this->add(2, 2, '1');
         $this->add(3, 5, $this->getCodigoBanco());
-        $this->add(6, 10, $this->getConta());
+        $this->add(6, 10, $this->getCodigoCliente());
         $this->add(11, 394, '');
         $this->add(395, 400, Util::formatCnab('9', $this->getCount(), 6));
 

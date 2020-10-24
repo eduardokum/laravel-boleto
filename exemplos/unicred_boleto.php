@@ -1,5 +1,6 @@
 <?php
-require 'autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
+ob_start();
 $beneficiario = new \Eduardokum\LaravelBoleto\Pessoa(
     [
         'nome'      => 'ACME',
@@ -23,39 +24,32 @@ $pagador = new \Eduardokum\LaravelBoleto\Pessoa(
     ]
 );
 
-$boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Sicredi(
+
+$boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Unicred(
     [
-        'logo'                   => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '748.png',
-        'dataVencimento'         => new \Carbon\Carbon(),
-        'valor'                  => 100,
+        'logo'                   => null,
+        'dataVencimento'         => \Carbon\Carbon::create(2019, 02, 15),
+        'valor'                  => 300,
         'multa'                  => false,
         'juros'                  => false,
         'numero'                 => 1,
-        'numeroDocumento'        => 1,
+        'numeroDocumento'        => 2002,
         'pagador'                => $pagador,
         'beneficiario'           => $beneficiario,
-        'carteira'               => '1',
-        'byte'                   => 2,
-        'agencia'                => 1111,
-        'posto'                  => 11,
-        'conta'                  => 11111,
-        'codigoCliente'          => 12345,
+        'carteira'               => 21,
+        "agenciaDv"              => 4,
+        'agencia'                => 5811,
+//        "contaDv"              => "1",
+        'convenio'               => 80004288,
+        'contaCorrente'          => \Eduardokum\LaravelBoleto\Util::numberFormatGeral(818321, 9),
+        'conta'                  => \Eduardokum\LaravelBoleto\Util::numberFormatGeral(818321, 9),
         'descricaoDemonstrativo' => ['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'],
         'instrucoes'             => ['instrucao 1', 'instrucao 2', 'instrucao 3'],
-        'aceite'                 => 'S',
+        'aceite'                 => 'N',
         'especieDoc'             => 'DM',
     ]
 );
 
-$remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Sicredi(
-    [
-        'agencia'      => 2606,
-        'carteira'     => '1',
-        'conta'        => 12510,
-        'codigoCliente'=> 12345,
-        'idremessa'    => 1,
-        'beneficiario' => $beneficiario,
-    ]
-);
-$remessa->addBoleto($boleto);
-echo $remessa->save(__DIR__ . DIRECTORY_SEPARATOR . 'arquivos' . DIRECTORY_SEPARATOR . 'sicredi.txt');
+$pdf = new Eduardokum\LaravelBoleto\Boleto\Render\Pdf();
+$pdf->addBoleto($boleto);
+$pdf->gerarBoleto($pdf::OUTPUT_SAVE, __DIR__ . DIRECTORY_SEPARATOR . 'arquivos' . DIRECTORY_SEPARATOR . 'unicred.pdf');

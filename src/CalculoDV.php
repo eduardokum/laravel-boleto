@@ -156,22 +156,22 @@ class CalculoDV
 
     public static function banrisulDuploDigito($campo)
     {
-		$dv1 = Util::modulo10($campo);
-		$dv2 = Util::modulo11($campo . $dv1, 2, 7, 1, 10);
+        $dv1 = Util::modulo10($campo);
+        $dv2 = Util::modulo11($campo . $dv1, 2, 7, 1, 10);
 
-		if ($dv2 == 1){
-			if ($dv1 == 9){
-				$dv1 = 0;
-			}else{
-				$dv1++;
-			}
-			
-			$dv2 = Util::modulo11($campo . $dv1, 2, 7, 0, 10);				
-		}elseif($dv2 != 0){
-			$dv2 = (11 - $dv2);
-		}
-			
-		return $dv1 . $dv2;
+        if ($dv2 == 1){
+            if ($dv1 == 9){
+                $dv1 = 0;
+            }else{
+                $dv1++;
+            }
+
+            $dv2 = Util::modulo11($campo . $dv1, 2, 7, 0, 10);
+        }elseif($dv2 != 0){
+            $dv2 = (11 - $dv2);
+        }
+
+        return $dv1 . $dv2;
     }
 
     /*
@@ -206,7 +206,7 @@ class CalculoDV
         $dv = Util::modulo11($agencia, 2, 9, 0, 'P');
         return $dv == 11 ? 0 : $dv;
     }
-    
+
     public static function bradescoContaCorrente($contaCorrente)
     {
         return Util::modulo11($contaCorrente, 2, 9, 0, 'P');
@@ -243,11 +243,11 @@ class CalculoDV
     | 748 - Sicredi - Falta o calculo agencia e conta
     |--------------------------------------------------------------------------
     */
-    public static function sicrediNossoNumero($agencia, $posto, $conta, $ano, $byte, $numero_boleto)
+    public static function sicrediNossoNumero($agencia, $posto, $codigoCliente, $ano, $byte, $numero_boleto)
     {
         $n = Util::numberFormatGeral($agencia, 4)
             . Util::numberFormatGeral($posto, 2)
-            . Util::numberFormatGeral($conta, 5)
+            . Util::numberFormatGeral($codigoCliente, 5)
             . Util::numberFormatGeral($ano, 2)
             . Util::numberFormatGeral($byte, 1)
             . Util::numberFormatGeral($numero_boleto, 5);
@@ -289,4 +289,40 @@ class CalculoDV
         }
         return  $dv;
     }
+
+
+    /**
+     * -------------------------------------------------------------------
+     * 756 - Unicred
+     * -------------------------------------------------------------------
+     */
+
+    public static function unicredCodigoBarra($numero)
+    {
+
+        $digitoVerificador = Util::modulo11($numero);
+        if ($digitoVerificador == 0 || $digitoVerificador > 9)
+            $digitoVerificador = 1;
+        return $digitoVerificador;
+    }
+
+    public static function unicredNossoNumero($numero)
+    {
+        $variavelParaOCalculo = Util::numberFormatGeral($numero, 10);
+        $constanteParaCalculo = '3298765432';
+
+        $soma = 0;
+        for ($contador = 0; $contador < 10; $contador++) {
+            $soma += $variavelParaOCalculo[$contador] * $constanteParaCalculo[$contador];
+        }
+
+        $restoDivisao = $soma % 11;
+
+        if ($restoDivisao == 1 || $restoDivisao == 0)
+            $digitoVerificador = 0;
+        else
+            $digitoVerificador = 11 - $restoDivisao;
+        return $digitoVerificador;
+    }
+
 }

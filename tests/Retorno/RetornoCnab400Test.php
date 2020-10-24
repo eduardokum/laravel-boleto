@@ -10,24 +10,20 @@ use Illuminate\Support\Collection;
 class RetornoCnab400Test extends TestCase
 {
 
-    /**
-     * @expectedException     \Exception
-     */
+
     public function testRetornoInvalido(){
+        $this->expectException(\Exception::class);
         new Bradesco([]);
     }
 
-    /**
-     * @expectedException     \Exception
-     */
+
     public function testRetornoBancoInvalido(){
+        $this->expectException(\Exception::class);
         new Bradesco(__DIR__ . '/files/cnab400/retorno_banco_fake.ret');
     }
 
-    /**
-     * @expectedException     \Exception
-     */
     public function testRetornoServicoInvalido(){
+        $this->expectException(\Exception::class);
         new Bradesco(__DIR__ . '/files/cnab400/retorno_banco_fake_2.ret');
     }
 
@@ -44,7 +40,7 @@ class RetornoCnab400Test extends TestCase
         $this->assertEquals(3, $retorno->key());
         $this->assertInstanceOf(Detalhe::class, $retorno->current());
 
-        $this->setExpectedException(\Exception::class);
+        $this->expectException(\Exception::class);
         $retorno->seek(100);
     }
 

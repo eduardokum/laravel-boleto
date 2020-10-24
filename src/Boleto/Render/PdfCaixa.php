@@ -5,6 +5,7 @@ namespace Eduardokum\LaravelBoleto\Boleto\Render;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Render\Pdf as PdfContract;
 use Eduardokum\LaravelBoleto\Util;
+use Illuminate\Support\Str;
 
 class PdfCaixa extends AbstractPdf implements PdfContract
 {
@@ -157,7 +158,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
          $this->SetFont($this->PadraoFont, '', $this->fdes);
          $this->Cell(101, $this->desc, $this->_('Beneficiário'), 'TLR');
          $this->Cell(34, $this->desc, $this->_('CPF/CNPJ'), 'TR');
-         $this->Cell(35, $this->desc, $this->_('Agencia/Codigo do beneficiário'), 'TR',1);
+         $this->Cell(35, $this->desc, $this->_('Agência/Código do beneficiário'), 'TR',1);
 
          $this->SetFont($this->PadraoFont, 'B', $this->fcel);
          $this->textFitCell(101, $this->cell, $this->_($this->boleto[$i]->getBeneficiario()->getNome()), 'LR', 0, 'L');
@@ -589,7 +590,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
             return $save_path;
         }
         if ($nameFile == null) {
-            $nameFile = str_random(32);
+            $nameFile = Str::random(32);
         }
 
         return $this->Output($nameFile . '.pdf', $dest, $this->print);

@@ -1,7 +1,8 @@
 {
-    "name": "eduardokum/laravel-boleto",
+    "name": "Eduardokum/laravel-boleto",
     "description": "Biblioteca com boletos para o laravel",
     "keywords": [
+        "r2soft",
         "eduardokum",
         "laravel-boleto"
     ],
@@ -11,23 +12,28 @@
         {
             "name": "Eduardo Gusmão",
             "email": "eduguscontra3@hotmail.com"
+        },
+        {
+            "name": "R2 Soft Infomática e Softwares LTDA",
+            "email": "ricardo@r2soft.com.br"
         }
     ],
     "require": {
-        "php" : ">=5.5.0",
+        "php": ">=7.1.3",
         "ext-intl": "*",
         "ext-mbstring": "*",
-        "nesbot/carbon": "*",
-        "illuminate/contracts": "~5.1",
-        "illuminate/support": "~5.1",
+        "laravel/framework": "^7.0",
+        "neitanod/forceutf8": "^2.0",
+        "nesbot/carbon": "2.*",
+        "illuminate/support": "^8.0",
         "illuminate/view": "~5.1",
         "illuminate/events": "~5.1",
         "neitanod/forceutf8": "^2.0",
         "setasign/fpdf": "^1.8"
     },
     "require-dev": {
-        "phpunit/phpunit": "~5.0.0",
-        "orchestra/testbench": "3.2"
+        "phpunit/phpunit": "~9.0",
+        "orchestra/testbench": "^5.3"
     },
     "autoload": {
         "psr-4": {
@@ -37,6 +43,11 @@
     "autoload-dev": {
         "psr-4": {
             "Eduardokum\\LaravelBoleto\\Tests\\": "tests"
+        }
+    },
+    "config": {
+        "platform": {
+            "php": "7.2.0"
         }
     }
 }
