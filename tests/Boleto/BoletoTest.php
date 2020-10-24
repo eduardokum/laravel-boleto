@@ -194,12 +194,10 @@ class BoletoTest extends TestCase
         $this->assertFileExists($file);
     }
 
-    /**
-     * @expectedException     \Exception
-     */
     public function testSemBoletoAdicionado()
     {
         $pdf = new Pdf();
+        $this->expectException(\Exception::class);
         $pdf->gerarBoleto($pdf::OUTPUT_STRING);
     }
 
@@ -226,7 +224,7 @@ class BoletoTest extends TestCase
                 'especieDoc' => 'DM',
             ]
         );
-        $this->assertInternalType('array', $boleto->toArray());
+        $this->assertIsArray( $boleto->toArray());
         $this->assertNotNull($boleto->renderHTML());
         $this->assertNotNull($boleto->renderPDF());
     }
@@ -252,7 +250,7 @@ class BoletoTest extends TestCase
                 'especieDoc' => 'DM',
             ]
         );
-        $this->assertInternalType('array', $boleto->toArray());
+        $this->assertIsArray( $boleto->toArray());
         $this->assertNotNull($boleto->renderHTML());
         $this->assertNotNull($boleto->renderPDF());
     }
@@ -280,7 +278,7 @@ class BoletoTest extends TestCase
                 'especieDoc' => 'DM',
             ]
         );
-        $this->assertInternalType('array', $boleto->toArray());
+        $this->assertIsArray( $boleto->toArray());
         $this->assertNotNull($boleto->renderHTML());
         $this->assertNotNull($boleto->renderPDF());
     }
@@ -309,7 +307,7 @@ class BoletoTest extends TestCase
                 'especieDoc' => 'DM',
             ]
         );
-        $this->assertInternalType('array', $boleto->toArray());
+        $this->assertIsArray( $boleto->toArray());
         $this->assertNotNull($boleto->renderHTML());
         $this->assertNotNull($boleto->renderPDF());
     }
@@ -338,7 +336,7 @@ class BoletoTest extends TestCase
                 'especieDoc' => 'DM',
             ]
         );
-        $this->assertInternalType('array', $boleto->toArray());
+        $this->assertIsArray( $boleto->toArray());
         $this->assertNotNull($boleto->renderHTML());
         $this->assertNotNull($boleto->renderPDF());
     }
@@ -366,7 +364,7 @@ class BoletoTest extends TestCase
                 'especieDoc' => 'DM',
             ]
         );
-        $this->assertInternalType('array', $boleto->toArray());
+        $this->assertIsArray( $boleto->toArray());
         $this->assertNotNull($boleto->renderHTML());
         $this->assertNotNull($boleto->renderPDF());
     }
@@ -394,7 +392,7 @@ class BoletoTest extends TestCase
                 'especieDoc' => 'DM',
             ]
         );
-        $this->assertInternalType('array', $boleto->toArray());
+        $this->assertIsArray( $boleto->toArray());
         $this->assertNotNull($boleto->renderHTML());
         $this->assertNotNull($boleto->renderPDF());
     }
@@ -423,7 +421,7 @@ class BoletoTest extends TestCase
                 'especieDoc'             => 'DM',
             ]
         );
-        $this->assertInternalType('array', $boleto->toArray());
+        $this->assertIsArray( $boleto->toArray());
         $this->assertNotNull($boleto->renderHTML());
         $this->assertNotNull($boleto->renderPDF());
     }
@@ -452,7 +450,7 @@ class BoletoTest extends TestCase
                 'especieDoc'             => 'DM',
             ]
         );
-        $this->assertInternalType('array', $boleto->toArray());
+        $this->assertIsArray( $boleto->toArray());
         $this->assertNotNull($boleto->renderHTML());
         $this->assertNotNull($boleto->renderPDF());
     }
@@ -480,7 +478,7 @@ class BoletoTest extends TestCase
                 'especieDoc'             => 'DM',
             ]
         );
-        $this->assertInternalType('array', $boleto->toArray());
+        $this->assertIsArray( $boleto->toArray());
         $this->assertNotNull($boleto->renderHTML());
         $this->assertNotNull($boleto->renderPDF());
     }
@@ -510,7 +508,7 @@ class BoletoTest extends TestCase
                 'especieDoc'             => 'DM',
             ]
         );
-        $this->assertInternalType('array', $boleto->toArray());
+        $this->assertIsArray( $boleto->toArray());
         $this->assertNotNull($boleto->renderHTML());
         $this->assertNotNull($boleto->renderPDF());
     }

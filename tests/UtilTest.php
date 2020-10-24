@@ -44,43 +44,35 @@ class UtilTest extends TestCase
         $this->assertEquals('1234567890', Util::remove(1, 10, $array));
     }
 
-    /**
-     * @expectedException     \Exception
-     */
+
     public function testAddMaiorTamanhoCnab() {
         $array = array_fill(0, 400, 0);
+        $this->expectException(\Exception::class);
         Util::adiciona($array, 400, 410, '1234567890');
     }
 
-    /**
-     * @expectedException     \Exception
-     */
     public function testAddFinalMenorInicial() {
         $array = array_fill(0, 400, 0);
+        $this->expectException(\Exception::class);
         Util::adiciona($array, 300, 290, '1234567890');
     }
 
-    /**
-     * @expectedException     \Exception
-     */
+
     public function testAddStringMaiorRange() {
         $array = array_fill(0, 400, 0);
+        $this->expectException(\Exception::class);
         Util::adiciona($array, 300, 301, '1234567890');
     }
 
-    /**
-     * @expectedException     \Exception
-     */
     public function testRemMaiorTamanhoCnab() {
+        $this->expectException(\Exception::class);
         $array = array_fill(0, 400, 0);
         Util::remove(400, 410, $array);
     }
 
-    /**
-     * @expectedException     \Exception
-     */
     public function testRemFinalMenorInicial() {
         $array = array_fill(0, 400, 0);
+        $this->expectException(\Exception::class);
         Util::remove(310, 300, $array);
     }
 
@@ -132,17 +124,13 @@ class UtilTest extends TestCase
         $this->assertEquals([123], Util::controle2array(123));
     }
 
-    /**
-     * @expectedException     \Exception
-     */
     public function testControleArrayMaior25() {
+        $this->expectException(\Exception::class);
         Util::array2Controle(['ABCDEFG' => 1231231, 'EFGHIJKL' => 1231231]);
     }
 
-    /**
-     * @expectedException     \Exception
-     */
     public function testControleArrayKeyNumerica() {
+        $this->expectException(\Exception::class);
         Util::array2Controle([0 => 1]);
     }
 }
