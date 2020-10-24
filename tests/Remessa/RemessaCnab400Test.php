@@ -54,10 +54,8 @@ class RemessaCnab400Test extends TestCase
         }
     }
 
-    /**
-     * @expectedException     \Exception
-     */
     public function testRemessaCamposInvalidos(){
+        $this->expectException(\Exception::class);
         $remessa = new Remessa\Banrisul([
             'codigoCliente' => 11112222222,
             'beneficiario' => self::$beneficiario,
@@ -65,10 +63,8 @@ class RemessaCnab400Test extends TestCase
         $remessa->gerar();
     }
 
-    /**
-     * @expectedException     \Exception
-     */
     public function testRemessaCarteiraIndisponivel(){
+        $this->expectException(\Exception::class);
         $remessa = new Remessa\Banrisul([
             'agencia' => 1111,
             'conta' => 22222,

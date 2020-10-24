@@ -39,13 +39,17 @@ class PessoaTest extends TestCase
         $this->assertEquals(Util::maskString($documento, '###.###.###-##'), $pessoa->getDocumento());
         $this->assertEquals('CPF', $pessoa->getTipoDocumento());
 
-        $this->assertContains(Util::maskString($cep, '#####-###'), $pessoa->getCepCidadeUf());
-        $this->assertContains($cidade, $pessoa->getCepCidadeUf());
-        $this->assertContains($uf, $pessoa->getCepCidadeUf());
+        $this->assertStringContainsString(Util::maskString($cep, '#####-###'), $pessoa->getCepCidadeUf());
 
-        $this->assertContains($nome, $pessoa->getNomeDocumento());
-        $this->assertContains('CPF', $pessoa->getNomeDocumento());
-        $this->assertContains(Util::maskString($documento, '###.###.###-##'), $pessoa->getNomeDocumento());
+
+        $this->assertStringContainsString(Util::maskString($cep, '#####-###'), $pessoa->getCepCidadeUf()) ;
+
+        $this->assertStringContainsString($cidade, $pessoa->getCepCidadeUf());
+        $this->assertStringContainsString($uf, $pessoa->getCepCidadeUf());
+
+        $this->assertStringContainsString($nome, $pessoa->getNomeDocumento());
+        $this->assertStringContainsString('CPF', $pessoa->getNomeDocumento());
+        $this->assertStringContainsString(Util::maskString($documento, '###.###.###-##'), $pessoa->getNomeDocumento());
 
         $pessoa->setDocumento('');
         $this->assertEquals($nome, $pessoa->getNomeDocumento());
@@ -62,11 +66,9 @@ class PessoaTest extends TestCase
 
     }
 
-    /**
-     * @expectedException     \Exception
-     */
-    public function testPessoaDocumentoErrado(){
 
+    public function testPessoaDocumentoErrado(){
+        $this->expectException(\Exception::class);
         $pessoa = new Pessoa(
             [
                 'documento' => '99999',
