@@ -119,6 +119,10 @@ class Caixa extends AbstractRetorno implements RetornoCnab400
             ->setCodigoCliente($this->rem(31, 36, $header))
             ->setData($this->rem(95, 100, $header));
 
+        if ($this->rem(159, 161, $header) == '007') {
+            $this->getHeader()->setCodigoCliente($this->rem(31, 37, $header));
+        }
+
         return true;
     }
 
