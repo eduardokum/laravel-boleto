@@ -15,13 +15,14 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu]
-        php: ["7.2"]
+        php: ["7.3"]
         # Apenas versões com suporte
         laravel:
           - "5.5.*"
           - "5.8.*"
           - "6.*"
           - "7.*"
+          - "8.*"
         include:
           - os: ubuntu
             php: "7.3"
