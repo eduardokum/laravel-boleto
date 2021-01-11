@@ -25,13 +25,16 @@ jobs:
           - "8.*"
         include:
           - os: ubuntu
+            php: "7.2"
+            laravel: "5.5.*"
+          - os: ubuntu
             php: "7.3"
             laravel: "8.*"
           - os: macos
-            php: "7.2"
+            php: "7.3"
             laravel: "7.*"
           - os: windows
-            php: "7.2"
+            php: "7.3"
             laravel: "7.*"
     runs-on: ${{ matrix.os }}-latest
     name: LRV ${{ matrix.laravel }} (${{ matrix.os }})
