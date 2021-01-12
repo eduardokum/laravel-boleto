@@ -9,7 +9,7 @@ class TestCase extends OrchestraTestCase
 {
     public static function assertIsArray($actual, string $message = ''): void
     {
-        if (method_exists(TestCase::class, 'assertIsArray')) {
+        if (method_exists(OrchestraTestCase::class, 'assertIsArray')) {
             parent::assertIsArray($actual, $message);
         } else {
             static::assertThat(
@@ -22,7 +22,7 @@ class TestCase extends OrchestraTestCase
 
     public static function assertStringContainsString(string $needle, string $haystack, string $message = ''): void
     {
-        if (method_exists(TestCase::class, 'assertStringContainsString')) {
+        if (method_exists(OrchestraTestCase::class, 'assertStringContainsString')) {
             parent::assertStringContainsString($needle, $haystack, $message);
         } else {
             $constraint = new StringContains($needle, false);
