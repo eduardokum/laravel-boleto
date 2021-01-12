@@ -25,9 +25,6 @@ jobs:
           - "8.*"
         include:
           - os: ubuntu
-            php: "7.2"
-            laravel: "5.5.*"
-          - os: ubuntu
             php: "7.3"
             laravel: "8.*"
           - os: macos
