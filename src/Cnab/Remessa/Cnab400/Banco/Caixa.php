@@ -125,7 +125,13 @@ class Caixa  extends AbstractRemessa implements RemessaContract
         $this->add(10, 11, '01');
         $this->add(12, 26, Util::formatCnab('X', 'COBRANCA', 15));
         $this->add(27, 30, Util::formatCnab('9', $this->getAgencia(), 4));
-        $this->add(31, 36, Util::formatCnab('9', $this->getCodigoCliente(), 6));
+
+        if ($this->getCodigoCliente() <= 999999) {
+            $this->add(31, 36, Util::formatCnab('9', $this->getCodigoCliente(), 6));
+        } else {
+            $this->add(31, 36, Util::formatCnab('X', $this->getCodigoCliente(), 6));
+        }
+
         $this->add(37, 46, '');
         $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(77, 79, $this->getCodigoBanco());
@@ -152,7 +158,14 @@ class Caixa  extends AbstractRemessa implements RemessaContract
         $this->add(1, 1, '1');
         $this->add(2, 3, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? '02' : '01');
         $this->add(4, 17, Util::formatCnab('9', Util::onlyNumbers($this->getBeneficiario()->getDocumento()), 14));
-        $this->add(18, 21, Util::formatCnab('9', $this->getAgencia(), 4));
+
+        if ($this->getCodigoCliente() <= 999999) {
+            $this->add(18, 20, Util::formatCnab('9', $this->getAgencia(), 3));
+            $this->add(21, 21, ' ');
+        } else {
+            $this->add(18, 21, Util::formatCnab('9', $this->getAgencia(), 4));
+        }
+
         $this->add(22, 27, Util::formatCnab('9', $this->getCodigoCliente(), 6));
         $this->add(28, 28, '2'); // ‘1’ = Banco Emite ‘2’ = Cliente Emite
         $this->add(29, 29, '0'); // ‘0’ = Postagem pelo Beneficiário ‘1’ = Pagador via Correio ‘2’ = Beneficiário via Agência CAIXA ‘3’ = Pagador via e-mail
@@ -163,6 +176,7 @@ class Caixa  extends AbstractRemessa implements RemessaContract
         $this->add(77, 106, '');
         $this->add(107, 108, Util::formatCnab('9', $this->getCarteiraNumero(), 2));
         $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
+
         if ($boleto->getStatus() == $boleto::STATUS_BAIXA) {
             $this->add(109, 110, self::OCORRENCIA_PEDIDO_BAIXA); // BAIXA
         }

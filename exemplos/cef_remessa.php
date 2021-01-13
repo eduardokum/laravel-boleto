@@ -7,7 +7,7 @@ $beneficiario = new \Eduardokum\LaravelBoleto\Pessoa(
         'cep'       => '99999-999',
         'uf'        => 'UF',
         'cidade'    => 'CIDADE',
-        'documento' => '99.999.999/9999-99',
+        'documento' => '76098166000154', // CPF GERADO AUTOMATICAMENTE
     ]
 );
 
@@ -19,7 +19,7 @@ $pagador = new \Eduardokum\LaravelBoleto\Pessoa(
         'cep'       => '99999-999',
         'uf'        => 'UF',
         'cidade'    => 'CIDADE',
-        'documento' => '999.999.999-99',
+        'documento' => '00003456790', // CNPJ GERADO AUTOMATICAMENTE
     ]
 );
 
@@ -32,6 +32,7 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Caixa(
         'juros'                  => false,
         'numero'                 => 1,
         'numeroDocumento'        => 1,
+        'numeroControle'         => 1,
         'pagador'                => $pagador,
         'diasBaixaAutomatica'    => 2,
         'beneficiario'           => $beneficiario,
