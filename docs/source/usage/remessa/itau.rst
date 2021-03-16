@@ -1,4 +1,4 @@
-Itáu
+Itaú
 ====
 
 This bank has the following mandatory fields:
