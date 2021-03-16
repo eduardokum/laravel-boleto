@@ -26,6 +26,7 @@
         "neitanod/forceutf8": "^2.0",
         "setasign/fpdf": "^1.8"
     },
+
     "require-dev": {
         "phpunit/phpunit": ">=6.0||^8.0||^9.0",
         "orchestra/testbench": "^3.1"
