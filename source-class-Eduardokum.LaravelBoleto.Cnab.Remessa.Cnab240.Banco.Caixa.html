@@ -419,8 +419,8 @@
 </span><span id="140" class="l"><a href="#140">140 </a>        }
 </span><span id="141" class="l"><a href="#141">141 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">18</span>, <span class="php-num">22</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-var">$this</span>-&gt;getAgencia(), <span class="php-num">5</span>));
 </span><span id="142" class="l"><a href="#142">142 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">23</span>, <span class="php-num">23</span>, CalculoDV::cefAgencia(<span class="php-var">$this</span>-&gt;getAgencia()));
-</span><span id="143" class="l"><a href="#143">143 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">24</span>, <span class="php-num">29</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-var">$this</span>-&gt;getCodigoCliente(), <span class="php-num">6</span>));
-</span><span id="144" class="l"><a href="#144">144 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">30</span>, <span class="php-num">37</span>, <span class="php-quote">'00000000'</span>);
+</span><span id="143" class="l"><a href="#143">143 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">24</span>, <span class="php-num">30</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-var">$this</span>-&gt;getCodigoCliente(), <span class="php-num">7</span>));
+</span><span id="144" class="l"><a href="#144">144 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">31</span>, <span class="php-num">37</span>, <span class="php-quote">'0000000'</span>);
 </span><span id="145" class="l"><a href="#145">145 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">38</span>, <span class="php-num">39</span>, <span class="php-quote">'00'</span>);
 </span><span id="146" class="l"><a href="#146">146 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">40</span>, <span class="php-num">57</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-var">$boleto</span>-&gt;getNossoNumero(), <span class="php-num">18</span>));
 </span><span id="147" class="l"><a href="#147">147 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">58</span>, <span class="php-num">58</span>, <span class="php-quote">'1'</span>); <span class="php-comment">//'1' = Cobrança Simples</span>
@@ -569,8 +569,8 @@
 </span><span id="290" class="l"><a href="#290">290 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">33</span>, <span class="php-num">52</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-num">0</span>, <span class="php-num">20</span>));
 </span><span id="291" class="l"><a href="#291">291 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">53</span>, <span class="php-num">57</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-var">$this</span>-&gt;getAgencia(), <span class="php-num">5</span>));
 </span><span id="292" class="l"><a href="#292">292 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">58</span>, <span class="php-num">58</span>, CalculoDV::cefAgencia(<span class="php-var">$this</span>-&gt;getAgencia()));
-</span><span id="293" class="l"><a href="#293">293 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">59</span>, <span class="php-num">64</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-var">$this</span>-&gt;getCodigoCliente(), <span class="php-num">6</span>));
-</span><span id="294" class="l"><a href="#294">294 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">65</span>, <span class="php-num">72</span>, <span class="php-quote">'00000000'</span>);
+</span><span id="293" class="l"><a href="#293">293 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">59</span>, <span class="php-num">65</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-var">$this</span>-&gt;getCodigoCliente(), <span class="php-num">7</span>));
+</span><span id="294" class="l"><a href="#294">294 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">66</span>, <span class="php-num">72</span>, <span class="php-quote">'0000000'</span>);
 </span><span id="295" class="l"><a href="#295">295 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">73</span>, <span class="php-num">102</span>, Util::formatCnab(<span class="php-quote">'X'</span>, <span class="php-var">$this</span>-&gt;getBeneficiario()-&gt;getNome(), <span class="php-num">30</span>));
 </span><span id="296" class="l"><a href="#296">296 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">103</span>, <span class="php-num">132</span>, Util::formatCnab(<span class="php-quote">'X'</span>, <span class="php-quote">'CAIXA ECONOMICA FEDERAL'</span>, <span class="php-num">30</span>));
 </span><span id="297" class="l"><a href="#297">297 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">133</span>, <span class="php-num">142</span>, <span class="php-quote">''</span>);
@@ -608,80 +608,84 @@
 </span><span id="329" class="l"><a href="#329">329 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">17</span>, <span class="php-num">17</span>, <span class="php-quote">''</span>);
 </span><span id="330" class="l"><a href="#330">330 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">18</span>, <span class="php-num">18</span>, <span class="php-keyword2">strlen</span>(Util::onlyNumbers(<span class="php-var">$this</span>-&gt;getBeneficiario()-&gt;getDocumento())) == <span class="php-num">14</span> ? <span class="php-num">2</span> : <span class="php-num">1</span>);
 </span><span id="331" class="l"><a href="#331">331 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">19</span>, <span class="php-num">33</span>, Util::formatCnab(<span class="php-quote">'9'</span>, Util::onlyNumbers(<span class="php-var">$this</span>-&gt;getBeneficiario()-&gt;getDocumento()), <span class="php-num">15</span>));
-</span><span id="332" class="l"><a href="#332">332 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">34</span>, <span class="php-num">39</span>, Util::formatCnab(<span class="php-quote">'9'</span>, Util::onlyNumbers(<span class="php-var">$this</span>-&gt;getCodigoCliente()), <span class="php-num">6</span>));
-</span><span id="333" class="l"><a href="#333">333 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">40</span>, <span class="php-num">53</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-num">0</span>, <span class="php-num">14</span>));
+</span><span id="332" class="l"><a href="#332">332 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">34</span>, <span class="php-num">40</span>, Util::formatCnab(<span class="php-quote">'9'</span>, Util::onlyNumbers(<span class="php-var">$this</span>-&gt;getCodigoCliente()), <span class="php-num">7</span>));
+</span><span id="333" class="l"><a href="#333">333 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">41</span>, <span class="php-num">53</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-num">0</span>, <span class="php-num">13</span>));
 </span><span id="334" class="l"><a href="#334">334 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">54</span>, <span class="php-num">58</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-var">$this</span>-&gt;getAgencia(), <span class="php-num">5</span>));
 </span><span id="335" class="l"><a href="#335">335 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">59</span>, <span class="php-num">59</span>, CalculoDV::cefAgencia(<span class="php-var">$this</span>-&gt;getAgencia()));
-</span><span id="336" class="l"><a href="#336">336 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">60</span>, <span class="php-num">65</span>, Util::formatCnab(<span class="php-quote">'9'</span>, Util::onlyNumbers(<span class="php-var">$this</span>-&gt;getCodigoCliente()), <span class="php-num">6</span>));
-</span><span id="337" class="l"><a href="#337">337 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">66</span>, <span class="php-num">72</span>, <span class="php-quote">'0000000'</span>);
-</span><span id="338" class="l"><a href="#338">338 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">73</span>, <span class="php-num">73</span>, <span class="php-quote">'0'</span>);
-</span><span id="339" class="l"><a href="#339">339 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">74</span>, <span class="php-num">103</span>, Util::formatCnab(<span class="php-quote">'X'</span>, <span class="php-var">$this</span>-&gt;getBeneficiario()-&gt;getNome(), <span class="php-num">30</span>));
-</span><span id="340" class="l"><a href="#340">340 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">104</span>, <span class="php-num">183</span>, <span class="php-quote">''</span>);
-</span><span id="341" class="l"><a href="#341">341 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">184</span>, <span class="php-num">191</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-var">$this</span>-&gt;getIdremessa(), <span class="php-num">8</span>));
-</span><span id="342" class="l"><a href="#342">342 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">192</span>, <span class="php-num">199</span>, <span class="php-keyword2">date</span>(<span class="php-quote">'dmY'</span>));
-</span><span id="343" class="l"><a href="#343">343 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">200</span>, <span class="php-num">207</span>, <span class="php-quote">'00000000'</span>);
-</span><span id="344" class="l"><a href="#344">344 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">208</span>, <span class="php-num">240</span>, <span class="php-quote">''</span>);
-</span><span id="345" class="l"><a href="#345">345 </a>
-</span><span id="346" class="l"><a href="#346">346 </a>        <span class="php-keyword1">return</span> <span class="php-var">$this</span>;
-</span><span id="347" class="l"><a href="#347">347 </a>    }
-</span><span id="348" class="l"><a href="#348">348 </a>
-</span><span id="349" class="l"><a href="#349">349 </a>    <span class="php-comment">/**
-</span></span><span id="350" class="l"><a href="#350">350 </a><span class="php-comment">     * @return $this
-</span></span><span id="351" class="l"><a href="#351">351 </a><span class="php-comment">     * @throws \Exception
-</span></span><span id="352" class="l"><a href="#352">352 </a><span class="php-comment">     */</span>
-</span><span id="353" class="l"><a href="#353">353 </a>    <span class="php-keyword1">protected</span> <span class="php-keyword1">function</span> trailerLote()
-</span><span id="354" class="l"><a href="#354">354 </a>    {
-</span><span id="355" class="l"><a href="#355">355 </a>        <span class="php-var">$this</span>-&gt;iniciaTrailerLote();
-</span><span id="356" class="l"><a href="#356">356 </a>
-</span><span id="357" class="l"><a href="#357">357 </a>        <span class="php-var">$valor</span> = <span class="php-keyword2">array_reduce</span>(<span class="php-var">$this</span>-&gt;boletos, <span class="php-keyword1">function</span>(<span class="php-var">$valor</span>, <span class="php-var">$boleto</span>) {
-</span><span id="358" class="l"><a href="#358">358 </a>            <span class="php-keyword1">return</span> <span class="php-var">$valor</span> + <span class="php-var">$boleto</span>-&gt;getValor();
-</span><span id="359" class="l"><a href="#359">359 </a>        }, <span class="php-num">0</span>);
+</span><span id="336" class="l"><a href="#336">336 </a>        <span class="php-keyword1">if</span>(<span class="php-keyword2">strlen</span>(<span class="php-var">$this</span>-&gt;getCodigoCliente()) == <span class="php-num">7</span>) {
+</span><span id="337" class="l"><a href="#337">337 </a>            <span class="php-var">$this</span>-&gt;add(<span class="php-num">60</span>, <span class="php-num">65</span>, <span class="php-quote">'000000'</span>);
+</span><span id="338" class="l"><a href="#338">338 </a>        } <span class="php-keyword1">else</span> {
+</span><span id="339" class="l"><a href="#339">339 </a>            <span class="php-var">$this</span>-&gt;add(<span class="php-num">60</span>, <span class="php-num">65</span>, Util::formatCnab(<span class="php-quote">'9'</span>, Util::onlyNumbers(<span class="php-var">$this</span>-&gt;getCodigoCliente()), <span class="php-num">6</span>));
+</span><span id="340" class="l"><a href="#340">340 </a>        }
+</span><span id="341" class="l"><a href="#341">341 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">66</span>, <span class="php-num">72</span>, <span class="php-quote">'0000000'</span>);
+</span><span id="342" class="l"><a href="#342">342 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">73</span>, <span class="php-num">73</span>, <span class="php-quote">'0'</span>);
+</span><span id="343" class="l"><a href="#343">343 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">74</span>, <span class="php-num">103</span>, Util::formatCnab(<span class="php-quote">'X'</span>, <span class="php-var">$this</span>-&gt;getBeneficiario()-&gt;getNome(), <span class="php-num">30</span>));
+</span><span id="344" class="l"><a href="#344">344 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">104</span>, <span class="php-num">183</span>, <span class="php-quote">''</span>);
+</span><span id="345" class="l"><a href="#345">345 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">184</span>, <span class="php-num">191</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-var">$this</span>-&gt;getIdremessa(), <span class="php-num">8</span>));
+</span><span id="346" class="l"><a href="#346">346 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">192</span>, <span class="php-num">199</span>, <span class="php-keyword2">date</span>(<span class="php-quote">'dmY'</span>));
+</span><span id="347" class="l"><a href="#347">347 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">200</span>, <span class="php-num">207</span>, <span class="php-quote">'00000000'</span>);
+</span><span id="348" class="l"><a href="#348">348 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">208</span>, <span class="php-num">240</span>, <span class="php-quote">''</span>);
+</span><span id="349" class="l"><a href="#349">349 </a>
+</span><span id="350" class="l"><a href="#350">350 </a>        <span class="php-keyword1">return</span> <span class="php-var">$this</span>;
+</span><span id="351" class="l"><a href="#351">351 </a>    }
+</span><span id="352" class="l"><a href="#352">352 </a>
+</span><span id="353" class="l"><a href="#353">353 </a>    <span class="php-comment">/**
+</span></span><span id="354" class="l"><a href="#354">354 </a><span class="php-comment">     * @return $this
+</span></span><span id="355" class="l"><a href="#355">355 </a><span class="php-comment">     * @throws \Exception
+</span></span><span id="356" class="l"><a href="#356">356 </a><span class="php-comment">     */</span>
+</span><span id="357" class="l"><a href="#357">357 </a>    <span class="php-keyword1">protected</span> <span class="php-keyword1">function</span> trailerLote()
+</span><span id="358" class="l"><a href="#358">358 </a>    {
+</span><span id="359" class="l"><a href="#359">359 </a>        <span class="php-var">$this</span>-&gt;iniciaTrailerLote();
 </span><span id="360" class="l"><a href="#360">360 </a>
-</span><span id="361" class="l"><a href="#361">361 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">1</span>, <span class="php-num">3</span>, Util::onlyNumbers(<span class="php-var">$this</span>-&gt;getCodigoBanco()));
-</span><span id="362" class="l"><a href="#362">362 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">4</span>, <span class="php-num">7</span>, <span class="php-quote">'0001'</span>);
-</span><span id="363" class="l"><a href="#363">363 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">8</span>, <span class="php-num">8</span>, <span class="php-quote">'5'</span>);
-</span><span id="364" class="l"><a href="#364">364 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">9</span>, <span class="php-num">17</span>, <span class="php-quote">''</span>);
-</span><span id="365" class="l"><a href="#365">365 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">18</span>, <span class="php-num">23</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-var">$this</span>-&gt;getCountDetalhes() + <span class="php-num">2</span>, <span class="php-num">6</span>));
-</span><span id="366" class="l"><a href="#366">366 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">24</span>, <span class="php-num">29</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-keyword2">count</span>(<span class="php-var">$this</span>-&gt;boletos), <span class="php-num">6</span>));
-</span><span id="367" class="l"><a href="#367">367 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">30</span>, <span class="php-num">46</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-var">$valor</span>, <span class="php-num">17</span>, <span class="php-num">2</span>));
-</span><span id="368" class="l"><a href="#368">368 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">47</span>, <span class="php-num">52</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-num">0</span>, <span class="php-num">6</span>));
-</span><span id="369" class="l"><a href="#369">369 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">53</span>, <span class="php-num">69</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-num">0</span>, <span class="php-num">17</span>, <span class="php-num">2</span>));
-</span><span id="370" class="l"><a href="#370">370 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">70</span>, <span class="php-num">75</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-num">0</span>, <span class="php-num">6</span>));
-</span><span id="371" class="l"><a href="#371">371 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">76</span>, <span class="php-num">92</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-num">0</span>, <span class="php-num">17</span>, <span class="php-num">2</span>));
-</span><span id="372" class="l"><a href="#372">372 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">93</span>, <span class="php-num">123</span>, <span class="php-quote">''</span>);
-</span><span id="373" class="l"><a href="#373">373 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">124</span>, <span class="php-num">240</span>, <span class="php-quote">''</span>);
-</span><span id="374" class="l"><a href="#374">374 </a>
-</span><span id="375" class="l"><a href="#375">375 </a>        <span class="php-keyword1">return</span> <span class="php-var">$this</span>;
-</span><span id="376" class="l"><a href="#376">376 </a>    }
-</span><span id="377" class="l"><a href="#377">377 </a>
-</span><span id="378" class="l"><a href="#378">378 </a>    <span class="php-comment">/**
-</span></span><span id="379" class="l"><a href="#379">379 </a><span class="php-comment">     * @return $this
-</span></span><span id="380" class="l"><a href="#380">380 </a><span class="php-comment">     * @throws \Exception
-</span></span><span id="381" class="l"><a href="#381">381 </a><span class="php-comment">     */</span>
-</span><span id="382" class="l"><a href="#382">382 </a>    <span class="php-keyword1">protected</span> <span class="php-keyword1">function</span> trailer()
-</span><span id="383" class="l"><a href="#383">383 </a>    {
-</span><span id="384" class="l"><a href="#384">384 </a>        <span class="php-var">$this</span>-&gt;iniciaTrailer();
-</span><span id="385" class="l"><a href="#385">385 </a>
-</span><span id="386" class="l"><a href="#386">386 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">1</span>, <span class="php-num">3</span>, Util::onlyNumbers(<span class="php-var">$this</span>-&gt;getCodigoBanco()));
-</span><span id="387" class="l"><a href="#387">387 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">4</span>, <span class="php-num">7</span>, <span class="php-quote">'9999'</span>);
-</span><span id="388" class="l"><a href="#388">388 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">8</span>, <span class="php-num">8</span>, <span class="php-quote">'9'</span>);
-</span><span id="389" class="l"><a href="#389">389 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">9</span>, <span class="php-num">17</span>, <span class="php-quote">''</span>);
-</span><span id="390" class="l"><a href="#390">390 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">18</span>, <span class="php-num">23</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-num">1</span>, <span class="php-num">6</span>));
-</span><span id="391" class="l"><a href="#391">391 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">24</span>, <span class="php-num">29</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-var">$this</span>-&gt;getCount(), <span class="php-num">6</span>));
-</span><span id="392" class="l"><a href="#392">392 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">30</span>, <span class="php-num">35</span>, <span class="php-quote">''</span>);
-</span><span id="393" class="l"><a href="#393">393 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">36</span>, <span class="php-num">240</span>, <span class="php-quote">''</span>);
-</span><span id="394" class="l"><a href="#394">394 </a>
-</span><span id="395" class="l"><a href="#395">395 </a>        <span class="php-keyword1">return</span> <span class="php-var">$this</span>;
-</span><span id="396" class="l"><a href="#396">396 </a>    }
-</span><span id="397" class="l"><a href="#397">397 </a>}
-</span><span id="398" class="l"><a href="#398">398 </a></span></code></pre>
+</span><span id="361" class="l"><a href="#361">361 </a>        <span class="php-var">$valor</span> = <span class="php-keyword2">array_reduce</span>(<span class="php-var">$this</span>-&gt;boletos, <span class="php-keyword1">function</span>(<span class="php-var">$valor</span>, <span class="php-var">$boleto</span>) {
+</span><span id="362" class="l"><a href="#362">362 </a>            <span class="php-keyword1">return</span> <span class="php-var">$valor</span> + <span class="php-var">$boleto</span>-&gt;getValor();
+</span><span id="363" class="l"><a href="#363">363 </a>        }, <span class="php-num">0</span>);
+</span><span id="364" class="l"><a href="#364">364 </a>
+</span><span id="365" class="l"><a href="#365">365 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">1</span>, <span class="php-num">3</span>, Util::onlyNumbers(<span class="php-var">$this</span>-&gt;getCodigoBanco()));
+</span><span id="366" class="l"><a href="#366">366 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">4</span>, <span class="php-num">7</span>, <span class="php-quote">'0001'</span>);
+</span><span id="367" class="l"><a href="#367">367 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">8</span>, <span class="php-num">8</span>, <span class="php-quote">'5'</span>);
+</span><span id="368" class="l"><a href="#368">368 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">9</span>, <span class="php-num">17</span>, <span class="php-quote">''</span>);
+</span><span id="369" class="l"><a href="#369">369 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">18</span>, <span class="php-num">23</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-var">$this</span>-&gt;getCountDetalhes() + <span class="php-num">2</span>, <span class="php-num">6</span>));
+</span><span id="370" class="l"><a href="#370">370 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">24</span>, <span class="php-num">29</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-keyword2">count</span>(<span class="php-var">$this</span>-&gt;boletos), <span class="php-num">6</span>));
+</span><span id="371" class="l"><a href="#371">371 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">30</span>, <span class="php-num">46</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-var">$valor</span>, <span class="php-num">17</span>, <span class="php-num">2</span>));
+</span><span id="372" class="l"><a href="#372">372 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">47</span>, <span class="php-num">52</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-num">0</span>, <span class="php-num">6</span>));
+</span><span id="373" class="l"><a href="#373">373 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">53</span>, <span class="php-num">69</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-num">0</span>, <span class="php-num">17</span>, <span class="php-num">2</span>));
+</span><span id="374" class="l"><a href="#374">374 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">70</span>, <span class="php-num">75</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-num">0</span>, <span class="php-num">6</span>));
+</span><span id="375" class="l"><a href="#375">375 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">76</span>, <span class="php-num">92</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-num">0</span>, <span class="php-num">17</span>, <span class="php-num">2</span>));
+</span><span id="376" class="l"><a href="#376">376 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">93</span>, <span class="php-num">123</span>, <span class="php-quote">''</span>);
+</span><span id="377" class="l"><a href="#377">377 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">124</span>, <span class="php-num">240</span>, <span class="php-quote">''</span>);
+</span><span id="378" class="l"><a href="#378">378 </a>
+</span><span id="379" class="l"><a href="#379">379 </a>        <span class="php-keyword1">return</span> <span class="php-var">$this</span>;
+</span><span id="380" class="l"><a href="#380">380 </a>    }
+</span><span id="381" class="l"><a href="#381">381 </a>
+</span><span id="382" class="l"><a href="#382">382 </a>    <span class="php-comment">/**
+</span></span><span id="383" class="l"><a href="#383">383 </a><span class="php-comment">     * @return $this
+</span></span><span id="384" class="l"><a href="#384">384 </a><span class="php-comment">     * @throws \Exception
+</span></span><span id="385" class="l"><a href="#385">385 </a><span class="php-comment">     */</span>
+</span><span id="386" class="l"><a href="#386">386 </a>    <span class="php-keyword1">protected</span> <span class="php-keyword1">function</span> trailer()
+</span><span id="387" class="l"><a href="#387">387 </a>    {
+</span><span id="388" class="l"><a href="#388">388 </a>        <span class="php-var">$this</span>-&gt;iniciaTrailer();
+</span><span id="389" class="l"><a href="#389">389 </a>
+</span><span id="390" class="l"><a href="#390">390 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">1</span>, <span class="php-num">3</span>, Util::onlyNumbers(<span class="php-var">$this</span>-&gt;getCodigoBanco()));
+</span><span id="391" class="l"><a href="#391">391 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">4</span>, <span class="php-num">7</span>, <span class="php-quote">'9999'</span>);
+</span><span id="392" class="l"><a href="#392">392 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">8</span>, <span class="php-num">8</span>, <span class="php-quote">'9'</span>);
+</span><span id="393" class="l"><a href="#393">393 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">9</span>, <span class="php-num">17</span>, <span class="php-quote">''</span>);
+</span><span id="394" class="l"><a href="#394">394 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">18</span>, <span class="php-num">23</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-num">1</span>, <span class="php-num">6</span>));
+</span><span id="395" class="l"><a href="#395">395 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">24</span>, <span class="php-num">29</span>, Util::formatCnab(<span class="php-quote">'9'</span>, <span class="php-var">$this</span>-&gt;getCount(), <span class="php-num">6</span>));
+</span><span id="396" class="l"><a href="#396">396 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">30</span>, <span class="php-num">35</span>, <span class="php-quote">''</span>);
+</span><span id="397" class="l"><a href="#397">397 </a>        <span class="php-var">$this</span>-&gt;add(<span class="php-num">36</span>, <span class="php-num">240</span>, <span class="php-quote">''</span>);
+</span><span id="398" class="l"><a href="#398">398 </a>
+</span><span id="399" class="l"><a href="#399">399 </a>        <span class="php-keyword1">return</span> <span class="php-var">$this</span>;
+</span><span id="400" class="l"><a href="#400">400 </a>    }
+</span><span id="401" class="l"><a href="#401">401 </a>}
+</span><span id="402" class="l"><a href="#402">402 </a></span></code></pre>
 	</div>
 
 	<div id="footer">
 		Documentação laravel-boletos API documentation generated by <a href="http://apigen.org">ApiGen</a>
 	</div>
 </div>
-<script src="resources/combined.js?26489efdec0521aef3d68ce564480f0fc314096b"></script>
+<script src="resources/combined.js?37f5d759fe32f60cc17740b3227f181b983a8f0b"></script>
 <script src="elementlist.js?52609ef7aeb0fcda604f34588320a706e1476161"></script>
 </body>
 </html>

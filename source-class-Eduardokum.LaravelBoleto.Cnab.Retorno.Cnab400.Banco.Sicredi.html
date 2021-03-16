@@ -284,305 +284,323 @@
 </span><span id="5" class="l"><a href="#5">  5 </a><span class="php-keyword1">use</span> Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto <span class="php-keyword1">as</span> BoletoContract;
 </span><span id="6" class="l"><a href="#6">  6 </a><span class="php-keyword1">use</span> Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
 </span><span id="7" class="l"><a href="#7">  7 </a><span class="php-keyword1">use</span> Eduardokum\LaravelBoleto\Util;
-</span><span id="8" class="l"><a href="#8">  8 </a>
-</span><span id="9" class="l"><a href="#9">  9 </a><span class="php-keyword1">class</span> Sicredi <span class="php-keyword1">extends</span> AbstractRetorno <span class="php-keyword1">implements</span> RetornoCnab400
-</span><span id="10" class="l"><a href="#10"> 10 </a>{
-</span><span id="11" class="l"><a href="#11"> 11 </a>    <span class="php-comment">/**
-</span></span><span id="12" class="l"><a href="#12"> 12 </a><span class="php-comment">     * Código do banco
-</span></span><span id="13" class="l"><a href="#13"> 13 </a><span class="php-comment">     *
-</span></span><span id="14" class="l"><a href="#14"> 14 </a><span class="php-comment">     * @var string
-</span></span><span id="15" class="l"><a href="#15"> 15 </a><span class="php-comment">     */</span>
-</span><span id="16" class="l"><a href="#16"> 16 </a>    <span class="php-keyword1">protected</span> <span class="php-var">$codigoBanco</span> = BoletoContract::COD_BANCO_SICREDI;
-</span><span id="17" class="l"><a href="#17"> 17 </a>
-</span><span id="18" class="l"><a href="#18"> 18 </a>    <span class="php-comment">/**
-</span></span><span id="19" class="l"><a href="#19"> 19 </a><span class="php-comment">     * Array com as ocorrencias do banco;
-</span></span><span id="20" class="l"><a href="#20"> 20 </a><span class="php-comment">     *
-</span></span><span id="21" class="l"><a href="#21"> 21 </a><span class="php-comment">     * @var array
-</span></span><span id="22" class="l"><a href="#22"> 22 </a><span class="php-comment">     */</span>
-</span><span id="23" class="l"><a href="#23"> 23 </a>    <span class="php-keyword1">private</span> <span class="php-var">$ocorrencias</span> = [
-</span><span id="24" class="l"><a href="#24"> 24 </a>        <span class="php-quote">'02'</span> =&gt; <span class="php-quote">'Entrada confirmada'</span>,
-</span><span id="25" class="l"><a href="#25"> 25 </a>        <span class="php-quote">'03'</span> =&gt; <span class="php-quote">'Entrada rejeitada'</span>,
-</span><span id="26" class="l"><a href="#26"> 26 </a>        <span class="php-quote">'06'</span> =&gt; <span class="php-quote">'Liquidação normal'</span>,
-</span><span id="27" class="l"><a href="#27"> 27 </a>        <span class="php-quote">'09'</span> =&gt; <span class="php-quote">'Baixado automaticamente via arquivo'</span>,
-</span><span id="28" class="l"><a href="#28"> 28 </a>        <span class="php-quote">'10'</span> =&gt; <span class="php-quote">'Baixado conforme instruções da cooperativa de crédito'</span>,
-</span><span id="29" class="l"><a href="#29"> 29 </a>        <span class="php-quote">'12'</span> =&gt; <span class="php-quote">'Abatimento concedido'</span>,
-</span><span id="30" class="l"><a href="#30"> 30 </a>        <span class="php-quote">'13'</span> =&gt; <span class="php-quote">'Abatimento cancelado'</span>,
-</span><span id="31" class="l"><a href="#31"> 31 </a>        <span class="php-quote">'14'</span> =&gt; <span class="php-quote">'Vencimento alterado'</span>,
-</span><span id="32" class="l"><a href="#32"> 32 </a>        <span class="php-quote">'15'</span> =&gt; <span class="php-quote">'Liquidação em cartório'</span>,
-</span><span id="33" class="l"><a href="#33"> 33 </a>        <span class="php-quote">'17'</span> =&gt; <span class="php-quote">'Liquidação após baixa'</span>,
-</span><span id="34" class="l"><a href="#34"> 34 </a>        <span class="php-quote">'19'</span> =&gt; <span class="php-quote">'Confirmação de recebimento de instrução de protesto'</span>,
-</span><span id="35" class="l"><a href="#35"> 35 </a>        <span class="php-quote">'20'</span> =&gt; <span class="php-quote">'Confirmação de recebimento de instrução de sustação de protesto'</span>,
-</span><span id="36" class="l"><a href="#36"> 36 </a>        <span class="php-quote">'23'</span> =&gt; <span class="php-quote">'Entrada de título em cartório'</span>,
-</span><span id="37" class="l"><a href="#37"> 37 </a>        <span class="php-quote">'24'</span> =&gt; <span class="php-quote">'Entrada rejeitada por CEP irregular'</span>,
-</span><span id="38" class="l"><a href="#38"> 38 </a>        <span class="php-quote">'27'</span> =&gt; <span class="php-quote">'Baixa rejeitada'</span>,
-</span><span id="39" class="l"><a href="#39"> 39 </a>        <span class="php-quote">'28'</span> =&gt; <span class="php-quote">'Tarifa'</span>,
-</span><span id="40" class="l"><a href="#40"> 40 </a>        <span class="php-quote">'29'</span> =&gt; <span class="php-quote">'Rejeição do pagador'</span>,
-</span><span id="41" class="l"><a href="#41"> 41 </a>        <span class="php-quote">'30'</span> =&gt; <span class="php-quote">'Alteração rejeitada'</span>,
-</span><span id="42" class="l"><a href="#42"> 42 </a>        <span class="php-quote">'32'</span> =&gt; <span class="php-quote">'Instrução rejeitada'</span>,
-</span><span id="43" class="l"><a href="#43"> 43 </a>        <span class="php-quote">'33'</span> =&gt; <span class="php-quote">'Confirmação de pedido de alteração de outros dados'</span>,
-</span><span id="44" class="l"><a href="#44"> 44 </a>        <span class="php-quote">'34'</span> =&gt; <span class="php-quote">'Retirado de cartório e manutenção em carteira'</span>,
-</span><span id="45" class="l"><a href="#45"> 45 </a>        <span class="php-quote">'35'</span> =&gt; <span class="php-quote">'Aceite do pagador'</span>,
-</span><span id="46" class="l"><a href="#46"> 46 </a>    ];
-</span><span id="47" class="l"><a href="#47"> 47 </a>
-</span><span id="48" class="l"><a href="#48"> 48 </a>    <span class="php-comment">/**
-</span></span><span id="49" class="l"><a href="#49"> 49 </a><span class="php-comment">     * Array com as possiveis rejeicoes do banco.
-</span></span><span id="50" class="l"><a href="#50"> 50 </a><span class="php-comment">     *
-</span></span><span id="51" class="l"><a href="#51"> 51 </a><span class="php-comment">     * @var array
-</span></span><span id="52" class="l"><a href="#52"> 52 </a><span class="php-comment">     */</span>
-</span><span id="53" class="l"><a href="#53"> 53 </a>    <span class="php-keyword1">private</span> <span class="php-var">$rejeicoes</span> = [
-</span><span id="54" class="l"><a href="#54"> 54 </a>        <span class="php-quote">'0A'</span> =&gt; <span class="php-quote">'Aceito'</span>,
-</span><span id="55" class="l"><a href="#55"> 55 </a>        <span class="php-quote">'0D'</span> =&gt; <span class="php-quote">'Desprezado'</span>,
-</span><span id="56" class="l"><a href="#56"> 56 </a>        <span class="php-quote">'01'</span> =&gt; <span class="php-quote">'Código do banco inválido'</span>,
-</span><span id="57" class="l"><a href="#57"> 57 </a>        <span class="php-quote">'02'</span> =&gt; <span class="php-quote">'Código do registro detalhe inválido'</span>,
-</span><span id="58" class="l"><a href="#58"> 58 </a>        <span class="php-quote">'03'</span> =&gt; <span class="php-quote">'Código da ocorrência inválido'</span>,
-</span><span id="59" class="l"><a href="#59"> 59 </a>        <span class="php-quote">'04'</span> =&gt; <span class="php-quote">'Código de ocorrência não permitida para a carteira'</span>,
-</span><span id="60" class="l"><a href="#60"> 60 </a>        <span class="php-quote">'05'</span> =&gt; <span class="php-quote">'Código de ocorrência não numérico'</span>,
-</span><span id="61" class="l"><a href="#61"> 61 </a>        <span class="php-quote">'07'</span> =&gt; <span class="php-quote">'Cooperativa/agência/conta/dígito inválidos'</span>,
-</span><span id="62" class="l"><a href="#62"> 62 </a>        <span class="php-quote">'08'</span> =&gt; <span class="php-quote">'Nosso número inválido'</span>,
-</span><span id="63" class="l"><a href="#63"> 63 </a>        <span class="php-quote">'09'</span> =&gt; <span class="php-quote">'Nosso número duplicado'</span>,
-</span><span id="64" class="l"><a href="#64"> 64 </a>        <span class="php-quote">'10'</span> =&gt; <span class="php-quote">'Carteira inválida'</span>,
-</span><span id="65" class="l"><a href="#65"> 65 </a>        <span class="php-quote">'15'</span> =&gt; <span class="php-quote">'Cooperativa/carteira/agência/conta/nosso número inválidos'</span>,
-</span><span id="66" class="l"><a href="#66"> 66 </a>        <span class="php-quote">'16'</span> =&gt; <span class="php-quote">'Data de vencimento inválida'</span>,
-</span><span id="67" class="l"><a href="#67"> 67 </a>        <span class="php-quote">'17'</span> =&gt; <span class="php-quote">'Data de vencimento anterior à data de emissão'</span>,
-</span><span id="68" class="l"><a href="#68"> 68 </a>        <span class="php-quote">'18'</span> =&gt; <span class="php-quote">'Vencimento fora do prazo de operação'</span>,
-</span><span id="69" class="l"><a href="#69"> 69 </a>        <span class="php-quote">'20'</span> =&gt; <span class="php-quote">'Valor do título inválido'</span>,
-</span><span id="70" class="l"><a href="#70"> 70 </a>        <span class="php-quote">'21'</span> =&gt; <span class="php-quote">'Espécie do título inválida'</span>,
-</span><span id="71" class="l"><a href="#71"> 71 </a>        <span class="php-quote">'22'</span> =&gt; <span class="php-quote">'Espécie não permitida para a carteira'</span>,
-</span><span id="72" class="l"><a href="#72"> 72 </a>        <span class="php-quote">'24'</span> =&gt; <span class="php-quote">'Data de emissão inválida'</span>,
-</span><span id="73" class="l"><a href="#73"> 73 </a>        <span class="php-quote">'29'</span> =&gt; <span class="php-quote">'Valor do desconto maior/igual ao valor do título'</span>,
-</span><span id="74" class="l"><a href="#74"> 74 </a>        <span class="php-quote">'31'</span> =&gt; <span class="php-quote">'Concessão de desconto - existe desconto anterior'</span>,
-</span><span id="75" class="l"><a href="#75"> 75 </a>        <span class="php-quote">'33'</span> =&gt; <span class="php-quote">'Valor do abatimento inválido'</span>,
-</span><span id="76" class="l"><a href="#76"> 76 </a>        <span class="php-quote">'34'</span> =&gt; <span class="php-quote">'Valor do abatimento maior/igual ao valor do título'</span>,
-</span><span id="77" class="l"><a href="#77"> 77 </a>        <span class="php-quote">'36'</span> =&gt; <span class="php-quote">'Concessão de abatimento - existe abatimento anterior'</span>,
-</span><span id="78" class="l"><a href="#78"> 78 </a>        <span class="php-quote">'38'</span> =&gt; <span class="php-quote">'Prazo para protesto inválido'</span>,
-</span><span id="79" class="l"><a href="#79"> 79 </a>        <span class="php-quote">'39'</span> =&gt; <span class="php-quote">'Pedido para protesto não permitido para o título'</span>,
-</span><span id="80" class="l"><a href="#80"> 80 </a>        <span class="php-quote">'40'</span> =&gt; <span class="php-quote">'Título com ordem de protesto emitida'</span>,
-</span><span id="81" class="l"><a href="#81"> 81 </a>        <span class="php-quote">'41'</span> =&gt; <span class="php-quote">'Pedido cancelamento/sustação sem instrução de protesto'</span>,
-</span><span id="82" class="l"><a href="#82"> 82 </a>        <span class="php-quote">'44'</span> =&gt; <span class="php-quote">'Cooperativa de crédito/agência beneficiária não prevista'</span>,
-</span><span id="83" class="l"><a href="#83"> 83 </a>        <span class="php-quote">'45'</span> =&gt; <span class="php-quote">'Nome do pagador inválido'</span>,
-</span><span id="84" class="l"><a href="#84"> 84 </a>        <span class="php-quote">'46'</span> =&gt; <span class="php-quote">'Tipo/número de inscrição do pagador inválidos'</span>,
-</span><span id="85" class="l"><a href="#85"> 85 </a>        <span class="php-quote">'47'</span> =&gt; <span class="php-quote">'Endereço do pagador não informado'</span>,
-</span><span id="86" class="l"><a href="#86"> 86 </a>        <span class="php-quote">'48'</span> =&gt; <span class="php-quote">'CEP irregular'</span>,
-</span><span id="87" class="l"><a href="#87"> 87 </a>        <span class="php-quote">'49'</span> =&gt; <span class="php-quote">'Número de Inscrição do pagador/avalista inválido'</span>,
-</span><span id="88" class="l"><a href="#88"> 88 </a>        <span class="php-quote">'50'</span> =&gt; <span class="php-quote">'Pagador/avalista não informado'</span>,
-</span><span id="89" class="l"><a href="#89"> 89 </a>        <span class="php-quote">'60'</span> =&gt; <span class="php-quote">'Movimento para título não cadastrado'</span>,
-</span><span id="90" class="l"><a href="#90"> 90 </a>        <span class="php-quote">'63'</span> =&gt; <span class="php-quote">'Entrada para título já cadastrado'</span>,
-</span><span id="91" class="l"><a href="#91"> 91 </a>        <span class="php-quote">'A1'</span> =&gt; <span class="php-quote">'Praça do pagador não cadastrada.'</span>,
-</span><span id="92" class="l"><a href="#92"> 92 </a>        <span class="php-quote">'A2'</span> =&gt; <span class="php-quote">'Tipo de cobrança do título divergente com a praça do pagador.'</span>,
-</span><span id="93" class="l"><a href="#93"> 93 </a>        <span class="php-quote">'A3'</span> =&gt; <span class="php-quote">'Cooperativa/agência depositária divergente: atualiza o cadastro de praças da Coop./agência beneficiária'</span>,
-</span><span id="94" class="l"><a href="#94"> 94 </a>        <span class="php-quote">'A4'</span> =&gt; <span class="php-quote">'Beneficiário não cadastrado ou possui CGC/CIC inválido'</span>,
-</span><span id="95" class="l"><a href="#95"> 95 </a>        <span class="php-quote">'A5'</span> =&gt; <span class="php-quote">'Pagador não cadastrado'</span>,
-</span><span id="96" class="l"><a href="#96"> 96 </a>        <span class="php-quote">'A6'</span> =&gt; <span class="php-quote">'Data da instrução/ocorrência inválida'</span>,
-</span><span id="97" class="l"><a href="#97"> 97 </a>        <span class="php-quote">'A7'</span> =&gt; <span class="php-quote">'Ocorrência não pode ser comandada'</span>,
-</span><span id="98" class="l"><a href="#98"> 98 </a>        <span class="php-quote">'B4'</span> =&gt; <span class="php-quote">'Tipo de moeda inválido'</span>,
-</span><span id="99" class="l"><a href="#99"> 99 </a>        <span class="php-quote">'B5'</span> =&gt; <span class="php-quote">'Tipo de desconto/juros inválido'</span>,
-</span><span id="100" class="l"><a href="#100">100 </a>        <span class="php-quote">'B6'</span> =&gt; <span class="php-quote">'Mensagem padrão não cadastrada'</span>,
-</span><span id="101" class="l"><a href="#101">101 </a>        <span class="php-quote">'B7'</span> =&gt; <span class="php-quote">'Seu número inválido'</span>,
-</span><span id="102" class="l"><a href="#102">102 </a>        <span class="php-quote">'B8'</span> =&gt; <span class="php-quote">'Percentual de multa inválido'</span>,
-</span><span id="103" class="l"><a href="#103">103 </a>        <span class="php-quote">'B9'</span> =&gt; <span class="php-quote">'Valor ou percentual de juros inválido'</span>,
-</span><span id="104" class="l"><a href="#104">104 </a>        <span class="php-quote">'C1'</span> =&gt; <span class="php-quote">'Data limite para concessão de desconto inválida'</span>,
-</span><span id="105" class="l"><a href="#105">105 </a>        <span class="php-quote">'C2'</span> =&gt; <span class="php-quote">'Aceite do título inválido'</span>,
-</span><span id="106" class="l"><a href="#106">106 </a>        <span class="php-quote">'C3'</span> =&gt; <span class="php-quote">'Campo alterado na instrução “31 – alteração de outros dados” inválido'</span>,
-</span><span id="107" class="l"><a href="#107">107 </a>        <span class="php-quote">'C4'</span> =&gt; <span class="php-quote">'Título ainda não foi confirmado pela centralizadora'</span>,
-</span><span id="108" class="l"><a href="#108">108 </a>        <span class="php-quote">'C5'</span> =&gt; <span class="php-quote">'Título rejeitado pela centralizadora'</span>,
-</span><span id="109" class="l"><a href="#109">109 </a>        <span class="php-quote">'C6'</span> =&gt; <span class="php-quote">'Título já liquidado'</span>,
-</span><span id="110" class="l"><a href="#110">110 </a>        <span class="php-quote">'C7'</span> =&gt; <span class="php-quote">'Título já baixado'</span>,
-</span><span id="111" class="l"><a href="#111">111 </a>        <span class="php-quote">'C8'</span> =&gt; <span class="php-quote">'Existe mesma instrução pendente de confirmação para este título'</span>,
-</span><span id="112" class="l"><a href="#112">112 </a>        <span class="php-quote">'C9'</span> =&gt; <span class="php-quote">'Instrução prévia de concessão de abatimento não existe ou não confirmada'</span>,
-</span><span id="113" class="l"><a href="#113">113 </a>        <span class="php-quote">'D1'</span> =&gt; <span class="php-quote">'Título dentro do prazo de vencimento (em dia)'</span>,
-</span><span id="114" class="l"><a href="#114">114 </a>        <span class="php-quote">'D2'</span> =&gt; <span class="php-quote">'Espécie de documento não permite protesto de título'</span>,
-</span><span id="115" class="l"><a href="#115">115 </a>        <span class="php-quote">'D3'</span> =&gt; <span class="php-quote">'Título possui instrução de baixa pendente de confirmação'</span>,
-</span><span id="116" class="l"><a href="#116">116 </a>        <span class="php-quote">'D4'</span> =&gt; <span class="php-quote">'Quantidade de mensagens padrão excede o limite permitido'</span>,
-</span><span id="117" class="l"><a href="#117">117 </a>        <span class="php-quote">'D5'</span> =&gt; <span class="php-quote">'Quantidade inválida no pedido de boletos pré-impressos da cobrança sem registro'</span>,
-</span><span id="118" class="l"><a href="#118">118 </a>        <span class="php-quote">'D6'</span> =&gt; <span class="php-quote">'Tipo de impressão inválida para cobrança sem registro'</span>,
-</span><span id="119" class="l"><a href="#119">119 </a>        <span class="php-quote">'D7'</span> =&gt; <span class="php-quote">'Cidade ou Estado do pagador não informado'</span>,
-</span><span id="120" class="l"><a href="#120">120 </a>        <span class="php-quote">'D8'</span> =&gt; <span class="php-quote">'Seqüência para composição do nosso número do ano atual esgotada'</span>,
-</span><span id="121" class="l"><a href="#121">121 </a>        <span class="php-quote">'D9'</span> =&gt; <span class="php-quote">'Registro mensagem para título não cadastrado'</span>,
-</span><span id="122" class="l"><a href="#122">122 </a>        <span class="php-quote">'E2'</span> =&gt; <span class="php-quote">'Registro complementar ao cadastro do título da cobrança com e sem registro não cadastrado'</span>,
-</span><span id="123" class="l"><a href="#123">123 </a>        <span class="php-quote">'E3'</span> =&gt; <span class="php-quote">'Tipo de postagem inválido, diferente de S, N e branco'</span>,
-</span><span id="124" class="l"><a href="#124">124 </a>        <span class="php-quote">'E4'</span> =&gt; <span class="php-quote">'Pedido de boletos pré-impressos'</span>,
-</span><span id="125" class="l"><a href="#125">125 </a>        <span class="php-quote">'E5'</span> =&gt; <span class="php-quote">'Confirmação/rejeição para pedidos de boletos não cadastrado'</span>,
-</span><span id="126" class="l"><a href="#126">126 </a>        <span class="php-quote">'E6'</span> =&gt; <span class="php-quote">'Pagador/avalista não cadastrado'</span>,
-</span><span id="127" class="l"><a href="#127">127 </a>        <span class="php-quote">'E7'</span> =&gt; <span class="php-quote">'Informação para atualização do valor do título para protesto inválido'</span>,
-</span><span id="128" class="l"><a href="#128">128 </a>        <span class="php-quote">'E8'</span> =&gt; <span class="php-quote">'Tipo de impressão inválido, diferente de A, B e branco'</span>,
-</span><span id="129" class="l"><a href="#129">129 </a>        <span class="php-quote">'E9'</span> =&gt; <span class="php-quote">'Código do pagador do título divergente com o código da cooperativa de crédito'</span>,
-</span><span id="130" class="l"><a href="#130">130 </a>        <span class="php-quote">'F1'</span> =&gt; <span class="php-quote">'Liquidado no sistema do cliente'</span>,
-</span><span id="131" class="l"><a href="#131">131 </a>        <span class="php-quote">'F2'</span> =&gt; <span class="php-quote">'Baixado no sistema do cliente'</span>,
-</span><span id="132" class="l"><a href="#132">132 </a>        <span class="php-quote">'F3'</span> =&gt; <span class="php-quote">'Instrução inválida, este título está caucionado/descontado'</span>,
-</span><span id="133" class="l"><a href="#133">133 </a>        <span class="php-quote">'F4'</span> =&gt; <span class="php-quote">'Instrução fixa com caracteres inválidos'</span>,
-</span><span id="134" class="l"><a href="#134">134 </a>        <span class="php-quote">'F6'</span> =&gt; <span class="php-quote">'Nosso número / número da parcela fora de seqüência – total de parcelas inválido'</span>,
-</span><span id="135" class="l"><a href="#135">135 </a>        <span class="php-quote">'F7'</span> =&gt; <span class="php-quote">'Falta de comprovante de prestação de serviço'</span>,
-</span><span id="136" class="l"><a href="#136">136 </a>        <span class="php-quote">'F8'</span> =&gt; <span class="php-quote">'Nome do beneficiário incompleto / incorreto.'</span>,
-</span><span id="137" class="l"><a href="#137">137 </a>        <span class="php-quote">'F9'</span> =&gt; <span class="php-quote">'CNPJ / CPF incompatível com o nome do pagador / Sacador Avalista'</span>,
-</span><span id="138" class="l"><a href="#138">138 </a>        <span class="php-quote">'G1'</span> =&gt; <span class="php-quote">'CNPJ / CPF do pagador Incompatível com a espécie'</span>,
-</span><span id="139" class="l"><a href="#139">139 </a>        <span class="php-quote">'G2'</span> =&gt; <span class="php-quote">'Título aceito: sem a assinatura do pagador'</span>,
-</span><span id="140" class="l"><a href="#140">140 </a>        <span class="php-quote">'G3'</span> =&gt; <span class="php-quote">'Título aceito: rasurado ou rasgado'</span>,
-</span><span id="141" class="l"><a href="#141">141 </a>        <span class="php-quote">'G4'</span> =&gt; <span class="php-quote">'Título aceito: falta título (cooperativa/ag. beneficiária deverá enviá-lo)'</span>,
-</span><span id="142" class="l"><a href="#142">142 </a>        <span class="php-quote">'G5'</span> =&gt; <span class="php-quote">'Praça de pagamento incompatível com o endereço'</span>,
-</span><span id="143" class="l"><a href="#143">143 </a>        <span class="php-quote">'G6'</span> =&gt; <span class="php-quote">'Título aceito: sem endosso ou beneficiário irregular'</span>,
-</span><span id="144" class="l"><a href="#144">144 </a>        <span class="php-quote">'G7'</span> =&gt; <span class="php-quote">'Título aceito: valor por extenso diferente do valor numérico'</span>,
-</span><span id="145" class="l"><a href="#145">145 </a>        <span class="php-quote">'G8'</span> =&gt; <span class="php-quote">'Saldo maior que o valor do título'</span>,
-</span><span id="146" class="l"><a href="#146">146 </a>        <span class="php-quote">'G9'</span> =&gt; <span class="php-quote">'Tipo de endosso inválido'</span>,
-</span><span id="147" class="l"><a href="#147">147 </a>        <span class="php-quote">'H1'</span> =&gt; <span class="php-quote">'Nome do pagador incompleto / Incorreto'</span>,
-</span><span id="148" class="l"><a href="#148">148 </a>        <span class="php-quote">'H2'</span> =&gt; <span class="php-quote">'Sustação judicial'</span>,
-</span><span id="149" class="l"><a href="#149">149 </a>        <span class="php-quote">'H3'</span> =&gt; <span class="php-quote">'Pagador não encontrado'</span>,
-</span><span id="150" class="l"><a href="#150">150 </a>        <span class="php-quote">'H4'</span> =&gt; <span class="php-quote">'Alteração de carteira'</span>,
-</span><span id="151" class="l"><a href="#151">151 </a>        <span class="php-quote">'H7'</span> =&gt; <span class="php-quote">'Espécie de documento necessita beneficiário ou avalista PJ'</span>,
-</span><span id="152" class="l"><a href="#152">152 </a>        <span class="php-quote">'H9'</span> =&gt; <span class="php-quote">'Dados do título não conferem com disquete'</span>,
-</span><span id="153" class="l"><a href="#153">153 </a>        <span class="php-quote">'I1'</span> =&gt; <span class="php-quote">'Pagador e Sacador Avalista são a mesma pessoa'</span>,
-</span><span id="154" class="l"><a href="#154">154 </a>        <span class="php-quote">'I2'</span> =&gt; <span class="php-quote">'Aguardar um dia útil após o vencimento para protestar'</span>,
-</span><span id="155" class="l"><a href="#155">155 </a>        <span class="php-quote">'I3'</span> =&gt; <span class="php-quote">'Data do vencimento rasurada'</span>,
-</span><span id="156" class="l"><a href="#156">156 </a>        <span class="php-quote">'I4'</span> =&gt; <span class="php-quote">'Vencimento – extenso não confere com número'</span>,
-</span><span id="157" class="l"><a href="#157">157 </a>        <span class="php-quote">'I5'</span> =&gt; <span class="php-quote">'Falta data de vencimento no título'</span>,
-</span><span id="158" class="l"><a href="#158">158 </a>        <span class="php-quote">'I6'</span> =&gt; <span class="php-quote">'DM/DMI sem comprovante autenticado ou declaração'</span>,
-</span><span id="159" class="l"><a href="#159">159 </a>        <span class="php-quote">'I7'</span> =&gt; <span class="php-quote">'Comprovante ilegível para conferência e microfilmagem'</span>,
-</span><span id="160" class="l"><a href="#160">160 </a>        <span class="php-quote">'I8'</span> =&gt; <span class="php-quote">'Nome solicitado não confere com emitente ou pagador'</span>,
-</span><span id="161" class="l"><a href="#161">161 </a>        <span class="php-quote">'I9'</span> =&gt; <span class="php-quote">'Confirmar se são 2 emitentes. Se sim, indicar os dados dos 2'</span>,
-</span><span id="162" class="l"><a href="#162">162 </a>        <span class="php-quote">'J1'</span> =&gt; <span class="php-quote">'Endereço do pagador igual ao do pagador ou do portador'</span>,
-</span><span id="163" class="l"><a href="#163">163 </a>        <span class="php-quote">'J2'</span> =&gt; <span class="php-quote">'Endereço do apresentante incompleto ou não informado'</span>,
-</span><span id="164" class="l"><a href="#164">164 </a>        <span class="php-quote">'J3'</span> =&gt; <span class="php-quote">'Rua/número inexistente no endereço'</span>,
-</span><span id="165" class="l"><a href="#165">165 </a>        <span class="php-quote">'J4'</span> =&gt; <span class="php-quote">'Falta endosso do favorecido para o apresentante'</span>,
-</span><span id="166" class="l"><a href="#166">166 </a>        <span class="php-quote">'J5'</span> =&gt; <span class="php-quote">'Data da emissão rasurada'</span>,
-</span><span id="167" class="l"><a href="#167">167 </a>        <span class="php-quote">'J6'</span> =&gt; <span class="php-quote">'Falta assinatura do pagador no título'</span>,
-</span><span id="168" class="l"><a href="#168">168 </a>        <span class="php-quote">'J7'</span> =&gt; <span class="php-quote">'Nome do apresentante não informado/incompleto/incorreto'</span>,
-</span><span id="169" class="l"><a href="#169">169 </a>        <span class="php-quote">'J8'</span> =&gt; <span class="php-quote">'Erro de preenchimento do titulo'</span>,
-</span><span id="170" class="l"><a href="#170">170 </a>        <span class="php-quote">'J9'</span> =&gt; <span class="php-quote">'Titulo com direito de regresso vencido'</span>,
-</span><span id="171" class="l"><a href="#171">171 </a>        <span class="php-quote">'K1'</span> =&gt; <span class="php-quote">'Titulo apresentado em duplicidade'</span>,
-</span><span id="172" class="l"><a href="#172">172 </a>        <span class="php-quote">'K2'</span> =&gt; <span class="php-quote">'Titulo já protestado'</span>,
-</span><span id="173" class="l"><a href="#173">173 </a>        <span class="php-quote">'K3'</span> =&gt; <span class="php-quote">'Letra de cambio vencida – falta aceite do pagador'</span>,
-</span><span id="174" class="l"><a href="#174">174 </a>        <span class="php-quote">'K4'</span> =&gt; <span class="php-quote">'Falta declaração de saldo assinada no título'</span>,
-</span><span id="175" class="l"><a href="#175">175 </a>        <span class="php-quote">'K5'</span> =&gt; <span class="php-quote">'Contrato de cambio – Falta conta gráfica'</span>,
-</span><span id="176" class="l"><a href="#176">176 </a>        <span class="php-quote">'K6'</span> =&gt; <span class="php-quote">'Ausência do documento físico'</span>,
-</span><span id="177" class="l"><a href="#177">177 </a>        <span class="php-quote">'K7'</span> =&gt; <span class="php-quote">'Pagador falecido'</span>,
-</span><span id="178" class="l"><a href="#178">178 </a>        <span class="php-quote">'K8'</span> =&gt; <span class="php-quote">'Pagador apresentou quitação do título'</span>,
-</span><span id="179" class="l"><a href="#179">179 </a>        <span class="php-quote">'K9'</span> =&gt; <span class="php-quote">'Título de outra jurisdição territorial'</span>,
-</span><span id="180" class="l"><a href="#180">180 </a>        <span class="php-quote">'L1'</span> =&gt; <span class="php-quote">'Título com emissão anterior a concordata do pagador'</span>,
-</span><span id="181" class="l"><a href="#181">181 </a>        <span class="php-quote">'L2'</span> =&gt; <span class="php-quote">'Pagador consta na lista de falência'</span>,
-</span><span id="182" class="l"><a href="#182">182 </a>        <span class="php-quote">'L3'</span> =&gt; <span class="php-quote">'Apresentante não aceita publicação de edital'</span>,
-</span><span id="183" class="l"><a href="#183">183 </a>        <span class="php-quote">'L4'</span> =&gt; <span class="php-quote">'Dados do Pagador em Branco ou inválido'</span>,
-</span><span id="184" class="l"><a href="#184">184 </a>        <span class="php-quote">'L5'</span> =&gt; <span class="php-quote">'Código do Pagador na agência beneficiária está duplicado'</span>,
-</span><span id="185" class="l"><a href="#185">185 </a>        <span class="php-quote">'M2'</span> =&gt; <span class="php-quote">'Não reconhecimento da dívida pelo pagador'</span>,
-</span><span id="186" class="l"><a href="#186">186 </a>    ];
-</span><span id="187" class="l"><a href="#187">187 </a>
-</span><span id="188" class="l"><a href="#188">188 </a>    <span class="php-comment">/**
-</span></span><span id="189" class="l"><a href="#189">189 </a><span class="php-comment">     * Roda antes dos metodos de processar
-</span></span><span id="190" class="l"><a href="#190">190 </a><span class="php-comment">     */</span>
-</span><span id="191" class="l"><a href="#191">191 </a>    <span class="php-keyword1">protected</span> <span class="php-keyword1">function</span> init()
-</span><span id="192" class="l"><a href="#192">192 </a>    {
-</span><span id="193" class="l"><a href="#193">193 </a>        <span class="php-var">$this</span>-&gt;totais = [
-</span><span id="194" class="l"><a href="#194">194 </a>            <span class="php-quote">'valor_recebido'</span> =&gt; <span class="php-num">0</span>,
-</span><span id="195" class="l"><a href="#195">195 </a>            <span class="php-quote">'liquidados'</span> =&gt; <span class="php-num">0</span>,
-</span><span id="196" class="l"><a href="#196">196 </a>            <span class="php-quote">'entradas'</span> =&gt; <span class="php-num">0</span>,
-</span><span id="197" class="l"><a href="#197">197 </a>            <span class="php-quote">'baixados'</span> =&gt; <span class="php-num">0</span>,
-</span><span id="198" class="l"><a href="#198">198 </a>            <span class="php-quote">'protestados'</span> =&gt; <span class="php-num">0</span>,
-</span><span id="199" class="l"><a href="#199">199 </a>            <span class="php-quote">'erros'</span> =&gt; <span class="php-num">0</span>,
-</span><span id="200" class="l"><a href="#200">200 </a>            <span class="php-quote">'alterados'</span> =&gt; <span class="php-num">0</span>,
-</span><span id="201" class="l"><a href="#201">201 </a>        ];
-</span><span id="202" class="l"><a href="#202">202 </a>    }
-</span><span id="203" class="l"><a href="#203">203 </a>
-</span><span id="204" class="l"><a href="#204">204 </a>    <span class="php-keyword1">protected</span> <span class="php-keyword1">function</span> processarHeader(<span class="php-keyword1">array</span> <span class="php-var">$header</span>)
-</span><span id="205" class="l"><a href="#205">205 </a>    {
-</span><span id="206" class="l"><a href="#206">206 </a>        <span class="php-var">$this</span>-&gt;getHeader()
-</span><span id="207" class="l"><a href="#207">207 </a>            -&gt;setOperacaoCodigo(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">2</span>, <span class="php-num">2</span>, <span class="php-var">$header</span>))
-</span><span id="208" class="l"><a href="#208">208 </a>            -&gt;setOperacao(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">3</span>, <span class="php-num">9</span>, <span class="php-var">$header</span>))
-</span><span id="209" class="l"><a href="#209">209 </a>            -&gt;setServicoCodigo(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">10</span>, <span class="php-num">11</span>, <span class="php-var">$header</span>))
-</span><span id="210" class="l"><a href="#210">210 </a>            -&gt;setServico(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">12</span>, <span class="php-num">26</span>, <span class="php-var">$header</span>))
-</span><span id="211" class="l"><a href="#211">211 </a>            -&gt;setConta(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">27</span>, <span class="php-num">31</span>, <span class="php-var">$header</span>))
-</span><span id="212" class="l"><a href="#212">212 </a>            -&gt;setCodigoCliente(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">32</span>, <span class="php-num">45</span>, <span class="php-var">$header</span>))
-</span><span id="213" class="l"><a href="#213">213 </a>            -&gt;setData(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">95</span>, <span class="php-num">102</span>, <span class="php-var">$header</span>), <span class="php-quote">'Ymd'</span>);
-</span><span id="214" class="l"><a href="#214">214 </a>
-</span><span id="215" class="l"><a href="#215">215 </a>        <span class="php-keyword1">return</span> <span class="php-keyword1">true</span>;
-</span><span id="216" class="l"><a href="#216">216 </a>    }
-</span><span id="217" class="l"><a href="#217">217 </a>
-</span><span id="218" class="l"><a href="#218">218 </a>    <span class="php-keyword1">protected</span> <span class="php-keyword1">function</span> processarDetalhe(<span class="php-keyword1">array</span> <span class="php-var">$detalhe</span>)
-</span><span id="219" class="l"><a href="#219">219 </a>    {
-</span><span id="220" class="l"><a href="#220">220 </a>        <span class="php-var">$d</span> = <span class="php-var">$this</span>-&gt;detalheAtual();
-</span><span id="221" class="l"><a href="#221">221 </a>        
-</span><span id="222" class="l"><a href="#222">222 </a>        <span class="php-var">$d</span>-&gt;setNossoNumero(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">48</span>, <span class="php-num">62</span>, <span class="php-var">$detalhe</span>))
-</span><span id="223" class="l"><a href="#223">223 </a>            -&gt;setNumeroControle(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">117</span>, <span class="php-num">126</span>, <span class="php-var">$detalhe</span>))
-</span><span id="224" class="l"><a href="#224">224 </a>            -&gt;setNumeroDocumento(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">117</span>, <span class="php-num">126</span>, <span class="php-var">$detalhe</span>))
-</span><span id="225" class="l"><a href="#225">225 </a>            -&gt;setOcorrencia(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">109</span>, <span class="php-num">110</span>, <span class="php-var">$detalhe</span>))
-</span><span id="226" class="l"><a href="#226">226 </a>            -&gt;setOcorrenciaDescricao(array_get(<span class="php-var">$this</span>-&gt;ocorrencias, <span class="php-var">$d</span>-&gt;getOcorrencia(), <span class="php-quote">'Desconhecida'</span>))
-</span><span id="227" class="l"><a href="#227">227 </a>            -&gt;setDataOcorrencia(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">111</span>, <span class="php-num">116</span>, <span class="php-var">$detalhe</span>))
-</span><span id="228" class="l"><a href="#228">228 </a>            -&gt;setDataVencimento(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">147</span>, <span class="php-num">152</span>, <span class="php-var">$detalhe</span>))
-</span><span id="229" class="l"><a href="#229">229 </a>            -&gt;setValor(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">153</span>, <span class="php-num">165</span>, <span class="php-var">$detalhe</span>), <span class="php-num">2</span>, <span class="php-keyword1">false</span>) / <span class="php-num">100</span>)
-</span><span id="230" class="l"><a href="#230">230 </a>            -&gt;setValorTarifa(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">176</span>, <span class="php-num">188</span>, <span class="php-var">$detalhe</span>), <span class="php-num">2</span>, <span class="php-keyword1">false</span>) / <span class="php-num">100</span>)
-</span><span id="231" class="l"><a href="#231">231 </a>            -&gt;setValorAbatimento(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">228</span>, <span class="php-num">240</span>, <span class="php-var">$detalhe</span>), <span class="php-num">2</span>, <span class="php-keyword1">false</span>) / <span class="php-num">100</span>)
-</span><span id="232" class="l"><a href="#232">232 </a>            -&gt;setValorDesconto(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">241</span>, <span class="php-num">253</span>, <span class="php-var">$detalhe</span>), <span class="php-num">2</span>, <span class="php-keyword1">false</span>) / <span class="php-num">100</span>)
-</span><span id="233" class="l"><a href="#233">233 </a>            -&gt;setValorRecebido(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">254</span>, <span class="php-num">266</span>, <span class="php-var">$detalhe</span>), <span class="php-num">2</span>, <span class="php-keyword1">false</span>) / <span class="php-num">100</span>)
-</span><span id="234" class="l"><a href="#234">234 </a>            -&gt;setValorMora(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">267</span>, <span class="php-num">279</span>, <span class="php-var">$detalhe</span>), <span class="php-num">2</span>, <span class="php-keyword1">false</span>) / <span class="php-num">100</span>)
-</span><span id="235" class="l"><a href="#235">235 </a>            -&gt;setValorMulta(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">280</span>, <span class="php-num">292</span>, <span class="php-var">$detalhe</span>), <span class="php-num">2</span>, <span class="php-keyword1">false</span>) / <span class="php-num">100</span>)
-</span><span id="236" class="l"><a href="#236">236 </a>            -&gt;setDataCredito(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">329</span>, <span class="php-num">336</span>, <span class="php-var">$detalhe</span>), <span class="php-quote">'Ymd'</span>);
-</span><span id="237" class="l"><a href="#237">237 </a>
-</span><span id="238" class="l"><a href="#238">238 </a>        <span class="php-keyword1">if</span> (<span class="php-var">$d</span>-&gt;hasOcorrencia(<span class="php-quote">'06'</span>, <span class="php-quote">'15'</span>, <span class="php-quote">'16'</span>)) {
-</span><span id="239" class="l"><a href="#239">239 </a>            <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'valor_recebido'</span>] += <span class="php-var">$d</span>-&gt;getValorRecebido();
-</span><span id="240" class="l"><a href="#240">240 </a>            <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'liquidados'</span>]++;
-</span><span id="241" class="l"><a href="#241">241 </a>            <span class="php-var">$d</span>-&gt;setOcorrenciaTipo(<span class="php-var">$d</span>::OCORRENCIA_LIQUIDADA);
-</span><span id="242" class="l"><a href="#242">242 </a>        } <span class="php-keyword1">elseif</span> (<span class="php-var">$d</span>-&gt;hasOcorrencia(<span class="php-quote">'02'</span>)) {
-</span><span id="243" class="l"><a href="#243">243 </a>            <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'entradas'</span>]++;
-</span><span id="244" class="l"><a href="#244">244 </a>            <span class="php-var">$d</span>-&gt;setOcorrenciaTipo(<span class="php-var">$d</span>::OCORRENCIA_ENTRADA);
-</span><span id="245" class="l"><a href="#245">245 </a>        } <span class="php-keyword1">elseif</span> (<span class="php-var">$d</span>-&gt;hasOcorrencia(<span class="php-quote">'09'</span>, <span class="php-quote">'10'</span>)) {
-</span><span id="246" class="l"><a href="#246">246 </a>            <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'baixados'</span>]++;
-</span><span id="247" class="l"><a href="#247">247 </a>            <span class="php-var">$d</span>-&gt;setOcorrenciaTipo(<span class="php-var">$d</span>::OCORRENCIA_BAIXADA);
-</span><span id="248" class="l"><a href="#248">248 </a>        } <span class="php-keyword1">elseif</span> (<span class="php-var">$d</span>-&gt;hasOcorrencia(<span class="php-quote">'23'</span>)) {
-</span><span id="249" class="l"><a href="#249">249 </a>            <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'protestados'</span>]++;
-</span><span id="250" class="l"><a href="#250">250 </a>            <span class="php-var">$d</span>-&gt;setOcorrenciaTipo(<span class="php-var">$d</span>::OCORRENCIA_PROTESTADA);
-</span><span id="251" class="l"><a href="#251">251 </a>        } <span class="php-keyword1">elseif</span> (<span class="php-var">$d</span>-&gt;hasOcorrencia(<span class="php-quote">'33'</span>)) {
-</span><span id="252" class="l"><a href="#252">252 </a>            <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'alterados'</span>]++;
-</span><span id="253" class="l"><a href="#253">253 </a>            <span class="php-var">$d</span>-&gt;setOcorrenciaTipo(<span class="php-var">$d</span>::OCORRENCIA_ALTERACAO);
-</span><span id="254" class="l"><a href="#254">254 </a>        } <span class="php-keyword1">elseif</span> (<span class="php-var">$d</span>-&gt;hasOcorrencia(<span class="php-quote">'03'</span>, <span class="php-quote">'27'</span>, <span class="php-quote">'30'</span>)) {
-</span><span id="255" class="l"><a href="#255">255 </a>            <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'erros'</span>]++;
-</span><span id="256" class="l"><a href="#256">256 </a>        <span class="php-keyword1">if</span>(<span class="php-var">$d</span>-&gt;hasOcorrencia(<span class="php-quote">'03'</span>)) {
-</span><span id="257" class="l"><a href="#257">257 </a>               <span class="php-keyword1">if</span>(<span class="php-keyword1">isset</span>(<span class="php-var">$this</span>-&gt;rejeicoes[<span class="php-var">$this</span>-&gt;rem(<span class="php-num">319</span>, <span class="php-num">320</span>, <span class="php-var">$detalhe</span>)])){
-</span><span id="258" class="l"><a href="#258">258 </a>                  <span class="php-var">$d</span>-&gt;setRejeicao(<span class="php-var">$this</span>-&gt;rejeicoes[<span class="php-var">$this</span>-&gt;rem(<span class="php-num">319</span>, <span class="php-num">320</span>, <span class="php-var">$detalhe</span>)]);
-</span><span id="259" class="l"><a href="#259">259 </a>               }
-</span><span id="260" class="l"><a href="#260">260 </a>            }
-</span><span id="261" class="l"><a href="#261">261 </a>        } <span class="php-keyword1">else</span> {
-</span><span id="262" class="l"><a href="#262">262 </a>            <span class="php-var">$d</span>-&gt;setOcorrenciaTipo(<span class="php-var">$d</span>::OCORRENCIA_OUTROS);
-</span><span id="263" class="l"><a href="#263">263 </a>        }
-</span><span id="264" class="l"><a href="#264">264 </a>
-</span><span id="265" class="l"><a href="#265">265 </a>        <span class="php-var">$stringErrors</span> = <span class="php-keyword2">sprintf</span>(<span class="php-quote">'%010s'</span>, <span class="php-var">$this</span>-&gt;rem(<span class="php-num">319</span>, <span class="php-num">328</span>, <span class="php-var">$detalhe</span>));
-</span><span id="266" class="l"><a href="#266">266 </a>        <span class="php-var">$errorsRetorno</span> = <span class="php-keyword2">str_split</span>(<span class="php-var">$stringErrors</span>, <span class="php-num">2</span>) + <span class="php-keyword2">array_fill</span>(<span class="php-num">0</span>, <span class="php-num">5</span>, <span class="php-quote">''</span>) + <span class="php-keyword2">array_fill</span>(<span class="php-num">0</span>, <span class="php-num">5</span>, <span class="php-quote">''</span>);
-</span><span id="267" class="l"><a href="#267">267 </a>        <span class="php-keyword1">if</span> (<span class="php-keyword2">trim</span>(<span class="php-var">$stringErrors</span>, <span class="php-quote">'0'</span>) != <span class="php-quote">''</span>) {
-</span><span id="268" class="l"><a href="#268">268 </a>            <span class="php-var">$error</span> = [];
-</span><span id="269" class="l"><a href="#269">269 </a>            <span class="php-var">$error</span>[] = array_get(<span class="php-var">$this</span>-&gt;rejeicoes, <span class="php-var">$errorsRetorno</span>[<span class="php-num">0</span>], <span class="php-quote">''</span>);
-</span><span id="270" class="l"><a href="#270">270 </a>            <span class="php-var">$error</span>[] = array_get(<span class="php-var">$this</span>-&gt;rejeicoes, <span class="php-var">$errorsRetorno</span>[<span class="php-num">1</span>], <span class="php-quote">''</span>);
-</span><span id="271" class="l"><a href="#271">271 </a>            <span class="php-var">$error</span>[] = array_get(<span class="php-var">$this</span>-&gt;rejeicoes, <span class="php-var">$errorsRetorno</span>[<span class="php-num">2</span>], <span class="php-quote">''</span>);
-</span><span id="272" class="l"><a href="#272">272 </a>            <span class="php-var">$error</span>[] = array_get(<span class="php-var">$this</span>-&gt;rejeicoes, <span class="php-var">$errorsRetorno</span>[<span class="php-num">3</span>], <span class="php-quote">''</span>);
-</span><span id="273" class="l"><a href="#273">273 </a>            <span class="php-var">$error</span>[] = array_get(<span class="php-var">$this</span>-&gt;rejeicoes, <span class="php-var">$errorsRetorno</span>[<span class="php-num">4</span>], <span class="php-quote">''</span>);
-</span><span id="274" class="l"><a href="#274">274 </a>
-</span><span id="275" class="l"><a href="#275">275 </a>            <span class="php-var">$error</span> = <span class="php-keyword2">array_filter</span>(<span class="php-var">$error</span>);
-</span><span id="276" class="l"><a href="#276">276 </a>
-</span><span id="277" class="l"><a href="#277">277 </a>            <span class="php-keyword1">if</span> (<span class="php-keyword2">count</span>(<span class="php-var">$error</span>) &gt; <span class="php-num">0</span>){
-</span><span id="278" class="l"><a href="#278">278 </a>                <span class="php-var">$d</span>-&gt;setError(<span class="php-keyword2">implode</span>(PHP_EOL, <span class="php-var">$error</span>));
-</span><span id="279" class="l"><a href="#279">279 </a>            }
-</span><span id="280" class="l"><a href="#280">280 </a>        }
-</span><span id="281" class="l"><a href="#281">281 </a>
-</span><span id="282" class="l"><a href="#282">282 </a>        <span class="php-keyword1">return</span> <span class="php-keyword1">true</span>;
-</span><span id="283" class="l"><a href="#283">283 </a>    }
-</span><span id="284" class="l"><a href="#284">284 </a>
-</span><span id="285" class="l"><a href="#285">285 </a>    <span class="php-keyword1">protected</span> <span class="php-keyword1">function</span> processarTrailer(<span class="php-keyword1">array</span> <span class="php-var">$trailer</span>)
-</span><span id="286" class="l"><a href="#286">286 </a>    {
-</span><span id="287" class="l"><a href="#287">287 </a>        <span class="php-var">$this</span>-&gt;getTrailer()
-</span><span id="288" class="l"><a href="#288">288 </a>            -&gt;setQuantidadeTitulos((int) <span class="php-var">$this</span>-&gt;<span class="php-keyword2">count</span>())
-</span><span id="289" class="l"><a href="#289">289 </a>            -&gt;setValorTitulos((float) Util::nFloat(<span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'valor_recebido'</span>], <span class="php-num">2</span>, <span class="php-keyword1">false</span>))
-</span><span id="290" class="l"><a href="#290">290 </a>            -&gt;setQuantidadeErros((int) <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'erros'</span>])
-</span><span id="291" class="l"><a href="#291">291 </a>            -&gt;setQuantidadeEntradas((int) <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'entradas'</span>])
-</span><span id="292" class="l"><a href="#292">292 </a>            -&gt;setQuantidadeLiquidados((int) <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'liquidados'</span>])
-</span><span id="293" class="l"><a href="#293">293 </a>            -&gt;setQuantidadeBaixados((int) <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'baixados'</span>])
-</span><span id="294" class="l"><a href="#294">294 </a>            -&gt;setQuantidadeAlterados((int) <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'alterados'</span>]);
-</span><span id="295" class="l"><a href="#295">295 </a>
-</span><span id="296" class="l"><a href="#296">296 </a>        <span class="php-keyword1">return</span> <span class="php-keyword1">true</span>;
-</span><span id="297" class="l"><a href="#297">297 </a>    }
-</span><span id="298" class="l"><a href="#298">298 </a>}
-</span><span id="299" class="l"><a href="#299">299 </a></span></code></pre>
+</span><span id="8" class="l"><a href="#8">  8 </a><span class="php-keyword1">use</span> Illuminate\Support\Arr;
+</span><span id="9" class="l"><a href="#9">  9 </a>
+</span><span id="10" class="l"><a href="#10"> 10 </a><span class="php-keyword1">class</span> Sicredi <span class="php-keyword1">extends</span> AbstractRetorno <span class="php-keyword1">implements</span> RetornoCnab400
+</span><span id="11" class="l"><a href="#11"> 11 </a>{
+</span><span id="12" class="l"><a href="#12"> 12 </a>    <span class="php-comment">/**
+</span></span><span id="13" class="l"><a href="#13"> 13 </a><span class="php-comment">     * Código do banco
+</span></span><span id="14" class="l"><a href="#14"> 14 </a><span class="php-comment">     *
+</span></span><span id="15" class="l"><a href="#15"> 15 </a><span class="php-comment">     * @var string
+</span></span><span id="16" class="l"><a href="#16"> 16 </a><span class="php-comment">     */</span>
+</span><span id="17" class="l"><a href="#17"> 17 </a>    <span class="php-keyword1">protected</span> <span class="php-var">$codigoBanco</span> = BoletoContract::COD_BANCO_SICREDI;
+</span><span id="18" class="l"><a href="#18"> 18 </a>
+</span><span id="19" class="l"><a href="#19"> 19 </a>    <span class="php-comment">/**
+</span></span><span id="20" class="l"><a href="#20"> 20 </a><span class="php-comment">     * Array com as ocorrencias do banco;
+</span></span><span id="21" class="l"><a href="#21"> 21 </a><span class="php-comment">     *
+</span></span><span id="22" class="l"><a href="#22"> 22 </a><span class="php-comment">     * @var array
+</span></span><span id="23" class="l"><a href="#23"> 23 </a><span class="php-comment">     */</span>
+</span><span id="24" class="l"><a href="#24"> 24 </a>    <span class="php-keyword1">private</span> <span class="php-var">$ocorrencias</span> = [
+</span><span id="25" class="l"><a href="#25"> 25 </a>        <span class="php-quote">'02'</span> =&gt; <span class="php-quote">'Entrada confirmada'</span>,
+</span><span id="26" class="l"><a href="#26"> 26 </a>        <span class="php-quote">'03'</span> =&gt; <span class="php-quote">'Entrada rejeitada'</span>,
+</span><span id="27" class="l"><a href="#27"> 27 </a>        <span class="php-quote">'06'</span> =&gt; <span class="php-quote">'Liquidação normal'</span>,
+</span><span id="28" class="l"><a href="#28"> 28 </a>        <span class="php-quote">'09'</span> =&gt; <span class="php-quote">'Baixado automaticamente via arquivo'</span>,
+</span><span id="29" class="l"><a href="#29"> 29 </a>        <span class="php-quote">'10'</span> =&gt; <span class="php-quote">'Baixado conforme instruções da cooperativa de crédito'</span>,
+</span><span id="30" class="l"><a href="#30"> 30 </a>        <span class="php-quote">'12'</span> =&gt; <span class="php-quote">'Abatimento concedido'</span>,
+</span><span id="31" class="l"><a href="#31"> 31 </a>        <span class="php-quote">'13'</span> =&gt; <span class="php-quote">'Abatimento cancelado'</span>,
+</span><span id="32" class="l"><a href="#32"> 32 </a>        <span class="php-quote">'14'</span> =&gt; <span class="php-quote">'Vencimento alterado'</span>,
+</span><span id="33" class="l"><a href="#33"> 33 </a>        <span class="php-quote">'15'</span> =&gt; <span class="php-quote">'Liquidação em cartório'</span>,
+</span><span id="34" class="l"><a href="#34"> 34 </a>        <span class="php-quote">'17'</span> =&gt; <span class="php-quote">'Liquidação após baixa'</span>,
+</span><span id="35" class="l"><a href="#35"> 35 </a>        <span class="php-quote">'19'</span> =&gt; <span class="php-quote">'Confirmação de recebimento de instrução de protesto'</span>,
+</span><span id="36" class="l"><a href="#36"> 36 </a>        <span class="php-quote">'20'</span> =&gt; <span class="php-quote">'Confirmação de recebimento de instrução de sustação de protesto'</span>,
+</span><span id="37" class="l"><a href="#37"> 37 </a>        <span class="php-quote">'23'</span> =&gt; <span class="php-quote">'Entrada de título em cartório'</span>,
+</span><span id="38" class="l"><a href="#38"> 38 </a>        <span class="php-quote">'24'</span> =&gt; <span class="php-quote">'Entrada rejeitada por CEP irregular'</span>,
+</span><span id="39" class="l"><a href="#39"> 39 </a>        <span class="php-quote">'27'</span> =&gt; <span class="php-quote">'Baixa rejeitada'</span>,
+</span><span id="40" class="l"><a href="#40"> 40 </a>        <span class="php-quote">'28'</span> =&gt; <span class="php-quote">'Tarifa'</span>,
+</span><span id="41" class="l"><a href="#41"> 41 </a>        <span class="php-quote">'29'</span> =&gt; <span class="php-quote">'Rejeição do pagador'</span>,
+</span><span id="42" class="l"><a href="#42"> 42 </a>        <span class="php-quote">'30'</span> =&gt; <span class="php-quote">'Alteração rejeitada'</span>,
+</span><span id="43" class="l"><a href="#43"> 43 </a>        <span class="php-quote">'32'</span> =&gt; <span class="php-quote">'Instrução rejeitada'</span>,
+</span><span id="44" class="l"><a href="#44"> 44 </a>        <span class="php-quote">'33'</span> =&gt; <span class="php-quote">'Confirmação de pedido de alteração de outros dados'</span>,
+</span><span id="45" class="l"><a href="#45"> 45 </a>        <span class="php-quote">'34'</span> =&gt; <span class="php-quote">'Retirado de cartório e manutenção em carteira'</span>,
+</span><span id="46" class="l"><a href="#46"> 46 </a>        <span class="php-quote">'35'</span> =&gt; <span class="php-quote">'Aceite do pagador'</span>,
+</span><span id="47" class="l"><a href="#47"> 47 </a>    ];
+</span><span id="48" class="l"><a href="#48"> 48 </a>
+</span><span id="49" class="l"><a href="#49"> 49 </a>    <span class="php-comment">/**
+</span></span><span id="50" class="l"><a href="#50"> 50 </a><span class="php-comment">     * Array com as possiveis rejeicoes do banco.
+</span></span><span id="51" class="l"><a href="#51"> 51 </a><span class="php-comment">     *
+</span></span><span id="52" class="l"><a href="#52"> 52 </a><span class="php-comment">     * @var array
+</span></span><span id="53" class="l"><a href="#53"> 53 </a><span class="php-comment">     */</span>
+</span><span id="54" class="l"><a href="#54"> 54 </a>    <span class="php-keyword1">private</span> <span class="php-var">$rejeicoes</span> = [
+</span><span id="55" class="l"><a href="#55"> 55 </a>        <span class="php-quote">'0A'</span> =&gt; <span class="php-quote">'Aceito'</span>,
+</span><span id="56" class="l"><a href="#56"> 56 </a>        <span class="php-quote">'0D'</span> =&gt; <span class="php-quote">'Desprezado'</span>,
+</span><span id="57" class="l"><a href="#57"> 57 </a>        <span class="php-quote">'01'</span> =&gt; <span class="php-quote">'Código do banco inválido'</span>,
+</span><span id="58" class="l"><a href="#58"> 58 </a>        <span class="php-quote">'02'</span> =&gt; <span class="php-quote">'Código do registro detalhe inválido'</span>,
+</span><span id="59" class="l"><a href="#59"> 59 </a>        <span class="php-quote">'03'</span> =&gt; <span class="php-quote">'Código da ocorrência inválido'</span>,
+</span><span id="60" class="l"><a href="#60"> 60 </a>        <span class="php-quote">'04'</span> =&gt; <span class="php-quote">'Código de ocorrência não permitida para a carteira'</span>,
+</span><span id="61" class="l"><a href="#61"> 61 </a>        <span class="php-quote">'05'</span> =&gt; <span class="php-quote">'Código de ocorrência não numérico'</span>,
+</span><span id="62" class="l"><a href="#62"> 62 </a>        <span class="php-quote">'07'</span> =&gt; <span class="php-quote">'Cooperativa/agência/conta/dígito inválidos'</span>,
+</span><span id="63" class="l"><a href="#63"> 63 </a>        <span class="php-quote">'08'</span> =&gt; <span class="php-quote">'Nosso número inválido'</span>,
+</span><span id="64" class="l"><a href="#64"> 64 </a>        <span class="php-quote">'09'</span> =&gt; <span class="php-quote">'Nosso número duplicado'</span>,
+</span><span id="65" class="l"><a href="#65"> 65 </a>        <span class="php-quote">'10'</span> =&gt; <span class="php-quote">'Carteira inválida'</span>,
+</span><span id="66" class="l"><a href="#66"> 66 </a>        <span class="php-quote">'15'</span> =&gt; <span class="php-quote">'Cooperativa/carteira/agência/conta/nosso número inválidos'</span>,
+</span><span id="67" class="l"><a href="#67"> 67 </a>        <span class="php-quote">'16'</span> =&gt; <span class="php-quote">'Data de vencimento inválida'</span>,
+</span><span id="68" class="l"><a href="#68"> 68 </a>        <span class="php-quote">'17'</span> =&gt; <span class="php-quote">'Data de vencimento anterior à data de emissão'</span>,
+</span><span id="69" class="l"><a href="#69"> 69 </a>        <span class="php-quote">'18'</span> =&gt; <span class="php-quote">'Vencimento fora do prazo de operação'</span>,
+</span><span id="70" class="l"><a href="#70"> 70 </a>        <span class="php-quote">'20'</span> =&gt; <span class="php-quote">'Valor do título inválido'</span>,
+</span><span id="71" class="l"><a href="#71"> 71 </a>        <span class="php-quote">'21'</span> =&gt; <span class="php-quote">'Espécie do título inválida'</span>,
+</span><span id="72" class="l"><a href="#72"> 72 </a>        <span class="php-quote">'22'</span> =&gt; <span class="php-quote">'Espécie não permitida para a carteira'</span>,
+</span><span id="73" class="l"><a href="#73"> 73 </a>        <span class="php-quote">'24'</span> =&gt; <span class="php-quote">'Data de emissão inválida'</span>,
+</span><span id="74" class="l"><a href="#74"> 74 </a>        <span class="php-quote">'29'</span> =&gt; <span class="php-quote">'Valor do desconto maior/igual ao valor do título'</span>,
+</span><span id="75" class="l"><a href="#75"> 75 </a>        <span class="php-quote">'31'</span> =&gt; <span class="php-quote">'Concessão de desconto - existe desconto anterior'</span>,
+</span><span id="76" class="l"><a href="#76"> 76 </a>        <span class="php-quote">'33'</span> =&gt; <span class="php-quote">'Valor do abatimento inválido'</span>,
+</span><span id="77" class="l"><a href="#77"> 77 </a>        <span class="php-quote">'34'</span> =&gt; <span class="php-quote">'Valor do abatimento maior/igual ao valor do título'</span>,
+</span><span id="78" class="l"><a href="#78"> 78 </a>        <span class="php-quote">'36'</span> =&gt; <span class="php-quote">'Concessão de abatimento - existe abatimento anterior'</span>,
+</span><span id="79" class="l"><a href="#79"> 79 </a>        <span class="php-quote">'38'</span> =&gt; <span class="php-quote">'Prazo para protesto inválido'</span>,
+</span><span id="80" class="l"><a href="#80"> 80 </a>        <span class="php-quote">'39'</span> =&gt; <span class="php-quote">'Pedido para protesto não permitido para o título'</span>,
+</span><span id="81" class="l"><a href="#81"> 81 </a>        <span class="php-quote">'40'</span> =&gt; <span class="php-quote">'Título com ordem de protesto emitida'</span>,
+</span><span id="82" class="l"><a href="#82"> 82 </a>        <span class="php-quote">'41'</span> =&gt; <span class="php-quote">'Pedido cancelamento/sustação sem instrução de protesto'</span>,
+</span><span id="83" class="l"><a href="#83"> 83 </a>        <span class="php-quote">'44'</span> =&gt; <span class="php-quote">'Cooperativa de crédito/agência beneficiária não prevista'</span>,
+</span><span id="84" class="l"><a href="#84"> 84 </a>        <span class="php-quote">'45'</span> =&gt; <span class="php-quote">'Nome do pagador inválido'</span>,
+</span><span id="85" class="l"><a href="#85"> 85 </a>        <span class="php-quote">'46'</span> =&gt; <span class="php-quote">'Tipo/número de inscrição do pagador inválidos'</span>,
+</span><span id="86" class="l"><a href="#86"> 86 </a>        <span class="php-quote">'47'</span> =&gt; <span class="php-quote">'Endereço do pagador não informado'</span>,
+</span><span id="87" class="l"><a href="#87"> 87 </a>        <span class="php-quote">'48'</span> =&gt; <span class="php-quote">'CEP irregular'</span>,
+</span><span id="88" class="l"><a href="#88"> 88 </a>        <span class="php-quote">'49'</span> =&gt; <span class="php-quote">'Número de Inscrição do pagador/avalista inválido'</span>,
+</span><span id="89" class="l"><a href="#89"> 89 </a>        <span class="php-quote">'50'</span> =&gt; <span class="php-quote">'Pagador/avalista não informado'</span>,
+</span><span id="90" class="l"><a href="#90"> 90 </a>        <span class="php-quote">'60'</span> =&gt; <span class="php-quote">'Movimento para título não cadastrado'</span>,
+</span><span id="91" class="l"><a href="#91"> 91 </a>        <span class="php-quote">'63'</span> =&gt; <span class="php-quote">'Entrada para título já cadastrado'</span>,
+</span><span id="92" class="l"><a href="#92"> 92 </a>        <span class="php-quote">'A1'</span> =&gt; <span class="php-quote">'Praça do pagador não cadastrada.'</span>,
+</span><span id="93" class="l"><a href="#93"> 93 </a>        <span class="php-quote">'A2'</span> =&gt; <span class="php-quote">'Tipo de cobrança do título divergente com a praça do pagador.'</span>,
+</span><span id="94" class="l"><a href="#94"> 94 </a>        <span class="php-quote">'A3'</span> =&gt; <span class="php-quote">'Cooperativa/agência depositária divergente: atualiza o cadastro de praças da Coop./agência beneficiária'</span>,
+</span><span id="95" class="l"><a href="#95"> 95 </a>        <span class="php-quote">'A4'</span> =&gt; <span class="php-quote">'Beneficiário não cadastrado ou possui CGC/CIC inválido'</span>,
+</span><span id="96" class="l"><a href="#96"> 96 </a>        <span class="php-quote">'A5'</span> =&gt; <span class="php-quote">'Pagador não cadastrado'</span>,
+</span><span id="97" class="l"><a href="#97"> 97 </a>        <span class="php-quote">'A6'</span> =&gt; <span class="php-quote">'Data da instrução/ocorrência inválida'</span>,
+</span><span id="98" class="l"><a href="#98"> 98 </a>        <span class="php-quote">'A7'</span> =&gt; <span class="php-quote">'Ocorrência não pode ser comandada'</span>,
+</span><span id="99" class="l"><a href="#99"> 99 </a>        <span class="php-quote">'B4'</span> =&gt; <span class="php-quote">'Tipo de moeda inválido'</span>,
+</span><span id="100" class="l"><a href="#100">100 </a>        <span class="php-quote">'B5'</span> =&gt; <span class="php-quote">'Tipo de desconto/juros inválido'</span>,
+</span><span id="101" class="l"><a href="#101">101 </a>        <span class="php-quote">'B6'</span> =&gt; <span class="php-quote">'Mensagem padrão não cadastrada'</span>,
+</span><span id="102" class="l"><a href="#102">102 </a>        <span class="php-quote">'B7'</span> =&gt; <span class="php-quote">'Seu número inválido'</span>,
+</span><span id="103" class="l"><a href="#103">103 </a>        <span class="php-quote">'B8'</span> =&gt; <span class="php-quote">'Percentual de multa inválido'</span>,
+</span><span id="104" class="l"><a href="#104">104 </a>        <span class="php-quote">'B9'</span> =&gt; <span class="php-quote">'Valor ou percentual de juros inválido'</span>,
+</span><span id="105" class="l"><a href="#105">105 </a>        <span class="php-quote">'C1'</span> =&gt; <span class="php-quote">'Data limite para concessão de desconto inválida'</span>,
+</span><span id="106" class="l"><a href="#106">106 </a>        <span class="php-quote">'C2'</span> =&gt; <span class="php-quote">'Aceite do título inválido'</span>,
+</span><span id="107" class="l"><a href="#107">107 </a>        <span class="php-quote">'C3'</span> =&gt; <span class="php-quote">'Campo alterado na instrução “31 – alteração de outros dados” inválido'</span>,
+</span><span id="108" class="l"><a href="#108">108 </a>        <span class="php-quote">'C4'</span> =&gt; <span class="php-quote">'Título ainda não foi confirmado pela centralizadora'</span>,
+</span><span id="109" class="l"><a href="#109">109 </a>        <span class="php-quote">'C5'</span> =&gt; <span class="php-quote">'Título rejeitado pela centralizadora'</span>,
+</span><span id="110" class="l"><a href="#110">110 </a>        <span class="php-quote">'C6'</span> =&gt; <span class="php-quote">'Título já liquidado'</span>,
+</span><span id="111" class="l"><a href="#111">111 </a>        <span class="php-quote">'C7'</span> =&gt; <span class="php-quote">'Título já baixado'</span>,
+</span><span id="112" class="l"><a href="#112">112 </a>        <span class="php-quote">'C8'</span> =&gt; <span class="php-quote">'Existe mesma instrução pendente de confirmação para este título'</span>,
+</span><span id="113" class="l"><a href="#113">113 </a>        <span class="php-quote">'C9'</span> =&gt; <span class="php-quote">'Instrução prévia de concessão de abatimento não existe ou não confirmada'</span>,
+</span><span id="114" class="l"><a href="#114">114 </a>        <span class="php-quote">'D1'</span> =&gt; <span class="php-quote">'Título dentro do prazo de vencimento (em dia)'</span>,
+</span><span id="115" class="l"><a href="#115">115 </a>        <span class="php-quote">'D2'</span> =&gt; <span class="php-quote">'Espécie de documento não permite protesto de título'</span>,
+</span><span id="116" class="l"><a href="#116">116 </a>        <span class="php-quote">'D3'</span> =&gt; <span class="php-quote">'Título possui instrução de baixa pendente de confirmação'</span>,
+</span><span id="117" class="l"><a href="#117">117 </a>        <span class="php-quote">'D4'</span> =&gt; <span class="php-quote">'Quantidade de mensagens padrão excede o limite permitido'</span>,
+</span><span id="118" class="l"><a href="#118">118 </a>        <span class="php-quote">'D5'</span> =&gt; <span class="php-quote">'Quantidade inválida no pedido de boletos pré-impressos da cobrança sem registro'</span>,
+</span><span id="119" class="l"><a href="#119">119 </a>        <span class="php-quote">'D6'</span> =&gt; <span class="php-quote">'Tipo de impressão inválida para cobrança sem registro'</span>,
+</span><span id="120" class="l"><a href="#120">120 </a>        <span class="php-quote">'D7'</span> =&gt; <span class="php-quote">'Cidade ou Estado do pagador não informado'</span>,
+</span><span id="121" class="l"><a href="#121">121 </a>        <span class="php-quote">'D8'</span> =&gt; <span class="php-quote">'Seqüência para composição do nosso número do ano atual esgotada'</span>,
+</span><span id="122" class="l"><a href="#122">122 </a>        <span class="php-quote">'D9'</span> =&gt; <span class="php-quote">'Registro mensagem para título não cadastrado'</span>,
+</span><span id="123" class="l"><a href="#123">123 </a>        <span class="php-quote">'E2'</span> =&gt; <span class="php-quote">'Registro complementar ao cadastro do título da cobrança com e sem registro não cadastrado'</span>,
+</span><span id="124" class="l"><a href="#124">124 </a>        <span class="php-quote">'E3'</span> =&gt; <span class="php-quote">'Tipo de postagem inválido, diferente de S, N e branco'</span>,
+</span><span id="125" class="l"><a href="#125">125 </a>        <span class="php-quote">'E4'</span> =&gt; <span class="php-quote">'Pedido de boletos pré-impressos'</span>,
+</span><span id="126" class="l"><a href="#126">126 </a>        <span class="php-quote">'E5'</span> =&gt; <span class="php-quote">'Confirmação/rejeição para pedidos de boletos não cadastrado'</span>,
+</span><span id="127" class="l"><a href="#127">127 </a>        <span class="php-quote">'E6'</span> =&gt; <span class="php-quote">'Pagador/avalista não cadastrado'</span>,
+</span><span id="128" class="l"><a href="#128">128 </a>        <span class="php-quote">'E7'</span> =&gt; <span class="php-quote">'Informação para atualização do valor do título para protesto inválido'</span>,
+</span><span id="129" class="l"><a href="#129">129 </a>        <span class="php-quote">'E8'</span> =&gt; <span class="php-quote">'Tipo de impressão inválido, diferente de A, B e branco'</span>,
+</span><span id="130" class="l"><a href="#130">130 </a>        <span class="php-quote">'E9'</span> =&gt; <span class="php-quote">'Código do pagador do título divergente com o código da cooperativa de crédito'</span>,
+</span><span id="131" class="l"><a href="#131">131 </a>        <span class="php-quote">'F1'</span> =&gt; <span class="php-quote">'Liquidado no sistema do cliente'</span>,
+</span><span id="132" class="l"><a href="#132">132 </a>        <span class="php-quote">'F2'</span> =&gt; <span class="php-quote">'Baixado no sistema do cliente'</span>,
+</span><span id="133" class="l"><a href="#133">133 </a>        <span class="php-quote">'F3'</span> =&gt; <span class="php-quote">'Instrução inválida, este título está caucionado/descontado'</span>,
+</span><span id="134" class="l"><a href="#134">134 </a>        <span class="php-quote">'F4'</span> =&gt; <span class="php-quote">'Instrução fixa com caracteres inválidos'</span>,
+</span><span id="135" class="l"><a href="#135">135 </a>        <span class="php-quote">'F6'</span> =&gt; <span class="php-quote">'Nosso número / número da parcela fora de seqüência – total de parcelas inválido'</span>,
+</span><span id="136" class="l"><a href="#136">136 </a>        <span class="php-quote">'F7'</span> =&gt; <span class="php-quote">'Falta de comprovante de prestação de serviço'</span>,
+</span><span id="137" class="l"><a href="#137">137 </a>        <span class="php-quote">'F8'</span> =&gt; <span class="php-quote">'Nome do beneficiário incompleto / incorreto.'</span>,
+</span><span id="138" class="l"><a href="#138">138 </a>        <span class="php-quote">'F9'</span> =&gt; <span class="php-quote">'CNPJ / CPF incompatível com o nome do pagador / Sacador Avalista'</span>,
+</span><span id="139" class="l"><a href="#139">139 </a>        <span class="php-quote">'G1'</span> =&gt; <span class="php-quote">'CNPJ / CPF do pagador Incompatível com a espécie'</span>,
+</span><span id="140" class="l"><a href="#140">140 </a>        <span class="php-quote">'G2'</span> =&gt; <span class="php-quote">'Título aceito: sem a assinatura do pagador'</span>,
+</span><span id="141" class="l"><a href="#141">141 </a>        <span class="php-quote">'G3'</span> =&gt; <span class="php-quote">'Título aceito: rasurado ou rasgado'</span>,
+</span><span id="142" class="l"><a href="#142">142 </a>        <span class="php-quote">'G4'</span> =&gt; <span class="php-quote">'Título aceito: falta título (cooperativa/ag. beneficiária deverá enviá-lo)'</span>,
+</span><span id="143" class="l"><a href="#143">143 </a>        <span class="php-quote">'G5'</span> =&gt; <span class="php-quote">'Praça de pagamento incompatível com o endereço'</span>,
+</span><span id="144" class="l"><a href="#144">144 </a>        <span class="php-quote">'G6'</span> =&gt; <span class="php-quote">'Título aceito: sem endosso ou beneficiário irregular'</span>,
+</span><span id="145" class="l"><a href="#145">145 </a>        <span class="php-quote">'G7'</span> =&gt; <span class="php-quote">'Título aceito: valor por extenso diferente do valor numérico'</span>,
+</span><span id="146" class="l"><a href="#146">146 </a>        <span class="php-quote">'G8'</span> =&gt; <span class="php-quote">'Saldo maior que o valor do título'</span>,
+</span><span id="147" class="l"><a href="#147">147 </a>        <span class="php-quote">'G9'</span> =&gt; <span class="php-quote">'Tipo de endosso inválido'</span>,
+</span><span id="148" class="l"><a href="#148">148 </a>        <span class="php-quote">'H1'</span> =&gt; <span class="php-quote">'Nome do pagador incompleto / Incorreto'</span>,
+</span><span id="149" class="l"><a href="#149">149 </a>        <span class="php-quote">'H2'</span> =&gt; <span class="php-quote">'Sustação judicial'</span>,
+</span><span id="150" class="l"><a href="#150">150 </a>        <span class="php-quote">'H3'</span> =&gt; <span class="php-quote">'Pagador não encontrado'</span>,
+</span><span id="151" class="l"><a href="#151">151 </a>        <span class="php-quote">'H4'</span> =&gt; <span class="php-quote">'Alteração de carteira'</span>,
+</span><span id="152" class="l"><a href="#152">152 </a>        <span class="php-quote">'H7'</span> =&gt; <span class="php-quote">'Espécie de documento necessita beneficiário ou avalista PJ'</span>,
+</span><span id="153" class="l"><a href="#153">153 </a>        <span class="php-quote">'H9'</span> =&gt; <span class="php-quote">'Dados do título não conferem com disquete'</span>,
+</span><span id="154" class="l"><a href="#154">154 </a>        <span class="php-quote">'I1'</span> =&gt; <span class="php-quote">'Pagador e Sacador Avalista são a mesma pessoa'</span>,
+</span><span id="155" class="l"><a href="#155">155 </a>        <span class="php-quote">'I2'</span> =&gt; <span class="php-quote">'Aguardar um dia útil após o vencimento para protestar'</span>,
+</span><span id="156" class="l"><a href="#156">156 </a>        <span class="php-quote">'I3'</span> =&gt; <span class="php-quote">'Data do vencimento rasurada'</span>,
+</span><span id="157" class="l"><a href="#157">157 </a>        <span class="php-quote">'I4'</span> =&gt; <span class="php-quote">'Vencimento – extenso não confere com número'</span>,
+</span><span id="158" class="l"><a href="#158">158 </a>        <span class="php-quote">'I5'</span> =&gt; <span class="php-quote">'Falta data de vencimento no título'</span>,
+</span><span id="159" class="l"><a href="#159">159 </a>        <span class="php-quote">'I6'</span> =&gt; <span class="php-quote">'DM/DMI sem comprovante autenticado ou declaração'</span>,
+</span><span id="160" class="l"><a href="#160">160 </a>        <span class="php-quote">'I7'</span> =&gt; <span class="php-quote">'Comprovante ilegível para conferência e microfilmagem'</span>,
+</span><span id="161" class="l"><a href="#161">161 </a>        <span class="php-quote">'I8'</span> =&gt; <span class="php-quote">'Nome solicitado não confere com emitente ou pagador'</span>,
+</span><span id="162" class="l"><a href="#162">162 </a>        <span class="php-quote">'I9'</span> =&gt; <span class="php-quote">'Confirmar se são 2 emitentes. Se sim, indicar os dados dos 2'</span>,
+</span><span id="163" class="l"><a href="#163">163 </a>        <span class="php-quote">'J1'</span> =&gt; <span class="php-quote">'Endereço do pagador igual ao do pagador ou do portador'</span>,
+</span><span id="164" class="l"><a href="#164">164 </a>        <span class="php-quote">'J2'</span> =&gt; <span class="php-quote">'Endereço do apresentante incompleto ou não informado'</span>,
+</span><span id="165" class="l"><a href="#165">165 </a>        <span class="php-quote">'J3'</span> =&gt; <span class="php-quote">'Rua/número inexistente no endereço'</span>,
+</span><span id="166" class="l"><a href="#166">166 </a>        <span class="php-quote">'J4'</span> =&gt; <span class="php-quote">'Falta endosso do favorecido para o apresentante'</span>,
+</span><span id="167" class="l"><a href="#167">167 </a>        <span class="php-quote">'J5'</span> =&gt; <span class="php-quote">'Data da emissão rasurada'</span>,
+</span><span id="168" class="l"><a href="#168">168 </a>        <span class="php-quote">'J6'</span> =&gt; <span class="php-quote">'Falta assinatura do pagador no título'</span>,
+</span><span id="169" class="l"><a href="#169">169 </a>        <span class="php-quote">'J7'</span> =&gt; <span class="php-quote">'Nome do apresentante não informado/incompleto/incorreto'</span>,
+</span><span id="170" class="l"><a href="#170">170 </a>        <span class="php-quote">'J8'</span> =&gt; <span class="php-quote">'Erro de preenchimento do titulo'</span>,
+</span><span id="171" class="l"><a href="#171">171 </a>        <span class="php-quote">'J9'</span> =&gt; <span class="php-quote">'Titulo com direito de regresso vencido'</span>,
+</span><span id="172" class="l"><a href="#172">172 </a>        <span class="php-quote">'K1'</span> =&gt; <span class="php-quote">'Titulo apresentado em duplicidade'</span>,
+</span><span id="173" class="l"><a href="#173">173 </a>        <span class="php-quote">'K2'</span> =&gt; <span class="php-quote">'Titulo já protestado'</span>,
+</span><span id="174" class="l"><a href="#174">174 </a>        <span class="php-quote">'K3'</span> =&gt; <span class="php-quote">'Letra de cambio vencida – falta aceite do pagador'</span>,
+</span><span id="175" class="l"><a href="#175">175 </a>        <span class="php-quote">'K4'</span> =&gt; <span class="php-quote">'Falta declaração de saldo assinada no título'</span>,
+</span><span id="176" class="l"><a href="#176">176 </a>        <span class="php-quote">'K5'</span> =&gt; <span class="php-quote">'Contrato de cambio – Falta conta gráfica'</span>,
+</span><span id="177" class="l"><a href="#177">177 </a>        <span class="php-quote">'K6'</span> =&gt; <span class="php-quote">'Ausência do documento físico'</span>,
+</span><span id="178" class="l"><a href="#178">178 </a>        <span class="php-quote">'K7'</span> =&gt; <span class="php-quote">'Pagador falecido'</span>,
+</span><span id="179" class="l"><a href="#179">179 </a>        <span class="php-quote">'K8'</span> =&gt; <span class="php-quote">'Pagador apresentou quitação do título'</span>,
+</span><span id="180" class="l"><a href="#180">180 </a>        <span class="php-quote">'K9'</span> =&gt; <span class="php-quote">'Título de outra jurisdição territorial'</span>,
+</span><span id="181" class="l"><a href="#181">181 </a>        <span class="php-quote">'L1'</span> =&gt; <span class="php-quote">'Título com emissão anterior a concordata do pagador'</span>,
+</span><span id="182" class="l"><a href="#182">182 </a>        <span class="php-quote">'L2'</span> =&gt; <span class="php-quote">'Pagador consta na lista de falência'</span>,
+</span><span id="183" class="l"><a href="#183">183 </a>        <span class="php-quote">'L3'</span> =&gt; <span class="php-quote">'Apresentante não aceita publicação de edital'</span>,
+</span><span id="184" class="l"><a href="#184">184 </a>        <span class="php-quote">'L4'</span> =&gt; <span class="php-quote">'Dados do Pagador em Branco ou inválido'</span>,
+</span><span id="185" class="l"><a href="#185">185 </a>        <span class="php-quote">'L5'</span> =&gt; <span class="php-quote">'Código do Pagador na agência beneficiária está duplicado'</span>,
+</span><span id="186" class="l"><a href="#186">186 </a>        <span class="php-quote">'M2'</span> =&gt; <span class="php-quote">'Não reconhecimento da dívida pelo pagador'</span>,
+</span><span id="187" class="l"><a href="#187">187 </a>    ];
+</span><span id="188" class="l"><a href="#188">188 </a>
+</span><span id="189" class="l"><a href="#189">189 </a>    <span class="php-comment">/**
+</span></span><span id="190" class="l"><a href="#190">190 </a><span class="php-comment">     * Roda antes dos metodos de processar
+</span></span><span id="191" class="l"><a href="#191">191 </a><span class="php-comment">     */</span>
+</span><span id="192" class="l"><a href="#192">192 </a>    <span class="php-keyword1">protected</span> <span class="php-keyword1">function</span> init()
+</span><span id="193" class="l"><a href="#193">193 </a>    {
+</span><span id="194" class="l"><a href="#194">194 </a>        <span class="php-var">$this</span>-&gt;totais = [
+</span><span id="195" class="l"><a href="#195">195 </a>            <span class="php-quote">'valor_recebido'</span> =&gt; <span class="php-num">0</span>,
+</span><span id="196" class="l"><a href="#196">196 </a>            <span class="php-quote">'liquidados'</span> =&gt; <span class="php-num">0</span>,
+</span><span id="197" class="l"><a href="#197">197 </a>            <span class="php-quote">'entradas'</span> =&gt; <span class="php-num">0</span>,
+</span><span id="198" class="l"><a href="#198">198 </a>            <span class="php-quote">'baixados'</span> =&gt; <span class="php-num">0</span>,
+</span><span id="199" class="l"><a href="#199">199 </a>            <span class="php-quote">'protestados'</span> =&gt; <span class="php-num">0</span>,
+</span><span id="200" class="l"><a href="#200">200 </a>            <span class="php-quote">'erros'</span> =&gt; <span class="php-num">0</span>,
+</span><span id="201" class="l"><a href="#201">201 </a>            <span class="php-quote">'alterados'</span> =&gt; <span class="php-num">0</span>,
+</span><span id="202" class="l"><a href="#202">202 </a>        ];
+</span><span id="203" class="l"><a href="#203">203 </a>    }
+</span><span id="204" class="l"><a href="#204">204 </a>
+</span><span id="205" class="l"><a href="#205">205 </a>    <span class="php-comment">/**
+</span></span><span id="206" class="l"><a href="#206">206 </a><span class="php-comment">     * @param array $header
+</span></span><span id="207" class="l"><a href="#207">207 </a><span class="php-comment">     *
+</span></span><span id="208" class="l"><a href="#208">208 </a><span class="php-comment">     * @return bool
+</span></span><span id="209" class="l"><a href="#209">209 </a><span class="php-comment">     * @throws \Exception
+</span></span><span id="210" class="l"><a href="#210">210 </a><span class="php-comment">     */</span>
+</span><span id="211" class="l"><a href="#211">211 </a>    <span class="php-keyword1">protected</span> <span class="php-keyword1">function</span> processarHeader(<span class="php-keyword1">array</span> <span class="php-var">$header</span>)
+</span><span id="212" class="l"><a href="#212">212 </a>    {
+</span><span id="213" class="l"><a href="#213">213 </a>        <span class="php-var">$this</span>-&gt;getHeader()
+</span><span id="214" class="l"><a href="#214">214 </a>            -&gt;setOperacaoCodigo(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">2</span>, <span class="php-num">2</span>, <span class="php-var">$header</span>))
+</span><span id="215" class="l"><a href="#215">215 </a>            -&gt;setOperacao(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">3</span>, <span class="php-num">9</span>, <span class="php-var">$header</span>))
+</span><span id="216" class="l"><a href="#216">216 </a>            -&gt;setServicoCodigo(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">10</span>, <span class="php-num">11</span>, <span class="php-var">$header</span>))
+</span><span id="217" class="l"><a href="#217">217 </a>            -&gt;setServico(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">12</span>, <span class="php-num">26</span>, <span class="php-var">$header</span>))
+</span><span id="218" class="l"><a href="#218">218 </a>            -&gt;setConta(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">27</span>, <span class="php-num">31</span>, <span class="php-var">$header</span>))
+</span><span id="219" class="l"><a href="#219">219 </a>            -&gt;setCodigoCliente(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">32</span>, <span class="php-num">45</span>, <span class="php-var">$header</span>))
+</span><span id="220" class="l"><a href="#220">220 </a>            -&gt;setData(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">95</span>, <span class="php-num">102</span>, <span class="php-var">$header</span>), <span class="php-quote">'Ymd'</span>);
+</span><span id="221" class="l"><a href="#221">221 </a>
+</span><span id="222" class="l"><a href="#222">222 </a>        <span class="php-keyword1">return</span> <span class="php-keyword1">true</span>;
+</span><span id="223" class="l"><a href="#223">223 </a>    }
+</span><span id="224" class="l"><a href="#224">224 </a>
+</span><span id="225" class="l"><a href="#225">225 </a>    <span class="php-comment">/**
+</span></span><span id="226" class="l"><a href="#226">226 </a><span class="php-comment">     * @param array $detalhe
+</span></span><span id="227" class="l"><a href="#227">227 </a><span class="php-comment">     *
+</span></span><span id="228" class="l"><a href="#228">228 </a><span class="php-comment">     * @return bool
+</span></span><span id="229" class="l"><a href="#229">229 </a><span class="php-comment">     * @throws \Exception
+</span></span><span id="230" class="l"><a href="#230">230 </a><span class="php-comment">     */</span>
+</span><span id="231" class="l"><a href="#231">231 </a>    <span class="php-keyword1">protected</span> <span class="php-keyword1">function</span> processarDetalhe(<span class="php-keyword1">array</span> <span class="php-var">$detalhe</span>)
+</span><span id="232" class="l"><a href="#232">232 </a>    {
+</span><span id="233" class="l"><a href="#233">233 </a>        <span class="php-var">$d</span> = <span class="php-var">$this</span>-&gt;detalheAtual();
+</span><span id="234" class="l"><a href="#234">234 </a>        
+</span><span id="235" class="l"><a href="#235">235 </a>        <span class="php-var">$d</span>-&gt;setNossoNumero(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">48</span>, <span class="php-num">62</span>, <span class="php-var">$detalhe</span>))
+</span><span id="236" class="l"><a href="#236">236 </a>            -&gt;setNumeroControle(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">117</span>, <span class="php-num">126</span>, <span class="php-var">$detalhe</span>))
+</span><span id="237" class="l"><a href="#237">237 </a>            -&gt;setNumeroDocumento(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">117</span>, <span class="php-num">126</span>, <span class="php-var">$detalhe</span>))
+</span><span id="238" class="l"><a href="#238">238 </a>            -&gt;setOcorrencia(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">109</span>, <span class="php-num">110</span>, <span class="php-var">$detalhe</span>))
+</span><span id="239" class="l"><a href="#239">239 </a>            -&gt;setOcorrenciaDescricao(Arr::get(<span class="php-var">$this</span>-&gt;ocorrencias, <span class="php-var">$d</span>-&gt;getOcorrencia(), <span class="php-quote">'Desconhecida'</span>))
+</span><span id="240" class="l"><a href="#240">240 </a>            -&gt;setDataOcorrencia(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">111</span>, <span class="php-num">116</span>, <span class="php-var">$detalhe</span>))
+</span><span id="241" class="l"><a href="#241">241 </a>            -&gt;setDataVencimento(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">147</span>, <span class="php-num">152</span>, <span class="php-var">$detalhe</span>))
+</span><span id="242" class="l"><a href="#242">242 </a>            -&gt;setValor(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">153</span>, <span class="php-num">165</span>, <span class="php-var">$detalhe</span>), <span class="php-num">2</span>, <span class="php-keyword1">false</span>) / <span class="php-num">100</span>)
+</span><span id="243" class="l"><a href="#243">243 </a>            -&gt;setValorTarifa(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">176</span>, <span class="php-num">188</span>, <span class="php-var">$detalhe</span>), <span class="php-num">2</span>, <span class="php-keyword1">false</span>) / <span class="php-num">100</span>)
+</span><span id="244" class="l"><a href="#244">244 </a>            -&gt;setValorAbatimento(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">228</span>, <span class="php-num">240</span>, <span class="php-var">$detalhe</span>), <span class="php-num">2</span>, <span class="php-keyword1">false</span>) / <span class="php-num">100</span>)
+</span><span id="245" class="l"><a href="#245">245 </a>            -&gt;setValorDesconto(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">241</span>, <span class="php-num">253</span>, <span class="php-var">$detalhe</span>), <span class="php-num">2</span>, <span class="php-keyword1">false</span>) / <span class="php-num">100</span>)
+</span><span id="246" class="l"><a href="#246">246 </a>            -&gt;setValorRecebido(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">254</span>, <span class="php-num">266</span>, <span class="php-var">$detalhe</span>), <span class="php-num">2</span>, <span class="php-keyword1">false</span>) / <span class="php-num">100</span>)
+</span><span id="247" class="l"><a href="#247">247 </a>            -&gt;setValorMora(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">267</span>, <span class="php-num">279</span>, <span class="php-var">$detalhe</span>), <span class="php-num">2</span>, <span class="php-keyword1">false</span>) / <span class="php-num">100</span>)
+</span><span id="248" class="l"><a href="#248">248 </a>            -&gt;setValorMulta(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">280</span>, <span class="php-num">292</span>, <span class="php-var">$detalhe</span>), <span class="php-num">2</span>, <span class="php-keyword1">false</span>) / <span class="php-num">100</span>)
+</span><span id="249" class="l"><a href="#249">249 </a>            -&gt;setDataCredito(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">329</span>, <span class="php-num">336</span>, <span class="php-var">$detalhe</span>), <span class="php-quote">'Ymd'</span>);
+</span><span id="250" class="l"><a href="#250">250 </a>
+</span><span id="251" class="l"><a href="#251">251 </a>        <span class="php-keyword1">if</span> (<span class="php-var">$d</span>-&gt;hasOcorrencia(<span class="php-quote">'06'</span>, <span class="php-quote">'15'</span>, <span class="php-quote">'16'</span>)) {
+</span><span id="252" class="l"><a href="#252">252 </a>            <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'valor_recebido'</span>] += <span class="php-var">$d</span>-&gt;getValorRecebido();
+</span><span id="253" class="l"><a href="#253">253 </a>            <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'liquidados'</span>]++;
+</span><span id="254" class="l"><a href="#254">254 </a>            <span class="php-var">$d</span>-&gt;setOcorrenciaTipo(<span class="php-var">$d</span>::OCORRENCIA_LIQUIDADA);
+</span><span id="255" class="l"><a href="#255">255 </a>        } <span class="php-keyword1">elseif</span> (<span class="php-var">$d</span>-&gt;hasOcorrencia(<span class="php-quote">'02'</span>)) {
+</span><span id="256" class="l"><a href="#256">256 </a>            <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'entradas'</span>]++;
+</span><span id="257" class="l"><a href="#257">257 </a>            <span class="php-var">$d</span>-&gt;setOcorrenciaTipo(<span class="php-var">$d</span>::OCORRENCIA_ENTRADA);
+</span><span id="258" class="l"><a href="#258">258 </a>        } <span class="php-keyword1">elseif</span> (<span class="php-var">$d</span>-&gt;hasOcorrencia(<span class="php-quote">'09'</span>, <span class="php-quote">'10'</span>)) {
+</span><span id="259" class="l"><a href="#259">259 </a>            <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'baixados'</span>]++;
+</span><span id="260" class="l"><a href="#260">260 </a>            <span class="php-var">$d</span>-&gt;setOcorrenciaTipo(<span class="php-var">$d</span>::OCORRENCIA_BAIXADA);
+</span><span id="261" class="l"><a href="#261">261 </a>        } <span class="php-keyword1">elseif</span> (<span class="php-var">$d</span>-&gt;hasOcorrencia(<span class="php-quote">'23'</span>)) {
+</span><span id="262" class="l"><a href="#262">262 </a>            <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'protestados'</span>]++;
+</span><span id="263" class="l"><a href="#263">263 </a>            <span class="php-var">$d</span>-&gt;setOcorrenciaTipo(<span class="php-var">$d</span>::OCORRENCIA_PROTESTADA);
+</span><span id="264" class="l"><a href="#264">264 </a>        } <span class="php-keyword1">elseif</span> (<span class="php-var">$d</span>-&gt;hasOcorrencia(<span class="php-quote">'33'</span>)) {
+</span><span id="265" class="l"><a href="#265">265 </a>            <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'alterados'</span>]++;
+</span><span id="266" class="l"><a href="#266">266 </a>            <span class="php-var">$d</span>-&gt;setOcorrenciaTipo(<span class="php-var">$d</span>::OCORRENCIA_ALTERACAO);
+</span><span id="267" class="l"><a href="#267">267 </a>        } <span class="php-keyword1">elseif</span> (<span class="php-var">$d</span>-&gt;hasOcorrencia(<span class="php-quote">'03'</span>, <span class="php-quote">'27'</span>, <span class="php-quote">'30'</span>)) {
+</span><span id="268" class="l"><a href="#268">268 </a>            <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'erros'</span>]++;
+</span><span id="269" class="l"><a href="#269">269 </a>        <span class="php-keyword1">if</span>(<span class="php-var">$d</span>-&gt;hasOcorrencia(<span class="php-quote">'03'</span>)) {
+</span><span id="270" class="l"><a href="#270">270 </a>               <span class="php-keyword1">if</span>(<span class="php-keyword1">isset</span>(<span class="php-var">$this</span>-&gt;rejeicoes[<span class="php-var">$this</span>-&gt;rem(<span class="php-num">319</span>, <span class="php-num">320</span>, <span class="php-var">$detalhe</span>)])){
+</span><span id="271" class="l"><a href="#271">271 </a>                  <span class="php-var">$d</span>-&gt;setRejeicao(<span class="php-var">$this</span>-&gt;rejeicoes[<span class="php-var">$this</span>-&gt;rem(<span class="php-num">319</span>, <span class="php-num">320</span>, <span class="php-var">$detalhe</span>)]);
+</span><span id="272" class="l"><a href="#272">272 </a>               }
+</span><span id="273" class="l"><a href="#273">273 </a>            }
+</span><span id="274" class="l"><a href="#274">274 </a>        } <span class="php-keyword1">else</span> {
+</span><span id="275" class="l"><a href="#275">275 </a>            <span class="php-var">$d</span>-&gt;setOcorrenciaTipo(<span class="php-var">$d</span>::OCORRENCIA_OUTROS);
+</span><span id="276" class="l"><a href="#276">276 </a>        }
+</span><span id="277" class="l"><a href="#277">277 </a>
+</span><span id="278" class="l"><a href="#278">278 </a>        <span class="php-var">$stringErrors</span> = <span class="php-keyword2">sprintf</span>(<span class="php-quote">'%010s'</span>, <span class="php-var">$this</span>-&gt;rem(<span class="php-num">319</span>, <span class="php-num">328</span>, <span class="php-var">$detalhe</span>));
+</span><span id="279" class="l"><a href="#279">279 </a>        <span class="php-var">$errorsRetorno</span> = <span class="php-keyword2">str_split</span>(<span class="php-var">$stringErrors</span>, <span class="php-num">2</span>) + <span class="php-keyword2">array_fill</span>(<span class="php-num">0</span>, <span class="php-num">5</span>, <span class="php-quote">''</span>) + <span class="php-keyword2">array_fill</span>(<span class="php-num">0</span>, <span class="php-num">5</span>, <span class="php-quote">''</span>);
+</span><span id="280" class="l"><a href="#280">280 </a>        <span class="php-keyword1">if</span> (<span class="php-keyword2">trim</span>(<span class="php-var">$stringErrors</span>, <span class="php-quote">'0'</span>) != <span class="php-quote">''</span>) {
+</span><span id="281" class="l"><a href="#281">281 </a>            <span class="php-var">$error</span> = [];
+</span><span id="282" class="l"><a href="#282">282 </a>            <span class="php-var">$error</span>[] = Arr::get(<span class="php-var">$this</span>-&gt;rejeicoes, <span class="php-var">$errorsRetorno</span>[<span class="php-num">0</span>], <span class="php-quote">''</span>);
+</span><span id="283" class="l"><a href="#283">283 </a>            <span class="php-var">$error</span>[] = Arr::get(<span class="php-var">$this</span>-&gt;rejeicoes, <span class="php-var">$errorsRetorno</span>[<span class="php-num">1</span>], <span class="php-quote">''</span>);
+</span><span id="284" class="l"><a href="#284">284 </a>            <span class="php-var">$error</span>[] = Arr::get(<span class="php-var">$this</span>-&gt;rejeicoes, <span class="php-var">$errorsRetorno</span>[<span class="php-num">2</span>], <span class="php-quote">''</span>);
+</span><span id="285" class="l"><a href="#285">285 </a>            <span class="php-var">$error</span>[] = Arr::get(<span class="php-var">$this</span>-&gt;rejeicoes, <span class="php-var">$errorsRetorno</span>[<span class="php-num">3</span>], <span class="php-quote">''</span>);
+</span><span id="286" class="l"><a href="#286">286 </a>            <span class="php-var">$error</span>[] = Arr::get(<span class="php-var">$this</span>-&gt;rejeicoes, <span class="php-var">$errorsRetorno</span>[<span class="php-num">4</span>], <span class="php-quote">''</span>);
+</span><span id="287" class="l"><a href="#287">287 </a>
+</span><span id="288" class="l"><a href="#288">288 </a>            <span class="php-var">$error</span> = <span class="php-keyword2">array_filter</span>(<span class="php-var">$error</span>);
+</span><span id="289" class="l"><a href="#289">289 </a>
+</span><span id="290" class="l"><a href="#290">290 </a>            <span class="php-keyword1">if</span> (<span class="php-keyword2">count</span>(<span class="php-var">$error</span>) &gt; <span class="php-num">0</span>){
+</span><span id="291" class="l"><a href="#291">291 </a>                <span class="php-var">$d</span>-&gt;setError(<span class="php-keyword2">implode</span>(PHP_EOL, <span class="php-var">$error</span>));
+</span><span id="292" class="l"><a href="#292">292 </a>            }
+</span><span id="293" class="l"><a href="#293">293 </a>        }
+</span><span id="294" class="l"><a href="#294">294 </a>
+</span><span id="295" class="l"><a href="#295">295 </a>        <span class="php-keyword1">return</span> <span class="php-keyword1">true</span>;
+</span><span id="296" class="l"><a href="#296">296 </a>    }
+</span><span id="297" class="l"><a href="#297">297 </a>
+</span><span id="298" class="l"><a href="#298">298 </a>    <span class="php-comment">/**
+</span></span><span id="299" class="l"><a href="#299">299 </a><span class="php-comment">     * @param array $trailer
+</span></span><span id="300" class="l"><a href="#300">300 </a><span class="php-comment">     *
+</span></span><span id="301" class="l"><a href="#301">301 </a><span class="php-comment">     * @return bool
+</span></span><span id="302" class="l"><a href="#302">302 </a><span class="php-comment">     */</span>
+</span><span id="303" class="l"><a href="#303">303 </a>    <span class="php-keyword1">protected</span> <span class="php-keyword1">function</span> processarTrailer(<span class="php-keyword1">array</span> <span class="php-var">$trailer</span>)
+</span><span id="304" class="l"><a href="#304">304 </a>    {
+</span><span id="305" class="l"><a href="#305">305 </a>        <span class="php-var">$this</span>-&gt;getTrailer()
+</span><span id="306" class="l"><a href="#306">306 </a>            -&gt;setQuantidadeTitulos((int) <span class="php-var">$this</span>-&gt;<span class="php-keyword2">count</span>())
+</span><span id="307" class="l"><a href="#307">307 </a>            -&gt;setValorTitulos((float) Util::nFloat(<span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'valor_recebido'</span>], <span class="php-num">2</span>, <span class="php-keyword1">false</span>))
+</span><span id="308" class="l"><a href="#308">308 </a>            -&gt;setQuantidadeErros((int) <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'erros'</span>])
+</span><span id="309" class="l"><a href="#309">309 </a>            -&gt;setQuantidadeEntradas((int) <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'entradas'</span>])
+</span><span id="310" class="l"><a href="#310">310 </a>            -&gt;setQuantidadeLiquidados((int) <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'liquidados'</span>])
+</span><span id="311" class="l"><a href="#311">311 </a>            -&gt;setQuantidadeBaixados((int) <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'baixados'</span>])
+</span><span id="312" class="l"><a href="#312">312 </a>            -&gt;setQuantidadeAlterados((int) <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'alterados'</span>]);
+</span><span id="313" class="l"><a href="#313">313 </a>
+</span><span id="314" class="l"><a href="#314">314 </a>        <span class="php-keyword1">return</span> <span class="php-keyword1">true</span>;
+</span><span id="315" class="l"><a href="#315">315 </a>    }
+</span><span id="316" class="l"><a href="#316">316 </a>}
+</span><span id="317" class="l"><a href="#317">317 </a></span></code></pre>
 	</div>
 
 	<div id="footer">
 		Documentação laravel-boletos API documentation generated by <a href="http://apigen.org">ApiGen</a>
 	</div>
 </div>
-<script src="resources/combined.js?26489efdec0521aef3d68ce564480f0fc314096b"></script>
+<script src="resources/combined.js?37f5d759fe32f60cc17740b3227f181b983a8f0b"></script>
 <script src="elementlist.js?52609ef7aeb0fcda604f34588320a706e1476161"></script>
 </body>
 </html>

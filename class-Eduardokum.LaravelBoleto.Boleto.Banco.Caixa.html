@@ -232,7 +232,7 @@
 		<b>Namespace:</b> <a href="namespace-Eduardokum.html">Eduardokum</a>\<a href="namespace-Eduardokum.LaravelBoleto.html">LaravelBoleto</a>\<a href="namespace-Eduardokum.LaravelBoleto.Boleto.html">Boleto</a>\<a href="namespace-Eduardokum.LaravelBoleto.Boleto.Banco.html">Banco</a><br>
 		<b>Package:</b> Eduardokum\LaravelBoleto\Boleto<br>
 
-			<b>Located at</b> <a href="source-class-Eduardokum.LaravelBoleto.Boleto.Banco.Caixa.html#9-184" title="Go to source code">Boleto/Banco/Caixa.php</a>
+			<b>Located at</b> <a href="source-class-Eduardokum.LaravelBoleto.Boleto.Banco.Caixa.html#9-189" title="Go to source code">Boleto/Banco/Caixa.php</a>
 		<br>
 	</div>
 
@@ -255,20 +255,24 @@
 			<code><a href="source-class-Eduardokum.LaravelBoleto.Boleto.Banco.Caixa.html#11-15" title="Go to source code">__construct</a>( <span>array <var>$params</var> = []</span> )</code>
 
 			<div class="description short">
-				<p>Construtor</p>
+				<p>AbstractBoleto constructor.</p>
 			</div>
 
 			<div class="description detailed hidden">
-				<p>Construtor</p>
+				<p>AbstractBoleto constructor.</p>
 
 
 					<h4>Parameters</h4>
 					<div class="list"><dl>
 						<dt><var>$params</var></dt>
-						<dd>Parâmetros iniciais para construção do objeto</dd>
+						<dd></dd>
 					</dl></div>
 
 
+					<h4>Throws</h4>
+					<div class="list">
+						Exception
+					</div>
 
 
 					<h4>Overrides</h4>
@@ -551,7 +555,7 @@ ja que a caixa não faz uso da conta para nada.</p>
 
 			<td class="name"><div>
 			<a class="anchor" href="#_getCampoLivre">#</a>
-			<code><a href="source-class-Eduardokum.LaravelBoleto.Boleto.Banco.Caixa.html#138-161" title="Go to source code">getCampoLivre</a>( )</code>
+			<code><a href="source-class-Eduardokum.LaravelBoleto.Boleto.Banco.Caixa.html#138-165" title="Go to source code">getCampoLivre</a>( )</code>
 
 			<div class="description short">
 				<p>Método para gerar o código da posição de 20 a 44</p>
@@ -588,7 +592,7 @@ ja que a caixa não faz uso da conta para nada.</p>
 
 			<td class="name"><div>
 			<a class="anchor" href="#_parseCampoLivre">#</a>
-			<code><a href="source-class-Eduardokum.LaravelBoleto.Boleto.Banco.Caixa.html#163-183" title="Go to source code">parseCampoLivre</a>( <span> <var>$campoLivre</var></span> )</code>
+			<code><a href="source-class-Eduardokum.LaravelBoleto.Boleto.Banco.Caixa.html#167-188" title="Go to source code">parseCampoLivre</a>( <span> <var>$campoLivre</var></span> )</code>
 
 			<div class="description short">
 				<p>Método onde qualquer boleto deve extender para gerar o código da posição de 20 a 44</p>
@@ -648,6 +652,7 @@ ja que a caixa não faz uso da conta para nada.</p>
 				<code><a href="class-Eduardokum.LaravelBoleto.Boleto.AbstractBoleto.html#_getDataDocumento">getDataDocumento()</a></code>, 
 				<code><a href="class-Eduardokum.LaravelBoleto.Boleto.AbstractBoleto.html#_getDataProcessamento">getDataProcessamento()</a></code>, 
 				<code><a href="class-Eduardokum.LaravelBoleto.Boleto.AbstractBoleto.html#_getDataVencimento">getDataVencimento()</a></code>, 
+				<code><a href="class-Eduardokum.LaravelBoleto.Boleto.AbstractBoleto.html#_getDataVencimentoApos">getDataVencimentoApos()</a></code>, 
 				<code><a href="class-Eduardokum.LaravelBoleto.Boleto.AbstractBoleto.html#_getDesconto">getDesconto()</a></code>, 
 				<code><a href="class-Eduardokum.LaravelBoleto.Boleto.AbstractBoleto.html#_getDescricaoDemonstrativo">getDescricaoDemonstrativo()</a></code>, 
 				<code><a href="class-Eduardokum.LaravelBoleto.Boleto.AbstractBoleto.html#_getDiasBaixaAutomatica">getDiasBaixaAutomatica()</a></code>, 
@@ -887,6 +892,8 @@ ja que a caixa não faz uso da conta para nada.</p>
 				<code><a href="class-Eduardokum.LaravelBoleto.Boleto.AbstractBoleto.html#$diasBaixaAutomatica"><var>$diasBaixaAutomatica</var></a></code>, 
 				<code><a href="class-Eduardokum.LaravelBoleto.Boleto.AbstractBoleto.html#$diasProtesto"><var>$diasProtesto</var></a></code>, 
 				<code><a href="class-Eduardokum.LaravelBoleto.Boleto.AbstractBoleto.html#$especieDoc"><var>$especieDoc</var></a></code>, 
+				<code><a href="class-Eduardokum.LaravelBoleto.Boleto.AbstractBoleto.html#$especiesCodigo240"><var>$especiesCodigo240</var></a></code>, 
+				<code><a href="class-Eduardokum.LaravelBoleto.Boleto.AbstractBoleto.html#$especiesCodigo400"><var>$especiesCodigo400</var></a></code>, 
 				<code><a href="class-Eduardokum.LaravelBoleto.Boleto.AbstractBoleto.html#$instrucoes"><var>$instrucoes</var></a></code>, 
 				<code><a href="class-Eduardokum.LaravelBoleto.Boleto.AbstractBoleto.html#$instrucoes_impressao"><var>$instrucoes_impressao</var></a></code>, 
 				<code><a href="class-Eduardokum.LaravelBoleto.Boleto.AbstractBoleto.html#$juros"><var>$juros</var></a></code>, 
