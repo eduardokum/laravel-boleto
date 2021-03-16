@@ -11,17 +11,6 @@ use Illuminate\Support\Collection;
 class RetornoCnab400Test extends TestCase
 {
 
-<<<<<<< HEAD
-
-    public function testRetornoInvalido(){
-        $this->expectException(\Exception::class);
-        new Bradesco([]);
-    }
-
-
-    public function testRetornoBancoInvalido(){
-        $this->expectException(\Exception::class);
-=======
     public function testRetornoInvalido(){
         $this->expectException(Exception::class);
         new Bradesco([]);
@@ -29,16 +18,11 @@ class RetornoCnab400Test extends TestCase
 
     public function testRetornoBancoInvalido(){
         $this->expectException(Exception::class);
->>>>>>> 82e1a7da2fdcb529244a43a8df9ea4baf364208e
         new Bradesco(__DIR__ . '/files/cnab400/retorno_banco_fake.ret');
     }
 
     public function testRetornoServicoInvalido(){
-<<<<<<< HEAD
-        $this->expectException(\Exception::class);
-=======
         $this->expectException(Exception::class);
->>>>>>> 82e1a7da2fdcb529244a43a8df9ea4baf364208e
         new Bradesco(__DIR__ . '/files/cnab400/retorno_banco_fake_2.ret');
     }
 

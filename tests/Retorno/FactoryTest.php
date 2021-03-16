@@ -9,44 +9,26 @@ use Illuminate\Support\Collection;
 
 class FactoryTest extends TestCase
 {
-<<<<<<< HEAD
-
-    public function testCriarEmBranco(){
-        $this->expectException(\Exception::class);
-=======
     public function testCriarEmBranco(){
         $this->expectException(Exception::class);
->>>>>>> 82e1a7da2fdcb529244a43a8df9ea4baf364208e
         $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make('');
         $retorno->processar();
     }
 
     public function testCriarComRemessa(){
-<<<<<<< HEAD
-        $this->expectException(\Exception::class);
-=======
         $this->expectException(Exception::class);
->>>>>>> 82e1a7da2fdcb529244a43a8df9ea4baf364208e
         $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make(__DIR__ . '/files/cnab400/remessa.txt');
         $retorno->processar();
     }
 
     public function testCriarComPathQueNaoExiste(){
-<<<<<<< HEAD
-        $this->expectException(\Exception::class);
-=======
         $this->expectException(Exception::class);
->>>>>>> 82e1a7da2fdcb529244a43a8df9ea4baf364208e
         $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make(__DIR__ . '/files/cnab400/naoexiste.txt');
         $retorno->processar();
     }
 
     public function testCriarComRetornoBancoNaoExiste(){
-<<<<<<< HEAD
-        $this->expectException(\Exception::class);
-=======
         $this->expectException(Exception::class);
->>>>>>> 82e1a7da2fdcb529244a43a8df9ea4baf364208e
         $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make(__DIR__ . '/files/cnab400/retorno_banco_fake.ret');
         $retorno->processar();
     }
