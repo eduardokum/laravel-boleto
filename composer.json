@@ -1,8 +1,7 @@
 {
-    "name": "r2soft/laravel-boleto",
+    "name": "eduardokum/laravel-boleto",
     "description": "Biblioteca com boletos para o laravel",
     "keywords": [
-        "r2soft",
         "eduardokum",
         "laravel-boleto"
     ],
@@ -12,10 +11,6 @@
         {
             "name": "Eduardo Gusmão",
             "email": "eduguscontra3@hotmail.com"
-        },
-        {
-            "name": "R2 Soft Infomática e Softwares LTDA",
-            "email": "ricardo@r2soft.com.br"
         }
     ],
     "require": {
@@ -26,7 +21,6 @@
         "neitanod/forceutf8": "^2.0",
         "setasign/fpdf": "^1.8"
     },
-
     "require-dev": {
         "phpunit/phpunit": ">=6.0||^8.0||^9.0",
         "orchestra/testbench": "^3.1"
