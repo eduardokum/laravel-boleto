@@ -500,7 +500,22 @@ final class Util
     public static function fatorVencimento($date, $format = 'Y-m-d')
     {
         $date = ($date instanceof Carbon) ? $date : Carbon::createFromFormat($format, $date)->setTime(0, 0, 0);
-        return (new Carbon('1997-10-07'))->diffInDays($date);
+        $quantidadeDeDias = (new Carbon('1997-10-07'))->diffInDays($date);
+        if (!empty($quantidadeDeDias)){
+            if ($quantidadeDeDias > 9999){
+                $num1 = $quantidadeDeDias / 10000;
+                $num1 = floor($num1);
+                $f = (($num1 * 10000) - 1000);
+                $quantidadeDeDias -= $f;
+                if ($quantidadeDeDias > 9999)
+                    $quantidadeDeDias -= 1000;
+                return $quantidadeDeDias;
+            }else{
+                return $quantidadeDeDias;
+            }
+        }else{
+            return "0000";
+        }
     }
 
     /**
