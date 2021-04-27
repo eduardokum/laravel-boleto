@@ -165,12 +165,12 @@ class CalculoDV
 			}else{
 				$dv1++;
 			}
-			
-			$dv2 = Util::modulo11($campo . $dv1, 2, 7, 0, 10);				
+
+			$dv2 = Util::modulo11($campo . $dv1, 2, 7, 0, 10);
 		}elseif($dv2 != 0){
 			$dv2 = (11 - $dv2);
 		}
-			
+
 		return $dv1 . $dv2;
     }
 
@@ -206,7 +206,7 @@ class CalculoDV
         $dv = Util::modulo11($agencia, 2, 9, 0, 'P');
         return $dv == 11 ? 0 : $dv;
     }
-    
+
     public static function bradescoContaCorrente($contaCorrente)
     {
         return Util::modulo11($contaCorrente, 2, 9, 0, 'P');
@@ -235,6 +235,12 @@ class CalculoDV
             . Util::numberFormatGeral($conta, 5)
             . Util::numberFormatGeral($carteira, 3)
             . Util::numberFormatGeral($numero_boleto, 8);
+
+        if (in_array($carteira, [112, 126, 131, 145, 150, 168])) {
+            $n = Util::numberFormatGeral($carteira, 3)
+                . Util::numberFormatGeral($numero_boleto, 8);
+        }
+
         return Util::modulo10($n);
     }
 
