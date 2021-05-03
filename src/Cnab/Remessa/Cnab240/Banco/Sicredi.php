@@ -142,7 +142,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(119, 126, $boleto->getJurosApos() == 0 ? '00000000' :
                $boleto->getDataVencimentoApos()->format('dmY'));
         $this->add(127, 141, Util::formatCnab('9', $boleto->getMoraDia(), 15, 2)); //Valor da mora/dia ou Taxa mensal
-        $this->add(142, 142, '1'); // '1' = Valor Fixo Até a Data Informada
+        $this->add(142, 142, '0'); // '1' = Valor Fixo Até a Data Informada
         $this->add(143, 150, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmY') : '00000000');
         $this->add(151, 165, Util::formatCnab('9', $boleto->getDesconto(), 15, 2));
         $this->add(166, 180, Util::formatCnab('9', 0, 15, 2));
@@ -196,17 +196,18 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         }
 
         $this->add(18, 18, '0');
-        $this->add(19, 26, '00000000');
-        $this->add(27, 41, Util::formatCnab('9', 0, 13, 2));
+        $this->add(19, 26, Util::formatCnab('9', 0, 8, 2));
+        $this->add(27, 41, Util::formatCnab('9', 0, 15, 2));
+
         if ($boleto->getDesconto() > 0) {
             $this->add(18, 18, '1'); // '1' = Valor fixo até a data informada
             $this->add(19, 26, $boleto->getDataDesconto() ? $boleto->getDataDesconto()->format('dmY') : $boleto->getDataVencimento()->format('dmY'));
             $this->add(27, 41, Util::formatCnab('9', $boleto->getMulta(), 13, 2));
         }
 
-        $this->add(42, 42, '');
-        $this->add(43, 50, Util::formatCnab('X', '', 8));
-        $this->add(51, 65, Util::formatCnab('x', '', 15));
+        $this->add(42, 42, '0');
+        $this->add(43, 50, Util::formatCnab('9', '0', 8));
+        $this->add(51, 65, Util::formatCnab('9', '0', 15));
         $this->add(66, 66, '0');
         $this->add(67, 74, '00000000');
         $this->add(75, 89, Util::formatCnab('9', 0, 13, 2));
