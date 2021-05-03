@@ -1,11 +1,12 @@
 {
-    "name": "eduardokum/laravel-boleto",
+    "name": "compufour/laravel-boleto",
     "description": "Biblioteca com boletos para o laravel",
     "keywords": [
+        "compufour",
         "eduardokum",
         "laravel-boleto"
     ],
-    "homepage": "https://github.com/eduardokum/laravel-boleto",
+    "homepage": "https://github.com/compufour/laravel-boleto",
     "license": "MIT",
     "authors": [
         {
