@@ -72,7 +72,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
      * @var array
      */
 
-    protected $carteiras = ['04', '09', '28'];
+    protected $carteiras = ['02', '04', '09', '28'];
 
     /**
      * Caracter de fim de linha
