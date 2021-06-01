@@ -217,6 +217,29 @@ class CalculoDV
         return Util::modulo11($carteira . Util::numberFormatGeral($nossoNumero, 11), 2, 7, 0, 'P');
     }
 
+    
+    /*
+    |--------------------------------------------------------------------------
+    | 329 - Qiscd
+    |--------------------------------------------------------------------------
+    */
+    public static function qiscdAgencia($agencia)
+    {
+        $dv = Util::modulo11($agencia, 2, 9, 0, 'P');
+        return $dv == 11 ? 0 : $dv;
+    }
+
+    public static function qiscdContaCorrente($contaCorrente)
+    {
+        return Util::modulo11($contaCorrente, 2, 9, 0, 'P');
+    }
+
+    public static function qiscdNossoNumero($carteira, $nossoNumero)
+    {
+        return Util::modulo11($carteira . Util::numberFormatGeral($nossoNumero, 11), 2, 7, 0, 'P');
+    }
+
+    
     /*
     |--------------------------------------------------------------------------
     | 341 - Itau

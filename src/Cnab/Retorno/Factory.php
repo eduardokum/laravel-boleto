@@ -50,6 +50,7 @@ class Factory
             BoletoContract::COD_BANCO_SANTANDER => 'Banco\\Santander',
             BoletoContract::COD_BANCO_CEF => 'Banco\\Caixa',
             BoletoContract::COD_BANCO_BRADESCO => 'Banco\\Bradesco',
+            BoletoContract::COD_BANCO_QISCD => 'Banco\\Qiscd',
             BoletoContract::COD_BANCO_ITAU => 'Banco\\Itau',
             BoletoContract::COD_BANCO_HSBC => 'Banco\\Hsbc',
             BoletoContract::COD_BANCO_SICREDI => 'Banco\\Sicredi',
