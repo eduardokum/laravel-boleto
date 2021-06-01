@@ -1,19 +1,10 @@
-<<<<<<< HEAD
 /vendor
 .DS_Store
 /.idea
-.composer.lock
-/tests/_reports/
-/docs/build/
-/composer.lock
 *.cache
-=======
-/vendor
-.DS_Store
-/.idea
-.composer.lock
 /tests/_reports/
 /docs/build/
 /composer.lock
 .phpunit.result.cache
->>>>>>> 82e1a7da2fdcb529244a43a8df9ea4baf364208e
+/nbproject/private/
+nbproject/
