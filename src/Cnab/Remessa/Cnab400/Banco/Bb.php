@@ -131,7 +131,7 @@ class Bb extends AbstractRemessa implements RemessaContract
      *
      * @var string
      */
-    protected $tipoCobranca;
+    protected $tipoCobranca = self::TIPO_COBRANCA_SIMPLES;
 
     /**
      * @return mixed
