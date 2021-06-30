@@ -1,4 +1,5 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
 use Eduardokum\LaravelBoleto\CalculoDV;
@@ -126,6 +127,13 @@ class Bb extends AbstractRemessa implements RemessaContract
     protected $variacaoCarteira;
 
     /**
+     * Tipo de cobrança
+     *
+     * @var string
+     */
+    protected $tipoCobranca;
+
+    /**
      * @return mixed
      */
     public function getConvenio()
@@ -185,6 +193,30 @@ class Bb extends AbstractRemessa implements RemessaContract
     public function setVariacaoCarteira($variacaoCarteira)
     {
         $this->variacaoCarteira = $variacaoCarteira;
+
+        return $this;
+    }
+
+    /**
+     * Retorna tipo de cobrança
+     *
+     * @return string
+     */
+    public function getTipoCobranca()
+    {
+        return $this->tipoCobranca;
+    }
+
+    /**
+     * Define tipo de cobrança
+     *
+     * @param string $tipoCobranca
+     *
+     * @return Bb
+     */
+    public function setTipoCobranca($tipoCobranca)
+    {
+        $this->tipoCobranca = $tipoCobranca;
 
         return $this;
     }
@@ -250,7 +282,7 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(92, 94, Util::formatCnab('9', $this->getVariacaoCarteira(), 3));
         $this->add(95, 95, '0');
         $this->add(96, 101, '000000');
-        $this->add(102, 106, '');
+        $this->add(102, 106, Util::formatCnab('X', $this->getTipoCobranca(), 5));
         $this->add(107, 108, $this->getCarteiraNumero());
         $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
         if ($boleto->getStatus() == $boleto::STATUS_BAIXA) {
