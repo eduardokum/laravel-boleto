@@ -196,6 +196,7 @@ class Banrisul extends AbstractRetorno implements RetornoCnab400
             ->setDataCredito($this->rem(296, 301, $detalhe))
             ->setValor(Util::nFloat($this->rem(153, 165, $detalhe)/100, 2, false))
             ->setValorTarifa(Util::nFloat($this->rem(176, 188, $detalhe)/100, 2, false))
+            ->setValorOutrasDespesas(Util::nFloat($this->rem(189, 201, $detalhe), 2, false) / 100 )
             ->setValorDesconto(Util::nFloat($this->rem(241, 253, $detalhe)/100, 2, false))
             ->setValorRecebido(Util::nFloat($this->rem(254, 266, $detalhe)/100, 2, false))
             ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe)/100, 2, false))
