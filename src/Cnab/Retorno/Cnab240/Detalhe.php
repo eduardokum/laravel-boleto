@@ -78,6 +78,11 @@ class Detalhe implements DetalheContract
     /**
      * @var string
      */
+    protected $valorOutrasDespesas;
+
+    /**
+     * @var string
+     */
     protected $valorIOF;
     /**
      * @var string
@@ -512,6 +517,26 @@ class Detalhe implements DetalheContract
     }
 
     /**
+     * @return string
+     */
+    public function getValorOutrasDespesas()
+    {
+        return $this->valorOutrasDespesas;
+    }
+
+    /**
+     * @param string $valorOutrasDespesas
+     *
+     * @return $this
+     */
+    public function setValorOutrasDespesas($valorOutrasDespesas)
+    {
+        $this->valorOutrasDespesas = $valorOutrasDespesas;
+
+        return $this;
+    }
+
+    /**
      * @return PessoaContract
      */
     public function getPagador()
@@ -582,7 +607,7 @@ class Detalhe implements DetalheContract
 
         return $this;
     }
-    
+
      /**
   * @return string
   */
