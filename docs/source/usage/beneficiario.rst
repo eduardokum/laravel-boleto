@@ -1,12 +1,12 @@
 .. _recipient:
 
-Beneficário
+Beneficiário
 ===========
 
-To create a ``Beneficário`` you need to create an instance of the ``Pessoa`` object.
+To create a ``Beneficiário`` you need to create an instance of the ``Pessoa`` object.
 
 .. NOTE::
-    ``Beneficário`` is the person issuing the charge.
+    ``Beneficiário`` is the person issuing the charge.
 
 .. code-block:: php
 
@@ -16,7 +16,7 @@ To create a ``Beneficário`` you need to create an instance of the ``Pessoa`` ob
         ->setCep('00000-000')
         ->setEndereco('Street name, 123')
         ->setBairro('district')
-        ->setUf('UF');
+        ->setUf('UF')
         ->setCidade('City');
 
 Or, Simply:
@@ -35,4 +35,4 @@ Or, Simply:
 
 
 .. ATTENTION::
-    The :ref:`bill` requires an instance of ``Beneficário``.
+    The :ref:`bill` requires an instance of ``Beneficiário``.

@@ -237,7 +237,7 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @var string
      */
-    protected $localPagamento = 'Pagável em qualquer agência bancária até o vencimento.';
+    protected $localPagamento = 'Pagável em qualquer agência bancária.';
     /**
      * Array com as linhas de instruções
      *

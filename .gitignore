@@ -1,7 +1,10 @@
 /vendor
 .DS_Store
 /.idea
-.composer.lock
+*.cache
 /tests/_reports/
 /docs/build/
 /composer.lock
+.phpunit.result.cache
+/nbproject/private/
+nbproject/

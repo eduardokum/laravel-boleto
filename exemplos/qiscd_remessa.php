@@ -4,7 +4,6 @@ $beneficiario = new \Eduardokum\LaravelBoleto\Pessoa(
     [
         'nome'      => 'ACME',
         'endereco'  => 'Rua um, 123',
-        'bairro'    => 'Bairro',
         'cep'       => '99999-999',
         'uf'        => 'UF',
         'cidade'    => 'CIDADE',
@@ -24,26 +23,39 @@ $pagador = new \Eduardokum\LaravelBoleto\Pessoa(
     ]
 );
 
-$boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Bb(
+$boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Qiscd(
     [
-        'logo'                   => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '001.png',
+        'logo'                   => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '329.png',
         'dataVencimento'         => new \Carbon\Carbon(),
         'valor'                  => 100,
         'multa'                  => false,
         'juros'                  => false,
         'numero'                 => 1,
+        'diasBaixaAutomatica'    => 2,
         'numeroDocumento'        => 1,
+        'pagador'                => $pagador,
+        'beneficiario'           => $beneficiario,
+        'carteira'               => '09',
+        'agencia'                => 1111,
+        'conta'                  => 9999999,
         'descricaoDemonstrativo' => ['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'],
         'instrucoes'             => ['instrucao 1', 'instrucao 2', 'instrucao 3'],
         'aceite'                 => 'S',
         'especieDoc'             => 'DM',
-        'pagador'                => $pagador,
-        'beneficiario'           => $beneficiario,
-        'carteira'               => 1111,
-        'convenio'               => 1234567,
     ]
 );
 
-$pdf = new Eduardokum\LaravelBoleto\Boleto\Render\Pdf();
-$pdf->addBoleto($boleto);
-$pdf->gerarBoleto($pdf::OUTPUT_SAVE, __DIR__ . DIRECTORY_SEPARATOR . 'arquivos' . DIRECTORY_SEPARATOR . 'bb.pdf');
+$remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Qiscd(
+    [
+        'idRemessa'     => 1,
+        'agencia'       => 1111,
+        'carteira'      => '09',
+        'conta'         => 99999999,
+        'contaDv'       => 9,
+        'codigoCliente' => '12345678901234567890',
+        'beneficiario'  => $beneficiario,
+    ]
+);
+$remessa->addBoleto($boleto);
+
+echo $remessa->save(__DIR__ . DIRECTORY_SEPARATOR . 'arquivos' . DIRECTORY_SEPARATOR . 'qiscd.txt');

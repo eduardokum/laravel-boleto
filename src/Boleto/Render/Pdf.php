@@ -294,7 +294,7 @@ class Pdf extends AbstractPdf implements PdfContract
 
         $this->Cell(12, $this->cell, $this->_('R$'), 'R');
         $this->Cell(28, $this->cell, $this->_(''), 'R');
-        $this->Cell(25, $this->cell, $this->_(''), 'R');
+        $this->Cell(25, $this->cell, $this->_(($this->boleto[$i]->getCodigoBanco() == '001') ? Util::nReal($this->boleto[$i]->getValor()) : ''), 'R');
         $this->Cell(50, $this->cell, $this->_(Util::nReal($this->boleto[$i]->getValor())), 'R', 1, 'R');
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
@@ -399,7 +399,7 @@ class Pdf extends AbstractPdf implements PdfContract
     {
         $this->Ln(3);
         $this->Cell(0, 15, '', 0, 1, 'L');
-        $this->i25($this->GetX(), $this->GetY() - 15, $this->boleto[$i]->getCodigoBarras(), 0.8, 17);
+        $this->i25($this->GetX(), $this->GetY() - 15, $this->boleto[$i]->getCodigoBarras(), 1, 17);
     }
 
     /**

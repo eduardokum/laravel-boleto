@@ -137,6 +137,7 @@ final class Util
         '751' => 'Scotiabank Brasil S.A. Banco Múltiplo',
         '409' => 'UNIBANCO - União de Bancos Brasileiros S.A.',
         '230' => 'Unicard Banco Múltiplo S.A.',
+        '329' => 'QISCD - QI Sociedade de Crédito Direto S.A.',
         'XXX' => 'Desconhecido',
     ];
 
@@ -500,7 +501,22 @@ final class Util
     public static function fatorVencimento($date, $format = 'Y-m-d')
     {
         $date = ($date instanceof Carbon) ? $date : Carbon::createFromFormat($format, $date)->setTime(0, 0, 0);
-        return (new Carbon('1997-10-07'))->diffInDays($date);
+        $quantidadeDeDias = (new Carbon('1997-10-07'))->diffInDays($date);
+        if (!empty($quantidadeDeDias)){
+            if ($quantidadeDeDias > 9999){
+                $num1 = $quantidadeDeDias / 10000;
+                $num1 = floor($num1);
+                $f = (($num1 * 10000) - 1000);
+                $quantidadeDeDias -= $f;
+                if ($quantidadeDeDias > 9999)
+                    $quantidadeDeDias -= 1000;
+                return $quantidadeDeDias;
+            }else{
+                return $quantidadeDeDias;
+            }
+        }else{
+            return "0000";
+        }
     }
 
     /**
@@ -512,7 +528,7 @@ final class Util
     public static function dataJuliano($date, $format = 'Y-m-d')
     {
         $date = ($date instanceof Carbon) ? $date : Carbon::createFromFormat($format, $date);
-        $dateDiff = $date->copy()->day(31)->month(12)->subYear()->diffInDays($date);
+        $dateDiff = $date->copy()->day(31)->month(12)->subYear(1)->diffInDays($date);
         return $dateDiff . mb_substr($date->year, -1);
     }
 
@@ -659,6 +675,9 @@ final class Util
         case Contracts\Boleto\Boleto::COD_BANCO_BRADESCO:
             self::adiciona($retorno[0], 27, 46, self::remove(27, 46, $remessa[0]));
             break;
+        case Contracts\Boleto\Boleto::COD_BANCO_QISCD:
+            self::adiciona($retorno[0], 27, 46, self::remove(27, 46, $remessa[0]));
+            break;
         case Contracts\Boleto\Boleto::COD_BANCO_ITAU:
             self::adiciona($retorno[0], 27, 30, self::remove(27, 30, $remessa[0]));
             self::adiciona($retorno[0], 33, 37, self::remove(33, 37, $remessa[0]));
@@ -716,6 +735,12 @@ final class Util
                 self::adiciona($retorno[$i], 57, 73, self::remove(57, 73, $detalhe));
                 break;
             case Contracts\Boleto\Boleto::COD_BANCO_BRADESCO:
+                self::adiciona($retorno[$i], 25, 29, self::remove(25, 29, $detalhe));
+                self::adiciona($retorno[$i], 30, 36, self::remove(30, 36, $detalhe));
+                self::adiciona($retorno[$i], 37, 37, self::remove(37, 37, $detalhe));
+                self::adiciona($retorno[$i], 71, 82, self::remove(71, 82, $detalhe));
+                break;
+            case Contracts\Boleto\Boleto::COD_BANCO_QISCD:
                 self::adiciona($retorno[$i], 25, 29, self::remove(25, 29, $detalhe));
                 self::adiciona($retorno[$i], 30, 36, self::remove(30, 36, $detalhe));
                 self::adiciona($retorno[$i], 37, 37, self::remove(37, 37, $detalhe));
@@ -978,6 +1003,7 @@ final class Util
             BoletoContract::COD_BANCO_SANTANDER => 'Banco\\Santander',
             BoletoContract::COD_BANCO_CEF => 'Banco\\Caixa',
             BoletoContract::COD_BANCO_BRADESCO => 'Banco\\Bradesco',
+            BoletoContract::COD_BANCO_QISCD => 'Banco\\Qiscd',
             BoletoContract::COD_BANCO_ITAU => 'Banco\\Itau',
             BoletoContract::COD_BANCO_HSBC => 'Banco\\Hsbc',
             BoletoContract::COD_BANCO_SICREDI => 'Banco\\Sicredi',
