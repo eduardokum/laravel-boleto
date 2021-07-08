@@ -9,12 +9,14 @@ interface Boleto
     const COD_BANCO_SANTANDER = '033';
     const COD_BANCO_CEF = '104';
     const COD_BANCO_BRADESCO = '237';
+    const COD_BANCO_QISCD = '329';
     const COD_BANCO_ITAU = '341';
     const COD_BANCO_HSBC = '399';
     const COD_BANCO_SICREDI = '748';
     const COD_BANCO_BANRISUL = '041';
     const COD_BANCO_BANCOOB = '756';
     const COD_BANCO_BNB = '004';
+    const COD_BANCO_UNICRED = '136';
 
     const STATUS_REGISTRO = 1;
     const STATUS_ALTERACAO = 2;
