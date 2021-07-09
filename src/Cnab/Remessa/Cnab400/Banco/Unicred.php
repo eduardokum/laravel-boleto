@@ -2,6 +2,7 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
 use Carbon\Carbon;
+use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
@@ -9,48 +10,30 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Unicred extends AbstractRemessa implements RemessaContract
 {
-    const ESPECIE_DUPLICATA = 'A';
-    const ESPECIE_DUPLICATA_RURAL = 'B';
-    const ESPECIE_NOTA_PROMISSORIA = 'C';
-    const ESPECIE_NOTA_PROMISSORIA_RURAL = 'D';
-    const ESPECIE_NOTA_SEGURO = 'E';
-    const ESPECIE_RECIBO = 'G';
-    const ESPECIE_LETRA_CAMBIO = 'H';
-    const ESPECIE_NOTA_DEBITOS = 'I';
-    const ESPECIE_NOTA_SERVICOS = 'J';
-    const ESPECIE_OUTROS = 'K';
-
     const OCORRENCIA_REMESSA = '01';
     const OCORRENCIA_BAIXA = '02';
     const OCORRENCIA_CONCESSAO_ABATIMENTO = '04';
     const OCORRENCIA_CANC_ABATIMENTO = '05';
     const OCORRENCIA_ALT_VENCIMENTO = '06';
+    const OCORRENCIA_ALT_SEU_NUMERO = '08';
     const OCORRENCIA_PROTESTAR = '09';
     const OCORRENCIA_SUSTAR_PROTESTO = '18';
-    const OCORRENCIA_SUSTAR_PROTESTO_MANTER_CARTEIRA = '19';
-    const OCORRENCIA_ALT_OUTROS_DADOS = '31';
+    const OCORRENCIA_SUSTAR_PROTESTO_MANTER_CARTEIRA = '11';
+    const OCORRENCIA_SUSTAR_PROTESTO_BAIXAR_TITULO = '25';
+
+    const INSTRUCAO_PROTESTO = '26';
+    const INSTRUCAO_PROTESTO_DIAS_CORR = '1';
+    const INSTRUCAO_PROTESTO_DIAS_UTEIS = '2';
+    const INSTRUCAO_PROTESTO_NAO = '3';
+
+    const INSTRUCAO_ALT_CARTEIRA = '40';
 
     const INSTRUCAO_SEM = '00';
-    const INSTRUCAO_PROTESTO = '06';
 
     public function __construct(array $params)
     {
         parent::__construct($params);
-        $this->setCarteira('A'); //Carteira Simples 'A'
         $this->addCampoObrigatorio('idremessa');
-    }
-
-    /**
-     * Define o código da carteira (Com ou sem registro)
-     *
-     * @param string $carteira
-     *
-     * @return AbstractRemessa
-     */
-    public function setCarteira($carteira)
-    {
-        $this->carteira = 'A';
-        return $this;
     }
 
     /**
@@ -60,12 +43,6 @@ class Unicred extends AbstractRemessa implements RemessaContract
      */
     protected $codigoBanco = BoletoContract::COD_BANCO_SICREDI;
 
-    /**
-     * Define as carteiras disponíveis para cada banco
-     *
-     * @var array
-     */
-    protected $carteiras = ['A'];
 
     /**
      * Caracter de fim de linha
@@ -155,85 +132,60 @@ class Unicred extends AbstractRemessa implements RemessaContract
         $this->iniciaDetalhe();
 
         $this->add(1, 1, '1');
-        $this->add(2, 2, 'A');
-        $this->add(3, 3, $this->getCarteiraNumero());
-        $this->add(4, 4, 'A');
-        $this->add(5, 16, '');
-        $this->add(17, 17, 'A');
-        $this->add(18, 18, 'A');
-        $this->add(19, 19, 'A');
-        $this->add(20, 47, '');
-        $this->add(48, 56, Util::formatCnab('9', $boleto->getNossoNumero(), 9));
-        $this->add(57, 62, '');
-        $this->add(63, 70, Carbon::now()->format('Ymd'));
-        $this->add(71, 71, '');
-        $this->add(72, 72, $boleto->getByte() == 1 ? 'S' : 'N');
-        $this->add(73, 73, '');
-        $this->add(74, 74, $boleto->getByte() == 1 ? 'A' : 'B');
-        $this->add(75, 76, '');
-        $this->add(77, 78, '');
-        $this->add(79, 82, '');
-        $this->add(83, 92, Util::formatCnab('9', 0, 10, 2));
-        $this->add(93, 96, Util::formatCnab('9', $boleto->getMulta(), 4, 2));
-        $this->add(97, 108, '');
+        $this->add(2, 6, $this->getAgencia());
+        $this->add(7, 7, CalculoDV::bbAgencia($this->getAgencia()));
+        $this->add(8, 19, Util::formatCnab('9', $this->getConta(), 12));
+        $this->add(20, 20, $this->getContaDv() ?: CalculoDV::bbContaCorrente($this->getConta()));
+        $this->add(21, 21, '0');
+        $this->add(22, 24, $this->getCarteiraNumero());
+        $this->add(25, 37, '0');
+        $this->add(38, 62, '');
+        $this->add(63, 65, $this->getCodigoBanco());
+        $this->add(66, 67, '0');
+        $this->add(68, 92, '');
+        $this->add(93, 94, '0');
+
+        if ($boleto->getMulta() > 0) {
+            $this->add(94, 94, '2'); //percentual
+            $this->add(95, 104, Util::formatCnab('9', $boleto->getMulta(), 9, 2));
+            $this->add(105,105, '2'); // mora de juros: mensal
+        } else {
+            $this->add(94, 94, '3'); //isento
+            $this->add(95, 104, Util::formatCnab('9', '0', 9, 2));
+            $this->add(105,105, '5'); //isento
+        }
+
+        $this->add(107, 108, '');
         $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
-        if ($boleto->getStatus() == $boleto::STATUS_BAIXA) {
-            $this->add(109, 110, self::OCORRENCIA_BAIXA); // BAIXA
-        }
-        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
-            $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO); // ALTERAR VENCIMENTO
-        }
-        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO_DATA) {
-            $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO);
-        }
-        if ($boleto->getStatus() == $boleto::STATUS_CUSTOM) {
-            $this->add(109, 110, sprintf('%2.02s', $boleto->getComando()));
-        }
-        $this->add(111, 120, Util::formatCnab('X', $boleto->getNumeroDocumento(), 10));
+        $this->add(111, 120, Util::formatCnab('X', $boleto->getNumeroDocumento(), 9));
         $this->add(121, 126, $boleto->getDataVencimento()->format('dmy'));
         $this->add(127, 139, Util::formatCnab('9', $boleto->getValor(), 13, 2));
-        $this->add(140, 148, '');
-        $this->add(149, 149, $boleto->getEspecieDocCodigo('A', 400));
-        $this->add(150, 150, $boleto->getAceite());
+        $this->add(140, 149, '0');
+        $this->add(150, 150, $boleto->getDesconto() > 0 ? 1 : 0);
         $this->add(151, 156, $boleto->getDataDocumento()->format('dmy'));
-        $this->add(157, 158, self::INSTRUCAO_SEM);
+        $this->add(157, 157, '0');
+        $this->add(158, 158, '0');
         $this->add(159, 160, self::INSTRUCAO_SEM);
         if ($boleto->getDiasProtesto() > 0) {
-            $this->add(157, 158, self::INSTRUCAO_PROTESTO);
+            $this->add(158, 158, self::INSTRUCAO_PROTESTO_DIAS_UTEIS);
             $this->add(159, 160, Util::formatCnab('9', $boleto->getDiasProtesto(), 2));
         }
         $this->add(161, 173, Util::formatCnab('9', $boleto->getMoraDia(), 13, 2));
         $this->add(174, 179, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmy') : '000000');
         $this->add(180, 192, Util::formatCnab('9', $boleto->getDesconto(), 13, 2));
-        $this->add(193, 205, Util::formatCnab('9', 0, 13, 2));
-        $this->add(206, 218, Util::formatCnab('9', 0, 13, 2));
-        $this->add(219, 220, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? '20' : '10');
+        $this->add(193, 203, Util::formatCnab('9', $boleto->getNossoNumero(), 11));
+        $this->add(204, 205, '0');
+        $this->add(206, 218, Util::formatCnab('9','0','13'));
+        $this->add(219, 220, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? '02' : '01');
         $this->add(221, 234, Util::formatCnab('9L', $boleto->getPagador()->getDocumento(), 14));
         $this->add(235, 274, Util::formatCnab('X', $boleto->getPagador()->getNome(), 40));
         $this->add(275, 314, Util::formatCnab('X', $boleto->getPagador()->getEndereco(), 40));
-        $this->add(315, 319, '00000');
-        $this->add(320, 325, '000000');
-        $this->add(326, 326, ' ');
+        $this->add(315, 326, Util::formatCnab('X', $boleto->getPagador()->getBairro(), 12));
         $this->add(327, 334, Util::formatCnab('9L', $boleto->getPagador()->getCep(), 8));
-        $this->add(335, 339, '00000');
-        $this->add(340, 353, $boleto->getSacadorAvalista() ? Util::formatCnab('9L', $boleto->getSacadorAvalista()->getDocumento(), 14) : Util::formatCnab('X', '', 14));
-        $this->add(354, 394, Util::formatCnab('X', $boleto->getSacadorAvalista() ? $boleto->getSacadorAvalista()->getNome() : '', 41));
+        $this->add(335, 354, Util::formatCnab('X', $boleto->getPagador()->getCidade(), 20));
+        $this->add(355, 356, Util::formatCnab('X', $boleto->getPagador()->getUf(), 2));
+        $this->add(357, 394, Util::formatCnab('9','0','38'));
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
-
-        if ($boleto->getByte() == 1) {
-            $this->iniciaDetalhe();
-
-            $this->add(1, 1, '2');
-            $this->add(2, 12, '');
-            $this->add(13, 21, Util::formatCnab('9', $boleto->getNossoNumero(), 9));
-            $this->add(22, 101, Util::formatCnab('X', $boleto->getInstrucoes()[0], 80));
-            $this->add(102, 181, Util::formatCnab('X', $boleto->getInstrucoes()[1], 80));
-            $this->add(182, 261, Util::formatCnab('X', $boleto->getInstrucoes()[2], 80));
-            $this->add(262, 341, Util::formatCnab('X', $boleto->getInstrucoes()[3], 80));
-            $this->add(342, 351, Util::formatCnab('9', $boleto->getNumeroDocumento(), 10));
-            $this->add(352, 394, '');
-            $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
-        }
 
         return $this;
     }
@@ -247,10 +199,7 @@ class Unicred extends AbstractRemessa implements RemessaContract
         $this->iniciaTrailer();
 
         $this->add(1, 1, '9');
-        $this->add(2, 2, '1');
-        $this->add(3, 5, $this->getCodigoBanco());
-        $this->add(6, 10, $this->getCodigoCliente());
-        $this->add(11, 394, '');
+        $this->add(2, 394, '');
         $this->add(395, 400, Util::formatCnab('9', $this->getCount(), 6));
 
         return $this;

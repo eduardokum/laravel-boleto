@@ -86,6 +86,7 @@ class Header implements HeaderContract
      * @param string $operacao
      *
      * @return Header
+     *
      */
     public function setOperacao($operacao)
     {
