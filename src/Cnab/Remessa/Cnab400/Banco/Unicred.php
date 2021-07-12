@@ -33,6 +33,7 @@ class Unicred extends AbstractRemessa implements RemessaContract
     public function __construct(array $params)
     {
         parent::__construct($params);
+        $this->carteira = 21;
         $this->addCampoObrigatorio('idremessa');
     }
 
@@ -42,7 +43,6 @@ class Unicred extends AbstractRemessa implements RemessaContract
      * @var string
      */
     protected $codigoBanco = BoletoContract::COD_BANCO_SICREDI;
-
 
     /**
      * Caracter de fim de linha
@@ -88,6 +88,13 @@ class Unicred extends AbstractRemessa implements RemessaContract
 
         return $this;
     }
+
+    /**
+     * Define as carteiras disponíveis para cada banco
+     *
+     * @var array
+     */
+    protected $carteiras = [21];
 
     /**
      * @return $this
