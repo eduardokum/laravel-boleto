@@ -348,4 +348,13 @@ class CalculoDV
         return $digitoVerificador;
     }
 
+    public static function unicredAgencia($agencia)
+    {
+        return Util::modulo11($agencia, 2, 9, 0, 'X');
+    }
+
+    public static function unicredContaCorrente($contaCorrente)
+    {
+        return Util::modulo11($contaCorrente, 2, 9, 0, 'X');
+    }
 }

@@ -132,29 +132,30 @@ class Unicred extends AbstractRemessa implements RemessaContract
         $this->iniciaDetalhe();
 
         $this->add(1, 1, '1');
-        $this->add(2, 6, $this->getAgencia());
-        $this->add(7, 7, CalculoDV::bbAgencia($this->getAgencia()));
+        $this->add(2, 6, Util::formatCnab('9', $this->getAgencia(),5));
+        $this->add(7, 7, CalculoDV::unicredAgencia($this->getAgencia()));
         $this->add(8, 19, Util::formatCnab('9', $this->getConta(), 12));
-        $this->add(20, 20, $this->getContaDv() ?: CalculoDV::bbContaCorrente($this->getConta()));
+        $this->add(20, 20, $this->getContaDv() ?: CalculoDV::unicredContaCorrente($this->getConta()));
         $this->add(21, 21, '0');
-        $this->add(22, 24, $this->getCarteiraNumero());
-        $this->add(25, 37, '0');
+        $this->add(22, 24, Util::formatCnab('9', $this->getCarteiraNumero(),'3'));
+        $this->add(25, 37, Util::formatCnab('9', '0', 13));
         $this->add(38, 62, '');
         $this->add(63, 65, $this->getCodigoBanco());
-        $this->add(66, 67, '0');
+        $this->add(66, 67, '00');
         $this->add(68, 92, '');
         $this->add(93, 94, '0');
 
         if ($boleto->getMulta() > 0) {
             $this->add(94, 94, '2'); //percentual
-            $this->add(95, 104, Util::formatCnab('9', $boleto->getMulta(), 9, 2));
+            $this->add(95, 104, Util::formatCnab('9', $boleto->getMulta(), 10, 2));
             $this->add(105,105, '2'); // mora de juros: mensal
         } else {
             $this->add(94, 94, '3'); //isento
-            $this->add(95, 104, Util::formatCnab('9', '0', 9, 2));
+            $this->add(95, 104, Util::formatCnab('9', '0', 10, 2));
             $this->add(105,105, '5'); //isento
         }
 
+        $this->add(106,106,'N');
         $this->add(107, 108, '');
         $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
         $this->add(111, 120, Util::formatCnab('X', $boleto->getNumeroDocumento(), 9));
@@ -164,7 +165,7 @@ class Unicred extends AbstractRemessa implements RemessaContract
         $this->add(150, 150, $boleto->getDesconto() > 0 ? 1 : 0);
         $this->add(151, 156, $boleto->getDataDocumento()->format('dmy'));
         $this->add(157, 157, '0');
-        $this->add(158, 158, '0');
+        $this->add(158, 158, '3');
         $this->add(159, 160, self::INSTRUCAO_SEM);
         if ($boleto->getDiasProtesto() > 0) {
             $this->add(158, 158, self::INSTRUCAO_PROTESTO_DIAS_UTEIS);
