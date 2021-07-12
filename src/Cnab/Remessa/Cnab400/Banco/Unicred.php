@@ -42,7 +42,7 @@ class Unicred extends AbstractRemessa implements RemessaContract
      *
      * @var string
      */
-    protected $codigoBanco = BoletoContract::COD_BANCO_SICREDI;
+    protected $codigoBanco = BoletoContract::COD_BANCO_UNICRED;
 
     /**
      * Caracter de fim de linha
