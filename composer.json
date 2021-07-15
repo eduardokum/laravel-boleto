@@ -19,7 +19,8 @@
         "ext-mbstring": "*",
         "laravel/framework": "^5.0||^6.0||^7.0|^8.0",
         "neitanod/forceutf8": "^2.0",
-        "setasign/fpdf": "^1.8"
+        "setasign/fpdf": "^1.8",
+        "nesbot/carbon": "^2.50"
     },
     "require-dev": {
         "phpunit/phpunit": ">=6.0||^8.0||^9.0",

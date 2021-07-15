@@ -4,7 +4,6 @@ namespace Eduardokum\LaravelBoleto\Tests;
 
 use Eduardokum\LaravelBoleto\Pessoa;
 use Eduardokum\LaravelBoleto\Util;
-use Exception;
 
 class PessoaTest extends TestCase
 {
@@ -41,6 +40,10 @@ class PessoaTest extends TestCase
         $this->assertEquals('CPF', $pessoa->getTipoDocumento());
 
         $this->assertStringContainsString(Util::maskString($cep, '#####-###'), $pessoa->getCepCidadeUf());
+
+
+        $this->assertStringContainsString(Util::maskString($cep, '#####-###'), $pessoa->getCepCidadeUf()) ;
+
         $this->assertStringContainsString($cidade, $pessoa->getCepCidadeUf());
         $this->assertStringContainsString($uf, $pessoa->getCepCidadeUf());
 
@@ -63,9 +66,9 @@ class PessoaTest extends TestCase
 
     }
 
-    public function testPessoaDocumentoErrado(){
-        $this->expectException(Exception::class);
 
+    public function testPessoaDocumentoErrado(){
+        $this->expectException(\Exception::class);
         $pessoa = new Pessoa(
             [
                 'documento' => '99999',

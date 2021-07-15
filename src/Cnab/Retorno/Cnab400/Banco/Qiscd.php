@@ -7,14 +7,14 @@ use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
 use Eduardokum\LaravelBoleto\Util;
 use Illuminate\Support\Arr;
 
-class Bradesco extends AbstractRetorno implements RetornoCnab400
+class Qiscd extends AbstractRetorno implements RetornoCnab400
 {
     /**
      * Código do banco
      *
      * @var string
      */
-    protected $codigoBanco = BoletoContract::COD_BANCO_BRADESCO;
+    protected $codigoBanco = BoletoContract::COD_BANCO_QISCD;
 
     /**
      * Array com as ocorrencias do banco;
@@ -147,7 +147,7 @@ class Bradesco extends AbstractRetorno implements RetornoCnab400
 
         $d = $this->detalheAtual();
         $d->setCarteira($this->rem(108, 108, $detalhe))
-            ->setNossoNumero($this->rem(71, 81, $detalhe))
+            ->setNossoNumero($this->rem(71, 82, $detalhe))
             ->setNumeroDocumento($this->rem(117, 126, $detalhe))
             ->setNumeroControle($this->rem(38, 62, $detalhe))
             ->setOcorrencia($this->rem(109, 110, $detalhe))

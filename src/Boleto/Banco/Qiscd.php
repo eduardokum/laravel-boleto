@@ -7,17 +7,17 @@ use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto;
 use Eduardokum\LaravelBoleto\Util;
 
-class Bradesco  extends AbstractBoleto implements BoletoContract
+class Qiscd  extends AbstractBoleto implements BoletoContract
 {
     /**
      * Código do banco
      *
      * @var string
      */
-    protected $codigoBanco = Boleto::COD_BANCO_BRADESCO;
+    protected $codigoBanco = Boleto::COD_BANCO_QISCD;
     /**
      * Define as carteiras disponíveis para este banco
-     * '02' => Com registro | '09' => Com registro | '06' => Sem Registro | '21' => Com Registro - Pagável somente no Bradesco | '22' => Sem Registro - Pagável somente no Bradesco | '25' => Sem Registro - Emissão na Internet | '26' => Com Registro - Emissão na Internet
+     * '02' => Com registro | '09' => Com registro | '06' => Sem Registro | '21' => Com Registro - Pagável somente no Emissor | '22' => Sem Registro - Pagável somente no Emissor | '25' => Sem Registro - Emissão na Internet | '26' => Com Registro - Emissão na Internet
      *
      * @var array
      */
@@ -93,7 +93,7 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
     protected function gerarNossoNumero()
     {
         return Util::numberFormatGeral($this->getNumero(), 11)
-            . CalculoDV::bradescoNossoNumero($this->getCarteira(), $this->getNumero());
+            . CalculoDV::qiscdNossoNumero($this->getCarteira(), $this->getNumero());
     }
 
     /**

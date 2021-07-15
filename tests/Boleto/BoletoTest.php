@@ -199,6 +199,7 @@ class BoletoTest extends TestCase
     {
         $this->expectException(Exception::class);
         $pdf = new Pdf();
+        $this->expectException(\Exception::class);
         $pdf->gerarBoleto($pdf::OUTPUT_STRING);
     }
 
