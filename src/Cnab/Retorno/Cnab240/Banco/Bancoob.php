@@ -282,7 +282,23 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
 
         if ($this->getSegmentType($detalhe) == 'T') {
             $d->setOcorrencia($this->rem(16, 17, $detalhe))
-                ->setOcorrenciaDescricao(Arr::get($this->ocorrencias, $this->detalheAtual()->getOcorrencia(), 'Desconhecida'))
+                ->setOcorrenciaDescricao(Arr::get($this->ocorrencias, $this->detalheAtual()->getOcorrencia(), 'Desconhecida'));
+
+            /**
+             * Conforme Manual o campo Nosso Número deve ter 7 dígitos + 1DV.
+             * Ao enviar a remessa formatamos para 10 dígitos preenchendo com zeros a esquerda
+             * Da mesma forma, no arquivo retorno, volta com 10 dígitos.
+             * Portanto, as duas primeiras, posições 38 e 39 serão sempre 00,
+             * seguidos de 7 dígitos + 1 dígito DV = 8 digitos da posição 40 até a 47.
+             *
+             * Para voltar a considerar 10 digitos voltar  trecho de código.
+             * ////->setNossoNumero($this->rem(38, 47, $detalhe))
+             *
+             */
+            if ( $this->rem(38, 39, $detalhe) != "00"){
+                throw new \Exception("Verificar arquivo retorno:  O nosso número no arquivo de retorno é maior que 7 dígitos.");
+            }
+            $d->setNossoNumero($this->rem(40, 47, $detalhe))
                 ->setNossoNumero($this->rem(38, 47, $detalhe))
                 ->setCarteira($this->rem(58, 58, $detalhe))
                 ->setNumeroDocumento($this->rem(59, 73, $detalhe))
