@@ -14,7 +14,7 @@ class Unicred extends AbstractRetorno implements RetornoCnab400
      *
      * @var string
      */
-    protected $codigoBanco = BoletoContract::COD_BANCO_BRADESCO;
+    protected $codigoBanco = BoletoContract::COD_BANCO_UNICRED;
 
     /**
      * Array com as ocorrencias do banco;
@@ -22,36 +22,19 @@ class Unicred extends AbstractRetorno implements RetornoCnab400
      * @var array
      */
     private $ocorrencias = [
-        "02" => "Entrada Confirmada",
-        "03" => "Entrada Rejeitada",
-        "06" => "Liquidação normal (sem motivo)",
-        "09" => "Baixado Automat. via Arquivo",
-        "10" => "Baixado conforme instruções da Agência",
-        "11" => "Em Ser - Arquivo de Títulos pendentes (sem motivo)",
-        "12" => "Abatimento Concedido (sem motivo)",
-        "13" => "Abatimento Cancelado (sem motivo)",
-        "14" => "Vencimento Alterado (sem motivo)",
-        "15" => "Liquidação em Cartório (sem motivo)",
-        "16" => "Título Pago em Cheque - Vinculado",
-        "17" => "Liquidação após baixa ou Título não registrado (sem motivo)",
-        "18" => "Acerto de Depositária (sem motivo)",
-        "19" => "Confirmação Receb. Inst. de Protesto",
-        "20" => "Confirmação Recebimento Instrução Sustação de Protesto (sem motivo)",
-        "21" => "Acerto do Controle do Participante (sem motivo)",
-        "22" => "Título Com Pagamento Cancelado",
-        "23" => "Entrada do Título em Cartório (sem motivo)",
-        "24" => "Entrada rejeitada por CEP Irregular",
-        "27" => "Baixa Rejeitada",
-        "28" => "Débito de tarifas/custas",
-        "30" => "Alteração de Outros Dados Rejeitados",
-        "32" => "Instrução Rejeitada",
-        "33" => "Confirmação Pedido Alteração Outros Dados (sem motivo)",
-        "34" => "Retirado de Cartório e Manutenção Carteira (sem motivo)",
-        "35" => "Desagendamento do débito automático",
-        "40" => "Estorno de pagamento (Novo)",
-        "55" => "Sustado judicial (Novo)",
-        "68" => "Acerto dos dados do rateio de Crédito",
-        "69" => "Cancelamento dos dados do rateio",
+        '01' => 'Pago (Título protestado pago em cartório)',
+        '02' => 'Instrução Confirmada*',
+        '03' => 'Instrução Rejeitada*',
+        '04' => 'Sustado Judicial (Título protestado sustado judicialmente)',
+        '06' => 'Liquidação Normal',
+        '07' => 'Liquidação em Condicional (Título liquidado em cartório com cheque do próprio devedor)',
+        '08' => 'Sustado Definitivo (Título protestado sustado judicialmente)',
+        '09' => 'Liquidação de Título Descontado',
+        '10' => 'Protesto solicitado',
+        '11' => 'Protesto Em cartório',
+        '12' => 'Sustação solicitada',
+        '13' => 'Títulos Descontado (título utilizado como garantia em operação de desconto)',
+        '14' => 'Títulos Descontável (título com desistência de garantia em operação de desconto)',
     ];
 
     /**
@@ -60,40 +43,154 @@ class Unicred extends AbstractRetorno implements RetornoCnab400
      * @var array
      */
     private $rejeicoes = [
-        '02' => 'Código do registro detalhe inválido',
-        '03' => 'Código da ocorrência inválida',
-        '04' => 'Código de ocorrência não permitida para a carteira',
-        '05' => 'Código de ocorrência não numérico',
-        '07' => 'Agência/conta/Digito - |Inválido',
-        '08' => 'Nosso número inválido',
-        '09' => 'Nosso número duplicado',
+        '00' => 'Sem Complemento a informar',
+        '01' => 'Código do Banco Inválido',
+        '04' => 'Código de Movimento não permitido para a carteira',
+        '05' => 'Código de Movimento Inválido',
+        '06' => 'Número de Inscrição do Beneficiário Inválido',
+        '07' => 'Agência - Conta Inválida',
+        '08' => 'Nosso Número Inválido',
+        '09' => 'Nosso Número Duplicado',
         '10' => 'Carteira inválida',
-        '13' => 'Identificação da emissão do bloqueto inválida',
-        '16' => 'Data de vencimento inválida',
-        '18' => 'Vencimento fora do prazo de operação',
-        '20' => 'Valor do Título inválido',
-        '21' => 'Espécie do Título inválida',
-        '22' => 'Espécie não permitida para a carteira',
-        '24' => 'Data de emissão inválida',
-        '28' => 'Código do desconto inválido',
-        '38' => 'Prazo para protesto/ Negativação inválido (ALTERADO)',
-        '44' => 'Agência Beneficiário não prevista',
-        '45' => 'Nome do pagador não informado',
-        '46' => 'Tipo/número de inscrição do pagador inválidos',
-        '47' => 'Endereço do pagador não informado',
+        '12' => 'Tipo de Documento Inválido',
+        '15' => 'Data de Vencimento inferior a 5 dias uteis para remessa gráfica',
+        '16' => 'Data de Vencimento Inválida',
+        '17' => 'Data de Vencimento Anterior à Data de Emissão',
+        '18' => 'Vencimento fora do Prazo de Operação',
+        '20' => 'Valor do Título Inválido',
+        '24' => 'Data de Emissão Inválida',
+        '25' => 'Data de Emissão Posterior à data de Entrega',
+        '26' => 'Código de juros inválido',
+        '27' => 'Valor de juros inválido',
+        '28' => 'Código de Desconto inválido',
+        '29' => 'Valor de Desconto inválido',
+        '30' => 'Alteração de Dados Rejeitada',
+        '33' => 'Valor de Abatimento Inválido',
+        '34' => 'Valor do Abatimento Maior ou Igual ao Valor do título',
+        '37' => 'Código para Protesto Inválido; (Protesto via SGR, não é CRA)',
+        '38' => 'Prazo para Protesto Inválido; (Protesto via SGR, não é CRA)',
+        '39' => 'Pedido de Protesto Não Permitido para o Título',
+        '40' => 'Título com Ordem de Protesto Emitida',
+        '41' => 'Pedido de Cancelamento/Sustação para Títulos sem Instrução de Protesto',
+        '45' => 'Nome do Pagador não informado',
+        '46' => 'Número de Inscrição do Pagador Inválido',
+        '47' => 'Endereço do Pagador Não Informado',
         '48' => 'CEP Inválido',
-        '50' => 'CEP irregular - Banco Correspondente',
+        '52' => 'Unidade Federativa Inválida',
+        '57' => 'Código de Multa inválido',
+        '58' => 'Data de Multa inválido',
+        '59' => 'Valor / percentual de Multa inválido',
+        '60' => 'Movimento para Título não Cadastrado',
         '63' => 'Entrada para Título já cadastrado',
-        '65' => 'Limite excedido',
-        '66' => 'Número autorização inexistente',
-        '68' => 'Débito não agendado - erro nos dados de remessa',
-        '69' => 'Débito não agendado - Pagador não consta no cadastro de autorizante',
-        '70' => 'Débito não agendado - Beneficiário não autorizado pelo Pagador',
-        '71' => 'Débito não agendado - Beneficiário não participa do débito Automático',
-        '72' => 'Débito não agendado - Código de moeda diferente de R$',
-        '73' => 'Débito não agendado - Data de vencimento inválida',
-        '74' => 'Débito não agendado - Conforme seu pedido, Título não registrado',
-        '75' => 'Débito não agendado – Tipo de número de inscrição do debitado inválido',
+        '79' => 'Data de Juros inválida',
+        '80' => 'Data de Desconto inválida',
+        '86' => 'Seu Número Inválido',
+        'A5' => 'Título Liquidado',
+        'A8' => 'Valor do Abatimento Inválido para Cancelamento',
+        'C0' => 'Sistema Intermitente – Entre em contato com sua Cooperativa',
+        'C1' => 'Situação do título Aberto',
+        'C3' => 'Status do Borderô Inválido',
+        'C4' => 'Nome do Beneficiário Inválido',
+        'C5' => 'Documento Inválido',
+        'C6' => 'Instrução não Atualiza Cadastro do Título',
+        'C7' => 'Título não registrado na CIP',
+        'C8' => 'Situação do Borderô inválida',
+        'C9' => 'Título inválido conforme situação CIP',
+        'C10' => 'Protesto: Título precisa estar em Aberto',
+        'D0' => 'Beneficiário não autorizado a operar com produto Desconto',
+        'D1' => 'Alteração de status de desconto não permitido para título',
+        'D2' => 'Operação de desconto não permitida para título vencido',
+        'D3' => 'Alteração de status de desconto não permitido para situação do título',
+        'E0' => 'CEP indicado para o endereço do Pagador não compatível com os Correios',
+        'E1' => 'Logradouro para o endereço do Pagador não compatível com os Correios, para o CEP indicado',
+        'E2' => 'Tipo de logradouro para o endereço do Pagador não compatível com os Correios, para o CEP indicado',
+        'E3' => 'Bairro para o endereço do Pagador não compatível com os Correios, para o CEP indicado',
+        'E4' => 'Cidade para o endereço do Pagador não compatível com os Correios, para o CEP indicado',
+        'E5' => 'UF para o endereço do Pagador não compatível com os Correios, para o CEP indicado',
+        'E6' => 'Dados do segmento/registro opcional de endereço do pagador, incompletos no arquivo remessa',
+        'E7' => 'Beneficiário não autorizado a enviar boleto por e-mail',
+        'E8' => 'Indicativo para pagador receber boleto por e-mail sinalizado, porém sem o endereço do e-mail',
+        'E9' => 'Beneficiário não autorizado a enviar títulos para protesto',
+        'E10' => 'Instrução ‘09 – Protestar’, usada erroneamente para título a vencer ou ainda dentro do período de Carência de ‘1 dia’ do vencimento, referente a liquidação por Compensação',
+        'E11' => 'Instrução ‘26 – Protesto Automático’, usada erroneamente para título vencido',
+        'E12' => 'Cancelamento de protesto automático não permitido, título não possui configuração de protesto automático',
+        'E13' => 'Configuração de Número de Dias para Protesto, foi informado para cancelamento de protesto automático',
+        'E14' => 'Configuração de Número de Dias para Protesto, não foi informado para protesto automático',
+        'E15' => 'Cancelamento de protesto automático não permitido, para protesto já enviado a cartório',
+        'E16' => 'Código para Protesto inválido',
+        'E17' => 'Instrução não permitida para título descontado',
+        'E18' => 'Configuração de Número de Dias para Protesto, foi informado para opção de não protestar',
+        'E19' => 'Baixa por decurso de prazo foi encaminhada em duplicidade pela CIP',
+        '101' => 'Data da apresentação inferior à data de vencimento',
+        '102' => 'Falta de comprovante da prestação de serviço',
+        '103' => 'Nome do sacado incompleto/incorreto',
+        '104' => 'Nome do cedente incompleto/incorreto',
+        '105' => 'Nome do sacador incompleto/incorreto',
+        '106' => 'Endereço do sacado insuficiente',
+        '107' => 'CNPJ/CPF do sacado inválido/incorreto',
+        '108' => 'CNPJ/CPF incompatível c/ o nome do sacado/sacador/avalista',
+        '109' => 'CNPJ/CPF do sacado incompatível com o tipo de documento',
+        '110' => 'CNPJ/CPF do sacador incompatível com a espécie',
+        '111' => 'Título aceito sem a assinatura do sacado',
+        '112' => 'Título aceito rasurado ou rasgado',
+        '113' => 'Título aceito – falta título (ag ced: enviar)',
+        '114' => 'CEP incorreto',
+        '115' => 'Praça de pagamento incompatível com endereço',
+        '116' => 'Falta número do título',
+        '117' => 'Título sem endosso do cedente ou irregular',
+        '118' => 'Falta data de emissão do título',
+        '119' => 'Título aceito: valor por extenso diferente do valor por numérico',
+        '120' => 'Data de emissão posterior ao vencimento',
+        '121' => 'Espécie inválida para protesto',
+        '122' => 'CEP do sacado incompatível com a praça de protesto',
+        '123' => 'Falta espécie do título',
+        '124' => 'Saldo maior que o valor do título',
+        '125' => 'Tipo de endosso inválido',
+        '126' => 'Devolvido por ordem judicial',
+        '127' => 'Dados do título não conferem com disquete',
+        '128' => 'Sacado e Sacador/Avalista são a mesma pessoa',
+        '129' => 'Corrigir a espécie do título',
+        '130' => 'Aguardar um dia útil após o vencimento para protestar',
+        '131' => 'Data do vencimento rasurada',
+        '132' => 'Vencimento – extenso não confere com número',
+        '133' => 'Falta data de vencimento no título',
+        '134' => 'DM/DMI sem comprovante autenticado ou declaração',
+        '135' => 'Comprovante ilegível para conferência e microfilmagem',
+        '136' => 'Nome solicitado não confere com emitente ou sacado',
+        '137' => 'Confirmar se são 2 emitentes. Se sim, indicar os dados dos 2',
+        '138' => 'Endereço do sacado igual ao do sacador ou do portador',
+        '139' => 'Endereço do apresentante incompleto ou não informado',
+        '140' => 'Rua / Número inexistente no endereço',
+        '141' => 'Informar a qualidade do endosso (M ou T)',
+        '142' => 'Falta endosso do favorecido para o apresentante',
+        '143' => 'Data da emissão rasurada',
+        '144' => 'Protesto de cheque proibido – motivo 20/25/28/30 ou 35',
+        '145' => 'Falta assinatura do emitente no cheque',
+        '146' => 'Endereço do emitente no cheque igual ao do banco sacado',
+        '147' => 'Falta o motivo da devolução no cheque ou motivo ilegível',
+        '148' => 'Falta assinatura do sacador no título',
+        '149' => 'Nome do apresentante não informado/incompleto/incorreto',
+        '150' => 'Erro de preenchimento do título',
+        '151' => 'Título com direito de regresso vencido',
+        '152' => 'Título apresentado em duplicidade',
+        '153' => 'Título já protestado',
+        '154' => 'Letra de Câmbio vencida – falta aceite do sacado',
+        '155' => 'Título – falta tradução por tradutor público',
+        '156' => 'Falta declaração de saldo assinada no título',
+        '157' => 'Contrato de Câmbio – falta conta gráfica',
+        '158' => 'Ausência do Documento Físico',
+        '159' => 'Sacado Falecido',
+        '160' => 'Sacado Apresentou Quitação do Título',
+        '161' => 'Título de outra jurisdição territorial',
+        '162' => 'Título com emissão anterior à concordata do sacado',
+        '163' => 'Sacado consta na lista de falência',
+        '164' => 'Apresentante não aceita publicação de edital',
+        '165' => 'Dados do sacador em branco ou inválido',
+        '166' => 'Título sem autorização para protesto por edital',
+        '167' => 'Valor divergente entre título e comprovante',
+        '168' => 'Condomínio não pode ser protestado para fins falimentares',
+        '169' => 'Vedada a intimação por edital para protesto falimentar',
+        '170' => 'Dados do Cedente em branco ou inválido',
     ];
 
     /**
@@ -144,47 +241,49 @@ class Unicred extends AbstractRetorno implements RetornoCnab400
     {
         if ($this->count() == 1) {
             $this->getHeader()
-                ->setAgencia($this->rem(25, 29, $detalhe))
-                ->setConta($this->rem(30, 36, $detalhe))
-                ->setContaDv($this->rem(37, 37, $detalhe));
+                ->setAgencia($this->rem(18, 22, $detalhe))
+                ->setConta($this->rem(23, 30, $detalhe))
+                ->setContaDv($this->rem(31, 31, $detalhe));
         }
 
         $d = $this->detalheAtual();
-        $d->setCarteira($this->rem(108, 108, $detalhe))
-            ->setNossoNumero($this->rem(71, 82, $detalhe))
-            ->setNumeroDocumento($this->rem(117, 126, $detalhe))
-            ->setNumeroControle($this->rem(38, 62, $detalhe))
+        $d
+            //->setCarteira($this->rem(108, 108, $detalhe))
+            ->setNossoNumero($this->rem(46, 62, $detalhe))
+            ->setNumeroDocumento($this->rem(280, 305, $detalhe))
+            ->setNumeroControle($this->rem(280, 305, $detalhe))
             ->setOcorrencia($this->rem(109, 110, $detalhe))
             ->setOcorrenciaDescricao(Arr::get($this->ocorrencias, $d->getOcorrencia(), 'Desconhecida'))
             ->setDataOcorrencia($this->rem(111, 116, $detalhe))
             ->setDataVencimento($this->rem(147, 152, $detalhe))
-            ->setDataCredito($this->rem(296, 301, $detalhe))
+            ->setDataCredito($this->rem(111, 116, $detalhe))
             ->setValor(Util::nFloat($this->rem(153, 165, $detalhe)/100, 2, false))
-            ->setValorTarifa(Util::nFloat($this->rem(176, 188, $detalhe)/100, 2, false))
-            ->setValorIOF(Util::nFloat($this->rem(215, 227, $detalhe)/100, 2, false))
+            ->setValorTarifa(Util::nFloat($this->rem(182, 188, $detalhe)/100, 2, false))
+            //->setValorIOF(Util::nFloat($this->rem(215, 227, $detalhe)/100, 2, false))
             ->setValorAbatimento(Util::nFloat($this->rem(228, 240, $detalhe)/100, 2, false))
             ->setValorDesconto(Util::nFloat($this->rem(241, 253, $detalhe)/100, 2, false))
             ->setValorRecebido(Util::nFloat($this->rem(254, 266, $detalhe)/100, 2, false))
-            ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe)/100, 2, false))
-            ->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe)/100, 2, false));
+            ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe)/100, 2, false));
+            //->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe)/100, 2, false));
 
-        $msgAdicional = str_split(sprintf('%08s', $this->rem(319, 328, $detalhe)), 2) + array_fill(0, 5, '');
-        if ($d->hasOcorrencia('06', '15', '17')) {
+        $msgAdicional = str_split(sprintf('%08s', $this->rem(319, 326, $detalhe)), 2) + array_fill(0, 5, '');
+
+        if ($d->hasOcorrencia('06','07','01','09')) {
             $this->totais['liquidados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
         } elseif ($d->hasOcorrencia('02')) {
             $this->totais['entradas']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_ENTRADA);
-        } elseif ($d->hasOcorrencia('09', '10')) {
+        } elseif ($d->hasOcorrencia('10')) {
             $this->totais['baixados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_BAIXADA);
-        } elseif ($d->hasOcorrencia('23')) {
+        } elseif ($d->hasOcorrencia('11')) {
             $this->totais['protestados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_PROTESTADA);
-        } elseif ($d->hasOcorrencia('14')) {
+        } elseif ($d->hasOcorrencia('14','13','12','04','08')) {
             $this->totais['alterados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
-        } elseif ($d->hasOcorrencia('03', '24', '27', '30', '32')) {
+        } elseif ($d->hasOcorrencia('03')) {
             $this->totais['erros']++;
             $error = Util::appendStrings(
                 Arr::get($this->rejeicoes, $msgAdicional[0], ''),
@@ -215,8 +314,8 @@ class Unicred extends AbstractRetorno implements RetornoCnab400
     protected function processarTrailer(array $trailer)
     {
         $this->getTrailer()
-            ->setQuantidadeTitulos($this->rem(18, 25, $trailer))
-            ->setValorTitulos(Util::nFloat($this->rem(26, 39, $trailer)/100, 2, false))
+            ->setQuantidadeTitulos((int) $this->count())
+            ->setValorTitulos((float) Util::nFloat($this->totais['valor_recebido'], 2, false))
             ->setQuantidadeErros((int) $this->totais['erros'])
             ->setQuantidadeEntradas((int) $this->totais['entradas'])
             ->setQuantidadeLiquidados((int) $this->totais['liquidados'])

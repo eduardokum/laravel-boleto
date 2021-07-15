@@ -54,6 +54,7 @@ class Factory
             BoletoContract::COD_BANCO_ITAU => 'Banco\\Itau',
             BoletoContract::COD_BANCO_HSBC => 'Banco\\Hsbc',
             BoletoContract::COD_BANCO_SICREDI => 'Banco\\Sicredi',
+            BoletoContract::COD_BANCO_UNICRED => 'Banco\\Unicred',
             BoletoContract::COD_BANCO_BANRISUL => 'Banco\\Banrisul',
             BoletoContract::COD_BANCO_BANCOOB => 'Banco\\Bancoob',
             BoletoContract::COD_BANCO_BNB => 'Banco\\Bnb',
