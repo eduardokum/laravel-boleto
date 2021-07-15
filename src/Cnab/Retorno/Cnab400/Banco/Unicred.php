@@ -199,6 +199,7 @@ class Unicred extends AbstractRetorno implements RetornoCnab400
     protected function init()
     {
         $this->totais = [
+            'valor_recebido' => 0,
             'liquidados' => 0,
             'entradas' => 0,
             'baixados' => 0,
@@ -269,6 +270,7 @@ class Unicred extends AbstractRetorno implements RetornoCnab400
         $msgAdicional = str_split(sprintf('%08s', $this->rem(319, 326, $detalhe)), 2) + array_fill(0, 5, '');
 
         if ($d->hasOcorrencia('06','07','01','09')) {
+            $this->totais['valor_recebido'] += $d->getValorRecebido();
             $this->totais['liquidados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
         } elseif ($d->hasOcorrencia('02')) {
@@ -293,8 +295,8 @@ class Unicred extends AbstractRetorno implements RetornoCnab400
                 Arr::get($this->rejeicoes, $msgAdicional[4], '')
             );
             if($d->hasOcorrencia('03')) {
-               if(isset($this->rejeicoes[$this->rem(319, 320, $detalhe)])){
-                  $d->setRejeicao($this->rejeicoes[$this->rem(319, 320, $detalhe)]);
+               if(isset($this->rejeicoes[$this->rem(319, 326, $detalhe)])){
+                  $d->setRejeicao($this->rejeicoes[$this->rem(319, 326, $detalhe)]);
                }
             }
             $d->setError($error);
