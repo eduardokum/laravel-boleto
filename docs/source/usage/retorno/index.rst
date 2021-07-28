@@ -17,7 +17,7 @@ Banco do Nordeste          no    no
 Bradesco                   yes   yes*
 Caixa Econônica Federal    yes   yes*
 HSBC                       no    yes
-Itáu                       yes   yes*
+Itaú                       yes   yes*
 Santander                  yes   yes
 Sicredi                    yes*  yes*
 =========================  ====  ====
@@ -157,7 +157,7 @@ HSBC
      // To process the file
     $return->processar();
 
-Itáu
+Itaú
 ----
 
 .. code-block:: php

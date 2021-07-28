@@ -17,7 +17,7 @@ Banco do Nordeste          no    yes*
 Bradesco                   yes*  yes
 Caixa Econônica Federal    yes*  yes
 HSBC                       no    yes
-Itáu                       yes*  yes
+Itaú                       yes*  yes
 Santander                  yes*  yes
 Sicredi                    yes*  yes
 =========================  ====  ====

@@ -4,6 +4,7 @@ namespace Eduardokum\LaravelBoleto\Tests;
 
 use Eduardokum\LaravelBoleto\Pessoa;
 use Eduardokum\LaravelBoleto\Util;
+use Exception;
 
 class UtilTest extends TestCase
 {
@@ -44,42 +45,32 @@ class UtilTest extends TestCase
         $this->assertEquals('1234567890', Util::remove(1, 10, $array));
     }
 
-    /**
-     * @expectedException     \Exception
-     */
     public function testAddMaiorTamanhoCnab() {
+        $this->expectException(Exception::class);
         $array = array_fill(0, 400, 0);
         Util::adiciona($array, 400, 410, '1234567890');
     }
 
-    /**
-     * @expectedException     \Exception
-     */
     public function testAddFinalMenorInicial() {
+        $this->expectException(Exception::class);
         $array = array_fill(0, 400, 0);
         Util::adiciona($array, 300, 290, '1234567890');
     }
 
-    /**
-     * @expectedException     \Exception
-     */
     public function testAddStringMaiorRange() {
+        $this->expectException(Exception::class);
         $array = array_fill(0, 400, 0);
         Util::adiciona($array, 300, 301, '1234567890');
     }
 
-    /**
-     * @expectedException     \Exception
-     */
     public function testRemMaiorTamanhoCnab() {
+        $this->expectException(Exception::class);
         $array = array_fill(0, 400, 0);
         Util::remove(400, 410, $array);
     }
 
-    /**
-     * @expectedException     \Exception
-     */
     public function testRemFinalMenorInicial() {
+        $this->expectException(Exception::class);
         $array = array_fill(0, 400, 0);
         Util::remove(310, 300, $array);
     }
@@ -90,7 +81,7 @@ class UtilTest extends TestCase
         $this->assertEquals('0000123400', Util::formatCnab('9', '1234', 10, 2));
         $this->assertEquals('ABC       ', Util::formatCnab('X', 'ABC', 10));
 
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
         Util::formatCnab('J', '123', 10);
     }
 
@@ -141,17 +132,13 @@ class UtilTest extends TestCase
         $this->assertEquals([123], Util::controle2array(123));
     }
 
-    /**
-     * @expectedException     \Exception
-     */
     public function testControleArrayMaior25() {
+        $this->expectException(Exception::class);
         Util::array2Controle(['ABCDEFG' => 1231231, 'EFGHIJKL' => 1231231]);
     }
 
-    /**
-     * @expectedException     \Exception
-     */
     public function testControleArrayKeyNumerica() {
+        $this->expectException(Exception::class);
         Util::array2Controle([0 => 1]);
     }
 }
