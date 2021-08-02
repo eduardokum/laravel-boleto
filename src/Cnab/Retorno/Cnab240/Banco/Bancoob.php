@@ -234,8 +234,7 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
             ->setCodigoRemessaRetorno($this->rem(143, 143, $header))
             ->setData($this->rem(144, 151, $header))
             ->setNumeroSequencialArquivo($this->rem(158, 163, $header))
-            ->setVersaoLayoutArquivo($this->rem(164, 166, $header))
-            ->setData($this->rem(192, 199, $header));
+            ->setVersaoLayoutArquivo($this->rem(164, 166, $header));
 
         return true;
     }
@@ -287,24 +286,24 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
                 ->setCarteira($this->rem(58, 58, $detalhe))
                 ->setNumeroDocumento($this->rem(59, 73, $detalhe))
                 ->setDataVencimento($this->rem(74, 81, $detalhe))
-                ->setValor(Util::nFloat($this->rem(82, 96, $detalhe)/100, 2, false))
+                ->setValor(Util::nFloat($this->rem(82, 96, $detalhe) / 100, 2, false))
                 ->setNumeroControle($this->rem(106, 130, $detalhe))
                 ->setPagador([
                     'nome' => $this->rem(149, 188, $detalhe),
                     'documento' => $this->rem(134, 148, $detalhe),
                 ])
-                ->setValorTarifa(Util::nFloat($this->rem(199, 213, $detalhe)/100, 2, false));
+                ->setValorTarifa(Util::nFloat($this->rem(199, 213, $detalhe) / 100, 2, false));
 
             /**
              * ocorrencias
-            */
+             */
             $msgAdicional = str_split(sprintf('%010s', $this->rem(214, 223, $detalhe)), 2) + array_fill(0, 5, '');
             if ($d->hasOcorrencia('06', '17', '50')) {
                 $this->totais['liquidados']++;
                 $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
             } elseif ($d->hasOcorrencia('02')) {
                 $this->totais['entradas']++;
-                if(array_search('a4', array_map('strtolower', $msgAdicional)) !== false) {
+                if (array_search('a4', array_map('strtolower', $msgAdicional)) !== false) {
                     $d->getPagador()->setDda(true);
                 }
                 $d->setOcorrenciaTipo($d::OCORRENCIA_ENTRADA);
@@ -333,11 +332,11 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
         }
 
         if ($this->getSegmentType($detalhe) == 'U') {
-            $d->setValorMulta(Util::nFloat($this->rem(18, 32, $detalhe)/100, 2, false))
-                ->setValorDesconto(Util::nFloat($this->rem(33, 47, $detalhe)/100, 2, false))
-                ->setValorAbatimento(Util::nFloat($this->rem(48, 62, $detalhe)/100, 2, false))
-                ->setValorIOF(Util::nFloat($this->rem(63, 77, $detalhe)/100, 2, false))
-                ->setValorRecebido(Util::nFloat($this->rem(78, 92, $detalhe)/100, 2, false))
+            $d->setValorMulta(Util::nFloat($this->rem(18, 32, $detalhe) / 100, 2, false))
+                ->setValorDesconto(Util::nFloat($this->rem(33, 47, $detalhe) / 100, 2, false))
+                ->setValorAbatimento(Util::nFloat($this->rem(48, 62, $detalhe) / 100, 2, false))
+                ->setValorIOF(Util::nFloat($this->rem(63, 77, $detalhe) / 100, 2, false))
+                ->setValorRecebido(Util::nFloat($this->rem(78, 92, $detalhe) / 100, 2, false))
                 ->setDataOcorrencia($this->rem(138, 145, $detalhe))
                 ->setDataCredito($this->rem(146, 153, $detalhe));
         }
@@ -358,13 +357,13 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
             ->setTipoRegistro($this->rem(8, 8, $trailer))
             ->setQtdRegistroLote((int) $this->rem(18, 23, $trailer))
             ->setQtdTitulosCobrancaSimples((int) $this->rem(24, 29, $trailer))
-            ->setValorTotalTitulosCobrancaSimples(Util::nFloat($this->rem(30, 46, $trailer)/100, 2, false))
+            ->setValorTotalTitulosCobrancaSimples(Util::nFloat($this->rem(30, 46, $trailer) / 100, 2, false))
             ->setQtdTitulosCobrancaVinculada((int) $this->rem(47, 52, $trailer))
-            ->setValorTotalTitulosCobrancaVinculada(Util::nFloat($this->rem(53, 69, $trailer)/100, 2, false))
+            ->setValorTotalTitulosCobrancaVinculada(Util::nFloat($this->rem(53, 69, $trailer) / 100, 2, false))
             ->setQtdTitulosCobrancaCaucionada((int) $this->rem(70, 75, $trailer))
-            ->setValorTotalTitulosCobrancaCaucionada(Util::nFloat($this->rem(76, 92, $trailer)/100, 2, false))
+            ->setValorTotalTitulosCobrancaCaucionada(Util::nFloat($this->rem(76, 92, $trailer) / 100, 2, false))
             ->setQtdTitulosCobrancaDescontada((int) $this->rem(93, 98, $trailer))
-            ->setValorTotalTitulosCobrancaDescontada(Util::nFloat($this->rem(99, 115, $trailer)/100, 2, false));
+            ->setValorTotalTitulosCobrancaDescontada(Util::nFloat($this->rem(99, 115, $trailer) / 100, 2, false));
 
         return true;
     }
