@@ -65,6 +65,10 @@ class Detalhe implements DetalheContract
     /**
      * @var string
      */
+    protected $valorOutrasDespesas;
+    /**
+     * @var string
+     */
     protected $valorIOF;
     /**
      * @var string
@@ -404,6 +408,26 @@ class Detalhe implements DetalheContract
     public function setValorTarifa($valorTarifa)
     {
         $this->valorTarifa = $valorTarifa;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getValorOutrasDespesas()
+    {
+        return $this->valorOutrasDespesas;
+    }
+
+    /**
+     * @param string $valorOutrasDespesas
+     *
+     * @return Detalhe
+     */
+    public function setValorOutrasDespesas($valorOutrasDespesas)
+    {
+        $this->valorOutrasDespesas = $valorOutrasDespesas;
 
         return $this;
     }
