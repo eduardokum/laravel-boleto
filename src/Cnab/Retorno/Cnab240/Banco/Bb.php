@@ -362,6 +362,8 @@ class Bb extends AbstractRetorno implements RetornoCnab240
                 ->setValorIOF(Util::nFloat($this->rem(63, 77, $detalhe)/100, 2, false))
                 ->setValorRecebido(Util::nFloat($this->rem(78, 92, $detalhe)/100, 2, false))
                 ->setValorTarifa($d->getValorRecebido() - Util::nFloat($this->rem(93, 107, $detalhe)/100, 2, false))
+                ->setValorOutrasDespesas(Util::nFloat($this->rem(108, 122, $detalhe)/100, 2, false))
+                ->setValorOutrosCreditos(Util::nFloat($this->rem(123, 137, $detalhe)/100, 2, false))
                 ->setDataOcorrencia($this->rem(138, 145, $detalhe))
                 ->setDataCredito($this->rem(146, 153, $detalhe));
         }
