@@ -232,7 +232,7 @@
 		<b>Namespace:</b> <a href="namespace-Eduardokum.html">Eduardokum</a>\<a href="namespace-Eduardokum.LaravelBoleto.html">LaravelBoleto</a>\<a href="namespace-Eduardokum.LaravelBoleto.Boleto.html">Boleto</a>\<a href="namespace-Eduardokum.LaravelBoleto.Boleto.Banco.html">Banco</a><br>
 		<b>Package:</b> Eduardokum\LaravelBoleto\Boleto<br>
 
-			<b>Located at</b> <a href="source-class-Eduardokum.LaravelBoleto.Boleto.Banco.Bancoob.html#9-167" title="Go to source code">Boleto/Banco/Bancoob.php</a>
+			<b>Located at</b> <a href="source-class-Eduardokum.LaravelBoleto.Boleto.Banco.Bancoob.html#9-173" title="Go to source code">Boleto/Banco/Bancoob.php</a>
 		<br>
 	</div>
 
@@ -292,7 +292,7 @@
 
 			<td class="name"><div>
 			<a class="anchor" href="#_setConvenio">#</a>
-			<code><a href="source-class-Eduardokum.LaravelBoleto.Boleto.Banco.Bancoob.html#68-78" title="Go to source code">setConvenio</a>( <span>string <var>$convenio</var></span> )</code>
+			<code><a href="source-class-Eduardokum.LaravelBoleto.Boleto.Banco.Bancoob.html#74-84" title="Go to source code">setConvenio</a>( <span>string <var>$convenio</var></span> )</code>
 
 			<div class="description short">
 				<p>Define o número do convênio. Sempre use string pois a quantidade de caracteres é validada.</p>
@@ -330,7 +330,7 @@
 
 			<td class="name"><div>
 			<a class="anchor" href="#_getConvenio">#</a>
-			<code><a href="source-class-Eduardokum.LaravelBoleto.Boleto.Banco.Bancoob.html#79-87" title="Go to source code">getConvenio</a>( )</code>
+			<code><a href="source-class-Eduardokum.LaravelBoleto.Boleto.Banco.Bancoob.html#85-93" title="Go to source code">getConvenio</a>( )</code>
 
 			<div class="description short">
 				<p>Retorna o número do convênio</p>
@@ -363,7 +363,7 @@
 
 			<td class="name"><div>
 			<a class="anchor" href="#_gerarNossoNumero">#</a>
-			<code><a href="source-class-Eduardokum.LaravelBoleto.Boleto.Banco.Bancoob.html#88-98" title="Go to source code">gerarNossoNumero</a>( )</code>
+			<code><a href="source-class-Eduardokum.LaravelBoleto.Boleto.Banco.Bancoob.html#94-104" title="Go to source code">gerarNossoNumero</a>( )</code>
 
 			<div class="description short">
 				<p>Gera o Nosso Número.</p>
@@ -400,7 +400,7 @@
 
 			<td class="name"><div>
 			<a class="anchor" href="#_getNossoNumeroBoleto">#</a>
-			<code><a href="source-class-Eduardokum.LaravelBoleto.Boleto.Banco.Bancoob.html#99-107" title="Go to source code">getNossoNumeroBoleto</a>( )</code>
+			<code><a href="source-class-Eduardokum.LaravelBoleto.Boleto.Banco.Bancoob.html#105-113" title="Go to source code">getNossoNumeroBoleto</a>( )</code>
 
 			<div class="description short">
 				<p>Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.</p>
@@ -437,7 +437,7 @@
 
 			<td class="name"><div>
 			<a class="anchor" href="#_getCampoLivre">#</a>
-			<code><a href="source-class-Eduardokum.LaravelBoleto.Boleto.Banco.Bancoob.html#108-130" title="Go to source code">getCampoLivre</a>( )</code>
+			<code><a href="source-class-Eduardokum.LaravelBoleto.Boleto.Banco.Bancoob.html#114-136" title="Go to source code">getCampoLivre</a>( )</code>
 
 			<div class="description short">
 				<p>Método para gerar o código da posição de 20 a 44</p>
@@ -474,7 +474,7 @@
 
 			<td class="name"><div>
 			<a class="anchor" href="#_parseCampoLivre">#</a>
-			<code><a href="source-class-Eduardokum.LaravelBoleto.Boleto.Banco.Bancoob.html#132-154" title="Go to source code">parseCampoLivre</a>( <span> <var>$campoLivre</var></span> )</code>
+			<code><a href="source-class-Eduardokum.LaravelBoleto.Boleto.Banco.Bancoob.html#138-160" title="Go to source code">parseCampoLivre</a>( <span> <var>$campoLivre</var></span> )</code>
 
 			<div class="description short">
 				<p>Método onde qualquer boleto deve extender para gerar o código da posição de 20 a 44</p>
@@ -514,7 +514,7 @@
 
 			<td class="name"><div>
 			<a class="anchor" href="#_getAgenciaCodigoBeneficiario">#</a>
-			<code><a href="source-class-Eduardokum.LaravelBoleto.Boleto.Banco.Bancoob.html#157-165" title="Go to source code">getAgenciaCodigoBeneficiario</a>( )</code>
+			<code><a href="source-class-Eduardokum.LaravelBoleto.Boleto.Banco.Bancoob.html#163-171" title="Go to source code">getAgenciaCodigoBeneficiario</a>( )</code>
 
 			<div class="description short">
 				<p>Agência/Código do Beneficiário: Informar o prefixo da agência e o código de associado/cliente.
@@ -734,6 +734,31 @@ confundido com o número da conta corrente, pois são códigos diferentes.</p>
 				</div>
 			</td>
 		</tr>
+		<tr data-order="localPagamento" id="$localPagamento">
+			<td class="attributes"><code>
+				protected  
+				string
+			</code></td>
+
+			<td class="name">
+					<a href="source-class-Eduardokum.LaravelBoleto.Boleto.Banco.Bancoob.html#27-32" title="Go to source code"><var>$localPagamento</var></a>
+
+				<div class="description short">
+					<p>Linha de local de pagamento</p>
+				</div>
+
+				<div class="description detailed hidden">
+					<p>Linha de local de pagamento</p>
+
+				</div>
+			</td>
+			<td class="value">
+				<div>
+					<a href="#$localPagamento" class="anchor">#</a>
+					<code><span class="php-quote">'Pagável Preferencialmente no Sicoob'</span></code>
+				</div>
+			</td>
+		</tr>
 		<tr data-order="especiesCodigo" id="$especiesCodigo">
 			<td class="attributes"><code>
 				protected  
@@ -741,7 +766,7 @@ confundido com o número da conta corrente, pois são códigos diferentes.</p>
 			</code></td>
 
 			<td class="name">
-					<a href="source-class-Eduardokum.LaravelBoleto.Boleto.Banco.Bancoob.html#27-61" title="Go to source code"><var>$especiesCodigo</var></a>
+					<a href="source-class-Eduardokum.LaravelBoleto.Boleto.Banco.Bancoob.html#33-67" title="Go to source code"><var>$especiesCodigo</var></a>
 
 				<div class="description short">
 					<p>Espécie do documento, código para remessa do CNAB240</p>
@@ -796,7 +821,7 @@ confundido com o número da conta corrente, pois são códigos diferentes.</p>
 			</code></td>
 
 			<td class="name">
-					<a href="source-class-Eduardokum.LaravelBoleto.Boleto.Banco.Bancoob.html#62-67" title="Go to source code"><var>$convenio</var></a>
+					<a href="source-class-Eduardokum.LaravelBoleto.Boleto.Banco.Bancoob.html#68-73" title="Go to source code"><var>$convenio</var></a>
 
 				<div class="description short">
 					<p>Define o número do convênio (4, 6 ou 7 caracteres)</p>
@@ -847,7 +872,6 @@ confundido com o número da conta corrente, pois são códigos diferentes.</p>
 				<code><a href="class-Eduardokum.LaravelBoleto.Boleto.AbstractBoleto.html#$instrucoes_impressao"><var>$instrucoes_impressao</var></a></code>, 
 				<code><a href="class-Eduardokum.LaravelBoleto.Boleto.AbstractBoleto.html#$juros"><var>$juros</var></a></code>, 
 				<code><a href="class-Eduardokum.LaravelBoleto.Boleto.AbstractBoleto.html#$jurosApos"><var>$jurosApos</var></a></code>, 
-				<code><a href="class-Eduardokum.LaravelBoleto.Boleto.AbstractBoleto.html#$localPagamento"><var>$localPagamento</var></a></code>, 
 				<code><a href="class-Eduardokum.LaravelBoleto.Boleto.AbstractBoleto.html#$logo"><var>$logo</var></a></code>, 
 				<code><a href="class-Eduardokum.LaravelBoleto.Boleto.AbstractBoleto.html#$moeda"><var>$moeda</var></a></code>, 
 				<code><a href="class-Eduardokum.LaravelBoleto.Boleto.AbstractBoleto.html#$mostrarEnderecoFichaCompensacao"><var>$mostrarEnderecoFichaCompensacao</var></a></code>, 

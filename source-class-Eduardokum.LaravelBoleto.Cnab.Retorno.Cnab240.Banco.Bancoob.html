@@ -561,111 +561,127 @@
 </span><span id="282" class="l"><a href="#282">282 </a>
 </span><span id="283" class="l"><a href="#283">283 </a>        <span class="php-keyword1">if</span> (<span class="php-var">$this</span>-&gt;getSegmentType(<span class="php-var">$detalhe</span>) == <span class="php-quote">'T'</span>) {
 </span><span id="284" class="l"><a href="#284">284 </a>            <span class="php-var">$d</span>-&gt;setOcorrencia(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">16</span>, <span class="php-num">17</span>, <span class="php-var">$detalhe</span>))
-</span><span id="285" class="l"><a href="#285">285 </a>                -&gt;setOcorrenciaDescricao(Arr::get(<span class="php-var">$this</span>-&gt;ocorrencias, <span class="php-var">$this</span>-&gt;detalheAtual()-&gt;getOcorrencia(), <span class="php-quote">'Desconhecida'</span>))
-</span><span id="286" class="l"><a href="#286">286 </a>                -&gt;setNossoNumero(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">38</span>, <span class="php-num">47</span>, <span class="php-var">$detalhe</span>))
-</span><span id="287" class="l"><a href="#287">287 </a>                -&gt;setCarteira(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">58</span>, <span class="php-num">58</span>, <span class="php-var">$detalhe</span>))
-</span><span id="288" class="l"><a href="#288">288 </a>                -&gt;setNumeroDocumento(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">59</span>, <span class="php-num">73</span>, <span class="php-var">$detalhe</span>))
-</span><span id="289" class="l"><a href="#289">289 </a>                -&gt;setDataVencimento(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">74</span>, <span class="php-num">81</span>, <span class="php-var">$detalhe</span>))
-</span><span id="290" class="l"><a href="#290">290 </a>                -&gt;setValor(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">82</span>, <span class="php-num">96</span>, <span class="php-var">$detalhe</span>)/<span class="php-num">100</span>, <span class="php-num">2</span>, <span class="php-keyword1">false</span>))
-</span><span id="291" class="l"><a href="#291">291 </a>                -&gt;setNumeroControle(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">106</span>, <span class="php-num">130</span>, <span class="php-var">$detalhe</span>))
-</span><span id="292" class="l"><a href="#292">292 </a>                -&gt;setPagador([
-</span><span id="293" class="l"><a href="#293">293 </a>                    <span class="php-quote">'nome'</span> =&gt; <span class="php-var">$this</span>-&gt;rem(<span class="php-num">149</span>, <span class="php-num">188</span>, <span class="php-var">$detalhe</span>),
-</span><span id="294" class="l"><a href="#294">294 </a>                    <span class="php-quote">'documento'</span> =&gt; <span class="php-var">$this</span>-&gt;rem(<span class="php-num">134</span>, <span class="php-num">148</span>, <span class="php-var">$detalhe</span>),
-</span><span id="295" class="l"><a href="#295">295 </a>                ])
-</span><span id="296" class="l"><a href="#296">296 </a>                -&gt;setValorTarifa(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">199</span>, <span class="php-num">213</span>, <span class="php-var">$detalhe</span>)/<span class="php-num">100</span>, <span class="php-num">2</span>, <span class="php-keyword1">false</span>));
-</span><span id="297" class="l"><a href="#297">297 </a>
-</span><span id="298" class="l"><a href="#298">298 </a>            <span class="php-comment">/**
-</span></span><span id="299" class="l"><a href="#299">299 </a><span class="php-comment">             * ocorrencias
-</span></span><span id="300" class="l"><a href="#300">300 </a><span class="php-comment">            */</span>
-</span><span id="301" class="l"><a href="#301">301 </a>            <span class="php-var">$msgAdicional</span> = <span class="php-keyword2">str_split</span>(<span class="php-keyword2">sprintf</span>(<span class="php-quote">'%010s'</span>, <span class="php-var">$this</span>-&gt;rem(<span class="php-num">214</span>, <span class="php-num">223</span>, <span class="php-var">$detalhe</span>)), <span class="php-num">2</span>) + <span class="php-keyword2">array_fill</span>(<span class="php-num">0</span>, <span class="php-num">5</span>, <span class="php-quote">''</span>);
-</span><span id="302" class="l"><a href="#302">302 </a>            <span class="php-keyword1">if</span> (<span class="php-var">$d</span>-&gt;hasOcorrencia(<span class="php-quote">'06'</span>, <span class="php-quote">'17'</span>, <span class="php-quote">'50'</span>)) {
-</span><span id="303" class="l"><a href="#303">303 </a>                <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'liquidados'</span>]++;
-</span><span id="304" class="l"><a href="#304">304 </a>                <span class="php-var">$d</span>-&gt;setOcorrenciaTipo(<span class="php-var">$d</span>::OCORRENCIA_LIQUIDADA);
-</span><span id="305" class="l"><a href="#305">305 </a>            } <span class="php-keyword1">elseif</span> (<span class="php-var">$d</span>-&gt;hasOcorrencia(<span class="php-quote">'02'</span>)) {
-</span><span id="306" class="l"><a href="#306">306 </a>                <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'entradas'</span>]++;
-</span><span id="307" class="l"><a href="#307">307 </a>                <span class="php-keyword1">if</span>(<span class="php-keyword2">array_search</span>(<span class="php-quote">'a4'</span>, <span class="php-keyword2">array_map</span>(<span class="php-quote">'strtolower'</span>, <span class="php-var">$msgAdicional</span>)) !== <span class="php-keyword1">false</span>) {
-</span><span id="308" class="l"><a href="#308">308 </a>                    <span class="php-var">$d</span>-&gt;getPagador()-&gt;setDda(<span class="php-keyword1">true</span>);
-</span><span id="309" class="l"><a href="#309">309 </a>                }
-</span><span id="310" class="l"><a href="#310">310 </a>                <span class="php-var">$d</span>-&gt;setOcorrenciaTipo(<span class="php-var">$d</span>::OCORRENCIA_ENTRADA);
-</span><span id="311" class="l"><a href="#311">311 </a>            } <span class="php-keyword1">elseif</span> (<span class="php-var">$d</span>-&gt;hasOcorrencia(<span class="php-quote">'09'</span>)) {
-</span><span id="312" class="l"><a href="#312">312 </a>                <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'baixados'</span>]++;
-</span><span id="313" class="l"><a href="#313">313 </a>                <span class="php-var">$d</span>-&gt;setOcorrenciaTipo(<span class="php-var">$d</span>::OCORRENCIA_BAIXADA);
-</span><span id="314" class="l"><a href="#314">314 </a>            } <span class="php-keyword1">elseif</span> (<span class="php-var">$d</span>-&gt;hasOcorrencia(<span class="php-quote">'25'</span>)) {
-</span><span id="315" class="l"><a href="#315">315 </a>                <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'protestados'</span>]++;
-</span><span id="316" class="l"><a href="#316">316 </a>                <span class="php-var">$d</span>-&gt;setOcorrenciaTipo(<span class="php-var">$d</span>::OCORRENCIA_PROTESTADA);
-</span><span id="317" class="l"><a href="#317">317 </a>            } <span class="php-keyword1">elseif</span> (<span class="php-var">$d</span>-&gt;hasOcorrencia(<span class="php-quote">'27'</span>)) {
-</span><span id="318" class="l"><a href="#318">318 </a>                <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'alterados'</span>]++;
-</span><span id="319" class="l"><a href="#319">319 </a>                <span class="php-var">$d</span>-&gt;setOcorrenciaTipo(<span class="php-var">$d</span>::OCORRENCIA_ALTERACAO);
-</span><span id="320" class="l"><a href="#320">320 </a>            } <span class="php-keyword1">elseif</span> (<span class="php-var">$d</span>-&gt;hasOcorrencia(<span class="php-quote">'03'</span>, <span class="php-quote">'26'</span>, <span class="php-quote">'30'</span>)) {
-</span><span id="321" class="l"><a href="#321">321 </a>                <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'erros'</span>]++;
-</span><span id="322" class="l"><a href="#322">322 </a>                <span class="php-var">$error</span> = Util::appendStrings(
-</span><span id="323" class="l"><a href="#323">323 </a>                    Arr::get(<span class="php-var">$this</span>-&gt;rejeicoes, <span class="php-var">$msgAdicional</span>[<span class="php-num">0</span>], <span class="php-quote">''</span>),
-</span><span id="324" class="l"><a href="#324">324 </a>                    Arr::get(<span class="php-var">$this</span>-&gt;rejeicoes, <span class="php-var">$msgAdicional</span>[<span class="php-num">1</span>], <span class="php-quote">''</span>),
-</span><span id="325" class="l"><a href="#325">325 </a>                    Arr::get(<span class="php-var">$this</span>-&gt;rejeicoes, <span class="php-var">$msgAdicional</span>[<span class="php-num">2</span>], <span class="php-quote">''</span>),
-</span><span id="326" class="l"><a href="#326">326 </a>                    Arr::get(<span class="php-var">$this</span>-&gt;rejeicoes, <span class="php-var">$msgAdicional</span>[<span class="php-num">3</span>], <span class="php-quote">''</span>),
-</span><span id="327" class="l"><a href="#327">327 </a>                    Arr::get(<span class="php-var">$this</span>-&gt;rejeicoes, <span class="php-var">$msgAdicional</span>[<span class="php-num">4</span>], <span class="php-quote">''</span>)
-</span><span id="328" class="l"><a href="#328">328 </a>                );
-</span><span id="329" class="l"><a href="#329">329 </a>                <span class="php-var">$d</span>-&gt;setError(<span class="php-var">$error</span>);
-</span><span id="330" class="l"><a href="#330">330 </a>            } <span class="php-keyword1">else</span> {
-</span><span id="331" class="l"><a href="#331">331 </a>                <span class="php-var">$d</span>-&gt;setOcorrenciaTipo(<span class="php-var">$d</span>::OCORRENCIA_OUTROS);
-</span><span id="332" class="l"><a href="#332">332 </a>            }
-</span><span id="333" class="l"><a href="#333">333 </a>        }
-</span><span id="334" class="l"><a href="#334">334 </a>
-</span><span id="335" class="l"><a href="#335">335 </a>        <span class="php-keyword1">if</span> (<span class="php-var">$this</span>-&gt;getSegmentType(<span class="php-var">$detalhe</span>) == <span class="php-quote">'U'</span>) {
-</span><span id="336" class="l"><a href="#336">336 </a>            <span class="php-var">$d</span>-&gt;setValorMulta(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">18</span>, <span class="php-num">32</span>, <span class="php-var">$detalhe</span>)/<span class="php-num">100</span>, <span class="php-num">2</span>, <span class="php-keyword1">false</span>))
-</span><span id="337" class="l"><a href="#337">337 </a>                -&gt;setValorDesconto(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">33</span>, <span class="php-num">47</span>, <span class="php-var">$detalhe</span>)/<span class="php-num">100</span>, <span class="php-num">2</span>, <span class="php-keyword1">false</span>))
-</span><span id="338" class="l"><a href="#338">338 </a>                -&gt;setValorAbatimento(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">48</span>, <span class="php-num">62</span>, <span class="php-var">$detalhe</span>)/<span class="php-num">100</span>, <span class="php-num">2</span>, <span class="php-keyword1">false</span>))
-</span><span id="339" class="l"><a href="#339">339 </a>                -&gt;setValorIOF(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">63</span>, <span class="php-num">77</span>, <span class="php-var">$detalhe</span>)/<span class="php-num">100</span>, <span class="php-num">2</span>, <span class="php-keyword1">false</span>))
-</span><span id="340" class="l"><a href="#340">340 </a>                -&gt;setValorRecebido(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">78</span>, <span class="php-num">92</span>, <span class="php-var">$detalhe</span>)/<span class="php-num">100</span>, <span class="php-num">2</span>, <span class="php-keyword1">false</span>))
-</span><span id="341" class="l"><a href="#341">341 </a>                -&gt;setDataOcorrencia(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">138</span>, <span class="php-num">145</span>, <span class="php-var">$detalhe</span>))
-</span><span id="342" class="l"><a href="#342">342 </a>                -&gt;setDataCredito(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">146</span>, <span class="php-num">153</span>, <span class="php-var">$detalhe</span>));
-</span><span id="343" class="l"><a href="#343">343 </a>        }
-</span><span id="344" class="l"><a href="#344">344 </a>
-</span><span id="345" class="l"><a href="#345">345 </a>        <span class="php-keyword1">return</span> <span class="php-keyword1">true</span>;
-</span><span id="346" class="l"><a href="#346">346 </a>    }
-</span><span id="347" class="l"><a href="#347">347 </a>
-</span><span id="348" class="l"><a href="#348">348 </a>    <span class="php-comment">/**
-</span></span><span id="349" class="l"><a href="#349">349 </a><span class="php-comment">     * @param array $trailer
-</span></span><span id="350" class="l"><a href="#350">350 </a><span class="php-comment">     *
-</span></span><span id="351" class="l"><a href="#351">351 </a><span class="php-comment">     * @return bool
-</span></span><span id="352" class="l"><a href="#352">352 </a><span class="php-comment">     * @throws \Exception
-</span></span><span id="353" class="l"><a href="#353">353 </a><span class="php-comment">     */</span>
-</span><span id="354" class="l"><a href="#354">354 </a>    <span class="php-keyword1">protected</span> <span class="php-keyword1">function</span> processarTrailerLote(<span class="php-keyword1">array</span> <span class="php-var">$trailer</span>)
-</span><span id="355" class="l"><a href="#355">355 </a>    {
-</span><span id="356" class="l"><a href="#356">356 </a>        <span class="php-var">$this</span>-&gt;getTrailerLote()
-</span><span id="357" class="l"><a href="#357">357 </a>            -&gt;setLoteServico(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">4</span>, <span class="php-num">7</span>, <span class="php-var">$trailer</span>))
-</span><span id="358" class="l"><a href="#358">358 </a>            -&gt;setTipoRegistro(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">8</span>, <span class="php-num">8</span>, <span class="php-var">$trailer</span>))
-</span><span id="359" class="l"><a href="#359">359 </a>            -&gt;setQtdRegistroLote((int) <span class="php-var">$this</span>-&gt;rem(<span class="php-num">18</span>, <span class="php-num">23</span>, <span class="php-var">$trailer</span>))
-</span><span id="360" class="l"><a href="#360">360 </a>            -&gt;setQtdTitulosCobrancaSimples((int) <span class="php-var">$this</span>-&gt;rem(<span class="php-num">24</span>, <span class="php-num">29</span>, <span class="php-var">$trailer</span>))
-</span><span id="361" class="l"><a href="#361">361 </a>            -&gt;setValorTotalTitulosCobrancaSimples(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">30</span>, <span class="php-num">46</span>, <span class="php-var">$trailer</span>)/<span class="php-num">100</span>, <span class="php-num">2</span>, <span class="php-keyword1">false</span>))
-</span><span id="362" class="l"><a href="#362">362 </a>            -&gt;setQtdTitulosCobrancaVinculada((int) <span class="php-var">$this</span>-&gt;rem(<span class="php-num">47</span>, <span class="php-num">52</span>, <span class="php-var">$trailer</span>))
-</span><span id="363" class="l"><a href="#363">363 </a>            -&gt;setValorTotalTitulosCobrancaVinculada(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">53</span>, <span class="php-num">69</span>, <span class="php-var">$trailer</span>)/<span class="php-num">100</span>, <span class="php-num">2</span>, <span class="php-keyword1">false</span>))
-</span><span id="364" class="l"><a href="#364">364 </a>            -&gt;setQtdTitulosCobrancaCaucionada((int) <span class="php-var">$this</span>-&gt;rem(<span class="php-num">70</span>, <span class="php-num">75</span>, <span class="php-var">$trailer</span>))
-</span><span id="365" class="l"><a href="#365">365 </a>            -&gt;setValorTotalTitulosCobrancaCaucionada(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">76</span>, <span class="php-num">92</span>, <span class="php-var">$trailer</span>)/<span class="php-num">100</span>, <span class="php-num">2</span>, <span class="php-keyword1">false</span>))
-</span><span id="366" class="l"><a href="#366">366 </a>            -&gt;setQtdTitulosCobrancaDescontada((int) <span class="php-var">$this</span>-&gt;rem(<span class="php-num">93</span>, <span class="php-num">98</span>, <span class="php-var">$trailer</span>))
-</span><span id="367" class="l"><a href="#367">367 </a>            -&gt;setValorTotalTitulosCobrancaDescontada(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">99</span>, <span class="php-num">115</span>, <span class="php-var">$trailer</span>)/<span class="php-num">100</span>, <span class="php-num">2</span>, <span class="php-keyword1">false</span>));
-</span><span id="368" class="l"><a href="#368">368 </a>
-</span><span id="369" class="l"><a href="#369">369 </a>        <span class="php-keyword1">return</span> <span class="php-keyword1">true</span>;
-</span><span id="370" class="l"><a href="#370">370 </a>    }
-</span><span id="371" class="l"><a href="#371">371 </a>
-</span><span id="372" class="l"><a href="#372">372 </a>    <span class="php-comment">/**
-</span></span><span id="373" class="l"><a href="#373">373 </a><span class="php-comment">     * @param array $trailer
-</span></span><span id="374" class="l"><a href="#374">374 </a><span class="php-comment">     *
-</span></span><span id="375" class="l"><a href="#375">375 </a><span class="php-comment">     * @return bool
-</span></span><span id="376" class="l"><a href="#376">376 </a><span class="php-comment">     * @throws \Exception
-</span></span><span id="377" class="l"><a href="#377">377 </a><span class="php-comment">     */</span>
-</span><span id="378" class="l"><a href="#378">378 </a>    <span class="php-keyword1">protected</span> <span class="php-keyword1">function</span> processarTrailer(<span class="php-keyword1">array</span> <span class="php-var">$trailer</span>)
-</span><span id="379" class="l"><a href="#379">379 </a>    {
-</span><span id="380" class="l"><a href="#380">380 </a>        <span class="php-var">$this</span>-&gt;getTrailer()
-</span><span id="381" class="l"><a href="#381">381 </a>            -&gt;setNumeroLote(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">4</span>, <span class="php-num">7</span>, <span class="php-var">$trailer</span>))
-</span><span id="382" class="l"><a href="#382">382 </a>            -&gt;setTipoRegistro(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">8</span>, <span class="php-num">8</span>, <span class="php-var">$trailer</span>))
-</span><span id="383" class="l"><a href="#383">383 </a>            -&gt;setQtdLotesArquivo((int) <span class="php-var">$this</span>-&gt;rem(<span class="php-num">18</span>, <span class="php-num">23</span>, <span class="php-var">$trailer</span>))
-</span><span id="384" class="l"><a href="#384">384 </a>            -&gt;setQtdRegistroArquivo((int) <span class="php-var">$this</span>-&gt;rem(<span class="php-num">24</span>, <span class="php-num">29</span>, <span class="php-var">$trailer</span>));
-</span><span id="385" class="l"><a href="#385">385 </a>
-</span><span id="386" class="l"><a href="#386">386 </a>        <span class="php-keyword1">return</span> <span class="php-keyword1">true</span>;
-</span><span id="387" class="l"><a href="#387">387 </a>    }
-</span><span id="388" class="l"><a href="#388">388 </a>}
-</span><span id="389" class="l"><a href="#389">389 </a></span></code></pre>
+</span><span id="285" class="l"><a href="#285">285 </a>                -&gt;setOcorrenciaDescricao(Arr::get(<span class="php-var">$this</span>-&gt;ocorrencias, <span class="php-var">$this</span>-&gt;detalheAtual()-&gt;getOcorrencia(), <span class="php-quote">'Desconhecida'</span>));
+</span><span id="286" class="l"><a href="#286">286 </a>
+</span><span id="287" class="l"><a href="#287">287 </a>            <span class="php-comment">/**
+</span></span><span id="288" class="l"><a href="#288">288 </a><span class="php-comment">             * Conforme Manual o campo Nosso Número deve ter 7 dígitos + 1DV.
+</span></span><span id="289" class="l"><a href="#289">289 </a><span class="php-comment">             * Ao enviar a remessa formatamos para 10 dígitos preenchendo com zeros a esquerda
+</span></span><span id="290" class="l"><a href="#290">290 </a><span class="php-comment">             * Da mesma forma, no arquivo retorno, volta com 10 dígitos.
+</span></span><span id="291" class="l"><a href="#291">291 </a><span class="php-comment">             * Portanto, as duas primeiras, posições 38 e 39 serão sempre 00,
+</span></span><span id="292" class="l"><a href="#292">292 </a><span class="php-comment">             * seguidos de 7 dígitos + 1 dígito DV = 8 digitos da posição 40 até a 47.
+</span></span><span id="293" class="l"><a href="#293">293 </a><span class="php-comment">             *
+</span></span><span id="294" class="l"><a href="#294">294 </a><span class="php-comment">             * Para voltar a considerar 10 digitos voltar  trecho de código.
+</span></span><span id="295" class="l"><a href="#295">295 </a><span class="php-comment">             * ////-&gt;setNossoNumero($this-&gt;rem(38, 47, $detalhe))
+</span></span><span id="296" class="l"><a href="#296">296 </a><span class="php-comment">             *
+</span></span><span id="297" class="l"><a href="#297">297 </a><span class="php-comment">             */</span>
+</span><span id="298" class="l"><a href="#298">298 </a>            <span class="php-keyword1">if</span> ( <span class="php-var">$this</span>-&gt;rem(<span class="php-num">38</span>, <span class="php-num">39</span>, <span class="php-var">$detalhe</span>) != <span class="php-quote">&quot;00&quot;</span>){
+</span><span id="299" class="l"><a href="#299">299 </a>                <span class="php-keyword1">throw</span> <span class="php-keyword1">new</span> \Exception(<span class="php-quote">&quot;Verificar arquivo retorno:  O nosso número no arquivo de retorno é maior que 7 dígitos.&quot;</span>);
+</span><span id="300" class="l"><a href="#300">300 </a>            }
+</span><span id="301" class="l"><a href="#301">301 </a>            <span class="php-var">$d</span>-&gt;setNossoNumero(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">40</span>, <span class="php-num">47</span>, <span class="php-var">$detalhe</span>))
+</span><span id="302" class="l"><a href="#302">302 </a>                -&gt;setNossoNumero(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">38</span>, <span class="php-num">47</span>, <span class="php-var">$detalhe</span>))
+</span><span id="303" class="l"><a href="#303">303 </a>                -&gt;setCarteira(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">58</span>, <span class="php-num">58</span>, <span class="php-var">$detalhe</span>))
+</span><span id="304" class="l"><a href="#304">304 </a>                -&gt;setNumeroDocumento(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">59</span>, <span class="php-num">73</span>, <span class="php-var">$detalhe</span>))
+</span><span id="305" class="l"><a href="#305">305 </a>                -&gt;setDataVencimento(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">74</span>, <span class="php-num">81</span>, <span class="php-var">$detalhe</span>))
+</span><span id="306" class="l"><a href="#306">306 </a>                -&gt;setValor(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">82</span>, <span class="php-num">96</span>, <span class="php-var">$detalhe</span>)/<span class="php-num">100</span>, <span class="php-num">2</span>, <span class="php-keyword1">false</span>))
+</span><span id="307" class="l"><a href="#307">307 </a>                -&gt;setNumeroControle(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">106</span>, <span class="php-num">130</span>, <span class="php-var">$detalhe</span>))
+</span><span id="308" class="l"><a href="#308">308 </a>                -&gt;setPagador([
+</span><span id="309" class="l"><a href="#309">309 </a>                    <span class="php-quote">'nome'</span> =&gt; <span class="php-var">$this</span>-&gt;rem(<span class="php-num">149</span>, <span class="php-num">188</span>, <span class="php-var">$detalhe</span>),
+</span><span id="310" class="l"><a href="#310">310 </a>                    <span class="php-quote">'documento'</span> =&gt; <span class="php-var">$this</span>-&gt;rem(<span class="php-num">134</span>, <span class="php-num">148</span>, <span class="php-var">$detalhe</span>),
+</span><span id="311" class="l"><a href="#311">311 </a>                ])
+</span><span id="312" class="l"><a href="#312">312 </a>                -&gt;setValorTarifa(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">199</span>, <span class="php-num">213</span>, <span class="php-var">$detalhe</span>)/<span class="php-num">100</span>, <span class="php-num">2</span>, <span class="php-keyword1">false</span>));
+</span><span id="313" class="l"><a href="#313">313 </a>
+</span><span id="314" class="l"><a href="#314">314 </a>            <span class="php-comment">/**
+</span></span><span id="315" class="l"><a href="#315">315 </a><span class="php-comment">             * ocorrencias
+</span></span><span id="316" class="l"><a href="#316">316 </a><span class="php-comment">            */</span>
+</span><span id="317" class="l"><a href="#317">317 </a>            <span class="php-var">$msgAdicional</span> = <span class="php-keyword2">str_split</span>(<span class="php-keyword2">sprintf</span>(<span class="php-quote">'%010s'</span>, <span class="php-var">$this</span>-&gt;rem(<span class="php-num">214</span>, <span class="php-num">223</span>, <span class="php-var">$detalhe</span>)), <span class="php-num">2</span>) + <span class="php-keyword2">array_fill</span>(<span class="php-num">0</span>, <span class="php-num">5</span>, <span class="php-quote">''</span>);
+</span><span id="318" class="l"><a href="#318">318 </a>            <span class="php-keyword1">if</span> (<span class="php-var">$d</span>-&gt;hasOcorrencia(<span class="php-quote">'06'</span>, <span class="php-quote">'17'</span>, <span class="php-quote">'50'</span>)) {
+</span><span id="319" class="l"><a href="#319">319 </a>                <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'liquidados'</span>]++;
+</span><span id="320" class="l"><a href="#320">320 </a>                <span class="php-var">$d</span>-&gt;setOcorrenciaTipo(<span class="php-var">$d</span>::OCORRENCIA_LIQUIDADA);
+</span><span id="321" class="l"><a href="#321">321 </a>            } <span class="php-keyword1">elseif</span> (<span class="php-var">$d</span>-&gt;hasOcorrencia(<span class="php-quote">'02'</span>)) {
+</span><span id="322" class="l"><a href="#322">322 </a>                <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'entradas'</span>]++;
+</span><span id="323" class="l"><a href="#323">323 </a>                <span class="php-keyword1">if</span>(<span class="php-keyword2">array_search</span>(<span class="php-quote">'a4'</span>, <span class="php-keyword2">array_map</span>(<span class="php-quote">'strtolower'</span>, <span class="php-var">$msgAdicional</span>)) !== <span class="php-keyword1">false</span>) {
+</span><span id="324" class="l"><a href="#324">324 </a>                    <span class="php-var">$d</span>-&gt;getPagador()-&gt;setDda(<span class="php-keyword1">true</span>);
+</span><span id="325" class="l"><a href="#325">325 </a>                }
+</span><span id="326" class="l"><a href="#326">326 </a>                <span class="php-var">$d</span>-&gt;setOcorrenciaTipo(<span class="php-var">$d</span>::OCORRENCIA_ENTRADA);
+</span><span id="327" class="l"><a href="#327">327 </a>            } <span class="php-keyword1">elseif</span> (<span class="php-var">$d</span>-&gt;hasOcorrencia(<span class="php-quote">'09'</span>)) {
+</span><span id="328" class="l"><a href="#328">328 </a>                <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'baixados'</span>]++;
+</span><span id="329" class="l"><a href="#329">329 </a>                <span class="php-var">$d</span>-&gt;setOcorrenciaTipo(<span class="php-var">$d</span>::OCORRENCIA_BAIXADA);
+</span><span id="330" class="l"><a href="#330">330 </a>            } <span class="php-keyword1">elseif</span> (<span class="php-var">$d</span>-&gt;hasOcorrencia(<span class="php-quote">'25'</span>)) {
+</span><span id="331" class="l"><a href="#331">331 </a>                <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'protestados'</span>]++;
+</span><span id="332" class="l"><a href="#332">332 </a>                <span class="php-var">$d</span>-&gt;setOcorrenciaTipo(<span class="php-var">$d</span>::OCORRENCIA_PROTESTADA);
+</span><span id="333" class="l"><a href="#333">333 </a>            } <span class="php-keyword1">elseif</span> (<span class="php-var">$d</span>-&gt;hasOcorrencia(<span class="php-quote">'27'</span>)) {
+</span><span id="334" class="l"><a href="#334">334 </a>                <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'alterados'</span>]++;
+</span><span id="335" class="l"><a href="#335">335 </a>                <span class="php-var">$d</span>-&gt;setOcorrenciaTipo(<span class="php-var">$d</span>::OCORRENCIA_ALTERACAO);
+</span><span id="336" class="l"><a href="#336">336 </a>            } <span class="php-keyword1">elseif</span> (<span class="php-var">$d</span>-&gt;hasOcorrencia(<span class="php-quote">'03'</span>, <span class="php-quote">'26'</span>, <span class="php-quote">'30'</span>)) {
+</span><span id="337" class="l"><a href="#337">337 </a>                <span class="php-var">$this</span>-&gt;totais[<span class="php-quote">'erros'</span>]++;
+</span><span id="338" class="l"><a href="#338">338 </a>                <span class="php-var">$error</span> = Util::appendStrings(
+</span><span id="339" class="l"><a href="#339">339 </a>                    Arr::get(<span class="php-var">$this</span>-&gt;rejeicoes, <span class="php-var">$msgAdicional</span>[<span class="php-num">0</span>], <span class="php-quote">''</span>),
+</span><span id="340" class="l"><a href="#340">340 </a>                    Arr::get(<span class="php-var">$this</span>-&gt;rejeicoes, <span class="php-var">$msgAdicional</span>[<span class="php-num">1</span>], <span class="php-quote">''</span>),
+</span><span id="341" class="l"><a href="#341">341 </a>                    Arr::get(<span class="php-var">$this</span>-&gt;rejeicoes, <span class="php-var">$msgAdicional</span>[<span class="php-num">2</span>], <span class="php-quote">''</span>),
+</span><span id="342" class="l"><a href="#342">342 </a>                    Arr::get(<span class="php-var">$this</span>-&gt;rejeicoes, <span class="php-var">$msgAdicional</span>[<span class="php-num">3</span>], <span class="php-quote">''</span>),
+</span><span id="343" class="l"><a href="#343">343 </a>                    Arr::get(<span class="php-var">$this</span>-&gt;rejeicoes, <span class="php-var">$msgAdicional</span>[<span class="php-num">4</span>], <span class="php-quote">''</span>)
+</span><span id="344" class="l"><a href="#344">344 </a>                );
+</span><span id="345" class="l"><a href="#345">345 </a>                <span class="php-var">$d</span>-&gt;setError(<span class="php-var">$error</span>);
+</span><span id="346" class="l"><a href="#346">346 </a>            } <span class="php-keyword1">else</span> {
+</span><span id="347" class="l"><a href="#347">347 </a>                <span class="php-var">$d</span>-&gt;setOcorrenciaTipo(<span class="php-var">$d</span>::OCORRENCIA_OUTROS);
+</span><span id="348" class="l"><a href="#348">348 </a>            }
+</span><span id="349" class="l"><a href="#349">349 </a>        }
+</span><span id="350" class="l"><a href="#350">350 </a>
+</span><span id="351" class="l"><a href="#351">351 </a>        <span class="php-keyword1">if</span> (<span class="php-var">$this</span>-&gt;getSegmentType(<span class="php-var">$detalhe</span>) == <span class="php-quote">'U'</span>) {
+</span><span id="352" class="l"><a href="#352">352 </a>            <span class="php-var">$d</span>-&gt;setValorMulta(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">18</span>, <span class="php-num">32</span>, <span class="php-var">$detalhe</span>)/<span class="php-num">100</span>, <span class="php-num">2</span>, <span class="php-keyword1">false</span>))
+</span><span id="353" class="l"><a href="#353">353 </a>                -&gt;setValorDesconto(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">33</span>, <span class="php-num">47</span>, <span class="php-var">$detalhe</span>)/<span class="php-num">100</span>, <span class="php-num">2</span>, <span class="php-keyword1">false</span>))
+</span><span id="354" class="l"><a href="#354">354 </a>                -&gt;setValorAbatimento(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">48</span>, <span class="php-num">62</span>, <span class="php-var">$detalhe</span>)/<span class="php-num">100</span>, <span class="php-num">2</span>, <span class="php-keyword1">false</span>))
+</span><span id="355" class="l"><a href="#355">355 </a>                -&gt;setValorIOF(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">63</span>, <span class="php-num">77</span>, <span class="php-var">$detalhe</span>)/<span class="php-num">100</span>, <span class="php-num">2</span>, <span class="php-keyword1">false</span>))
+</span><span id="356" class="l"><a href="#356">356 </a>                -&gt;setValorRecebido(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">78</span>, <span class="php-num">92</span>, <span class="php-var">$detalhe</span>)/<span class="php-num">100</span>, <span class="php-num">2</span>, <span class="php-keyword1">false</span>))
+</span><span id="357" class="l"><a href="#357">357 </a>                -&gt;setDataOcorrencia(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">138</span>, <span class="php-num">145</span>, <span class="php-var">$detalhe</span>))
+</span><span id="358" class="l"><a href="#358">358 </a>                -&gt;setDataCredito(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">146</span>, <span class="php-num">153</span>, <span class="php-var">$detalhe</span>));
+</span><span id="359" class="l"><a href="#359">359 </a>        }
+</span><span id="360" class="l"><a href="#360">360 </a>
+</span><span id="361" class="l"><a href="#361">361 </a>        <span class="php-keyword1">return</span> <span class="php-keyword1">true</span>;
+</span><span id="362" class="l"><a href="#362">362 </a>    }
+</span><span id="363" class="l"><a href="#363">363 </a>
+</span><span id="364" class="l"><a href="#364">364 </a>    <span class="php-comment">/**
+</span></span><span id="365" class="l"><a href="#365">365 </a><span class="php-comment">     * @param array $trailer
+</span></span><span id="366" class="l"><a href="#366">366 </a><span class="php-comment">     *
+</span></span><span id="367" class="l"><a href="#367">367 </a><span class="php-comment">     * @return bool
+</span></span><span id="368" class="l"><a href="#368">368 </a><span class="php-comment">     * @throws \Exception
+</span></span><span id="369" class="l"><a href="#369">369 </a><span class="php-comment">     */</span>
+</span><span id="370" class="l"><a href="#370">370 </a>    <span class="php-keyword1">protected</span> <span class="php-keyword1">function</span> processarTrailerLote(<span class="php-keyword1">array</span> <span class="php-var">$trailer</span>)
+</span><span id="371" class="l"><a href="#371">371 </a>    {
+</span><span id="372" class="l"><a href="#372">372 </a>        <span class="php-var">$this</span>-&gt;getTrailerLote()
+</span><span id="373" class="l"><a href="#373">373 </a>            -&gt;setLoteServico(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">4</span>, <span class="php-num">7</span>, <span class="php-var">$trailer</span>))
+</span><span id="374" class="l"><a href="#374">374 </a>            -&gt;setTipoRegistro(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">8</span>, <span class="php-num">8</span>, <span class="php-var">$trailer</span>))
+</span><span id="375" class="l"><a href="#375">375 </a>            -&gt;setQtdRegistroLote((int) <span class="php-var">$this</span>-&gt;rem(<span class="php-num">18</span>, <span class="php-num">23</span>, <span class="php-var">$trailer</span>))
+</span><span id="376" class="l"><a href="#376">376 </a>            -&gt;setQtdTitulosCobrancaSimples((int) <span class="php-var">$this</span>-&gt;rem(<span class="php-num">24</span>, <span class="php-num">29</span>, <span class="php-var">$trailer</span>))
+</span><span id="377" class="l"><a href="#377">377 </a>            -&gt;setValorTotalTitulosCobrancaSimples(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">30</span>, <span class="php-num">46</span>, <span class="php-var">$trailer</span>)/<span class="php-num">100</span>, <span class="php-num">2</span>, <span class="php-keyword1">false</span>))
+</span><span id="378" class="l"><a href="#378">378 </a>            -&gt;setQtdTitulosCobrancaVinculada((int) <span class="php-var">$this</span>-&gt;rem(<span class="php-num">47</span>, <span class="php-num">52</span>, <span class="php-var">$trailer</span>))
+</span><span id="379" class="l"><a href="#379">379 </a>            -&gt;setValorTotalTitulosCobrancaVinculada(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">53</span>, <span class="php-num">69</span>, <span class="php-var">$trailer</span>)/<span class="php-num">100</span>, <span class="php-num">2</span>, <span class="php-keyword1">false</span>))
+</span><span id="380" class="l"><a href="#380">380 </a>            -&gt;setQtdTitulosCobrancaCaucionada((int) <span class="php-var">$this</span>-&gt;rem(<span class="php-num">70</span>, <span class="php-num">75</span>, <span class="php-var">$trailer</span>))
+</span><span id="381" class="l"><a href="#381">381 </a>            -&gt;setValorTotalTitulosCobrancaCaucionada(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">76</span>, <span class="php-num">92</span>, <span class="php-var">$trailer</span>)/<span class="php-num">100</span>, <span class="php-num">2</span>, <span class="php-keyword1">false</span>))
+</span><span id="382" class="l"><a href="#382">382 </a>            -&gt;setQtdTitulosCobrancaDescontada((int) <span class="php-var">$this</span>-&gt;rem(<span class="php-num">93</span>, <span class="php-num">98</span>, <span class="php-var">$trailer</span>))
+</span><span id="383" class="l"><a href="#383">383 </a>            -&gt;setValorTotalTitulosCobrancaDescontada(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">99</span>, <span class="php-num">115</span>, <span class="php-var">$trailer</span>)/<span class="php-num">100</span>, <span class="php-num">2</span>, <span class="php-keyword1">false</span>));
+</span><span id="384" class="l"><a href="#384">384 </a>
+</span><span id="385" class="l"><a href="#385">385 </a>        <span class="php-keyword1">return</span> <span class="php-keyword1">true</span>;
+</span><span id="386" class="l"><a href="#386">386 </a>    }
+</span><span id="387" class="l"><a href="#387">387 </a>
+</span><span id="388" class="l"><a href="#388">388 </a>    <span class="php-comment">/**
+</span></span><span id="389" class="l"><a href="#389">389 </a><span class="php-comment">     * @param array $trailer
+</span></span><span id="390" class="l"><a href="#390">390 </a><span class="php-comment">     *
+</span></span><span id="391" class="l"><a href="#391">391 </a><span class="php-comment">     * @return bool
+</span></span><span id="392" class="l"><a href="#392">392 </a><span class="php-comment">     * @throws \Exception
+</span></span><span id="393" class="l"><a href="#393">393 </a><span class="php-comment">     */</span>
+</span><span id="394" class="l"><a href="#394">394 </a>    <span class="php-keyword1">protected</span> <span class="php-keyword1">function</span> processarTrailer(<span class="php-keyword1">array</span> <span class="php-var">$trailer</span>)
+</span><span id="395" class="l"><a href="#395">395 </a>    {
+</span><span id="396" class="l"><a href="#396">396 </a>        <span class="php-var">$this</span>-&gt;getTrailer()
+</span><span id="397" class="l"><a href="#397">397 </a>            -&gt;setNumeroLote(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">4</span>, <span class="php-num">7</span>, <span class="php-var">$trailer</span>))
+</span><span id="398" class="l"><a href="#398">398 </a>            -&gt;setTipoRegistro(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">8</span>, <span class="php-num">8</span>, <span class="php-var">$trailer</span>))
+</span><span id="399" class="l"><a href="#399">399 </a>            -&gt;setQtdLotesArquivo((int) <span class="php-var">$this</span>-&gt;rem(<span class="php-num">18</span>, <span class="php-num">23</span>, <span class="php-var">$trailer</span>))
+</span><span id="400" class="l"><a href="#400">400 </a>            -&gt;setQtdRegistroArquivo((int) <span class="php-var">$this</span>-&gt;rem(<span class="php-num">24</span>, <span class="php-num">29</span>, <span class="php-var">$trailer</span>));
+</span><span id="401" class="l"><a href="#401">401 </a>
+</span><span id="402" class="l"><a href="#402">402 </a>        <span class="php-keyword1">return</span> <span class="php-keyword1">true</span>;
+</span><span id="403" class="l"><a href="#403">403 </a>    }
+</span><span id="404" class="l"><a href="#404">404 </a>}
+</span><span id="405" class="l"><a href="#405">405 </a></span></code></pre>
 	</div>
 
 	<div id="footer">

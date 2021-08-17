@@ -641,47 +641,49 @@
 </span><span id="362" class="l"><a href="#362">362 </a>                -&gt;setValorIOF(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">63</span>, <span class="php-num">77</span>, <span class="php-var">$detalhe</span>)/<span class="php-num">100</span>, <span class="php-num">2</span>, <span class="php-keyword1">false</span>))
 </span><span id="363" class="l"><a href="#363">363 </a>                -&gt;setValorRecebido(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">78</span>, <span class="php-num">92</span>, <span class="php-var">$detalhe</span>)/<span class="php-num">100</span>, <span class="php-num">2</span>, <span class="php-keyword1">false</span>))
 </span><span id="364" class="l"><a href="#364">364 </a>                -&gt;setValorTarifa(<span class="php-var">$d</span>-&gt;getValorRecebido() - Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">93</span>, <span class="php-num">107</span>, <span class="php-var">$detalhe</span>)/<span class="php-num">100</span>, <span class="php-num">2</span>, <span class="php-keyword1">false</span>))
-</span><span id="365" class="l"><a href="#365">365 </a>                -&gt;setDataOcorrencia(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">138</span>, <span class="php-num">145</span>, <span class="php-var">$detalhe</span>))
-</span><span id="366" class="l"><a href="#366">366 </a>                -&gt;setDataCredito(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">146</span>, <span class="php-num">153</span>, <span class="php-var">$detalhe</span>));
-</span><span id="367" class="l"><a href="#367">367 </a>        }
-</span><span id="368" class="l"><a href="#368">368 </a>
-</span><span id="369" class="l"><a href="#369">369 </a>        <span class="php-keyword1">return</span> <span class="php-keyword1">true</span>;
-</span><span id="370" class="l"><a href="#370">370 </a>    }
-</span><span id="371" class="l"><a href="#371">371 </a>
-</span><span id="372" class="l"><a href="#372">372 </a>    <span class="php-comment">/**
-</span></span><span id="373" class="l"><a href="#373">373 </a><span class="php-comment">     * @param array $trailer
-</span></span><span id="374" class="l"><a href="#374">374 </a><span class="php-comment">     *
-</span></span><span id="375" class="l"><a href="#375">375 </a><span class="php-comment">     * @return bool
-</span></span><span id="376" class="l"><a href="#376">376 </a><span class="php-comment">     * @throws \Exception
-</span></span><span id="377" class="l"><a href="#377">377 </a><span class="php-comment">     */</span>
-</span><span id="378" class="l"><a href="#378">378 </a>    <span class="php-keyword1">protected</span> <span class="php-keyword1">function</span> processarTrailerLote(<span class="php-keyword1">array</span> <span class="php-var">$trailer</span>)
-</span><span id="379" class="l"><a href="#379">379 </a>    {
-</span><span id="380" class="l"><a href="#380">380 </a>        <span class="php-var">$this</span>-&gt;getTrailerLote()
-</span><span id="381" class="l"><a href="#381">381 </a>            -&gt;setLoteServico(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">4</span>, <span class="php-num">7</span>, <span class="php-var">$trailer</span>))
-</span><span id="382" class="l"><a href="#382">382 </a>            -&gt;setTipoRegistro(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">8</span>, <span class="php-num">8</span>, <span class="php-var">$trailer</span>))
-</span><span id="383" class="l"><a href="#383">383 </a>            -&gt;setQtdRegistroLote((int) <span class="php-var">$this</span>-&gt;rem(<span class="php-num">18</span>, <span class="php-num">23</span>, <span class="php-var">$trailer</span>));
-</span><span id="384" class="l"><a href="#384">384 </a>
-</span><span id="385" class="l"><a href="#385">385 </a>        <span class="php-keyword1">return</span> <span class="php-keyword1">true</span>;
-</span><span id="386" class="l"><a href="#386">386 </a>    }
-</span><span id="387" class="l"><a href="#387">387 </a>
-</span><span id="388" class="l"><a href="#388">388 </a>    <span class="php-comment">/**
-</span></span><span id="389" class="l"><a href="#389">389 </a><span class="php-comment">     * @param array $trailer
-</span></span><span id="390" class="l"><a href="#390">390 </a><span class="php-comment">     *
-</span></span><span id="391" class="l"><a href="#391">391 </a><span class="php-comment">     * @return bool
-</span></span><span id="392" class="l"><a href="#392">392 </a><span class="php-comment">     * @throws \Exception
-</span></span><span id="393" class="l"><a href="#393">393 </a><span class="php-comment">     */</span>
-</span><span id="394" class="l"><a href="#394">394 </a>    <span class="php-keyword1">protected</span> <span class="php-keyword1">function</span> processarTrailer(<span class="php-keyword1">array</span> <span class="php-var">$trailer</span>)
-</span><span id="395" class="l"><a href="#395">395 </a>    {
-</span><span id="396" class="l"><a href="#396">396 </a>        <span class="php-var">$this</span>-&gt;getTrailer()
-</span><span id="397" class="l"><a href="#397">397 </a>            -&gt;setNumeroLote(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">4</span>, <span class="php-num">7</span>, <span class="php-var">$trailer</span>))
-</span><span id="398" class="l"><a href="#398">398 </a>            -&gt;setTipoRegistro(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">8</span>, <span class="php-num">8</span>, <span class="php-var">$trailer</span>))
-</span><span id="399" class="l"><a href="#399">399 </a>            -&gt;setQtdLotesArquivo((int) <span class="php-var">$this</span>-&gt;rem(<span class="php-num">18</span>, <span class="php-num">23</span>, <span class="php-var">$trailer</span>))
-</span><span id="400" class="l"><a href="#400">400 </a>            -&gt;setQtdRegistroArquivo((int) <span class="php-var">$this</span>-&gt;rem(<span class="php-num">24</span>, <span class="php-num">29</span>, <span class="php-var">$trailer</span>));
-</span><span id="401" class="l"><a href="#401">401 </a>
-</span><span id="402" class="l"><a href="#402">402 </a>        <span class="php-keyword1">return</span> <span class="php-keyword1">true</span>;
-</span><span id="403" class="l"><a href="#403">403 </a>    }
-</span><span id="404" class="l"><a href="#404">404 </a>}
-</span><span id="405" class="l"><a href="#405">405 </a></span></code></pre>
+</span><span id="365" class="l"><a href="#365">365 </a>                -&gt;setValorOutrasDespesas(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">108</span>, <span class="php-num">122</span>, <span class="php-var">$detalhe</span>)/<span class="php-num">100</span>, <span class="php-num">2</span>, <span class="php-keyword1">false</span>))
+</span><span id="366" class="l"><a href="#366">366 </a>                -&gt;setValorOutrosCreditos(Util::nFloat(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">123</span>, <span class="php-num">137</span>, <span class="php-var">$detalhe</span>)/<span class="php-num">100</span>, <span class="php-num">2</span>, <span class="php-keyword1">false</span>))
+</span><span id="367" class="l"><a href="#367">367 </a>                -&gt;setDataOcorrencia(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">138</span>, <span class="php-num">145</span>, <span class="php-var">$detalhe</span>))
+</span><span id="368" class="l"><a href="#368">368 </a>                -&gt;setDataCredito(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">146</span>, <span class="php-num">153</span>, <span class="php-var">$detalhe</span>));
+</span><span id="369" class="l"><a href="#369">369 </a>        }
+</span><span id="370" class="l"><a href="#370">370 </a>
+</span><span id="371" class="l"><a href="#371">371 </a>        <span class="php-keyword1">return</span> <span class="php-keyword1">true</span>;
+</span><span id="372" class="l"><a href="#372">372 </a>    }
+</span><span id="373" class="l"><a href="#373">373 </a>
+</span><span id="374" class="l"><a href="#374">374 </a>    <span class="php-comment">/**
+</span></span><span id="375" class="l"><a href="#375">375 </a><span class="php-comment">     * @param array $trailer
+</span></span><span id="376" class="l"><a href="#376">376 </a><span class="php-comment">     *
+</span></span><span id="377" class="l"><a href="#377">377 </a><span class="php-comment">     * @return bool
+</span></span><span id="378" class="l"><a href="#378">378 </a><span class="php-comment">     * @throws \Exception
+</span></span><span id="379" class="l"><a href="#379">379 </a><span class="php-comment">     */</span>
+</span><span id="380" class="l"><a href="#380">380 </a>    <span class="php-keyword1">protected</span> <span class="php-keyword1">function</span> processarTrailerLote(<span class="php-keyword1">array</span> <span class="php-var">$trailer</span>)
+</span><span id="381" class="l"><a href="#381">381 </a>    {
+</span><span id="382" class="l"><a href="#382">382 </a>        <span class="php-var">$this</span>-&gt;getTrailerLote()
+</span><span id="383" class="l"><a href="#383">383 </a>            -&gt;setLoteServico(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">4</span>, <span class="php-num">7</span>, <span class="php-var">$trailer</span>))
+</span><span id="384" class="l"><a href="#384">384 </a>            -&gt;setTipoRegistro(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">8</span>, <span class="php-num">8</span>, <span class="php-var">$trailer</span>))
+</span><span id="385" class="l"><a href="#385">385 </a>            -&gt;setQtdRegistroLote((int) <span class="php-var">$this</span>-&gt;rem(<span class="php-num">18</span>, <span class="php-num">23</span>, <span class="php-var">$trailer</span>));
+</span><span id="386" class="l"><a href="#386">386 </a>
+</span><span id="387" class="l"><a href="#387">387 </a>        <span class="php-keyword1">return</span> <span class="php-keyword1">true</span>;
+</span><span id="388" class="l"><a href="#388">388 </a>    }
+</span><span id="389" class="l"><a href="#389">389 </a>
+</span><span id="390" class="l"><a href="#390">390 </a>    <span class="php-comment">/**
+</span></span><span id="391" class="l"><a href="#391">391 </a><span class="php-comment">     * @param array $trailer
+</span></span><span id="392" class="l"><a href="#392">392 </a><span class="php-comment">     *
+</span></span><span id="393" class="l"><a href="#393">393 </a><span class="php-comment">     * @return bool
+</span></span><span id="394" class="l"><a href="#394">394 </a><span class="php-comment">     * @throws \Exception
+</span></span><span id="395" class="l"><a href="#395">395 </a><span class="php-comment">     */</span>
+</span><span id="396" class="l"><a href="#396">396 </a>    <span class="php-keyword1">protected</span> <span class="php-keyword1">function</span> processarTrailer(<span class="php-keyword1">array</span> <span class="php-var">$trailer</span>)
+</span><span id="397" class="l"><a href="#397">397 </a>    {
+</span><span id="398" class="l"><a href="#398">398 </a>        <span class="php-var">$this</span>-&gt;getTrailer()
+</span><span id="399" class="l"><a href="#399">399 </a>            -&gt;setNumeroLote(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">4</span>, <span class="php-num">7</span>, <span class="php-var">$trailer</span>))
+</span><span id="400" class="l"><a href="#400">400 </a>            -&gt;setTipoRegistro(<span class="php-var">$this</span>-&gt;rem(<span class="php-num">8</span>, <span class="php-num">8</span>, <span class="php-var">$trailer</span>))
+</span><span id="401" class="l"><a href="#401">401 </a>            -&gt;setQtdLotesArquivo((int) <span class="php-var">$this</span>-&gt;rem(<span class="php-num">18</span>, <span class="php-num">23</span>, <span class="php-var">$trailer</span>))
+</span><span id="402" class="l"><a href="#402">402 </a>            -&gt;setQtdRegistroArquivo((int) <span class="php-var">$this</span>-&gt;rem(<span class="php-num">24</span>, <span class="php-num">29</span>, <span class="php-var">$trailer</span>));
+</span><span id="403" class="l"><a href="#403">403 </a>
+</span><span id="404" class="l"><a href="#404">404 </a>        <span class="php-keyword1">return</span> <span class="php-keyword1">true</span>;
+</span><span id="405" class="l"><a href="#405">405 </a>    }
+</span><span id="406" class="l"><a href="#406">406 </a>}
+</span><span id="407" class="l"><a href="#407">407 </a></span></code></pre>
 	</div>
 
 	<div id="footer">

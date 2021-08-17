@@ -461,10 +461,10 @@
 </span><span id="182" class="l"><a href="#182">182 </a>            <span class="php-var">$this</span>-&gt;add(<span class="php-num">109</span>, <span class="php-num">110</span>, self::OCORRENCIA_BAIXA); <span class="php-comment">// BAIXA</span>
 </span><span id="183" class="l"><a href="#183">183 </a>        }
 </span><span id="184" class="l"><a href="#184">184 </a>        <span class="php-keyword1">if</span> (<span class="php-var">$boleto</span>-&gt;getStatus() == <span class="php-var">$boleto</span>::STATUS_ALTERACAO) {
-</span><span id="185" class="l"><a href="#185">185 </a>            <span class="php-var">$this</span>-&gt;add(<span class="php-num">109</span>, <span class="php-num">110</span>, self::OCORRENCIA_ALT_VENCIMENTO); <span class="php-comment">// ALTERAR VENCIMENTO</span>
+</span><span id="185" class="l"><a href="#185">185 </a>            <span class="php-var">$this</span>-&gt;add(<span class="php-num">109</span>, <span class="php-num">110</span>, self::OCORRENCIA_ALT_OUTROS_DADOS); <span class="php-comment">// ALTERAR OUTROS DADOS (Endereço, etc.)</span>
 </span><span id="186" class="l"><a href="#186">186 </a>        }
 </span><span id="187" class="l"><a href="#187">187 </a>        <span class="php-keyword1">if</span> (<span class="php-var">$boleto</span>-&gt;getStatus() == <span class="php-var">$boleto</span>::STATUS_ALTERACAO_DATA) {
-</span><span id="188" class="l"><a href="#188">188 </a>            <span class="php-var">$this</span>-&gt;add(<span class="php-num">109</span>, <span class="php-num">110</span>, self::OCORRENCIA_ALT_VENCIMENTO);
+</span><span id="188" class="l"><a href="#188">188 </a>            <span class="php-var">$this</span>-&gt;add(<span class="php-num">109</span>, <span class="php-num">110</span>, self::OCORRENCIA_ALT_VENCIMENTO); <span class="php-comment">// ALTERAR VENCIMENTO</span>
 </span><span id="189" class="l"><a href="#189">189 </a>        }
 </span><span id="190" class="l"><a href="#190">190 </a>        <span class="php-keyword1">if</span> (<span class="php-var">$boleto</span>-&gt;getStatus() == <span class="php-var">$boleto</span>::STATUS_CUSTOM) {
 </span><span id="191" class="l"><a href="#191">191 </a>            <span class="php-var">$this</span>-&gt;add(<span class="php-num">109</span>, <span class="php-num">110</span>, <span class="php-keyword2">sprintf</span>(<span class="php-quote">'%2.02s'</span>, <span class="php-var">$boleto</span>-&gt;getComando()));
