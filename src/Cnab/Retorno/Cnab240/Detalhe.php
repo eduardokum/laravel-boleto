@@ -1,4 +1,4 @@
-<?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
 use Carbon\Carbon;
@@ -6,6 +6,9 @@ use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Detalhe as DetalheCo
 use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
 use Eduardokum\LaravelBoleto\MagicTrait;
 use Eduardokum\LaravelBoleto\Util;
+
+
+
 
 class Detalhe implements DetalheContract
 {
@@ -79,6 +82,11 @@ class Detalhe implements DetalheContract
      * @var string
      */
     protected $valorOutrasDespesas;
+
+    /**
+     * @var string
+     */
+    protected $valorOutrosCreditos;
 
     /**
      * @var string
@@ -532,6 +540,26 @@ class Detalhe implements DetalheContract
     public function setValorOutrasDespesas($valorOutrasDespesas)
     {
         $this->valorOutrasDespesas = $valorOutrasDespesas;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getValorOutrosCreditos()
+    {
+        return $this->valorOutrosCreditos;
+    }
+
+    /**
+     * @param string $valorTarifa
+     *
+     * @return $this
+     */
+    public function setValorOutrosCreditos($valorOutrosCreditos)
+    {
+        $this->valorOutrosCreditos = $valorOutrosCreditos;
 
         return $this;
     }
