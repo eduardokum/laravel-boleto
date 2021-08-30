@@ -98,6 +98,21 @@ abstract class AbstractRemessa
      * @var int
      */
     protected $agencia;
+
+    /**
+     * Codigo Transmissão Customizado
+     *
+     * @var int
+     */
+    protected $codigoTransmissaoCustomizado;
+
+        /**
+     * Codigo Beneficiario
+     *
+     * @var int
+     */
+    protected $codigoBeneficiario;
+
     /**
      * Conta
      *
@@ -140,13 +155,16 @@ abstract class AbstractRemessa
         Util::fillClass($this, $params);
     }
 
-    /**
-     * Informa a data da remessa a ser gerada
-     *
-     * @param $data
-     */
     public function setDataRemessa($data){
         $this->dataRemessa = $data;
+    }
+
+    public function setCodigoTransmissaoCustomizado($codigoTransmissaoCustomizado){
+        $this->codigoTransmissaoCustomizado = $codigoTransmissaoCustomizado;
+    }
+
+    public function setCodigoBeneficiario($codigoBeneficiario){
+        $this->codigoBeneficiario = $codigoBeneficiario;
     }
 
     /**
@@ -291,6 +309,16 @@ abstract class AbstractRemessa
     public function getConta()
     {
         return $this->conta;
+    }
+
+    public function getCodigoTransmissaoCustomizado()
+    {
+        return $this->codigoTransmissaoCustomizado;
+    }
+
+    public function getCodigoBeneficiario()
+    {
+        return $this->codigoBeneficiario;
     }
 
     /**
