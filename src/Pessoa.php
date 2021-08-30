@@ -34,6 +34,8 @@ class Pessoa implements PessoaContract
      */
     protected $documento;
 
+    protected $codigo_beneficiario;
+
     /**
      * @var boolean
      */
@@ -166,6 +168,19 @@ class Pessoa implements PessoaContract
 
         return $this;
     }
+
+    public function setCodigoBeneficiario($codigo_beneficiario)
+    {
+        $this->codigo_beneficiario = $codigo_beneficiario;
+
+        return $this;
+    }
+
+    public function getCodigoBeneficiario()
+    {
+        return $this->codigo_beneficiario;
+    }
+
     /**
      * Retorna o endereço
      *
