@@ -171,11 +171,11 @@ class Santander extends AbstractRemessa implements RemessaContract
             .str_pad($this->getBeneficiario()->getCodigoBeneficiario(), 8, '0', STR_PAD_LEFT)
             .substr($this->getConta(), 0, 8));
         $this->add(38, 62, Util::formatCnab('X', $boleto->getNumeroDocumento(), 25)); // numero de controle
-        $this->add(63, 70, substr(Util::onlyNumbers($boleto->getNossoNumero()), -8));
+        $this->add(63, 70, substr(substr(Util::onlyNumbers($boleto->getNossoNumero()), -8), 0, -1));
         $this->add(71, 76, '000000');
         $this->add(77, 77, '');
         $this->add(78, 78, ($boleto->getMulta() > 0 ? '4' : '0'));
-        $this->add(79, 82, Util::formatCnab('9', $boleto->getMulta(), 4, 2));
+        $this->add(79, 82, Util::formatCnab('9', ($boleto->getMulta() * 1000) / 10, 4, 2));
         $this->add(83, 84, '00');
         $this->add(85, 97, Util::formatCnab('9', 0, 13, 2));
         $this->add(98, 101, '');
@@ -206,6 +206,8 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(159, 160, self::INSTRUCAO_SEM);
         if ($boleto->getDiasProtesto() > 0) {
             $this->add(157, 158, self::INSTRUCAO_PROTESTAR);
+        } elseif ($boleto->getDiasProtesto() == '0') {
+            $this->add(157, 158, self::INSTRUCAO_NAO_BAIXAR);
         } elseif ($boleto->getDiasBaixaAutomatica() == 15) {
             $this->add(157, 158, self::INSTRUCAO_BAIXAR_APOS_VENC_15);
         } elseif ($boleto->getDiasBaixaAutomatica() == 30) {
@@ -232,7 +234,7 @@ class Santander extends AbstractRemessa implements RemessaContract
             $this->add(384, 385, substr($this->getConta(), -2));
         }
         $this->add(386, 391, '');
-        $this->add(392, 393, Util::formatCnab('9', $boleto->getDiasProtesto('0'), 2));
+        $this->add(392, 393, Util::formatCnab('9', $boleto->getDiasProtesto(), 2));
         $this->add(394, 394, '');
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
 
