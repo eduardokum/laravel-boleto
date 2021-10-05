@@ -167,6 +167,12 @@ abstract class AbstractBoleto implements BoletoContract
      */
     protected $usoBanco;
     /**
+     * Chave da nfe para cnab de 444 posições
+     *
+     * @var string
+     */
+    protected $chaveNfe;
+    /**
      * Agência
      *
      * @var string
@@ -613,8 +619,8 @@ abstract class AbstractBoleto implements BoletoContract
     {
         return $this->dataDocumento;
     }
-	
-   /**
+
+    /**
      * Retorna a data do juros após
      *
      * @return \Carbon\Carbon
@@ -788,6 +794,41 @@ abstract class AbstractBoleto implements BoletoContract
     public function getUsoBanco()
     {
         return $this->usoBanco;
+    }
+
+    /**
+     * Define o campo Chave da nfe para cnab de 444 posições
+     *
+     * @param string $chaveNfe
+     *
+     * @return AbstractBoleto
+     * @throws \Exception
+     */
+    public function setChaveNfe($chaveNfe)
+    {
+        $chaveNfe = Util::onlyNumbers($chaveNfe);
+
+        if (strlen($chaveNfe) != 44) {
+            throw new \Exception('Chave de nfe não possui 44 posições');
+        }
+        
+        if (!in_array($this->getCodigoBanco(), ['001', '237'])) {
+            throw new \Exception('Banco não suportado para remessa extendida');
+        }
+
+        $this->chaveNfe = $chaveNfe;
+
+        return $this;
+    }
+
+    /**
+     * Retorna o campo Chave da nfe
+     *
+     * @return string
+     */
+    public function getChaveNfe()
+    {
+        return $this->chaveNfe;
     }
 
     /**
@@ -1137,7 +1178,7 @@ abstract class AbstractBoleto implements BoletoContract
     public function getMoraDia()
     {
         if ($this->getJuros() <= 0) {
-           return 0;
+            return 0;
         }
         return Util::percent($this->getValor(), $this->getJuros())/30;
     }
@@ -1544,12 +1585,12 @@ abstract class AbstractBoleto implements BoletoContract
      * @return string
      * @throws \Exception
      */
-     public function renderPDF($print = false, $instrucoes = true)
+    public function renderPDF($print = false, $instrucoes = true)
     {
         if($this->codigoBanco == 104){
-           $pdf = new PdfCaixa();
+            $pdf = new PdfCaixa();
         }else{
-           $pdf = new Pdf();
+            $pdf = new Pdf();
         }
         $pdf->addBoleto($this);
         !$print || $pdf->showPrint();
@@ -1649,7 +1690,7 @@ abstract class AbstractBoleto implements BoletoContract
                         'documento' => $this->getSacadorAvalista()->getDocumento(),
                         'nome_documento' => $this->getSacadorAvalista()->getNomeDocumento(),
                         'endereco2' => $this->getSacadorAvalista()->getCepCidadeUf(),
-						'endereco_completo' => $this->getSacadorAvalista()->getEnderecoCompleto(),
+                        'endereco_completo' => $this->getSacadorAvalista()->getEnderecoCompleto(),
                     ]
                         : [],
                 'pagador' => [
@@ -1662,7 +1703,7 @@ abstract class AbstractBoleto implements BoletoContract
                     'documento' => $this->getPagador()->getDocumento(),
                     'nome_documento' => $this->getPagador()->getNomeDocumento(),
                     'endereco2' => $this->getPagador()->getCepCidadeUf(),
-					'endereco_completo' => $this->getPagador()->getEnderecoCompleto(),
+                    'endereco_completo' => $this->getPagador()->getEnderecoCompleto(),
                 ],
                 'demonstrativo' => $this->getDescricaoDemonstrativo(),
                 'instrucoes' => $this->getInstrucoes(),
@@ -1686,3 +1727,4 @@ abstract class AbstractBoleto implements BoletoContract
         );
     }
 }
+
