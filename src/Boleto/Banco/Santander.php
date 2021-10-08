@@ -105,10 +105,8 @@ class Santander extends AbstractBoleto implements BoletoContract
      */
     public function getAgenciaCodigoBeneficiario()
     {
-        $agencia = $this->getAgenciaDv() !== null ? $this->getAgencia() . '-' . $this->getAgenciaDv() : $this->getAgencia();
-        $codigoCliente = $this->getCodigoCliente();
-
-        return $agencia . ' / ' . $codigoCliente;
+        $agencia = rtrim(sprintf('%s-%s', $this->getAgencia(), $this->getAgenciaDv()), '-');
+        return sprintf('%s / %s',$agencia, $this->getCodigoCliente());
     }
 
     /**

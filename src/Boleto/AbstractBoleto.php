@@ -1459,8 +1459,8 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getAgenciaCodigoBeneficiario()
     {
-        $agencia = $this->getAgenciaDv() !== null ? $this->getAgencia() . '-' . $this->getAgenciaDv() : $this->getAgencia();
-        $conta = $this->getContaDv() !== null ? $this->getConta() . '-' . $this->getContaDv() : $this->getConta();
+        $agencia = rtrim(sprintf('%s-%s', $this->getAgencia(), $this->getAgenciaDv()), '-');
+        $conta = rtrim(sprintf('%s-%s', $this->getConta(), $this->getContaDv()), '-');
 
         return $agencia . ' / ' . $conta;
     }
