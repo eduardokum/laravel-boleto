@@ -129,7 +129,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
      * Define se é teste
      *
      * @param  boolean $teste
-     * @return $this
+     * @return Banrisul
      */
 
     public function setTeste($teste)
@@ -194,7 +194,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @return $this
+     * @return Banrisul
      * @throws \Exception
      */
     protected function header()
@@ -237,13 +237,17 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     /**
      * @param BoletoContract $boleto
      *
-     * @return bool
+     * @return Banrisul
      * @throws \Exception
      */
     public function addBoleto(BoletoContract $boleto)
     {
         $this->boletos[] = $boleto;
-        $this->iniciaDetalhe();
+        if ($chaveNfe = $boleto->getChaveNfe()) {
+            $this->iniciaDetalheExtendido();
+        } else {
+            $this->iniciaDetalhe();
+        }
 
         $this->add(1, 1, 1);
         $this->add(2, 17, '');
@@ -319,14 +323,17 @@ class Banrisul extends AbstractRemessa implements RemessaContract
 
         $this->add(372, 394, '');
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
+        if ($chaveNfe) {
+            $this->add(401, 444, Util::formatCnab('9', $chaveNfe, 44));
+        }
 
         $this->valorTotal += $boleto->getValor();
 
-        return true;
+        return $this;
     }
 
     /**
-     * @return $this
+     * @return Banrisul
      * @throws \Exception
      */
     protected function trailer()

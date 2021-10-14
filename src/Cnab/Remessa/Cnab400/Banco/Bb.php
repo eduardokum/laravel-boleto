@@ -222,7 +222,7 @@ class Bb extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @return $this
+     * @return Bb
      * @throws \Exception
      */
     protected function header()
@@ -256,7 +256,7 @@ class Bb extends AbstractRemessa implements RemessaContract
     /**
      * @param BoletoContract $boleto
      *
-     * @return mixed|void
+     * @return Bb
      * @throws \Exception
      */
     public function addBoleto(BoletoContract $boleto)
@@ -355,10 +355,12 @@ class Bb extends AbstractRemessa implements RemessaContract
             $this->add(23, 394, '');
             $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
         }
+
+        return $this;
     }
 
     /**
-     * @return $this
+     * @return Bb
      * @throws \Exception
      */
     protected function trailer()

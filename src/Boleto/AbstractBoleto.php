@@ -812,10 +812,6 @@ abstract class AbstractBoleto implements BoletoContract
             throw new \Exception('Chave de nfe não possui 44 posições');
         }
         
-        if (!in_array($this->getCodigoBanco(), ['001', '237'])) {
-            throw new \Exception('Banco não suportado para remessa extendida');
-        }
-
         $this->chaveNfe = $chaveNfe;
 
         return $this;

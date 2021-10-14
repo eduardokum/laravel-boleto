@@ -128,7 +128,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @return $this
+     * @return Bradesco
      * @throws \Exception
      */
     protected function header()
@@ -157,13 +157,12 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     /**
      * @param BoletoContract $boleto
      *
-     * @return $this
+     * @return Bradesco
      * @throws \Exception
      */
     public function addBoleto(BoletoContract $boleto)
     {
         $this->boletos[] = $boleto;
-
         if ($chaveNfe = $boleto->getChaveNfe()) {
             $this->iniciaDetalheExtendido();
         } else {
@@ -244,7 +243,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @return $this
+     * @return Bradesco
      * @throws \Exception
      */
     protected function trailer()
