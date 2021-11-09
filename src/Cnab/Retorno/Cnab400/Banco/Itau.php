@@ -214,6 +214,20 @@ class Itau extends AbstractRetorno implements RetornoCnab400
     {
         $d = $this->detalheAtual();
 
+        $tipoRegistro = $this->rem(1, 1, $detalhe);
+
+        // Tipo Registro 3 - Boleto Pix
+        if ($tipoRegistro == 3) {
+            $detalheAnterior = $this->getDetalhe($this->increment - 1);
+
+            if (!is_null($detalheAnterior)) {
+                $detalheAnterior->setQrCodePix($this->rem(2, 391, $detalhe));
+                $detalheAnterior->setCodigoErroPix($this->rem(392, 394, $detalhe));
+            }
+
+            return false;
+        }
+
         $d->setCarteira($this->rem(83, 85, $detalhe))
             ->setNossoNumero($this->rem(86, 94, $detalhe))
             ->setNumeroDocumento($this->rem(117, 126, $detalhe))

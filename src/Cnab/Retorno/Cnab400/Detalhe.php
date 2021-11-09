@@ -45,6 +45,14 @@ class Detalhe implements DetalheContract
      */
     protected $ocorrenciaDescricao;
     /**
+     * @var string
+     */
+    protected $qrCodePix;
+    /**
+     * @var string
+     */
+    protected $codigoErroPix;
+    /**
      * @var Carbon
      */
     protected $dataOcorrencia;
@@ -279,6 +287,42 @@ class Detalhe implements DetalheContract
     public function setOcorrenciaTipo($ocorrenciaTipo)
     {
         $this->ocorrenciaTipo = $ocorrenciaTipo;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getQrCodePix() {
+        return $this->qrCodePix;
+    }
+
+    /**
+     * @param string $qrCodePix
+     *
+     * @return Detalhe
+     */
+    public function setQrCodePix($qrCodePix) {
+        $this->qrCodePix = $qrCodePix;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCodigoErroPix() {
+        return $this->codigoErroPix;
+    }
+
+    /**
+     * @param string $codigoErroPix
+     *
+     * @return Detalhe
+     */
+    public function setCodigoErroPix($codigoErroPix) {
+        $this->codigoErroPix = $codigoErroPix;
 
         return $this;
     }
