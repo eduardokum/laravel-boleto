@@ -20,6 +20,7 @@ interface Boleto
     const STATUS_ALTERACAO = 2;
     const STATUS_BAIXA = 3;
     const STATUS_ALTERACAO_DATA = 4;
+    const STATUS_BOLETO_PIX = 5;
     const STATUS_CUSTOM = 99;
 
     /**

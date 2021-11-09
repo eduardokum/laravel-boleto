@@ -42,6 +42,7 @@ class Itau extends AbstractRemessa implements RemessaContract
     const OCORRENCIA_ALT_VENC_SUSTAR_PROTESTO = '37';
     const OCORRENCIA_NAO_CONCORDA_SACADO = '38';
     const OCORRENCIA_DISPENSA_JUROS = '47';
+    const OCORRENCIA_BOLETO_PIX = '71';
 
     const INSTRUCAO_SEM = '00';
     const INSTRUCAO_DEVOL_VENC_5 = '02';
@@ -202,6 +203,9 @@ class Itau extends AbstractRemessa implements RemessaContract
         }
         if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO_DATA) {
             $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO);
+        }
+        if ($boleto->getStatus() == $boleto::STATUS_BOLETO_PIX) {
+            $this->add(109, 110, self::OCORRENCIA_BOLETO_PIX);
         }
         if ($boleto->getStatus() == $boleto::STATUS_CUSTOM) {
             $this->add(109, 110, sprintf('%2.02s', $boleto->getComando()));

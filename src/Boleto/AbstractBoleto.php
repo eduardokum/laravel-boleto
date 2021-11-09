@@ -811,7 +811,7 @@ abstract class AbstractBoleto implements BoletoContract
         if (strlen($chaveNfe) != 44) {
             throw new \Exception('Chave de nfe não possui 44 posições');
         }
-        
+
         $this->chaveNfe = $chaveNfe;
 
         return $this;
@@ -1367,6 +1367,18 @@ abstract class AbstractBoleto implements BoletoContract
     public function baixarBoleto()
     {
         $this->status = BoletoContract::STATUS_BAIXA;
+
+        return $this;
+    }
+
+    /**
+     * Marca o boleto para emissao do QR Code pix
+     *
+     * @return AbstractBoleto
+     */
+    public function alterarBoletoPix()
+    {
+        $this->status = BoletoContract::STATUS_BOLETO_PIX;
 
         return $this;
     }
