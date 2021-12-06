@@ -1254,7 +1254,7 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @return int
      */
-    public function getDiasBaixaAutomatica($default = 0)
+    public function getDiasBaixaAutomatica($default = 60)
     {
         return $this->diasBaixaAutomatica > 0 ? $this->diasBaixaAutomatica : $default;
     }
@@ -1387,7 +1387,7 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @throws \Exception
      */
-    final public function setNossoNumero()
+    public function setNossoNumero($nossoNumero)
     {
         throw new \Exception('Não é possível definir o nosso número diretamente. Utilize o método setNumero.');
     }
@@ -1444,6 +1444,10 @@ abstract class AbstractBoleto implements BoletoContract
                 $messages .= "Campo $campo está em branco";
                 return false;
             }
+        }
+        if (is_null($this->campoNossoNumero) || $this->campoNossoNumero == '') {
+            $messages .= "Campo nosso número está em branco";
+            return false;
         }
         return true;
     }

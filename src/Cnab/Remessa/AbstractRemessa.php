@@ -511,12 +511,13 @@ abstract class AbstractRemessa
     /**
      * Salva o arquivo no path informado
      *
-     * @param $path
+     * @param      $path
+     * @param bool $suggestName
      *
      * @return mixed
      * @throws \Exception
      */
-    public function save($path)
+    public function save($path, $suggestName = false)
     {
         $folder = dirname($path);
         if (! is_dir($folder)) {
@@ -527,10 +528,22 @@ abstract class AbstractRemessa
             throw new \Exception('Path ' . $folder . ' não possui permissao de escrita');
         }
 
+        if ($suggestName) {
+            $path = rtrim(dirname($path), '/') . '/' . ltrim($this->nomeSugerido(), '/');
+        }
+
         $string = $this->gerar();
         file_put_contents($path, $string);
 
         return $path;
+    }
+
+    /**
+     * @return string
+     */
+    public function nomeSugerido()
+    {
+        return 'remessa.txt';
     }
 
     /**
@@ -543,7 +556,7 @@ abstract class AbstractRemessa
     public function download($filename = null)
     {
         if ($filename === null) {
-            $filename = 'remessa.txt';
+            $filename = $this->nomeSugerido();
         }
         header('Content-type: text/plain');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
