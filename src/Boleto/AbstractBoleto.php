@@ -1445,8 +1445,7 @@ abstract class AbstractBoleto implements BoletoContract
                 return false;
             }
         }
-        if (is_null($this->campoNossoNumero) || $this->campoNossoNumero == ''
-            || is_null($this->gerarNossoNumero()) || $this->gerarNossoNumero() == '') {
+        if (empty($this->campoNossoNumero) && empty($this->gerarNossoNumero())) {
             $messages .= "Campo nosso número está em branco";
             return false;
         }
