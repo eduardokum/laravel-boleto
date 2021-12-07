@@ -3,24 +3,24 @@ require 'autoload.php';
 
 $beneficiario = new \Eduardokum\LaravelBoleto\Pessoa(
     [
-        'nome'      => 'INTRA-SIS DESENVOLVIMENTO DE SISTEMAS',
-        'endereco'  => 'Av. Engenheiro Caetano Alvares, 3536 - Sala 3',
-        'cep'       => '02546-000',
-        'uf'        => 'SP',
-        'cidade'    => 'São Paulo',
-        'documento' => '10.228.511/0001-19',
+        'nome' => 'ACME',
+        'endereco' => 'Rua um, 123',
+        'cep' => '99999-999',
+        'uf' => 'UF',
+        'cidade' => 'CIDADE',
+        'documento' => '99.999.999/9999-99',
     ]
 );
 
 $pagador = new \Eduardokum\LaravelBoleto\Pessoa(
     [
-        'nome'      => 'Eduardo Gusmão',
-        'endereco'  => 'Rua Sete de Abril, 1294 - AP 503',
-        'bairro'    => 'Juveve',
-        'cep'       => '80040-120',
-        'uf'        => 'PR',
-        'cidade'    => 'Curitiba',
-        'documento' => '33532256843',
+        'nome' => 'Cliente',
+        'endereco' => 'Rua um, 123',
+        'bairro' => 'Bairro',
+        'cep' => '99999-999',
+        'uf' => 'UF',
+        'cidade' => 'CIDADE',
+        'documento' => '999.999.999-99',
     ]
 );
 
@@ -35,8 +35,8 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Inter(
         'numeroDocumento' => 1,
         'pagador'         => $pagador,
         'beneficiario'    => $beneficiario,
-        'conta'           => '173699880',
-        'operacao'        => '0587891',
+        'conta'           => '123456789',
+        'operacao'        => '1234567',
         'aceite'          => 'S',
         'especieDoc'      => 'DM'
     ]

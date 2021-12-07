@@ -16,7 +16,7 @@ $beneficiario = new \Eduardokum\LaravelBoleto\Pessoa(
 );
 
 $api = new Eduardokum\LaravelBoleto\Api\Banco\Inter(
-    '173699880',
+    '123456789',
     realpath(__DIR__ . '/certs/') . DIRECTORY_SEPARATOR . 'cert.crt',
     realpath(__DIR__ . '/certs/') . DIRECTORY_SEPARATOR . 'key.key'
 );
@@ -26,7 +26,7 @@ $boletos = [];
 if ($list = $retorno->body->content) {
     foreach ($list as $boleto) {
         $boletos[] = Inter::createFromAPI($boleto, [
-            'conta'        => '173699880',
+            'conta'           => '123456789',
             'beneficiario' => $beneficiario,
         ]);
     }

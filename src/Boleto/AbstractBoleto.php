@@ -1645,10 +1645,18 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function toArray()
     {
+        $nosso_numero = $nosso_numero_boleto = $linha_digitavel = $codigo_barras = null;
+        try {
+            $nosso_numero = $this->getNossoNumero();
+            $nosso_numero_boleto = $this->getNossoNumeroBoleto();
+            $linha_digitavel = $this->getLinhaDigitavel();
+            $codigo_barras = $this->getCodigoBarras();
+        } catch (\Exception $e) {}
+
         return array_merge(
             [
-                'linha_digitavel' => $this->getLinhaDigitavel(),
-                'codigo_barras' => $this->getCodigoBarras(),
+                'linha_digitavel' => $linha_digitavel,
+                'codigo_barras' => $codigo_barras,
                 'beneficiario' => [
                     'nome' => $this->getBeneficiario()->getNome(),
                     'endereco' => $this->getBeneficiario()->getEndereco(),
@@ -1713,8 +1721,8 @@ abstract class AbstractBoleto implements BoletoContract
                 'numero_documento' => $this->getNumeroDocumento(),
                 'numero_controle' => $this->getNumeroControle(),
                 'agencia_codigo_beneficiario' => $this->getAgenciaCodigoBeneficiario(),
-                'nosso_numero' => $this->getNossoNumero(),
-                'nosso_numero_boleto' => $this->getNossoNumeroBoleto(),
+                'nosso_numero' => $nosso_numero,
+                'nosso_numero_boleto' => $nosso_numero_boleto,
                 'especie_doc' => $this->getEspecieDoc(),
                 'especie_doc_cod' => $this->getEspecieDocCodigo(),
                 'aceite' => $this->getAceite(),

@@ -33,11 +33,11 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Inter(
         'juros'           => false,
         'numero'          => 1,
         'numeroDocumento' => 1,
-        'nossoNumero'     => '00757713765',
+        'nossoNumero'     => '12345678901',
         'pagador'         => $pagador,
         'beneficiario'    => $beneficiario,
-        'conta'           => '173699880',
-        'operacao'        => '0587891',
+        'conta'           => '123456789',
+        'operacao'        => '1234567',
         'aceite'          => 'S',
         'especieDoc'      => 'DM'
     ]
