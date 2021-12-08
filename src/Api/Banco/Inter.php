@@ -5,6 +5,7 @@ use Carbon\Carbon;
 use Eduardokum\LaravelBoleto\Api\AbstractAPI;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\BoletoAPI as BoletoAPIContract;
+use Illuminate\Support\Arr;
 
 class Inter extends AbstractAPI
 {
@@ -47,7 +48,7 @@ class Inter extends AbstractAPI
     /**
      * @param array $inputedParams
      *
-     * @return \stdClass
+     * @return array
      * @throws \Eduardokum\LaravelBoleto\Api\Exception\HttpException
      */
     public function retrieveList($inputedParams = [])
@@ -79,13 +80,18 @@ class Inter extends AbstractAPI
                     : 0,
             'size'           =>
                 array_key_exists('size', $inputedParams)
-                    ? $inputedParams['size']
-                    : 50,
+                    ? (($inputedParams['size'] > 5 && $inputedParams['size'] < 20) ? $inputedParams['size'] : 20)
+                    : 20,
         ];
 
-        return $this->get(
-            '/openbanking/v1/certificado/boletos?' . http_build_query($params)
-        );
+        $aRetorno = [];
+        do {
+            $retorno = $this->get(
+                '/openbanking/v1/certificado/boletos?' . http_build_query($params)
+            );
+            array_push($aRetorno, ...$retorno->body->content);
+        } while (!$retorno->body->last);
+        return $aRetorno;
     }
 
     public function retrieveNossoNumero($nossoNumero)
