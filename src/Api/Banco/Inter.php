@@ -90,6 +90,7 @@ class Inter extends AbstractAPI
                 '/openbanking/v1/certificado/boletos?' . http_build_query($params)
             );
             array_push($aRetorno, ...$retorno->body->content);
+            $params['page'] += 1;
         } while (!$retorno->body->last);
         return $aRetorno;
     }
