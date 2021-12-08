@@ -201,7 +201,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
         if ($this->getMulta()) {
             $multa = [
                 'codigoMulta' => 'PERCENTUAL',
-                'data' => $this->getDataVencimento()->addDay()->format('Y-m-d'),
+                'data' => ($this->getDataVencimento()->copy())->addDay()->format('Y-m-d'),
                 'taxa' => Util::nFloat($this->getMulta()),
                 'valor' => 0,
             ];
@@ -216,7 +216,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
         if ($this->getJuros()) {
             $mora = [
                 'codigoMora' => 'TAXAMENSAL',
-                'data' => $this->getDataVencimento()->addDays($this->getJurosApos() > 0 ? $this->getJurosApos() : 1)->format('Y-m-d'),
+                'data' => ($this->getDataVencimento()->copy())->addDays($this->getJurosApos() > 0 ? $this->getJurosApos() : 1)->format('Y-m-d'),
                 'taxa' => Util::nFloat($this->getJuros()),
                 'valor' => 0,
             ];
