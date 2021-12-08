@@ -7,6 +7,7 @@ use Eduardokum\LaravelBoleto\Contracts\Boleto\BoletoAPI as BoletoAPIContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto;
 use Eduardokum\LaravelBoleto\Util;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 class Inter extends AbstractBoleto implements BoletoAPIContract
 {
@@ -81,10 +82,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
      */
     public function getNossoNumeroBoleto()
     {
-        return $this->getAgencia() . Util::modulo11($this->getAgencia()) . '/'
-             . $this->getCarteira() . '/'
-            . substr($this->getNossoNumero(), 0, -1) . '-' . substr($this->getNossoNumero(), -1);
-
+        return $this->getNossoNumero();
     }
 
     /**
@@ -315,6 +313,14 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
     }
     public function setNossoNumero($nossoNumero)
     {
+        $nnClean = substr(Util::onlyNumbers($nossoNumero), -11);
+        if (!Str::startsWith('00019112', $nnClean)) {
+            $nossoNumero = sprintf(
+                '00019/112/%011s-%01s',
+                substr($nnClean, 0, -1),
+                substr($nnClean, -1)
+            );
+        }
         $this->campoNossoNumero = $nossoNumero;
     }
 }
