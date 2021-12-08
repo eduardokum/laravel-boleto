@@ -2,7 +2,6 @@
 namespace Eduardokum\LaravelBoleto\Api;
 
 use Eduardokum\LaravelBoleto\Contracts\Boleto\BoletoAPI as BoletoAPIContract;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 abstract class AbstractAPI
 {
@@ -11,6 +10,10 @@ abstract class AbstractAPI
     protected $certificado = null;
     protected $certificadoChave = null;
     protected $certificadoSenha = null;
+    protected $debug = false;
+    protected $log = null;
+    private $responseHttpCode = null;
+    private $requestInfo = null;
 
     protected $curl = null;
 
@@ -60,7 +63,7 @@ abstract class AbstractAPI
     /**
      * @return string|null
      */
-    protected function getCertificado()
+    public function getCertificado()
     {
         return $this->certificado;
     }
@@ -68,7 +71,7 @@ abstract class AbstractAPI
     /**
      * @return string|null
      */
-    protected function getCertificadoChave()
+    public function getCertificadoChave()
     {
         return $this->certificadoChave;
     }
@@ -76,55 +79,90 @@ abstract class AbstractAPI
     /**
      * @return string|null
      */
-    protected function getCertificadoSenha()
+    public function getCertificadoSenha()
     {
         return $this->certificadoSenha;
     }
 
+    /**
+     * @return $this
+     */
+    public function setDebug()
+    {
+        $this->debug = true;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDebug()
+    {
+        return $this->debug;
+    }
+
+    /**
+     * @return null
+     */
+    public function getLog()
+    {
+        return stream_get_contents($this->log);
+    }
+
+    /**
+     * @return null
+     */
+    protected function getResponseHttpCode()
+    {
+        return $this->responseHttpCode;
+    }
+
+    /**
+     * @param null $responseHttpCode
+     *
+     * @return AbstractAPI
+     */
+    protected function setResponseHttpCode($responseHttpCode)
+    {
+        $this->responseHttpCode = $responseHttpCode;
+        return $this;
+    }
+
+    /**
+     * @return null
+     */
+    protected function getRequestInfo()
+    {
+        return $this->requestInfo;
+    }
+
+    /**
+     * @param null $requestInfo
+     *
+     * @return AbstractAPI
+     */
+    protected function setRequestInfo($requestInfo)
+    {
+        $this->requestInfo = $requestInfo;
+        return $this;
+    }
+
+    /**
+     * @throws Exception\CurlException
+     * @throws Exception\HttpException|Exception\UnauthorizedException
+     */
     protected function post($url, array $post)
     {
         $url = ltrim($url, '/');
-        $this->init([
-            'Accept' => 'application/json',
-            'Content-type' => 'application/json'
-        ]);
-
-        $loop = 0;
-        $error = null;
-        do {
-            $loop ++;
-            curl_setopt($this->curl, CURLOPT_URL, $this->getBaseUrl() . $url);
-            curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'POST');
-            curl_setopt($this->curl, CURLOPT_POSTFIELDS, json_encode($post));
-
-            if (!$exec = curl_exec($this->curl)) {
-                $error = curl_error($this->curl);
-            }
-            $httpCode = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
-            $info = curl_getinfo($this->curl);
-            curl_close($this->curl);
-            $this->curl = null;
-
-            if ($httpCode == 503 && $loop <= 5) {
-                $keep = true;
-            } else {
-                $keep = false;
-            }
-        } while($keep == true);
-
-        if (!$httpCode && $error) {
-            throw new \Exception("Curl error: " . $error);
-        }
-
-        $retorno = $this->parseResponse($exec);
-        if ($httpCode < 200 || $httpCode > 299) {
-            throw new \Eduardokum\LaravelBoleto\Api\Exception\HttpException(
-                $httpCode,
-                $info,
-                $retorno->body_text
-            );
-        }
-        return $retorno;
+        $this->init()
+            ->setHeaders([
+                'Accept' => 'application/json',
+                'Content-type' => 'application/json'
+            ]);
+        curl_setopt($this->curl, CURLOPT_URL, $this->getBaseUrl() . $url);
+        curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt($this->curl, CURLOPT_POSTFIELDS, json_encode($post));
+        return $this->execute();
     }
 
     /**
@@ -132,50 +170,25 @@ abstract class AbstractAPI
      *
      * @return \stdClass
      * @throws Exception\HttpException
+     * @throws Exception\CurlException|Exception\UnauthorizedException
      */
     protected function get($url)
     {
         $url = ltrim($url, '/');
-        $this->init([
-            'Accept' => 'application/json',
-        ]);
+        $this->init()
+            ->setHeaders([
+                'Accept' => 'application/json',
+            ]);
 
-        $loop = 0;
-        $error = null;
-        do {
-            $loop ++;
-            curl_setopt($this->curl, CURLOPT_URL, $this->getBaseUrl() . $url);
-            curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'GET');
-            if (!$exec = curl_exec($this->curl)) {
-                $error = curl_error($this->curl);
-            }
-            $httpCode = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
-            $info = curl_getinfo($this->curl);
-            curl_close($this->curl);
-            $this->curl = null;
-            if ($httpCode == 503 && $loop <= 5) {
-                $keep = true;
-            } else {
-                $keep = false;
-            }
-        } while($keep == true);
-
-        if (!$httpCode && $error) {
-            throw new \Exception("Curl error: " . $error);
-        }
-
-        $retorno = $this->parseResponse($exec);
-        if ($httpCode < 200 || $httpCode > 299) {
-            throw new \Eduardokum\LaravelBoleto\Api\Exception\HttpException(
-                $httpCode,
-                $info,
-                $retorno->body_text
-            );
-        }
-        return $retorno;
+        curl_setopt($this->curl, CURLOPT_URL, $this->getBaseUrl() . $url);
+        curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'GET');
+        return $this->execute();
     }
 
-    private function init($headers = [])
+    /**
+     * @return $this
+     */
+    private function init()
     {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
@@ -190,10 +203,17 @@ abstract class AbstractAPI
         }
         curl_setopt($curl, CURLOPT_CAPATH, "/etc/ssl/certs/");
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'POST');
+        $this->curl = $curl;
+        return $this;
+    }
 
-//        curl_setopt($curl, CURLOPT_VERBOSE, true);
-//        curl_setopt($curl, CURLOPT_STDERR, fopen('php://stderr', 'w'));
-
+    /**
+     * @param array $headers
+     *
+     * @return $this
+     */
+    private function setHeaders($headers = [])
+    {
         $headers = array_unique(
             array_merge(
                 $this->convertHeaders($headers),
@@ -201,8 +221,8 @@ abstract class AbstractAPI
             )
         );
 
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-        $this->curl = $curl;
+        curl_setopt($this->curl, CURLOPT_HTTPHEADER, $headers);
+        return $this;
     }
 
     /**
@@ -246,5 +266,86 @@ abstract class AbstractAPI
         $retorno->body = json_decode($retorno->body_text);
 
         return $retorno;
+    }
+
+    /**
+     * @param $retorno
+     *
+     * @throws Exception\HttpException
+     * @throws Exception\UnauthorizedException
+     */
+    private function handleException($retorno)
+    {
+        if ($this->getResponseHttpCode() < 200 || $this->getResponseHttpCode() > 299) {
+            if (in_array($this->getResponseHttpCode(), [401, 403]) && empty($retorno->body_text)) {
+                throw new Exception\UnauthorizedException(
+                    $this->getBaseUrl(),
+                    $this->getCertificado(),
+                    $this->getCertificadoChave(),
+                    $this->getCertificadoSenha()
+                );
+            }
+
+            throw new Exception\HttpException(
+                $this->getResponseHttpCode(),
+                $this->getRequestInfo(),
+                $retorno->body_text
+            );
+        }
+    }
+
+    /**
+     * @return false|\stdClass
+     * @throws Exception\CurlException
+     * @throws Exception\HttpException
+     * @throws Exception\UnauthorizedException
+     */
+    private function execute()
+    {
+        $loop = 0;
+        if ($this->isDebug()) {
+            ob_start();
+            $this->log = fopen('php://output', 'w');
+            curl_setopt($this->curl, CURLOPT_VERBOSE, true);
+            curl_setopt($this->curl, CURLOPT_STDERR, $this->log);
+        }
+
+        do {
+            if ($exec = curl_exec($this->curl)) {
+                $this->setResponseHttpCode(curl_getinfo($this->curl, CURLINFO_HTTP_CODE));
+                $this->setRequestInfo(curl_getinfo($this->curl));
+                curl_close($this->curl);
+                $this->curl = null;
+
+                if ($this->isDebug()) {
+                    fclose($this->log);
+                    $this->log = ob_get_clean();
+                }
+                $retorno = $this->parseResponse($exec);
+                $this->handleException($retorno);
+                return $retorno;
+            }
+
+            if ($this->isDebug()) {
+                fclose($this->log);
+                $this->log = ob_get_clean();
+            }
+
+            if ($this->getResponseHttpCode() == 503 && $loop < 5) {
+                $keep = true;
+                usleep(200000);  // 0.2 segundos
+            } else {
+                $keep = false;
+            }
+            $loop ++;
+        } while($keep == true);
+
+        $error = curl_error($this->curl);
+        curl_close($this->curl);
+        $this->curl = null;
+        if (!$this->getResponseHttpCode() && $error) {
+            throw new Exception\CurlException($error);
+        }
+        return false;
     }
 }
