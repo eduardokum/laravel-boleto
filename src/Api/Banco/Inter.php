@@ -98,13 +98,13 @@ class Inter extends AbstractAPI
     {
         return $this->get(
             '/openbanking/v1/certificado/boletos/' . $nossoNumero
-        );
+        )->body;
     }
 
     public function getPdfNossoNumero($nossoNumero)
     {
         return $this->get(
             '/openbanking/v1/certificado/boletos/' . $nossoNumero . '/pdf'
-        );
+        )->body;
     }
 }
