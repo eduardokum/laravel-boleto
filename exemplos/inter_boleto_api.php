@@ -43,12 +43,10 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Inter(
 );
 
 $api = new Eduardokum\LaravelBoleto\Api\Banco\Inter(
-    '173699880',
+    '123456789',
     realpath(__DIR__ . '/certs/') . DIRECTORY_SEPARATOR . 'cert.crt',
     realpath(__DIR__ . '/certs/') . DIRECTORY_SEPARATOR . 'key.key'
 );
-
-$boleto = $api->createBoleto($boleto);
 
 $pdf = new Eduardokum\LaravelBoleto\Boleto\Render\Pdf();
 $pdf->addBoleto($boleto);
