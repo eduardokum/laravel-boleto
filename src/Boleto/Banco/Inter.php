@@ -200,10 +200,10 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
         ];
         if ($this->getMulta()) {
             $multa = [
-                'codigoMulta' => 'VALORFIXO',
-                'data' => $this->getDataVencimento()->format('Y-m-d'),
-                'taxa' => 0,
-                'valor' => Util::nFloat($this->getMulta()),
+                'codigoMulta' => 'PERCENTUAL',
+                'data' => $this->getDataVencimento()->addDay()->format('Y-m-d'),
+                'taxa' => Util::nFloat($this->getMulta()),
+                'valor' => 0,
             ];
         }
 
