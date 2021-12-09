@@ -4,6 +4,7 @@ namespace Eduardokum\LaravelBoleto;
 use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Illuminate\Support\Str;
 
 /**
  * Class Util
@@ -905,12 +906,12 @@ final class Util
     public static function fillClass(&$obj, array $params)
     {
         foreach ($params as $param => $value) {
-            $param = str_replace(' ', '', ucwords(str_replace('_', ' ', $param)));
+            $param = Str::camel($param);
             if (method_exists($obj, 'getProtectedFields') && in_array(lcfirst($param), $obj->getProtectedFields())) {
                 continue;
             }
-            if (method_exists($obj, 'set' . ucwords($param))) {
-                $obj->{'set' . ucwords($param)}($value);
+            if (method_exists($obj, 'set' . Str::camel($param))) {
+                $obj->{'set' . Str::camel($param)}($value);
             }
         }
     }

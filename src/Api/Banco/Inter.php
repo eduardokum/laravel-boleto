@@ -8,17 +8,18 @@ use Eduardokum\LaravelBoleto\Util;
 
 class Inter extends AbstractAPI
 {
+    protected $baseUrl = 'https://apis.bancointer.com.br';
 
-    public function __construct($conta, $certificado, $certificadoChave, $certificadoSenha = null)
-    {
-        parent::__construct(
-            'https://apis.bancointer.com.br',
-            $conta,
-            $certificado,
-            $certificadoChave,
-            $certificadoSenha
-        );
-    }
+    /**
+     * Campos que são necessários para o boleto
+     *
+     * @var array
+     */
+    protected $camposObrigatorios = [
+        'conta',
+        'certificado',
+        'certificadoChave',
+    ];
 
     /**
      * @return array

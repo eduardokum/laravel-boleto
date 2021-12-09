@@ -7,7 +7,6 @@ use Eduardokum\LaravelBoleto\Contracts\Boleto\BoletoAPI as BoletoAPIContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto;
 use Eduardokum\LaravelBoleto\Util;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 
 class Inter extends AbstractBoleto implements BoletoAPIContract
 {

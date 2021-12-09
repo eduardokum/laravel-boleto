@@ -42,11 +42,11 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Inter(
     ]
 );
 
-$api = new Eduardokum\LaravelBoleto\Api\Banco\Inter(
-    '123456789',
-    realpath(__DIR__ . '/certs/') . DIRECTORY_SEPARATOR . 'cert.crt',
-    realpath(__DIR__ . '/certs/') . DIRECTORY_SEPARATOR . 'key.key'
-);
+$api = new Eduardokum\LaravelBoleto\Api\Banco\Inter([
+    'conta'            => '123456789',
+    'certificado'      => realpath(__DIR__ . '/certs/') . DIRECTORY_SEPARATOR . 'cert.crt',
+    'certificadoChave' => realpath(__DIR__ . '/certs/') . DIRECTORY_SEPARATOR . 'key.key',
+]);
 
 $pdf = new Eduardokum\LaravelBoleto\Boleto\Render\Pdf();
 $pdf->addBoleto($boleto);

@@ -2,6 +2,8 @@
 namespace Eduardokum\LaravelBoleto\Api;
 
 use Eduardokum\LaravelBoleto\Contracts\Boleto\BoletoAPI as BoletoAPIContract;
+use Eduardokum\LaravelBoleto\Util;
+use Illuminate\Support\Str;
 
 abstract class AbstractAPI
 {
@@ -10,6 +12,10 @@ abstract class AbstractAPI
     protected $certificado = null;
     protected $certificadoChave = null;
     protected $certificadoSenha = null;
+    protected $identificador = null;
+    protected $senha = null;
+    protected $cnpj = null;
+
     protected $debug = false;
     protected $log = null;
     private $responseHttpCode = null;
@@ -17,14 +23,51 @@ abstract class AbstractAPI
 
     protected $curl = null;
 
-    public function __construct($baseUrl, $conta, $certificado, $certificadoChave, $certificadoSenha = null)
+    /**
+     * Campos que são necessários para o boleto
+     *
+     * @var array
+     */
+    protected $camposObrigatorios = [
+        'conta',
+        'cnpj',
+        'certificado',
+        'certificadoChave',
+        'certificadoSenha',
+        'identificador',
+        'senha',
+    ];
+
+    /**
+     * AbstractBoleto constructor.
+     *
+     * @param array $params
+     *
+     * @throws \Exception
+     */
+    public function __construct($params = [])
     {
-        $this->baseUrl = $baseUrl;
-        $this->conta = $conta;
-        $this->certificado = $certificado;
-        $this->certificadoChave = $certificadoChave;
-        $this->certificadoSenha = $certificadoSenha;
+        Util::fillClass($this, $params);
+        $missing = [];
+        foreach ($this->camposObrigatorios as $campo) {
+            $test = call_user_func([$this, 'get' . Str::camel($campo)]);
+            if ($test === '' || is_null($test)) {
+                $missing[] = $campo;
+            }
+        }
+        if (count($missing) > 0) {
+            throw new Exception\MissingDataException($missing);
+        }
     }
+//
+//    public function __construct($baseUrl, $conta, $certificado, $certificadoChave, $certificadoSenha = null)
+//    {
+//        $this->baseUrl = $baseUrl;
+//        $this->conta = $conta;
+//        $this->certificado = $certificado;
+//        $this->certificadoChave = $certificadoChave;
+//        $this->certificadoSenha = $certificadoSenha;
+//    }
 
     abstract protected function headers();
     abstract public function createBoleto(BoletoAPIContract $boleto);
@@ -32,6 +75,21 @@ abstract class AbstractAPI
     abstract public function cancelNossoNumero($nossoNumero, $motivo);
     abstract public function retrieveList($inputedParams = []);
     abstract public function getPdfNossoNumero($nossoNumero);
+
+    public function retrieve(BoletoAPIContract $boleto)
+    {
+        return $this->retrieveNossoNumero($boleto->getNossoNumero());
+    }
+
+    public function cancel(BoletoAPIContract $boleto, $motivo)
+    {
+        return $this->cancelNossoNumero($boleto->getNossoNumero(), $motivo);
+    }
+
+    public function getPdf(BoletoAPIContract $boleto)
+    {
+        return $this->getPdfNossoNumero($boleto->getNossoNumero());
+    }
 
     /**
      * Get API Base URL
@@ -51,23 +109,19 @@ abstract class AbstractAPI
         return $this->conta;
     }
 
-    public function retrieve(BoletoAPIContract $boleto)
+    /**
+     * @param $conta
+     *
+     * @return $this
+     */
+    public function setConta($conta)
     {
-        return $this->retrieveNossoNumero($boleto->getNossoNumero());
-    }
-
-    public function cancel(BoletoAPIContract $boleto, $motivo)
-    {
-        return $this->cancelNossoNumero($boleto->getNossoNumero(), $motivo);
-    }
-
-    public function getPdf(BoletoAPIContract $boleto)
-    {
-        return $this->getPdfNossoNumero($boleto->getNossoNumero());
+        $this->conta = $conta;
+        return $this;
     }
 
     /**
-     * @return string|null
+     * @return null
      */
     public function getCertificado()
     {
@@ -75,7 +129,19 @@ abstract class AbstractAPI
     }
 
     /**
-     * @return string|null
+     * @param null $certificado
+     *
+     * @return AbstractAPI
+     */
+    public function setCertificado($certificado)
+    {
+        $this->certificado = $certificado;
+
+        return $this;
+    }
+
+    /**
+     * @return null
      */
     public function getCertificadoChave()
     {
@@ -83,12 +149,97 @@ abstract class AbstractAPI
     }
 
     /**
-     * @return string|null
+     * @param null $certificadoChave
+     *
+     * @return AbstractAPI
+     */
+    public function setCertificadoChave($certificadoChave)
+    {
+        $this->certificadoChave = $certificadoChave;
+
+        return $this;
+    }
+
+    /**
+     * @return null
      */
     public function getCertificadoSenha()
     {
         return $this->certificadoSenha;
     }
+
+    /**
+     * @param null $certificadoSenha
+     *
+     * @return AbstractAPI
+     */
+    public function setCertificadoSenha($certificadoSenha)
+    {
+        $this->certificadoSenha = $certificadoSenha;
+
+        return $this;
+    }
+
+    /**
+     * @return null
+     */
+    public function getIdentificador()
+    {
+        return $this->identificador;
+    }
+
+    /**
+     * @param null $identificador
+     *
+     * @return AbstractAPI
+     */
+    public function setIdentificador($identificador)
+    {
+        $this->identificador = $identificador;
+
+        return $this;
+    }
+
+    /**
+     * @return null
+     */
+    public function getSenha()
+    {
+        return $this->senha;
+    }
+
+    /**
+     * @param null $senha
+     *
+     * @return AbstractAPI
+     */
+    public function setSenha($senha)
+    {
+        $this->senha = $senha;
+
+        return $this;
+    }
+
+    /**
+     * @return null
+     */
+    public function getCnpj()
+    {
+        return $this->cnpj;
+    }
+
+    /**
+     * @param null $cnpj
+     *
+     * @return AbstractAPI
+     */
+    public function setCnpj($cnpj)
+    {
+        $this->cnpj = $cnpj;
+
+        return $this;
+    }
+
 
     /**
      * @return $this
