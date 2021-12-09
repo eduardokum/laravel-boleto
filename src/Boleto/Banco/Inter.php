@@ -82,7 +82,11 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
      */
     public function getNossoNumeroBoleto()
     {
-        return $this->getNossoNumero();
+        return sprintf(
+                '00019/112/%011s-%01s',
+                substr($this->getNossoNumero(), 0, -1),
+                substr($this->getNossoNumero(), -1)
+            );
     }
 
     /**
@@ -314,13 +318,9 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
     public function setNossoNumero($nossoNumero)
     {
         $nnClean = substr(Util::onlyNumbers($nossoNumero), -11);
-        if (!Str::startsWith('00019112', $nnClean)) {
-            $nossoNumero = sprintf(
-                '00019/112/%011s-%01s',
-                substr($nnClean, 0, -1),
-                substr($nnClean, -1)
-            );
+        if (strlen($nnClean) > 11) {
+            $nnClean = str_replace('00019112', '', $nnClean);
         }
-        $this->campoNossoNumero = $nossoNumero;
+        $this->campoNossoNumero = $nnClean;
     }
 }
