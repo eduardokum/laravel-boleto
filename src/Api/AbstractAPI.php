@@ -56,9 +56,9 @@ abstract class AbstractAPI
         return $this->retrieveNossoNumero($boleto->getNossoNumero());
     }
 
-    public function cancel(BoletoAPIContract $boleto)
+    public function cancel(BoletoAPIContract $boleto, $motivo)
     {
-        return $this->cancelNossoNumero($boleto->getNossoNumero());
+        return $this->cancelNossoNumero($boleto->getNossoNumero(), $motivo);
     }
 
     public function getPdf(BoletoAPIContract $boleto)
