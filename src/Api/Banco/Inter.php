@@ -122,7 +122,7 @@ class Inter extends AbstractAPI
      * @throws \Eduardokum\LaravelBoleto\Api\Exception\HttpException
      * @throws \Eduardokum\LaravelBoleto\Api\Exception\UnauthorizedException
      */
-    public function cancelNossoNumero($nossoNumero, $motivo = 'codigoBaixa')
+    public function cancelNossoNumero($nossoNumero, $motivo = 'ACERTOS')
     {
         $motivosValidos = [
             'ACERTOS',
