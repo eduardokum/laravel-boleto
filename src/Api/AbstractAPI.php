@@ -29,6 +29,7 @@ abstract class AbstractAPI
     abstract protected function headers();
     abstract public function createBoleto(BoletoAPIContract $boleto);
     abstract public function retrieveNossoNumero($nossoNumero);
+    abstract public function cancelNossoNumero($nossoNumero, $motivo);
     abstract public function retrieveList($inputedParams = []);
     abstract public function getPdfNossoNumero($nossoNumero);
 
@@ -53,6 +54,11 @@ abstract class AbstractAPI
     public function retrieve(BoletoAPIContract $boleto)
     {
         return $this->retrieveNossoNumero($boleto->getNossoNumero());
+    }
+
+    public function cancel(BoletoAPIContract $boleto)
+    {
+        return $this->cancelNossoNumero($boleto->getNossoNumero());
     }
 
     public function getPdf(BoletoAPIContract $boleto)

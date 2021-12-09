@@ -3,9 +3,8 @@ namespace Eduardokum\LaravelBoleto\Api\Banco;
 
 use Carbon\Carbon;
 use Eduardokum\LaravelBoleto\Api\AbstractAPI;
-use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\BoletoAPI as BoletoAPIContract;
-use Illuminate\Support\Arr;
+use Eduardokum\LaravelBoleto\Util;
 
 class Inter extends AbstractAPI
 {
@@ -34,8 +33,10 @@ class Inter extends AbstractAPI
     /**
      * @param BoletoAPIContract $boleto
      *
-     * @return AbstractBoleto
+     * @return BoletoAPIContract
+     * @throws \Eduardokum\LaravelBoleto\Api\Exception\CurlException
      * @throws \Eduardokum\LaravelBoleto\Api\Exception\HttpException
+     * @throws \Eduardokum\LaravelBoleto\Api\Exception\UnauthorizedException
      */
     public function createBoleto(BoletoAPIContract $boleto)
     {
@@ -49,7 +50,9 @@ class Inter extends AbstractAPI
      * @param array $inputedParams
      *
      * @return array
+     * @throws \Eduardokum\LaravelBoleto\Api\Exception\CurlException
      * @throws \Eduardokum\LaravelBoleto\Api\Exception\HttpException
+     * @throws \Eduardokum\LaravelBoleto\Api\Exception\UnauthorizedException
      */
     public function retrieveList($inputedParams = [])
     {
@@ -95,6 +98,14 @@ class Inter extends AbstractAPI
         return $aRetorno;
     }
 
+    /**
+     * @param $nossoNumero
+     *
+     * @return mixed
+     * @throws \Eduardokum\LaravelBoleto\Api\Exception\CurlException
+     * @throws \Eduardokum\LaravelBoleto\Api\Exception\HttpException
+     * @throws \Eduardokum\LaravelBoleto\Api\Exception\UnauthorizedException
+     */
     public function retrieveNossoNumero($nossoNumero)
     {
         return $this->get(
@@ -102,6 +113,42 @@ class Inter extends AbstractAPI
         )->body;
     }
 
+    /**
+     * @param        $nossoNumero
+     * @param string $motivo
+     *
+     * @return mixed
+     * @throws \Eduardokum\LaravelBoleto\Api\Exception\CurlException
+     * @throws \Eduardokum\LaravelBoleto\Api\Exception\HttpException
+     * @throws \Eduardokum\LaravelBoleto\Api\Exception\UnauthorizedException
+     */
+    public function cancelNossoNumero($nossoNumero, $motivo = 'codigoBaixa')
+    {
+        $motivosValidos = [
+            'ACERTOS',
+            'PAGODIRETOAOCLIENTE',
+            'SUBISTITUICAO',
+            'FALTADESOLUCAO',
+            'APEDIDODOCLIENTE',
+        ];
+
+        if (!in_array(Util::upper($motivo), $motivosValidos)) {
+            $motivo = 'ACERTOS';
+        }
+        return $this->post(
+            '/openbanking/v1/certificado/boletos/' . $nossoNumero . '/baixas',
+            ['codigoBaixa' => $motivo]
+        )->body;
+    }
+
+    /**
+     * @param $nossoNumero
+     *
+     * @return mixed
+     * @throws \Eduardokum\LaravelBoleto\Api\Exception\CurlException
+     * @throws \Eduardokum\LaravelBoleto\Api\Exception\HttpException
+     * @throws \Eduardokum\LaravelBoleto\Api\Exception\UnauthorizedException
+     */
     public function getPdfNossoNumero($nossoNumero)
     {
         return $this->get(
