@@ -96,7 +96,7 @@ class Inter extends AbstractAPI
             array_push($aRetorno, ...$retorno->body->content);
             $params['page'] += 1;
         } while (!$retorno->body->last);
-        return $aRetorno;
+        return array_map([$this, 'arrayToBoleto'], $aRetorno);
     }
 
     /**
@@ -155,5 +155,19 @@ class Inter extends AbstractAPI
         return $this->get(
             '/openbanking/v1/certificado/boletos/' . $nossoNumero . '/pdf'
         )->body;
+    }
+
+    /**
+     * @param $boleto
+     *
+     * @return \Eduardokum\LaravelBoleto\Boleto\Banco\Inter
+     * @throws \Exception
+     */
+    private function arrayToBoleto($boleto)
+    {
+        return \Eduardokum\LaravelBoleto\Boleto\Banco\Inter::createFromAPI($boleto, [
+            'conta'        => $this->getConta(),
+            'beneficiario' => $this->getBeneficiario(),
+        ]);
     }
 }

@@ -19,6 +19,13 @@ use Illuminate\Support\Str;
  */
 abstract class AbstractBoleto implements BoletoContract
 {
+
+    const SITUACAO_REJEITADO = 'rejeitado';
+    const SITUACAO_ABERTO = 'aberto';
+    const SITUACAO_BAIXADO = 'baixado';
+    const SITUACAO_PAGO = 'pago';
+    const SITUACAO_PROTESTADO = 'protestado';
+
     /**
      * Campos que são necessários para o boleto
      *
@@ -314,6 +321,21 @@ abstract class AbstractBoleto implements BoletoContract
      * @var boolean
      */
     protected $mostrarEnderecoFichaCompensacao = false;
+
+    /**
+     * Situacao do boleto no banco, pago aberto portestado...
+     *
+     * @var string
+     */
+    protected $situacao;
+
+    /**
+     * Data da situacao
+     * Data da situacao
+     *
+     * @var \Carbon\Carbon
+     */
+    protected $dataSituacao;
 
     /**
      * AbstractBoleto constructor.
@@ -1575,6 +1597,96 @@ abstract class AbstractBoleto implements BoletoContract
     public function setMostrarEnderecoFichaCompensacao($mostrarEnderecoFichaCompensacao)
     {
         $this->mostrarEnderecoFichaCompensacao = $mostrarEnderecoFichaCompensacao;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSituacao()
+    {
+        return $this->situacao;
+    }
+
+    /**
+     * @param string $situacao
+     *
+     * @return AbstractBoleto
+     */
+    public function setSituacao($situacao)
+    {
+        $this->situacao = $situacao;
+
+        return $this;
+    }
+
+    /**
+     * @return Carbon
+     */
+    public function getDataSituacao()
+    {
+        return $this->dataSituacao;
+    }
+
+    /**
+     * @param Carbon $dataSituacao
+     *
+     * @return AbstractBoleto
+     */
+    public function setDataSituacao($dataSituacao)
+    {
+        $this->dataSituacao = $dataSituacao;
+
+        return $this;
+    }
+
+    /**
+     * @param $situacao
+     *
+     * @return bool
+     */
+    public function isSituacao($situacao)
+    {
+        return $this->situacao == $situacao;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRejeitado()
+    {
+        return $this->isSituacao(self::SITUACAO_REJEITADO);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAberto()
+    {
+        return $this->isSituacao(self::SITUACAO_ABERTO);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isBaixado()
+    {
+        return $this->isSituacao(self::SITUACAO_BAIXADO);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPago()
+    {
+        return $this->isSituacao(self::SITUACAO_PAGO);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isProtestado()
+    {
+        return $this->isSituacao(self::SITUACAO_PROTESTADO);
     }
 
     /**

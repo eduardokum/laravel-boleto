@@ -2,6 +2,8 @@
 namespace Eduardokum\LaravelBoleto\Api;
 
 use Eduardokum\LaravelBoleto\Contracts\Boleto\BoletoAPI as BoletoAPIContract;
+use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
+use Eduardokum\LaravelBoleto\Pessoa;
 use Eduardokum\LaravelBoleto\Util;
 use Illuminate\Support\Str;
 
@@ -18,10 +20,13 @@ abstract class AbstractAPI
 
     protected $debug = false;
     protected $log = null;
+    protected $beneficiario;
+
+    private $curl = null;
     private $responseHttpCode = null;
     private $requestInfo = null;
+    private $temps = [];
 
-    protected $curl = null;
 
     /**
      * Campos que são necessários para o boleto
@@ -59,6 +64,16 @@ abstract class AbstractAPI
             throw new Exception\MissingDataException($missing);
         }
     }
+
+    /**
+     *
+     */
+    function __destruct() {
+        foreach ($this->temps as $temp) {
+            @unlink($temp);
+        }
+    }
+
 //
 //    public function __construct($baseUrl, $conta, $certificado, $certificadoChave, $certificadoSenha = null)
 //    {
@@ -240,6 +255,25 @@ abstract class AbstractAPI
         return $this;
     }
 
+    /**
+     * @return PessoaContract
+     */
+    public function getBeneficiario()
+    {
+        return is_array($this->beneficiario) || is_null($this->beneficiario) ? new Pessoa() : $this->beneficiario;
+    }
+
+    /**
+     * @param array $beneficiario
+     *
+     * @return AbstractAPI
+     * @throws \Exception
+     */
+    public function setBeneficiario($beneficiario): AbstractAPI
+    {
+        Util::addPessoa($this->beneficiario, $beneficiario);
+        return $this;
+    }
 
     /**
      * @return $this
@@ -263,7 +297,8 @@ abstract class AbstractAPI
      */
     public function getLog()
     {
-        return stream_get_contents($this->log);
+        return $this->log .
+            print_r($this->getRequestInfo(), true);
     }
 
     /**
@@ -347,6 +382,18 @@ abstract class AbstractAPI
      */
     private function init()
     {
+        if ($this->getCertificado()
+            && !file_exists($this->getCertificado())
+            && openssl_x509_read($this->getCertificado())) {
+            $this->setCertificado($this->tempFile($this->getCertificado()));
+        }
+
+        if ($this->getCertificadoChave()
+            && !file_exists($this->getCertificadoChave())
+            && openssl_pkey_get_private($this->getCertificadoChave())) {
+            $this->setCertificadoChave($this->tempFile($this->getCertificadoChave()));
+        }
+
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
@@ -416,7 +463,7 @@ abstract class AbstractAPI
             if ($i === 0) {
                 $retorno->headers['http_code'] = $line;
             } else {
-                list ($key, $value) = explode(': ', $line);
+                [$key, $value] = explode(': ', $line);
                 $retorno->headers[$key] = $value;
             }
         }
@@ -484,6 +531,7 @@ abstract class AbstractAPI
             }
 
             if ($this->isDebug()) {
+
                 fclose($this->log);
                 $this->log = ob_get_clean();
             }
@@ -504,5 +552,18 @@ abstract class AbstractAPI
             throw new Exception\CurlException($error);
         }
         return false;
+    }
+
+    /**
+     * @param $content
+     *
+     * @return false|string
+     */
+    private function tempFile($content)
+    {
+        $tmpFile = tempnam(sys_get_temp_dir(), 'certificate');
+        $this->temps[] = $tmpFile;
+        file_put_contents($tmpFile, $content);
+        return $tmpFile;
     }
 }

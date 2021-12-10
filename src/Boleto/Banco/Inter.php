@@ -274,7 +274,18 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
         }
         $ipte = Util::IPTE2Variveis($boleto->linhaDigitavel);
 
+        $aSituacao = [
+            'PAGO' => AbstractBoleto::SITUACAO_PAGO,
+            'BAIXADO' => AbstractBoleto::SITUACAO_BAIXADO,
+            'VENCIDO' => AbstractBoleto::SITUACAO_ABERTO,
+            'EXPIRADO' => AbstractBoleto::SITUACAO_BAIXADO,
+        ];
+
         return new self(array_merge(array_filter([
+            'situacao'        => Arr::get($aSituacao, $boleto->situacao, $boleto->situacao),
+            'dataSituacao'    => $boleto->dataHoraSituacao
+                ? Carbon::createFromFormat('d/m/Y H:i', $boleto->dataHoraSituacao)
+                : Carbon::now(),
             'nossoNumero'     => $boleto->nossoNumero,
             'valor'           => $boleto->valorNominal,
             'numero'          => $boleto->seuNumero,
