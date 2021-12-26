@@ -321,11 +321,7 @@ final class Util
             'ß' => 'sz', 'þ' => 'thorn', 'º' => '', 'ª' => '', '°' => '',
         );
 
-        return preg_replace(
-           '/[^0-9a-zA-Z !*-+=\/%,.;:]/',
-            '',
-            strtr($string, $normalizeChars)
-        );
+        return preg_replace('/[^0-9a-zA-Z !+=*\-,.;:%@]/', '', strtr($string, $normalizeChars));
     }
 
     /**
