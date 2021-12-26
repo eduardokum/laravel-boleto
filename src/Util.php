@@ -301,7 +301,8 @@ final class Util
     /**
      * Função para limpar acentos de uma string
      *
-     * @param  string $string
+     * @param string $string
+     *
      * @return string
      */
     public static function normalizeChars($string)
@@ -319,7 +320,12 @@ final class Util
 
             'ß' => 'sz', 'þ' => 'thorn', 'º' => '', 'ª' => '', '°' => '',
         );
-        return preg_replace('/[^0-9a-zA-Z !*\-$\(\)\[\]\{\},.;:\/\\#%&@+=]/', '', strtr($string, $normalizeChars));
+
+        return preg_replace(
+           '/[^0-9a-zA-Z !*-+=\/%,.;:]/',
+            '',
+            strtr($string, $normalizeChars)
+        );
     }
 
     /**

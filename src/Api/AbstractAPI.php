@@ -5,6 +5,7 @@ use Eduardokum\LaravelBoleto\Contracts\Boleto\BoletoAPI as BoletoAPIContract;
 use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
 use Eduardokum\LaravelBoleto\Pessoa;
 use Eduardokum\LaravelBoleto\Util;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 abstract class AbstractAPI
@@ -351,6 +352,12 @@ abstract class AbstractAPI
                 'Accept' => 'application/json',
                 'Content-type' => 'application/json'
             ]);
+
+        // clean string
+        $post = $this->arrayMapRecursive(function ($data) {
+            return Util::normalizeChars($data);
+        }, $post);
+
         curl_setopt($this->curl, CURLOPT_URL, $this->getBaseUrl() . $url);
         curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt($this->curl, CURLOPT_POSTFIELDS, json_encode($post));
@@ -565,5 +572,23 @@ abstract class AbstractAPI
         $this->temps[] = $tmpFile;
         file_put_contents($tmpFile, $content);
         return $tmpFile;
+    }
+
+    /**
+     * @param $callback
+     * @param $input
+     *
+     * @return array
+     */
+    private function arrayMapRecursive($callback, $input) {
+        $output= Array();
+        foreach ($input as $key => $data) {
+            if (is_array($data)) {
+                $output[$key] = $this->arrayMapRecursive($callback, $data);
+            } else {
+                $output[$key] = $callback($data);
+            }
+        }
+        return $output;
     }
 }
