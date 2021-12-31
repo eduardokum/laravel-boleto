@@ -331,11 +331,15 @@ abstract class AbstractBoleto implements BoletoContract
 
     /**
      * Data da situacao
-     * Data da situacao
      *
      * @var \Carbon\Carbon
      */
     protected $dataSituacao;
+
+    /**
+     * Valor Recebido
+     */
+    protected $valorRecebido;
 
     /**
      * AbstractBoleto constructor.
@@ -1635,6 +1639,26 @@ abstract class AbstractBoleto implements BoletoContract
     public function setDataSituacao($dataSituacao)
     {
         $this->dataSituacao = $dataSituacao;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getValorRecebido()
+    {
+        return $this->valorRecebido;
+    }
+
+    /**
+     * @param mixed $valorRecebido
+     *
+     * @return AbstractBoleto
+     */
+    public function setValorRecebido($valorRecebido)
+    {
+        $this->valorRecebido = $valorRecebido;
 
         return $this;
     }
