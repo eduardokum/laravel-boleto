@@ -47,13 +47,13 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @var string
      */
-    public $codigoBanco;
+    protected $codigoBanco;
     /**
      * Moeda
      *
      * @var int
      */
-    public $moeda = 9;
+    protected $moeda = 9;
     /**
      * Valor total do boleto
      *
@@ -125,13 +125,13 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @var string
      */
-    public $aceite = 'N';
+    protected $aceite = 'N';
     /**
      * Espécie do documento, geralmente DM (Duplicata Mercantil)
      *
      * @var string
      */
-    public $especieDoc = 'DM';
+    protected $especieDoc = 'DM';
     /**
      * Espécie do documento, coódigo para remessa
      *
@@ -185,31 +185,31 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @var string
      */
-    public $agencia;
+    protected $agencia;
     /**
      * Dígito da agência
      *
      * @var string
      */
-    public $agenciaDv;
+    protected $agenciaDv;
     /**
      * Conta
      *
      * @var string
      */
-    public $conta;
+    protected $conta;
     /**
      * Dígito da conta
      *
      * @var string
      */
-    public $contaDv;
+    protected $contaDv;
     /**
      * Modalidade de cobrança do cliente, geralmente Cobrança Simples ou Registrada
      *
      * @var string
      */
-    public $carteira;
+    protected $carteira;
     /**
      * Define as carteiras disponíveis para cada banco
      *
@@ -245,7 +245,7 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @var array
      */
-    public $descricaoDemonstrativo;
+    protected $descricaoDemonstrativo;
     /**
      * Linha de local de pagamento
      *
@@ -257,13 +257,13 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @var array
      */
-    public $instrucoes = ['Pagar até a data do vencimento.'];
+    protected $instrucoes = ['Pagar até a data do vencimento.'];
     /**
      * Array com as linhas de instruções de impressão
      *
      * @var array
      */
-    public $instrucoes_impressao = [];
+    protected $instrucoes_impressao = [];
     /**
      * Localização do logotipo do banco, referente ao diretório de imagens
      *
@@ -275,7 +275,7 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @var array
      */
-    protected $variaveis_adicionais = [];
+    public $variaveis_adicionais = [];
     /**
      * Cache do campo livre para evitar processamento desnecessário.
      *
@@ -287,21 +287,21 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @var string
      */
-    public $campoNossoNumero;
+    protected $campoNossoNumero;
 
     /**
      * Cache da linha digitabel para evitar processamento desnecessário.
      *
      * @var string
      */
-    public $campoLinhaDigitavel;
+    protected $campoLinhaDigitavel;
 
     /**
      * Cache do codigo de barras para evitar processamento desnecessário.
      *
      * @var string
      */
-    public $campoCodigoBarras;
+    protected $campoCodigoBarras;
 
     /**
      * Status do boleto, se vai criar alterar ou baixa no banco.
@@ -330,6 +330,7 @@ abstract class AbstractBoleto implements BoletoContract
     public $situacao;
 
     /**
+     * Data da situacao
      * Data da situacao
      *
      * @var \Carbon\Carbon
