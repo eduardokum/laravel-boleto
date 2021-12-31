@@ -47,91 +47,91 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @var string
      */
-    protected $codigoBanco;
+    public $codigoBanco;
     /**
      * Moeda
      *
      * @var int
      */
-    protected $moeda = 9;
+    public $moeda = 9;
     /**
      * Valor total do boleto
      *
      * @var float
      */
-    protected $valor;
+    public $valor;
     /**
      * Desconto total do boleto
      *
      * @var float
      */
-    protected $desconto;
+    public $desconto;
     /**
      * Valor para multa
      *
      * @var float
      */
-    protected $multa = 0;
+    public $multa = 0;
     /**
      * Valor para mora juros
      *
      * @var float
      */
-    protected $juros = 0;
+    public $juros = 0;
     /**
      * Dias apos vencimento do juros
      *
      * @var int
      */
-    protected $jurosApos = 0;
+    public $jurosApos = 0;
     /**
      * Dias para protesto
      *
      * @var integer
      */
-    protected $diasProtesto = 0;
+    public $diasProtesto = 0;
     /**
      * Dias para baixa automática
      *
      * @var integer
      */
-    protected $diasBaixaAutomatica;
+    public $diasBaixaAutomatica;
     /**
      * Data do documento
      *
      * @var \Carbon\Carbon
      */
-    protected $dataDocumento;
+    public $dataDocumento;
     /**
      * Data de emissão
      *
      * @var \Carbon\Carbon
      */
-    protected $dataProcessamento;
+    public $dataProcessamento;
     /**
      * Data de vencimento
      *
      * @var \Carbon\Carbon
      */
-    protected $dataVencimento;
+    public $dataVencimento;
     /**
      * Data de limite de desconto
      *
      * @var \Carbon\Carbon
      */
-    protected $dataDesconto;
+    public $dataDesconto;
     /**
      * Campo de aceite
      *
      * @var string
      */
-    protected $aceite = 'N';
+    public $aceite = 'N';
     /**
      * Espécie do documento, geralmente DM (Duplicata Mercantil)
      *
      * @var string
      */
-    protected $especieDoc = 'DM';
+    public $especieDoc = 'DM';
     /**
      * Espécie do documento, coódigo para remessa
      *
@@ -155,19 +155,19 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @var int
      */
-    protected $numeroDocumento;
+    public $numeroDocumento;
     /**
      * Define o número definido pelo cliente para compor o Nosso Número
      *
      * @var int
      */
-    protected $numero;
+    public $numero;
     /**
      * Define o número definido pelo cliente para controle da remessa
      *
      * @var string
      */
-    protected $numeroControle;
+    public $numeroControle;
     /**
      * Campo de uso do banco no boleto
      *
@@ -179,37 +179,37 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @var string
      */
-    protected $chaveNfe;
+    public $chaveNfe;
     /**
      * Agência
      *
      * @var string
      */
-    protected $agencia;
+    public $agencia;
     /**
      * Dígito da agência
      *
      * @var string
      */
-    protected $agenciaDv;
+    public $agenciaDv;
     /**
      * Conta
      *
      * @var string
      */
-    protected $conta;
+    public $conta;
     /**
      * Dígito da conta
      *
      * @var string
      */
-    protected $contaDv;
+    public $contaDv;
     /**
      * Modalidade de cobrança do cliente, geralmente Cobrança Simples ou Registrada
      *
      * @var string
      */
-    protected $carteira;
+    public $carteira;
     /**
      * Define as carteiras disponíveis para cada banco
      *
@@ -227,25 +227,25 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @var PessoaContract
      */
-    protected $beneficiario;
+    public $beneficiario;
     /**
      * Entidade pagadora (de quem se cobra o boleto)
      *
      * @var PessoaContract
      */
-    protected $pagador;
+    public $pagador;
     /**
      * Entidade sacador avalista
      *
      * @var PessoaContract
      */
-    protected $sacadorAvalista;
+    public $sacadorAvalista;
     /**
      * Array com as linhas do demonstrativo (descrição do pagamento)
      *
      * @var array
      */
-    protected $descricaoDemonstrativo;
+    public $descricaoDemonstrativo;
     /**
      * Linha de local de pagamento
      *
@@ -257,13 +257,13 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @var array
      */
-    protected $instrucoes = ['Pagar até a data do vencimento.'];
+    public $instrucoes = ['Pagar até a data do vencimento.'];
     /**
      * Array com as linhas de instruções de impressão
      *
      * @var array
      */
-    protected $instrucoes_impressao = [];
+    public $instrucoes_impressao = [];
     /**
      * Localização do logotipo do banco, referente ao diretório de imagens
      *
@@ -275,7 +275,7 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @var array
      */
-    public $variaveis_adicionais = [];
+    protected $variaveis_adicionais = [];
     /**
      * Cache do campo livre para evitar processamento desnecessário.
      *
@@ -287,28 +287,28 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @var string
      */
-    protected $campoNossoNumero;
+    public $campoNossoNumero;
 
     /**
      * Cache da linha digitabel para evitar processamento desnecessário.
      *
      * @var string
      */
-    protected $campoLinhaDigitavel;
+    public $campoLinhaDigitavel;
 
     /**
      * Cache do codigo de barras para evitar processamento desnecessário.
      *
      * @var string
      */
-    protected $campoCodigoBarras;
+    public $campoCodigoBarras;
 
     /**
      * Status do boleto, se vai criar alterar ou baixa no banco.
      *
      * @var int
      */
-    protected $status = BoletoContract::STATUS_REGISTRO;
+    public $status = BoletoContract::STATUS_REGISTRO;
 
     /**
      * @var int
@@ -327,19 +327,19 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @var string
      */
-    protected $situacao;
+    public $situacao;
 
     /**
      * Data da situacao
      *
      * @var \Carbon\Carbon
      */
-    protected $dataSituacao;
+    public $dataSituacao;
 
     /**
      * Valor Recebido
      */
-    protected $valorRecebido;
+    public $valorRecebido;
 
     /**
      * AbstractBoleto constructor.

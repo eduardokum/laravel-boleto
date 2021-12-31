@@ -282,7 +282,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
         ];
 
         return new self(array_merge(array_filter([
-            'valorRecebido'   => $boleto->valorTotalRecebimento ?: 0,
+            'valorRecebido'   => isset($boleto->valorTotalRecebimento) ? $boleto->valorTotalRecebimento : null,
             'situacao'        => Arr::get($aSituacao, $boleto->situacao, $boleto->situacao),
             'dataSituacao'    => $boleto->dataHoraSituacao
                 ? Carbon::createFromFormat('d/m/Y H:i', $boleto->dataHoraSituacao)
