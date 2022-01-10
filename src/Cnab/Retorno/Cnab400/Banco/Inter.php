@@ -80,8 +80,8 @@ class Inter extends AbstractRetorno implements RetornoCnab400
     {
         if ($this->count() == 1) {
             $this->getHeader()
-                ->setAgencia($this->rem(25, 29, $detalhe))
-                ->setConta($this->rem(30, 36, $detalhe))
+                ->setAgencia($this->rem(24, 27, $detalhe))
+                ->setConta($this->rem(28, 36, $detalhe))
                 ->setContaDv($this->rem(37, 37, $detalhe));
         }
 
