@@ -114,7 +114,7 @@ class Inter extends AbstractRemessa implements RemessaContract
         $this->add(160, 160, $boleto->getJuros() > 0 ? 2 : 0);
         $this->add(161, 173, Util::formatCnab('9', $boleto->getJuros(), 13, 2));
         $this->add(174, 177, '0000');
-        $this->add(178, 183, $boleto->getJuros() > 0 ? ($boleto->getDataVencimento()->copy())->addDays($boleto->getJurosApos() > 0 ? $boleto->getJurosApos() : 1)->format('Y-m-d') : '000000');
+        $this->add(178, 183, $boleto->getJuros() > 0 ? ($boleto->getDataVencimento()->copy())->addDays($boleto->getJurosApos() > 0 ? $boleto->getJurosApos() : 1)->format('dmy') : '000000');
         $this->add(184, 184, $boleto->getDesconto() > 0 ? 1 : 0);
         $this->add(185, 197, Util::formatCnab('9', $boleto->getDesconto() > 0 ? $boleto->getDesconto() : 0, 13, 2));
         $this->add(198, 201, '0000');
