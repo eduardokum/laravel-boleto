@@ -95,7 +95,7 @@ class Inter extends AbstractRetorno implements RetornoCnab400
             ->setDataOcorrencia($this->rem(92, 97, $detalhe))
             ->setDataVencimento($this->rem(119, 124, $detalhe))
             ->setDataCredito($this->rem(173, 178, $detalhe))
-            ->setValor(Util::nFloat($this->rem(125, 137, $detalhe)/100, 2, false));
+            ->setValor(Util::nFloat(((float) $this->rem(125, 137, $detalhe))/100, 2, false));
 
         if ($d->hasOcorrencia('06')) {
             $this->totais['liquidados']++;
@@ -109,7 +109,8 @@ class Inter extends AbstractRetorno implements RetornoCnab400
         } elseif ($d->hasOcorrencia('03')) {
             $this->totais['erros']++;
             $error = Util::appendStrings(
-                'Entrada rejeitada'
+                'Entrada rejeitada',
+                $this->rem(241, 380, $detalhe)
             );
             $d->setError($error);
         } else {
