@@ -95,10 +95,10 @@ class Inter extends AbstractRemessa implements RemessaContract
         $this->add(21, 37, '1120001' . Util::formatCnab('9', $this->getConta(), 10));
         $this->add(38, 62, Util::formatCnab('X', $boleto->getNumeroControle(), 25)); // numero de controle
         $this->add(63, 65, '000');
-        $this->add(66, 66, $boleto->getMulta() > 0 ? '1' : '0');
-        $this->add(67, 79, Util::formatCnab('9', $boleto->getMulta() > 0 ? $boleto->getMulta() : '0', 13, 2));
-        $this->add(80, 83, '000');
-        $this->add(84, 89, $boleto->getMulta() > 0 ? $boleto->getDataVencimento()->format('dmy') : '000000');
+        $this->add(66, 66, $boleto->getMulta() > 0 ? '2' : '0');
+        $this->add(67, 79, Util::formatCnab('9', 0, 13, 2));
+        $this->add(80, 83, Util::formatCnab('9', $boleto->getMulta(), 4, 2));
+        $this->add(84, 89, $boleto->getMulta() > 0 ? ($boleto->getDataVencimento()->copy())->addDay()->format('dmy') : '000000');
         $this->add(90, 100, Util::formatCnab('9', '0', 11));
         $this->add(101, 108, '');
         $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
