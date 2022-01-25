@@ -58,6 +58,8 @@ abstract class AbstractBoleto implements BoletoContract
      * @var float
      */
     protected $desconto;
+    protected $desconto2;
+    protected $desconto3;
     /**
      * Valor para multa
      *
@@ -112,6 +114,8 @@ abstract class AbstractBoleto implements BoletoContract
      * @var \Carbon\Carbon
      */
     protected $dataDesconto;
+    protected $dataDesconto2;
+    protected $dataDesconto3;
     /**
      * Campo de aceite
      *
@@ -333,6 +337,12 @@ abstract class AbstractBoleto implements BoletoContract
         // Marca a data de desconto
         if (!$this->getDataDesconto()) {
             $this->setDataDesconto($this->getDataVencimento());
+        }
+        if (!$this->getDataDesconto2()) {
+            $this->setDataDesconto($this->getDataVencimento2());
+        }
+        if (!$this->getDataDesconto3()) {
+            $this->setDataDesconto($this->getDataVencimento3());
         }
     }
 
@@ -579,6 +589,18 @@ abstract class AbstractBoleto implements BoletoContract
 
         return $this;
     }
+    public function setDataDesconto2(Carbon $dataDesconto)
+    {
+        $this->dataDesconto2 = $dataDesconto;
+
+        return $this;
+    }
+    public function setDataDesconto3(Carbon $dataDesconto)
+    {
+        $this->dataDesconto3 = $dataDesconto;
+
+        return $this;
+    }
 
     /**
      * Retorna a data de limite de desconto
@@ -588,6 +610,14 @@ abstract class AbstractBoleto implements BoletoContract
     public function getDataDesconto()
     {
         return $this->dataDesconto;
+    }
+    public function getDataDesconto2()
+    {
+        return $this->dataDesconto2;
+    }
+    public function getDataDesconto3()
+    {
+        return $this->dataDesconto3;
     }
 
     /**
@@ -1070,6 +1100,18 @@ abstract class AbstractBoleto implements BoletoContract
 
         return $this;
     }
+    public function setDesconto2($desconto)
+    {
+        $this->desconto2 = Util::nFloat($desconto, 2, false);
+
+        return $this;
+    }
+    public function setDesconto3($desconto)
+    {
+        $this->desconto3 = Util::nFloat($desconto, 2, false);
+
+        return $this;
+    }
 
     /**
      * Retorna o desconto total do boleto (incluindo taxas)
@@ -1079,6 +1121,14 @@ abstract class AbstractBoleto implements BoletoContract
     public function getDesconto()
     {
         return Util::nFloat($this->desconto, 2, false);
+    }
+    public function getDesconto2()
+    {
+        return Util::nFloat($this->desconto2, 2, false);
+    }
+    public function getDesconto3()
+    {
+        return Util::nFloat($this->desconto3, 2, false);
     }
 
     /**
@@ -1631,8 +1681,12 @@ abstract class AbstractBoleto implements BoletoContract
                 'data_processamento' => $this->getDataProcessamento(),
                 'data_documento' => $this->getDataDocumento(),
                 'data_desconto' => $this->getDataDesconto(),
+                'data_desconto2' => $this->getDataDesconto2(),
+                'data_desconto3' => $this->getDataDesconto3(),
                 'valor' => Util::nReal($this->getValor(), 2, false),
                 'desconto' => Util::nReal($this->getDesconto(), 2, false),
+                'desconto2' => Util::nReal($this->getDesconto2(), 2, false),
+                'desconto3' => Util::nReal($this->getDesconto3(), 2, false),
                 'multa' => Util::nReal($this->getMulta(), 2, false),
                 'juros' => Util::nReal($this->getJuros(), 2, false),
                 'juros_apos' => $this->getJurosApos(),

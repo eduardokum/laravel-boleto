@@ -221,7 +221,7 @@ class Caixa extends AbstractRemessa implements RemessaContract
         $this->add(154, 154, '0');
         $this->add(155, 169, '000000000000000');
         $this->add(170, 209, '');
-        $this->add(210, 212, '000');
+        $this->add(210, 212, '');
         $this->add(213, 232, '');
         $this->add(233, 240, '');
 
@@ -256,13 +256,13 @@ class Caixa extends AbstractRemessa implements RemessaContract
         if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
             $this->add(16, 17, self::OCORRENCIA_ALT_OUTROS_DADOS);
         }
-        $this->add(18, 18, '0');
-        $this->add(19, 26, '00000000');
-        $this->add(27, 41, '000000000000000');
-        $this->add(42, 42, '0');
-        $this->add(43, 50, '00000000');
-        $this->add(51, 65, '000000000000000');
-        $this->add(66, 66, $boleto->getMulta() > 0 ? '2' : '0'); //0 = ISENTO | 1 = VALOR FIXO | 2 = PERCENTUAL
+        $this->add(18, 18, $boleto->getDesconto2() > 0 ? '1' : '0');
+        $this->add(19, 26, $boleto->getDesconto2() > 0 ? $boleto->getDataDesconto2()->format('dmY') : '00000000');
+        $this->add(27, 41, Util::formatCnab('9', $boleto->getDesconto2(), 15, 2));
+        $this->add(42, 42, $boleto->getDesconto3() > 0 ? '1' : '0');
+        $this->add(43, 50, $boleto->getDesconto3() > 0 ? $boleto->getDataDesconto3()->format('dmY') : '00000000');
+        $this->add(51, 65, Util::formatCnab('9', $boleto->getDesconto3(), 15, 2));
+        $this->add(66, 66, $boleto->getMulta() > 0 ? '1' : '0'); //0 = ISENTO | 1 = VALOR FIXO | 2 = PERCENTUAL
         $this->add(67, 74, $boleto->getDataVencimento()->format('dmY'));
         $this->add(75, 89, Util::formatCnab('9', $boleto->getMulta(), 15, 2));  //2,20 = 0000000000220
         $this->add(90, 240, '');
@@ -299,7 +299,7 @@ class Caixa extends AbstractRemessa implements RemessaContract
         $this->add(144, 151, $this->getDataRemessa('dmY'));
         $this->add(152, 157, date('His'));
         $this->add(158, 163, Util::formatCnab('9', $this->getIdremessa(), 6));
-        $this->add(164, 166, '101');
+        $this->add(164, 166, '107');
         $this->add(167, 171, '00000');
         $this->add(172, 191, '');
         $this->add(192, 211, Util::formatCnab('X','REMESSA-PRODUCAO', 20));
@@ -325,7 +325,7 @@ class Caixa extends AbstractRemessa implements RemessaContract
         $this->add(9, 9, 'R');
         $this->add(10, 11, '01');
         $this->add(12, 13, '00');
-        $this->add(14, 16, '060');
+        $this->add(14, 16, '067');
         $this->add(17, 17, '');
         $this->add(18, 18, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? 2 : 1);
         $this->add(19, 33, Util::formatCnab('9', Util::onlyNumbers($this->getBeneficiario()->getDocumento()), 15));
@@ -333,12 +333,8 @@ class Caixa extends AbstractRemessa implements RemessaContract
         $this->add(41, 53, Util::formatCnab('9', 0, 13));
         $this->add(54, 58, Util::formatCnab('9', $this->getAgencia(), 5));
         $this->add(59, 59, CalculoDV::cefAgencia($this->getAgencia()));
-        if(strlen($this->getCodigoCliente()) == 7) {
-            $this->add(60, 65, '000000');
-        } else {
-            $this->add(60, 65, Util::formatCnab('9', Util::onlyNumbers($this->getCodigoCliente()), 6));
-        }
-        $this->add(66, 72, '0000000');
+        $this->add(60, 66, Util::formatCnab('9', Util::onlyNumbers($this->getCodigoCliente()), 7));
+        $this->add(67, 72, '000000');
         $this->add(73, 73, '0');
         $this->add(74, 103, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(104, 183, '');
