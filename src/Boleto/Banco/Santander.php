@@ -26,7 +26,7 @@ class Santander extends AbstractBoleto implements BoletoContract
      *
      * @var array
      */
-    protected $carteiras = ['101', '201'];
+    protected $carteiras = ['101', '102', '104', '201'];
     /**
      * Espécie do documento, código para remessa 240
      *
@@ -72,8 +72,9 @@ class Santander extends AbstractBoleto implements BoletoContract
      * @var array
      */
     protected $carteirasNomes = [
-        '101' => 'Cobrança Simples ECR',
+        '101' => 'Cobrança Simples RCR',
         '102' => 'Cobrança Simples CSR',
+        '104' => 'Cobrança Eletrônica COM Registro',
         '201' => 'Penhor'
     ];
     /**
@@ -124,6 +125,9 @@ class Santander extends AbstractBoleto implements BoletoContract
             case '201':
                 $carteira = '1';
                 break;
+            case '104':
+                $carteira = '1';
+                break;
             default:
                 $carteira = $this->carteira;
                 break;
@@ -167,6 +171,8 @@ class Santander extends AbstractBoleto implements BoletoContract
     {
         switch ($carteira) {
             case '1':
+                $carteira = '104';
+                break;
             case '5':
                 $carteira = '101';
                 break;
