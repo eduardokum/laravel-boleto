@@ -127,7 +127,7 @@ class Html implements HtmlContract
                 $barcodes[$f] = $texto;
             }
         }
-        
+
         // Guarda inicial
         $retorno = '<div class="barcode">' .
             '<div class="black thin"></div>' .

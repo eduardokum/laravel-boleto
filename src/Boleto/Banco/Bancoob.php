@@ -25,12 +25,6 @@ class Bancoob extends AbstractBoleto implements BoletoContract
      */
     protected $carteiras = ['1','3'];
     /**
-     * Linha de local de pagamento
-     *
-     * @var string
-     */
-    protected $localPagamento = 'Pagável Preferencialmente no Sicoob';
-    /**
      * Espécie do documento, código para remessa do CNAB240
      * @var string
      */

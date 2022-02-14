@@ -1,5 +1,4 @@
 <?php
-
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
 use Carbon\Carbon;
@@ -7,11 +6,9 @@ use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Detalhe as DetalheCo
 use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
 use Eduardokum\LaravelBoleto\MagicTrait;
 use Eduardokum\LaravelBoleto\Util;
-use Exception;
 
 class Detalhe implements DetalheContract
 {
-
     use MagicTrait;
 
     /**
@@ -81,16 +78,6 @@ class Detalhe implements DetalheContract
     /**
      * @var string
      */
-    protected $valorOutrasDespesas;
-
-    /**
-     * @var string
-     */
-    protected $valorOutrosCreditos;
-
-    /**
-     * @var string
-     */
     protected $valorIOF;
     /**
      * @var string
@@ -139,7 +126,7 @@ class Detalhe implements DetalheContract
     {
         $ocorrencias = func_get_args();
 
-        if (count($ocorrencias) == 0 && ! empty($this->getOcorrencia())) {
+        if (count($ocorrencias) == 0 && !empty($this->getOcorrencia())) {
             return true;
         }
 
@@ -299,7 +286,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @param        $dataVencimento
+     * @param $dataVencimento
      *
      * @param string $format
      *
@@ -325,7 +312,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @param        $dataCredito
+     * @param $dataCredito
      *
      * @param string $format
      *
@@ -351,7 +338,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @param        $dataOcorrencia
+     * @param $dataOcorrencia
      *
      * @param string $format
      *
@@ -525,46 +512,6 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @return string
-     */
-    public function getValorOutrasDespesas()
-    {
-        return $this->valorOutrasDespesas;
-    }
-
-    /**
-     * @param string $valorOutrasDespesas
-     *
-     * @return $this
-     */
-    public function setValorOutrasDespesas($valorOutrasDespesas)
-    {
-        $this->valorOutrasDespesas = $valorOutrasDespesas;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getValorOutrosCreditos()
-    {
-        return $this->valorOutrosCreditos;
-    }
-
-    /**
-     * @param string $valorOutrosCreditos
-     *
-     * @return $this
-     */
-    public function setValorOutrosCreditos($valorOutrosCreditos)
-    {
-        $this->valorOutrosCreditos = $valorOutrosCreditos;
-
-        return $this;
-    }
-
-    /**
      * @return PessoaContract
      */
     public function getPagador()
@@ -576,12 +523,11 @@ class Detalhe implements DetalheContract
      * @param $pagador
      *
      * @return $this
-     * @throws Exception
+     * @throws \Exception
      */
     public function setPagador($pagador)
     {
         Util::addPessoa($this->pagador, $pagador);
-
         return $this;
     }
 
@@ -632,24 +578,24 @@ class Detalhe implements DetalheContract
     public function setError($error)
     {
         $this->ocorrenciaTipo = self::OCORRENCIA_ERRO;
-        $this->error          = $error;
+        $this->error = $error;
 
         return $this;
     }
-
-    /**
-     * @return string
-     */
+    
+     /**
+  * @return string
+  */
     public function getRejeicao()
     {
         return $this->rejeicao;
     }
 
     /**
-     * @param string $rejeicao
-     *
-     * @return Detalhe
-     */
+      * @param string $ocorrenciaTipo
+      *
+      * @return Detalhe
+      */
     public function setRejeicao($rejeicao)
     {
         $this->rejeicao = $rejeicao;

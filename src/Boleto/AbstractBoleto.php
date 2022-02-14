@@ -111,7 +111,11 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @var \Carbon\Carbon
      */
-    protected $dataDesconto;
+     protected $dataDesconto;
+
+     // modificado por Anderson
+     protected $dataLimiteParaRecebimento;
+
     /**
      * Campo de aceite
      *
@@ -573,12 +577,12 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @return AbstractBoleto
      */
-    public function setDataDesconto(Carbon $dataDesconto)
-    {
-        $this->dataDesconto = $dataDesconto;
+     public function setDataDesconto(Carbon $dataDesconto)
+     {
+         $this->dataDesconto = $dataDesconto;
 
-        return $this;
-    }
+         return $this;
+     }
 
     /**
      * Retorna a data de limite de desconto
@@ -589,6 +593,21 @@ abstract class AbstractBoleto implements BoletoContract
     {
         return $this->dataDesconto;
     }
+
+    // modificado por Anderson
+    public function setDataLimiteParaRecebimento(Carbon $dataLimiteParaRecebimento)
+    {
+        $this->dataLimiteParaRecebimento = $dataLimiteParaRecebimento;
+
+        return $this;
+    }
+
+    // modificado por Anderson
+    public function getDataLimiteParaRecebimento()
+    {
+        return $this->dataLimiteParaRecebimento;
+    }
+
 
     /**
      * Define a data do documento
@@ -613,7 +632,7 @@ abstract class AbstractBoleto implements BoletoContract
     {
         return $this->dataDocumento;
     }
-	
+
    /**
      * Retorna a data do juros após
      *

@@ -142,7 +142,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(119, 126, $boleto->getJurosApos() == 0 ? '00000000' :
                $boleto->getDataVencimentoApos()->format('dmY'));
         $this->add(127, 141, Util::formatCnab('9', $boleto->getMoraDia(), 15, 2)); //Valor da mora/dia ou Taxa mensal
-        $this->add(142, 142, $boleto->getDesconto() > 0 ? '1' : '0');
+        $this->add(142, 142, '1'); // '1' = Valor Fixo Até a Data Informada
         $this->add(143, 150, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmY') : '00000000');
         $this->add(151, 165, Util::formatCnab('9', $boleto->getDesconto(), 15, 2));
         $this->add(166, 180, Util::formatCnab('9', 0, 15, 2));
