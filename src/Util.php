@@ -109,6 +109,7 @@ final class Util
         '082' => 'Banco Topázio S.A.',
         'M20' => 'Banco Toyota do Brasil S.A.',
         '634' => 'Banco Triângulo S.A.',
+        '136' => 'Banco Unicred do Brasil',
         'M14' => 'Banco Volkswagen S.A.',
         'M23' => 'Banco Volvo (Brasil) S.A.',
         '655' => 'Banco Votorantim S.A.',
