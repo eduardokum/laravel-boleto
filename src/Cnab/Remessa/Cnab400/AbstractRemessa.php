@@ -8,12 +8,15 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
 {
     protected $tamanho_linha = 400;
 
+    protected $tamanhos_linha = [];
+
     /**
      * Inicia a edição do header
      */
     protected function iniciaHeader()
     {
         $this->aRegistros[self::HEADER] = array_fill(0, $this->tamanho_linha, ' ');
+        $this->tamanhos_linha[self::HEADER] = $this->tamanho_linha;
         $this->atual = &$this->aRegistros[self::HEADER];
     }
 
@@ -23,6 +26,7 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
     protected function iniciaTrailer()
     {
         $this->aRegistros[self::TRAILER] = array_fill(0, $this->tamanho_linha, ' ');
+        $this->tamanhos_linha[self::TRAILER] = $this->tamanho_linha;
         $this->atual = &$this->aRegistros[self::TRAILER];
     }
 
@@ -53,6 +57,18 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
     {
         $this->iRegistros++;
         $this->aRegistros[self::DETALHE][$this->iRegistros] = array_fill(0, $this->tamanho_linha, ' ');
+        $this->tamanhos_linha[self::DETALHE][$this->iRegistros] = $this->tamanho_linha;
+        $this->atual = &$this->aRegistros[self::DETALHE][$this->iRegistros];
+    }
+
+    /**
+     * Inicia uma nova linha de detalhe extendido e marca com a atual de edição
+     */
+    protected function iniciaDetalheExtendido($extencao = 44)
+    {
+        $this->iRegistros++;
+        $this->aRegistros[self::DETALHE][$this->iRegistros] = array_fill(0, $this->tamanho_linha + $extencao, ' ');
+        $this->tamanhos_linha[self::DETALHE][$this->iRegistros] = $this->tamanho_linha + $extencao;
         $this->atual = &$this->aRegistros[self::DETALHE][$this->iRegistros];
     }
 
@@ -77,7 +93,12 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
         $stringRemessa .= $this->valida($this->getHeader()) . $this->fimLinha;
 
         foreach ($this->getDetalhes() as $i => $detalhe) {
-            $stringRemessa .= $this->valida($detalhe) . $this->fimLinha;
+            if ($this->tamanhos_linha[self::DETALHE][$i] != 400) {
+                $stringRemessa .= $this->valida($detalhe, $this->tamanhos_linha[self::DETALHE][$i] - 400) . $this->fimLinha;
+            } else {
+                $stringRemessa .= $this->valida($detalhe) . $this->fimLinha;
+            }
+
         }
 
         $this->trailer();
@@ -86,3 +107,4 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
         return Encoding::toUTF8($stringRemessa);
     }
 }
+

@@ -99,7 +99,7 @@ interface Boleto
      * @return \Carbon\Carbon
      */
     public function getDataVencimento();
-    
+
     /**
      * @return \Carbon\Carbon
      */
@@ -255,6 +255,11 @@ interface Boleto
     /**
      * @return mixed
      */
+    public function getChaveNfe();
+
+    /**
+     * @return mixed
+     */
     public function getStatus();
 
     /**
@@ -268,8 +273,8 @@ interface Boleto
     public function baixarBoleto();
 
     /**
-    * @return mixed
-    */
+     * @return mixed
+     */
     public function alterarDataDeVencimento();
 
     /**
@@ -299,3 +304,4 @@ interface Boleto
      */
     public function getMostrarEnderecoFichaCompensacao();
 }
+

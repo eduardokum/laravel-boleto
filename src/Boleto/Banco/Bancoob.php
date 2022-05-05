@@ -167,7 +167,7 @@ class Bancoob extends AbstractBoleto implements BoletoContract
      * @return string
      */
     public function getAgenciaCodigoBeneficiario(){
-        return $this->getAgencia() . ' / ' . $this->getConvenio();
+        return sprintf('%s / %s',$this->getAgencia(), $this->getConvenio());
     }
     
 }

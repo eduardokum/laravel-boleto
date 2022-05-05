@@ -112,7 +112,7 @@ class Caixa  extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @return $this
+     * @return Caixa
      * @throws \Exception
      */
     protected function header()
@@ -147,13 +147,17 @@ class Caixa  extends AbstractRemessa implements RemessaContract
     /**
      * @param BoletoContract $boleto
      *
-     * @return $this
+     * @return Caixa
      * @throws \Exception
      */
     public function addBoleto(BoletoContract $boleto)
     {
         $this->boletos[] = $boleto;
-        $this->iniciaDetalhe();
+        if ($chaveNfe = $boleto->getChaveNfe()) {
+            $this->iniciaDetalheExtendido();
+        } else {
+            $this->iniciaDetalhe();
+        }
 
         $this->add(1, 1, '1');
         $this->add(2, 3, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? '02' : '01');
@@ -222,12 +226,15 @@ class Caixa  extends AbstractRemessa implements RemessaContract
         // Código da Moeda - Código adotado para identificar a moeda referenciada no Título. Informar fixo: ‘1’ = REAL
         $this->add(394, 394, Util::formatCnab('9', 1, 1));
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
+        if ($chaveNfe) {
+            $this->add(401, 444, Util::formatCnab('9', $chaveNfe, 44));
+        }
 
         return $this;
     }
 
     /**
-     * @return $this
+     * @return Caixa
      * @throws \Exception
      */
     protected function trailer()

@@ -141,6 +141,14 @@ abstract class AbstractRemessa
     }
 
     /**
+     * @return string
+     */
+    public function getFimLinha()
+    {
+        return $this->fimLinha;
+    }
+
+    /**
      * Informa a data da remessa a ser gerada
      *
      * @param $data
@@ -473,18 +481,19 @@ abstract class AbstractRemessa
      * Valida se a linha esta correta.
      *
      * @param array $a
+     * @param int   $extendido
      *
      * @return string
      * @throws \Exception
      */
-    protected function valida(array $a)
+    protected function valida(array $a, $extendido = 0)
     {
         if ($this->tamanho_linha === false) {
             throw new \Exception('Classe remessa deve informar o tamanho da linha');
         }
 
         $a = array_filter($a, 'mb_strlen');
-        if (count($a) != $this->tamanho_linha) {
+        if (count($a) != $this->tamanho_linha + $extendido) {
             throw new \Exception(sprintf('$a não possui %s posições, possui: %s', $this->tamanho_linha, count($a)));
         }
 

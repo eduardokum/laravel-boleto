@@ -806,7 +806,7 @@ final class Util
     {
         $i--;
 
-        if ($i > 398 || $f > 400) {
+        if (($i > 398 || $f > 400) && ($i != 401 && $f != 444)) {
             throw new \Exception('$ini ou $fim ultrapassam o limite máximo de 400');
         }
 
