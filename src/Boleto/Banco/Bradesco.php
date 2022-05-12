@@ -1,4 +1,5 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
@@ -21,7 +22,7 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
      *
      * @var array
      */
-    protected $carteiras = ['02', '04', '09', '21', '26'];
+    protected $carteiras = ['02', '03', '04', '06', '09', '21', '26'];
     /**
      * Trata-se de código utilizado para identificar mensagens especificas ao cedente, sendo
      * que o mesmo consta no cadastro do Banco, quando não houver código cadastrado preencher
@@ -145,7 +146,8 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
      *
      * @return array
      */
-    public static function parseCampoLivre($campoLivre) {
+    public static function parseCampoLivre($campoLivre)
+    {
         return [
             'convenio' => null,
             'agenciaDv' => null,

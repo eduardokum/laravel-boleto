@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: simetriatecnologia
@@ -83,7 +84,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
      * @var array
      */
 
-    protected $carteiras = ['04' ,'09', '28'];
+    protected $carteiras = ['04', '09', '28'];
 
 
     /**
@@ -137,7 +138,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
         $this->segmentoP($boleto);
         $this->segmentoQ($boleto);
         $this->segmentoR($boleto);
-        if($boleto->getSacadorAvalista()) {
+        if ($boleto->getSacadorAvalista()) {
             $this->segmentoY01($boleto);
         }
         return $this;
@@ -252,7 +253,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
         $this->add(210, 212, '000');
         $this->add(213, 240, '');
 
-        if($boleto->getSacadorAvalista()) {
+        if ($boleto->getSacadorAvalista()) {
             $this->add(154, 154, strlen(Util::onlyNumbers($boleto->getSacadorAvalista()->getDocumento())) == 14 ? 2 : 1);
             $this->add(155, 169, Util::formatCnab('9', Util::onlyNumbers($boleto->getSacadorAvalista()->getDocumento()), 15));
             $this->add(170, 209, Util::formatCnab('X', $boleto->getSacadorAvalista()->getNome(), 30));
@@ -261,7 +262,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
         return $this;
     }
 
-     /**
+    /**
      * @param BoletoContract $boleto
      *
      * @return $this
@@ -423,7 +424,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     {
         $this->iniciaTrailerLote();
 
-        $valor = array_reduce($this->boletos, function($valor, $boleto) {
+        $valor = array_reduce($this->boletos, function ($valor, $boleto) {
             return $valor + $boleto->getValor();
         }, 0);
 
