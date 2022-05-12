@@ -985,6 +985,7 @@ final class Util
             BoletoContract::COD_BANCO_BANRISUL => 'Banco\\Banrisul',
             BoletoContract::COD_BANCO_BANCOOB => 'Banco\\Bancoob',
             BoletoContract::COD_BANCO_BNB => 'Banco\\Bnb',
+            BoletoContract::COD_BANCO_UNICRED => 'Banco\\Unicred',
         ];
 
         if (array_key_exists($banco, $aBancos)) {
