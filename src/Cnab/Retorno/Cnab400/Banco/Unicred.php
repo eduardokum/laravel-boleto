@@ -127,16 +127,10 @@ class Unicred extends AbstractRetorno implements RetornoCnab400
         'E23' => 'Quantidade de pagamentos parciais, deve ser 99',
         'E24' => 'Quantidade de pagamentos parciais não deve ser informado',
         'E25' => 'Modelo de calculo invalido para titulo com pagamentos parciais',
-        'I0' => 'Título possui baixa operacional ativa na cip',
-    ];
-
-
-    /**
-     * Array com os códigos de Complemento do Movimento, relacionados a Protesto de título:
-     *
-     * @var array
-     */
-    private $rejeicoes_protesto = [
+        'I0'  => 'Título possui baixa operacional ativa na cip',
+        /**
+         * Array com os códigos de Complemento do Movimento, relacionados a Protesto de título:
+         */
         '101' => 'Data da apresentação inferior à data de vencimento',
         '102' => 'Falta de comprovante da prestação de serviço',
         '103' => 'Nome do sacado incompleto/incorreto',
@@ -215,7 +209,7 @@ class Unicred extends AbstractRetorno implements RetornoCnab400
      *
      * @var array
      */
-    private $codigos_tipo_intrucao_origem = [
+    private $codigos_tipo_instrucao_origem = [
         '00' => 'Sem Tipo de Instrução Origem a informar – usado para Código de Movimento 01; 06; 07; 09; 13 e 14',
         '01' => 'Remessa',
         '02' => 'Pedido de Baixa',
@@ -238,6 +232,7 @@ class Unicred extends AbstractRetorno implements RetornoCnab400
     protected function init()
     {
         $this->totais = [
+            'valor_recebido' => 0,
             'liquidados' => 0,
             'entradas' => 0,
             'baixados' => 0,
@@ -263,6 +258,8 @@ class Unicred extends AbstractRetorno implements RetornoCnab400
             ->setCodigoCliente($this->rem(27, 46, $header))
             ->setData($this->rem(95, 100, $header));
 
+        $this->dataGeracaoArquivo = $this->rem(95, 100, $header);
+
         return true;
     }
 
@@ -279,18 +276,24 @@ class Unicred extends AbstractRetorno implements RetornoCnab400
                 ->setAgencia($this->rem(18, 21, $detalhe))
                 ->setConta($this->rem(23, 30, $detalhe))
                 ->setContaDv($this->rem(31, 31, $detalhe));
-                // ->setAgencia($this->rem(25, 29, $detalhe))
-                // ->setConta($this->rem(30, 36, $detalhe))
-                // ->setContaDv($this->rem(37, 37, $detalhe));
         }
+        /**
+         * Retorno não possui informação de data de ocorrencia, apenas de data de quitação.
+         * Portanto, quando não refere-se a quitação de valores esse campo vem preenchido com '000000', e nesse caso
+         * será utilizada então a data de geração do arquivo como data de ocorrência
+         */
+        $this->dataOcorrencia = ((!empty($this->rem(111, 116, $detalhe)) && ($this->rem(111, 116, $detalhe)!= '000000'))?$this->rem(111, 116, $detalhe):$this->dataGeracaoArquivo);
 
         $d = $this->detalheAtual();
-        $d->setNossoNumero($this->rem(46, 62, $detalhe))
+
+        //NossoNúmero UNICRED só tem 11 dígitos, por isso da pra pegar apartir do campo 52 em vez de começar do 46
+        //pois o resto dos campos será preenchido com valor '0'
+        $d->setNossoNumero($this->rem(52, 62, $detalhe))
             ->setNumeroDocumento($this->rem(280, 305, $detalhe))  //SEU NUMERO
             // ->setNumeroControle($this->rem(38, 62, $detalhe))
             ->setOcorrencia($this->rem(109, 110, $detalhe)) //MOVIMENTO
             ->setOcorrenciaDescricao(Arr::get($this->ocorrencias, $d->getOcorrencia(), 'Desconhecida'))
-            ->setDataOcorrencia($this->rem(111, 116, $detalhe))
+            ->setDataOcorrencia($this->dataOcorrencia)//Data de geração do arquivo de remessa ou data de quitação do registro
             ->setDataVencimento($this->rem(147, 152, $detalhe))
             ->setDataCredito($this->rem(176, 181, $detalhe))
             ->setValor(Util::nFloat($this->rem(153, 165, $detalhe)/100, 2, false))
@@ -302,8 +305,12 @@ class Unicred extends AbstractRetorno implements RetornoCnab400
             ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe)/100, 2, false));
             // ->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe)/100, 2, false));
 
-        $msgAdicional = str_split(sprintf('%08s', $this->rem(319, 326, $detalhe)), 2) + array_fill(0, 5, '');
+
+        //Adicionar array_fill para garantir que array tenha 5 casas
+        $msgAdicional = str_split( $this->rem(319, 326, $detalhe), 2) + array_fill(0, 5, '');
+
         if ($d->hasOcorrencia('01','06', '09')) { //'07'
+            $this->totais['valor_recebido'] += $d->getValorRecebido();
             $this->totais['liquidados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
         } elseif ($d->hasOcorrencia('02')) {
@@ -319,6 +326,7 @@ class Unicred extends AbstractRetorno implements RetornoCnab400
           //  $this->totais['alterados']++;
            // $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
         } elseif ($d->hasOcorrencia('03')) {
+
             $this->totais['erros']++;
             $error = Util::appendStrings(
                 Arr::get($this->rejeicoes, $msgAdicional[0], ''),
@@ -327,11 +335,7 @@ class Unicred extends AbstractRetorno implements RetornoCnab400
                 Arr::get($this->rejeicoes, $msgAdicional[3], ''),
                 Arr::get($this->rejeicoes, $msgAdicional[4], '')
             );
-            if($d->hasOcorrencia('03')) {
-               if(isset($this->rejeicoes[$this->rem(319, 326, $detalhe)])){
-                  $d->setRejeicao($this->rejeicoes[$this->rem(319, 326, $detalhe)]);
-               }
-            }
+
             $d->setError($error);
         } else {
             $d->setOcorrenciaTipo($d::OCORRENCIA_OUTROS);
@@ -349,8 +353,8 @@ class Unicred extends AbstractRetorno implements RetornoCnab400
     protected function processarTrailer(array $trailer)
     {
         $this->getTrailer()
-            ->setQuantidadeTitulos($this->rem(18, 25, $trailer))
-            ->setValorTitulos(Util::nFloat($this->rem(26, 39, $trailer)/100, 2, false))
+            ->setQuantidadeTitulos((int) $this->count())
+            ->setValorTitulos( (float) Util::nFloat($this->totais['valor_recebido'], 2, false) )
             ->setQuantidadeErros((int) $this->totais['erros'])
             ->setQuantidadeEntradas((int) $this->totais['entradas'])
             ->setQuantidadeLiquidados((int) $this->totais['liquidados'])
