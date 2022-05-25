@@ -23,9 +23,29 @@ jobs:
               -   laravel: 8.*
               -   laravel: 7.*
               -   laravel: 6.*
+              -   laravel: 5.8.*
+              -   laravel: 5.5.*
           exclude:
+              -   laravel: 5.5.*
+                  php: 8
+              -   laravel: 5.8.*
+                  php: 8
+              -   laravel: 5.8.*
+                  php: 8
+              -   laravel: 6.*
+                  php: 7.2
+              -   laravel: 6.*
+                  php: 8
+              -   laravel: 7.*
+                  php: 7.2
+              -   laravel: 7.*
+                  php: 8
               -   laravel: 8.*
                   php: 7.2
+              -   laravel: 8.*
+                  php: 7.3
+              -   laravel: 8.*
+                  php: 7.4
               -   laravel: 9.*
                   php: 7.2
               -   laravel: 9.*
@@ -33,7 +53,7 @@ jobs:
               -   laravel: 9.*
                   php: 7.4
     runs-on: ${{ matrix.os }}
-    name: PHP ${{ matrix.php }} LRV ${{ matrix.laravel }} (${{ matrix.os }})
+    name: PHP ${{ matrix.php }} LRV ${{ matrix.laravel }} - ${{ matrix.dependency-version }} (${{ matrix.os }})
     steps:
       - name: Checkout
         uses: actions/checkout@v2
