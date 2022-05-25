@@ -16,7 +16,7 @@ jobs:
       matrix:
           php: [ 8.0, 7.4, 7.3, 7.2 ]
           laravel: [ 9.*, 8.*, 7.*, 6.*, 5.8.*, 5.5.* ]
-          dependency-version: [ prefer-lowest, prefer-stable ]
+          dependency-version: [ prefer-stable ]
           os: [ ubuntu-latest ]
           include:
               -   laravel: 9.*
@@ -53,7 +53,7 @@ jobs:
               -   laravel: 9.*
                   php: 7.4
     runs-on: ${{ matrix.os }}
-    name: PHP ${{ matrix.php }} LRV ${{ matrix.laravel }} - ${{ matrix.dependency-version }} (${{ matrix.os }})
+    name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.dependency-version }} - ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
