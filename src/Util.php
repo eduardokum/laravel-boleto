@@ -111,6 +111,7 @@ final class Util
         '082' => 'Banco Topázio S.A.',
         'M20' => 'Banco Toyota do Brasil S.A.',
         '634' => 'Banco Triângulo S.A.',
+        '136' => 'Banco Unicred do Brasil',
         'M14' => 'Banco Volkswagen S.A.',
         'M23' => 'Banco Volvo (Brasil) S.A.',
         '655' => 'Banco Votorantim S.A.',
@@ -989,6 +990,7 @@ final class Util
             BoletoContract::COD_BANCO_BANRISUL => 'Banco\\Banrisul',
             BoletoContract::COD_BANCO_BANCOOB => 'Banco\\Bancoob',
             BoletoContract::COD_BANCO_BNB => 'Banco\\Bnb',
+            BoletoContract::COD_BANCO_UNICRED => 'Banco\\Unicred',
         ];
 
         if (array_key_exists($banco, $aBancos)) {
