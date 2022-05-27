@@ -87,7 +87,7 @@ class Hsbc  extends AbstractBoleto implements BoletoContract
      */
     public function getAgenciaCodigoBeneficiario()
     {
-        $agencia = $this->getAgenciaDv() !== null ? $this->getAgencia() . '-' . $this->getAgenciaDv() : $this->getAgencia();
+        $agencia = rtrim(sprintf('%s-%s', $this->getAgencia(), $this->getAgenciaDv()), '-');
 
         if ($this->getContaDv() !== null && strlen($this->getContaDv()) == 1) {
             $conta = substr($this->getConta(), 0, -1) . '-' .substr($this->getConta(), -1).$this->getContaDv();
@@ -97,7 +97,7 @@ class Hsbc  extends AbstractBoleto implements BoletoContract
             $conta = $this->getConta();
         }
 
-        return $agencia . ' / ' . $conta;
+        return sprintf('%s / %s', $agencia, $conta);
     }
     /**
      * Gera o Nosso Número.

@@ -7,6 +7,7 @@ interface Boleto
 {
     const COD_BANCO_BB = '001';
     const COD_BANCO_SANTANDER = '033';
+    const COD_BANCO_INTER = '077';
     const COD_BANCO_CEF = '104';
     const COD_BANCO_BRADESCO = '237';
     const COD_BANCO_ITAU = '341';
@@ -15,6 +16,7 @@ interface Boleto
     const COD_BANCO_BANRISUL = '041';
     const COD_BANCO_BANCOOB = '756';
     const COD_BANCO_BNB = '004';
+    const COD_BANCO_UNICRED = '136';
 
     const STATUS_REGISTRO = 1;
     const STATUS_ALTERACAO = 2;
@@ -99,7 +101,7 @@ interface Boleto
      * @return \Carbon\Carbon
      */
     public function getDataVencimento();
-    
+
     /**
      * @return \Carbon\Carbon
      */
@@ -255,6 +257,11 @@ interface Boleto
     /**
      * @return mixed
      */
+    public function getChaveNfe();
+
+    /**
+     * @return mixed
+     */
     public function getStatus();
 
     /**
@@ -268,8 +275,8 @@ interface Boleto
     public function baixarBoleto();
 
     /**
-    * @return mixed
-    */
+     * @return mixed
+     */
     public function alterarDataDeVencimento();
 
     /**
@@ -299,3 +306,4 @@ interface Boleto
      */
     public function getMostrarEnderecoFichaCompensacao();
 }
+

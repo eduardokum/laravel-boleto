@@ -1,6 +1,8 @@
 <?php
 namespace Eduardokum\LaravelBoleto;
 
+use Illuminate\Support\Str;
+
 trait MagicTrait
 {
     protected $trash = [];
@@ -30,7 +32,7 @@ trait MagicTrait
     public function __get($name)
     {
         if (property_exists($this, $name)) {
-            $method = 'get' . ucwords($name);
+            $method = 'get' . Str::camel($name);
             return $this->{$method}();
         } elseif (isset($this->trash[$name])) {
             return $this->trash[$name];

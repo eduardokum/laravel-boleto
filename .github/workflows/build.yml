@@ -14,27 +14,46 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu]
-        php: ["7.3"]
-        # Apenas versões com suporte
-        laravel:
-          - "5.5.*"
-          - "5.8.*"
-          - "6.*"
-          - "7.*"
-          - "8.*"
-        include:
-          - os: ubuntu
-            php: "7.3"
-            laravel: "8.*"
-          - os: macos
-            php: "7.3"
-            laravel: "7.*"
-          - os: windows
-            php: "7.3"
-            laravel: "7.*"
-    runs-on: ${{ matrix.os }}-latest
-    name: LRV ${{ matrix.laravel }} (${{ matrix.os }})
+          php: [ 8.0, 7.4, 7.3, 7.2 ]
+          laravel: [ 9.*, 8.*, 7.*, 6.*, 5.8.*, 5.5.* ]
+          dependency-version: [ prefer-stable ]
+          os: [ ubuntu-latest ]
+          include:
+              -   laravel: 9.*
+              -   laravel: 8.*
+              -   laravel: 7.*
+              -   laravel: 6.*
+              -   laravel: 5.8.*
+              -   laravel: 5.5.*
+          exclude:
+              -   laravel: 5.5.*
+                  php: 8
+              -   laravel: 5.8.*
+                  php: 8
+              -   laravel: 5.8.*
+                  php: 8
+              -   laravel: 6.*
+                  php: 7.2
+              -   laravel: 6.*
+                  php: 8
+              -   laravel: 7.*
+                  php: 7.2
+              -   laravel: 7.*
+                  php: 8
+              -   laravel: 8.*
+                  php: 7.2
+              -   laravel: 8.*
+                  php: 7.3
+              -   laravel: 8.*
+                  php: 7.4
+              -   laravel: 9.*
+                  php: 7.2
+              -   laravel: 9.*
+                  php: 7.3
+              -   laravel: 9.*
+                  php: 7.4
+    runs-on: ${{ matrix.os }}
+    name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.dependency-version }} - ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2

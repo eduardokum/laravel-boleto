@@ -136,7 +136,7 @@ class Itau extends AbstractRemessa implements RemessaContract
     protected $fimArquivo = "\r\n";
 
     /**
-     * @return $this
+     * @return Itau
      * @throws \Exception
      */
     protected function header()
@@ -166,13 +166,17 @@ class Itau extends AbstractRemessa implements RemessaContract
     /**
      * @param BoletoContract $boleto
      *
-     * @return $this
+     * @return Itau
      * @throws \Exception
      */
     public function addBoleto(BoletoContract $boleto)
     {
         $this->boletos[] = $boleto;
-        $this->iniciaDetalhe();
+        if ($chaveNfe = $boleto->getChaveNfe()) {
+            $this->iniciaDetalheExtendido();
+        } else {
+            $this->iniciaDetalhe();
+        }
 
         $this->add(1, 1, '1');
         $this->add(2, 3, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? '02' : '01');
@@ -237,6 +241,9 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(392, 393, Util::formatCnab('9', $boleto->getDiasProtesto($boleto->getDiasBaixaAutomatica()), 2));
         $this->add(394, 394, '');
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
+        if ($chaveNfe) {
+            $this->add(401, 444, Util::formatCnab('9', $chaveNfe, 44));
+        }
 
         // Verifica multa
         if ($boleto->getMulta() > 0) {
@@ -255,7 +262,7 @@ class Itau extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @return $this
+     * @return Itau
      * @throws \Exception
      */
     protected function trailer()

@@ -49,6 +49,7 @@ class Factory
             BoletoContract::COD_BANCO_BB => 'Banco\\Bb',
             BoletoContract::COD_BANCO_SANTANDER => 'Banco\\Santander',
             BoletoContract::COD_BANCO_CEF => 'Banco\\Caixa',
+            BoletoContract::COD_BANCO_INTER => 'Banco\\Inter',
             BoletoContract::COD_BANCO_BRADESCO => 'Banco\\Bradesco',
             BoletoContract::COD_BANCO_ITAU => 'Banco\\Itau',
             BoletoContract::COD_BANCO_HSBC => 'Banco\\Hsbc',
@@ -56,6 +57,7 @@ class Factory
             BoletoContract::COD_BANCO_BANRISUL => 'Banco\\Banrisul',
             BoletoContract::COD_BANCO_BANCOOB => 'Banco\\Bancoob',
             BoletoContract::COD_BANCO_BNB => 'Banco\\Bnb',
+            BoletoContract::COD_BANCO_UNICRED => 'Banco\\Unicred',
         ];
 
         if (array_key_exists($banco, $aBancos)) {
