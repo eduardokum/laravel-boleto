@@ -98,45 +98,13 @@ jobs:
             -   name: Run tests
                 run: "vendor/bin/phpunit -c phpunit.xml --coverage-clover=coverage.clover"
 
-    update-docs:
-        # Atualizar a documentação apenas a partir do ramo master
-        needs: [ test ]
-        if: "!contains(github.event.head_commit.message, 'skip ci') && github.ref == 'refs/heads/master'"
-        runs-on: ubuntu-latest
-        name: Update Docs
-        steps:
-            -   name: Checkout source
-                uses: actions/checkout@v2
-                with:
-                    path: source
-
-            -   name: Checkout gh-pages
-                uses: actions/checkout@v2
-                with:
-                    ref: gh-pages
-                    path: gh-pages
-
-            -   name: Setup PHP
-                uses: shivammathur/setup-php@v2
-                with:
-                    php-version: 7.1
-                    extensions: intl, mbstring, mcrypt, openssl
-
-            -   name: Generate docs
+            # Tenta enviar a cobertura de código até 5 vezes
+            -   name: Upload coverage
                 run: |
-                    wget http://www.apigen.org/apigen.phar
-                    php apigen.phar generate -s source/src -d tmp-doc --title 'Documentação laravel-boletos' --template-theme bootstrap
-                continue-on-error: true
-
-            # Remove todos arquivos antigos e adiciona os novos
-            -   name: Publish
-                working-directory: gh-pages
-                run: |
-                    rm -rf *
-                    cp -r ../tmp-doc/. ./
-                    git config user.name github-actions
-                    git config user.email github-action@users.noreply.github.com
-                    git add .
-                    git commit -m "Documentacao atualizada"
-                    git push
+                    cover() {
+                      curl -s https://scrutinizer-ci.com/ocular.phar -o ocular.phar
+                      php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+                    }
+                    for i in {1..5}; do cover && break || sleep 5; done
+                shell: bash
                 continue-on-error: true
