@@ -97,14 +97,3 @@ jobs:
 
             -   name: Run tests
                 run: "vendor/bin/phpunit -c phpunit.xml --coverage-clover=coverage.clover"
-
-            # Tenta enviar a cobertura de código até 5 vezes
-            -   name: Upload coverage
-                run: |
-                    cover() {
-                      curl -s https://scrutinizer-ci.com/ocular.phar -o ocular.phar
-                      php ocular.phar code-coverage:upload --format=php-clover coverage.clover
-                    }
-                    for i in {1..5}; do cover && break || sleep 5; done
-                shell: bash
-                continue-on-error: true
