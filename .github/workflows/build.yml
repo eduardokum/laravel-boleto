@@ -20,11 +20,17 @@ jobs:
                 os: [ ubuntu-latest ]
                 include:
                     -   laravel: 9.*
+                        testbench: 7.*
                     -   laravel: 8.*
+                        testbench: 6.*
                     -   laravel: 7.*
+                        testbench: 5.*
                     -   laravel: 6.*
+                        testbench: 4.*
                     -   laravel: 5.8.*
+                        testbench: 3.*
                     -   laravel: 5.5.*
+                        testbench: 3.*
                 exclude:
                     -   laravel: 5.5.*
                         php: 8
