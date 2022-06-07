@@ -655,7 +655,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getDataVencimentoApos()
     {
-        return $this->getDataVencimento()->addDays((int) $this->getJurosApos());
+        return $this->getDataVencimento()->copy()->addDays((int) $this->getJurosApos());
     }
 
     /**

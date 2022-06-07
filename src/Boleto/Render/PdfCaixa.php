@@ -252,7 +252,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
          $this->Cell(30, $this->cell, $this->_($this->boleto[$i]->getPagador()->getCep()), 'R',1);
 
          $this->SetFont($this->PadraoFont, '', $this->fcel);
-         $this->Cell(170, $this->desc, $this->_($this->boleto[$i]->getPagador()->getEndereco()), 'BLR',1);
+         $this->Cell(170, $this->desc, $this->_(trim($this->boleto[$i]->getPagador()->getEndereco() . ' - ' . $this->boleto[$i]->getPagador()->getBairro()), ' -'), 'BLR', 1);
          //setima linha
          $this->SetFont($this->PadraoFont, '', $this->fdes);
          $this->Cell(34, $this->desc, $this->_('Carteira'), 'LR');
