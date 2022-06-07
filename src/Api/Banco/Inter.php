@@ -77,17 +77,11 @@ class Inter extends AbstractAPI
             'ordenarPor'     =>
                 array_key_exists('ordenarPor', $inputedParams)
                     ? $inputedParams['ordenarPor']
-                    : 'NOSSONUMERO',
-            'page'           =>
-                array_key_exists('page', $inputedParams)
-                    ? $inputedParams['page']
-                    : 0,
-            'size'           =>
-                array_key_exists('size', $inputedParams)
-                    ? (($inputedParams['size'] > 5 && $inputedParams['size'] < 20) ? $inputedParams['size'] : 20)
-                    : 20,
+                    : 'NOSSONUMERO'
         ];
 
+        $params['size'] = 50;
+        $params['page'] = 0;
         $aRetorno = [];
         do {
             $retorno = $this->get(
