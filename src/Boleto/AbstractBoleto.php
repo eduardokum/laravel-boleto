@@ -839,7 +839,7 @@ abstract class AbstractBoleto implements BoletoContract
         if (strlen($chaveNfe) != 44) {
             throw new \Exception('Chave de nfe não possui 44 posições');
         }
-        
+
         $this->chaveNfe = $chaveNfe;
 
         return $this;
@@ -1242,7 +1242,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setDiasProtesto($diasProtesto)
     {
-        if ($this->getDiasBaixaAutomatica() > 0) {
+        if (!empty($diasProtesto) && $this->getDiasBaixaAutomatica() > 0) {
             throw new \Exception('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
         }
         $diasProtesto = (int)$diasProtesto;
@@ -1282,8 +1282,13 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @return int
      */
-    public function getDiasBaixaAutomatica($default = 60)
+    public function getDiasBaixaAutomatica($default = 0)
     {
+        //Caso não tenha valor definido de dias pra protesto setar 60 dias como valor padrão para baixa automatica.
+        //O valor padrão só será utilizado caso não haja nenhum valor definido para baixaAutomatica
+        if(empty($this->getDiasProtesto())){
+            $default = (empty($default)?60:$default);
+        }
         return $this->diasBaixaAutomatica > 0 ? $this->diasBaixaAutomatica : $default;
     }
 
