@@ -1276,7 +1276,7 @@ abstract class AbstractBoleto implements BoletoContract
     }
 
     /**
-     * Retorna os diasProtesto
+     * Retorna os diasBaixaAutomatica
      *
      * @param int $default
      *
