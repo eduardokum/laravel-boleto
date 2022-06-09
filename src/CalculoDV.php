@@ -237,7 +237,21 @@ class CalculoDV
     {
         return Util::modulo11($carteira . Util::numberFormatGeral($nossoNumero, 11), 2, 7, 0, 'P');
     }
-
+	
+    /*
+    |--------------------------------------------------------------------------
+    | 435 - Delcred (Delbank)
+    |--------------------------------------------------------------------------
+    */
+	
+    public static function delcredNossoNumero($carteira, $nossoNumero)
+    {
+		$agencia = "0019";
+		$numeroFormatado = Util::numberFormatGeral($nossoNumero, 10);
+		$digitoVerificador = Util::modulo10($agencia.$carteira.$numeroFormatado);
+        return $digitoVerificador;
+    }
+	
     /*
     |--------------------------------------------------------------------------
     | 341 - Itau
