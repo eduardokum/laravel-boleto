@@ -148,7 +148,7 @@ class Delbank extends AbstractRetorno implements RetornoCnab400
         }
 
         $d = $this->detalheAtual();
-        $d->setCarteira($this->rem(108, 108, $detalhe))
+        $d->setCarteira($this->rem(83, 85, $detalhe))
             ->setNossoNumero($this->rem(63, 73, $detalhe))
             ->setNumeroDocumento($this->rem(117, 126, $detalhe))
             ->setNumeroControle($this->rem(38, 62, $detalhe))
@@ -157,7 +157,7 @@ class Delbank extends AbstractRetorno implements RetornoCnab400
             ->setDataOcorrencia($this->rem(111, 116, $detalhe))
             ->setDataVencimento($this->rem(147, 152, $detalhe))
             ->setDataCredito($this->rem(386, 391, $detalhe))
-            ->setValor(Util::nFloat($this->rem(254, 266, $detalhe)/100, 2, false))
+            ->setValor(Util::nFloat($this->rem(153, 165, $detalhe)/100, 2, false))
             ->setValorTarifa(Util::nFloat($this->rem(176, 188, $detalhe)/100, 2, false))
             ->setValorIOF(Util::nFloat($this->rem(215, 227, $detalhe)/100, 2, false))
             ->setValorAbatimento(Util::nFloat($this->rem(228, 240, $detalhe)/100, 2, false))
@@ -167,22 +167,22 @@ class Delbank extends AbstractRetorno implements RetornoCnab400
             ->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe)/100, 2, false));
 
         $msgAdicional = str_split(sprintf('%08s', $this->rem(319, 328, $detalhe)), 2) + array_fill(0, 5, '');
-        if ($d->hasOcorrencia('06', '15', '17')) {
+        if ($d->hasOcorrencia('06', '08')) {
             $this->totais['liquidados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
         } elseif ($d->hasOcorrencia('02')) {
             $this->totais['entradas']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_ENTRADA);
-        } elseif ($d->hasOcorrencia('09', '10')) {
+        } elseif ($d->hasOcorrencia('09', '10', '43')) {
             $this->totais['baixados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_BAIXADA);
-        } elseif ($d->hasOcorrencia('23')) {
+        } elseif ($d->hasOcorrencia('19')) {
             $this->totais['protestados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_PROTESTADA);
-        } elseif ($d->hasOcorrencia('14')) {
+        } elseif ($d->hasOcorrencia('05', '14', '22')) {
             $this->totais['alterados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
-        } elseif ($d->hasOcorrencia('03', '24', '27', '30', '32')) {
+        } elseif ($d->hasOcorrencia('03', '15', '16')) {
             $this->totais['erros']++;
             $error = Util::appendStrings(
                 Arr::get($this->rejeicoes, $msgAdicional[0], ''),

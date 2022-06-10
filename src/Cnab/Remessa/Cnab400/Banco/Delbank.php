@@ -11,14 +11,6 @@ use Eduardokum\LaravelBoleto\Util;
 class Delbank extends AbstractRemessa implements RemessaContract
 {
     const ESPECIE_DUPLICATA = '01';
-    const ESPECIE_NOTA_PROMISSORIA = '02';
-    const ESPECIE_NOTA_SEGURO = '03';
-    const ESPECIE_COBRANCA_SERIADA = '04';
-    const ESPECIE_RECIBO = '05';
-    const ESPECIE_LETRAS_CAMBIO = '10';
-    const ESPECIE_NOTA_DEBITO = '11';
-    const ESPECIE_DUPLICATA_SERVICO = '12';
-    const ESPECIE_OUTROS = '99';
 
     const OCORRENCIA_REMESSA = '01';
     const OCORRENCIA_PEDIDO_BAIXA = '02';
@@ -28,16 +20,9 @@ class Delbank extends AbstractRemessa implements RemessaContract
     const OCORRENCIA_ALT_CONTROLE_PARTICIPANTE = '07';
     const OCORRENCIA_ALT_SEU_NUMERO = '08';
     const OCORRENCIA_PEDIDO_PROTESTO = '09';
+    const OCORRENCIA_PEDIDO_NAO_PROTESTO = '10';
     const OCORRENCIA_SUSTAR_PROTESTO_BAIXAR_TITULO = '18';
-    const OCORRENCIA_SUSTAR_PROTESTO_MANTER_TITULO = '19';
-    const OCORRENCIA_TRANS_CESSAO_CREDITO_ID10 = '22';
-    const OCORRENCIA_TRANS_CARTEIRAS = '23';
-    const OCORRENCIA_DEVOLUCAO_TRANS_CARTEIRAS = '24';
-    const OCORRENCIA_ALT_OUTROS_DADOS = '31';
-    const OCORRENCIA_DESAGENDAMENTO_DEBITO_AUT = '35';
-    const OCORRENCIA_ACERTO_RATEIO_CREDITO = '68';
-    const OCORRENCIA_CANC_RATEIO_CREDITO = '69';
-
+    const OCORRENCIA_ALT_OUTROS_DADOS = '47';
 
     const INSTRUCAO_SEM = '10';
     const INSTRUCAO_PROTESTAR_XX = '94';
@@ -161,19 +146,28 @@ class Delbank extends AbstractRemessa implements RemessaContract
 		if($boleto->getCarteira() == "121"){
 			$this->add(108, 108, '6'); // CARTEIRA
 		}
+		
         $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
+		
+		// BAIXA
         if ($boleto->getStatus() == $boleto::STATUS_BAIXA) {
-            $this->add(109, 110, self::OCORRENCIA_PEDIDO_BAIXA); // BAIXA
+            $this->add(109, 110, self::OCORRENCIA_PEDIDO_BAIXA);
         }
+		
+		// ALTERAR VENCIMENTO
         if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
-            $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO); // ALTERAR VENCIMENTO
+            $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO);
         }
+		
+		// ALTERAR DATA
         if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO_DATA) {
             $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO);
         }
+		
         if ($boleto->getStatus() == $boleto::STATUS_CUSTOM) {
             $this->add(109, 110, sprintf('%2.02s', $boleto->getComando()));
         }
+		
         $this->add(111, 120, Util::formatCnab('X', $boleto->getNumeroControle(), 10));
         $this->add(121, 126, $boleto->getDataVencimento()->format('dmy'));
         $this->add(127, 139, Util::formatCnab('9', $boleto->getValor(), 13, 2));
