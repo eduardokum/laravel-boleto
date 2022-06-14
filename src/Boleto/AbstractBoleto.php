@@ -1242,11 +1242,12 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setDiasProtesto($diasProtesto)
     {
-        if (!empty($diasProtesto) && $this->getDiasBaixaAutomatica() > 0) {
-            throw new \Exception('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
-        }
         $diasProtesto = (int)$diasProtesto;
         $this->diasProtesto = $diasProtesto > 0 ? $diasProtesto : 0;
+        
+        if (!empty($diasProtesto) && $this->getDiasBaixaAutomatica() > 0) {
+            throw new \Exception('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
+        }       
 
         return $this;
     }
