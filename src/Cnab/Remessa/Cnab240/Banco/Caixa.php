@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: simetriatecnologia
@@ -225,7 +226,7 @@ class Caixa extends AbstractRemessa implements RemessaContract
         $this->add(213, 232, '');
         $this->add(233, 240, '');
 
-        if($boleto->getSacadorAvalista()) {
+        if ($boleto->getSacadorAvalista()) {
             $this->add(154, 154, strlen(Util::onlyNumbers($boleto->getSacadorAvalista()->getDocumento())) == 14 ? 2 : 1);
             $this->add(155, 169, Util::formatCnab('9', Util::onlyNumbers($boleto->getSacadorAvalista()->getDocumento()), 15));
             $this->add(170, 209, Util::formatCnab('X', $boleto->getSacadorAvalista()->getNome(), 30));
@@ -290,8 +291,13 @@ class Caixa extends AbstractRemessa implements RemessaContract
         $this->add(33, 52, Util::formatCnab('9', 0, 20));
         $this->add(53, 57, Util::formatCnab('9', $this->getAgencia(), 5));
         $this->add(58, 58, CalculoDV::cefAgencia($this->getAgencia()));
-        $this->add(59, 65, Util::formatCnab('9', $this->getCodigoCliente(), 7));
-        $this->add(66, 72, '0000000');
+        if (strlen($this->getCodigoCliente()) == 7) {
+            $this->add(59, 65, Util::formatCnab('9', $this->getCodigoCliente(), 7));
+            $this->add(66, 72, '0000000');
+        } else {
+            $this->add(59, 64, Util::formatCnab('9', $this->getCodigoCliente(), 6));
+            $this->add(65, 72, '00000000');
+        }
         $this->add(73, 102, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(103, 132, Util::formatCnab('X', 'CAIXA ECONOMICA FEDERAL', 30));
         $this->add(133, 142, '');
@@ -302,7 +308,7 @@ class Caixa extends AbstractRemessa implements RemessaContract
         $this->add(164, 166, '101');
         $this->add(167, 171, '00000');
         $this->add(172, 191, '');
-        $this->add(192, 211, Util::formatCnab('X','REMESSA-PRODUCAO', 20));
+        $this->add(192, 211, Util::formatCnab('X', 'REMESSA-PRODUCAO', 20));
         $this->add(212, 215, '');
         $this->add(216, 240, '');
         return $this;
@@ -329,11 +335,16 @@ class Caixa extends AbstractRemessa implements RemessaContract
         $this->add(17, 17, '');
         $this->add(18, 18, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? 2 : 1);
         $this->add(19, 33, Util::formatCnab('9', Util::onlyNumbers($this->getBeneficiario()->getDocumento()), 15));
-        $this->add(34, 40, Util::formatCnab('9', Util::onlyNumbers($this->getCodigoCliente()), 7));
-        $this->add(41, 53, Util::formatCnab('9', 0, 13));
+        if (strlen($this->getCodigoCliente()) == 7) {
+            $this->add(34, 40, Util::formatCnab('9', Util::onlyNumbers($this->getCodigoCliente()), 7));
+            $this->add(41, 53, Util::formatCnab('9', 0, 13));
+        } else {
+            $this->add(34, 39, Util::formatCnab('9', Util::onlyNumbers($this->getCodigoCliente()), 6));
+            $this->add(40, 53, Util::formatCnab('9', 0, 14));
+        }
         $this->add(54, 58, Util::formatCnab('9', $this->getAgencia(), 5));
         $this->add(59, 59, CalculoDV::cefAgencia($this->getAgencia()));
-        if(strlen($this->getCodigoCliente()) == 7) {
+        if (strlen($this->getCodigoCliente()) == 7) {
             $this->add(60, 65, '000000');
         } else {
             $this->add(60, 65, Util::formatCnab('9', Util::onlyNumbers($this->getCodigoCliente()), 6));
@@ -358,7 +369,7 @@ class Caixa extends AbstractRemessa implements RemessaContract
     {
         $this->iniciaTrailerLote();
 
-        $valor = array_reduce($this->boletos, function($valor, $boleto) {
+        $valor = array_reduce($this->boletos, function ($valor, $boleto) {
             return $valor + $boleto->getValor();
         }, 0);
 
