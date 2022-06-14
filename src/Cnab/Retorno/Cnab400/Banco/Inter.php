@@ -95,7 +95,8 @@ class Inter extends AbstractRetorno implements RetornoCnab400
             ->setDataOcorrencia($this->rem(92, 97, $detalhe))
             ->setDataVencimento($this->rem(119, 124, $detalhe))
             ->setDataCredito($this->rem(173, 178, $detalhe))
-            ->setValor(Util::nFloat(((float) $this->rem(125, 137, $detalhe))/100, 2, false));
+            ->setValor(Util::nFloat(((float) $this->rem(125, 137, $detalhe))/100, 2, false))
+            ->setValorRecebido(Util::nFloat($this->rem(160, 172, $detalhe)/100, 2, false));
 
         if ($d->hasOcorrencia('06')) {
             $this->totais['liquidados']++;
@@ -130,7 +131,7 @@ class Inter extends AbstractRetorno implements RetornoCnab400
     {
         $this->getTrailer()
             ->setQuantidadeTitulos($this->rem(18, 25, $trailer))
-            ->setValorTitulos(Util::nFloat($this->rem(63, 74, $trailer)/100, 2, false))
+            ->setValorTitulos(Util::nFloat($this->rem(121, 132, $trailer)/100, 2, false)) //Total dos valores dos títulos Pagos
             ->setQuantidadeErros((int) $this->totais['erros'])
             ->setQuantidadeEntradas((int) $this->totais['entradas'])
             ->setQuantidadeLiquidados((int) $this->totais['liquidados'])
