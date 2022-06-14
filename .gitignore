@@ -6,3 +6,5 @@
 /docs/build/
 /composer.lock
 .phpunit.result.cache
+.vs/
+arquivos/*.txt
