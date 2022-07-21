@@ -128,6 +128,33 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     }
 
     /**
+     * Convenio com o banco
+     *
+     * @var string
+     */
+    protected $convenio;
+
+    /**
+     * @return mixed
+     */
+    public function getConvenio()
+    {
+        return $this->convenio;
+    }
+
+    /**
+     * @param mixed $convenio
+     *
+     * @return Bradesco
+     */
+    public function setConvenio($convenio)
+    {
+        $this->convenio = ltrim($convenio, 0);
+
+        return $this;
+    }
+
+    /**
      * @return $this
      * @throws \Exception
      */
@@ -140,7 +167,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
         $this->add(3, 9, 'REMESSA');
         $this->add(10, 11, '01');
         $this->add(12, 26, Util::formatCnab('X', 'COBRANCA', 15));
-        $this->add(27, 46, Util::formatCnab('9', $this->getConta(), 20));
+        $this->add(27, 46, Util::formatCnab('9', $this->getConvenio(), 20));
         $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(77, 79, $this->getCodigoBanco());
         $this->add(80, 94, Util::formatCnab('X', 'Bradesco', 15));
