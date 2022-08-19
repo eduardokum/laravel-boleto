@@ -37,5 +37,10 @@
         "psr-4": {
             "Eduardokum\\LaravelBoleto\\Tests\\": "tests"
         }
+    },
+    "config": {
+        "allow-plugins": {
+            "kylekatarnls/update-helper": true
+        }
     }
 }
