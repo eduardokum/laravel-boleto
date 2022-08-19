@@ -189,7 +189,9 @@ class Inter extends AbstractAPI
             $this->version == 1
                 ? 'openbanking/v1/certificado/boletos/' . $nossoNumero . '/baixas'
                 : 'cobranca/v2/boletos/' . $nossoNumero . '/cancelar',
-            ['codigoBaixa' => $motivo]
+            $this->version == 1
+                ? ['codigoBaixa' => $motivo]
+                : ['motivoCancelamento' => $motivo]
         )->body;
     }
 
