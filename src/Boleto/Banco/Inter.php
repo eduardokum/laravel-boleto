@@ -280,12 +280,14 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
             'VENCIDO' => AbstractBoleto::SITUACAO_ABERTO,
             'EXPIRADO' => AbstractBoleto::SITUACAO_BAIXADO,
         ];
+        
+        $dateUS = preg_match('/[0-9]{4}-[0-9]{2}-[0-9]{2}.*/', $boleto->dataHoraSituacao);
 
         return new self(array_merge(array_filter([
             'valorRecebido'   => isset($boleto->valorTotalRecebimento) ? $boleto->valorTotalRecebimento : null,
             'situacao'        => Arr::get($aSituacao, $boleto->situacao, $boleto->situacao),
             'dataSituacao'    => $boleto->dataHoraSituacao
-                ? Carbon::createFromFormat('d/m/Y H:i', $boleto->dataHoraSituacao)
+                ? Carbon::createFromFormat($dateUS ? 'Y-m-d H:i' : 'd/m/Y H:i', $boleto->dataHoraSituacao)
                 : Carbon::now(),
             'nossoNumero'     => $boleto->nossoNumero,
             'valor'           => $boleto->valorNominal,
@@ -293,11 +295,16 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
             'numeroDocumento' => $boleto->seuNumero,
             'aceite'          => 'S',
             'especieDoc'      => 'DM',
-            'dataVencimento'  => Carbon::createFromFormat('d/m/Y', $boleto->dataVencimento),
-            'pagador'         => [
-                'nome'      => $boleto->nomeSacado,
-                'documento' => $boleto->cnpjCpfSacado,
-            ],
+            'dataVencimento'  => Carbon::createFromFormat($dateUS ? 'Y-m-d' : 'd/m/Y', $boleto->dataVencimento),
+            'pagador'         => array_filter([
+                'nome'      => isset($boleto->pagador) ? $boleto->pagador->nome : $boleto->nomeSacado,
+                'documento' => isset($boleto->pagador) ? $boleto->pagador->cpfCnpj : $boleto->cnpjCpfSacado,
+                'endereco' => isset($boleto->pagador) ? trim($boleto->pagador->endereco . ', ' . $boleto->pagador->endereco . ' ' . $boleto->pagador->complemento) : null,
+                'bairro' => isset($boleto->pagador) ? $boleto->pagador->bairro : null,
+                'cep' => isset($boleto->pagador) ? $boleto->pagador->cep : null,
+                'uf' => isset($boleto->pagador) ? $boleto->pagador->uf : null,
+                'cidade' => isset($boleto->pagador) ? $boleto->pagador->cidade : null,
+            ]),
             'multa'           => Arr::get($boleto, 'multa.valor', 0),
             'juros'           => Arr::get($boleto, 'juros.taxa', 0),
             'desconto'        => Arr::get($boleto, 'desconto1.taxa', 0),

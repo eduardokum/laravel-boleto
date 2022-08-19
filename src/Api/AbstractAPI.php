@@ -16,8 +16,11 @@ abstract class AbstractAPI
     protected $certificadoChave = null;
     protected $certificadoSenha = null;
     protected $identificador = null;
+    protected $client_id = null;
+    protected $client_secret = null;
     protected $senha = null;
     protected $cnpj = null;
+    protected $access_token = null;
 
     protected $debug = false;
     protected $log = null;
@@ -257,6 +260,66 @@ abstract class AbstractAPI
     }
 
     /**
+     * @return null
+     */
+    public function getClientId()
+    {
+        return $this->client_id;
+    }
+
+    /**
+     * @param null $client_id
+     *
+     * @return AbstractAPI
+     */
+    public function setClientId($client_id)
+    {
+        $this->client_id = $client_id;
+
+        return $this;
+    }
+
+    /**
+     * @return null
+     */
+    public function getClientSecret()
+    {
+        return $this->client_secret;
+    }
+
+    /**
+     * @param null $client_secret
+     *
+     * @return AbstractAPI
+     */
+    public function setClientSecret($client_secret)
+    {
+        $this->client_secret = $client_secret;
+
+        return $this;
+    }
+
+    /**
+     * @return null
+     */
+    public function getAccessToken()
+    {
+        return $this->access_token;
+    }
+
+    /**
+     * @param $access_token
+     *
+     * @return AbstractAPI
+     */
+    public function setAccessToken($access_token)
+    {
+        $this->access_token = $access_token;
+
+        return $this;
+    }
+
+    /**
      * @return PessoaContract
      */
     public function getBeneficiario()
@@ -344,14 +407,14 @@ abstract class AbstractAPI
      * @throws Exception\CurlException
      * @throws Exception\HttpException|Exception\UnauthorizedException
      */
-    protected function post($url, array $post)
+    protected function post($url, array $post, $raw = false)
     {
         $url = ltrim($url, '/');
         $this->init()
-            ->setHeaders([
-                'Accept' => 'application/json',
-                'Content-type' => 'application/json'
-            ]);
+            ->setHeaders(array_filter([
+                'Accept' => $raw ? null : 'application/json',
+                'Content-type' => $raw ? 'application/x-www-form-urlencoded' : 'application/json'
+            ]));
 
         // clean string
         $post = $this->arrayMapRecursive(function ($data) {
@@ -359,8 +422,9 @@ abstract class AbstractAPI
         }, $post);
 
         curl_setopt($this->curl, CURLOPT_URL, $this->getBaseUrl() . $url);
+        curl_setopt($this->curl, CURLOPT_POST, 1);
         curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'POST');
-        curl_setopt($this->curl, CURLOPT_POSTFIELDS, json_encode($post));
+        curl_setopt($this->curl, CURLOPT_POSTFIELDS, $raw ? http_build_query($post) : json_encode($post));
         return $this->execute();
     }
 
@@ -520,7 +584,6 @@ abstract class AbstractAPI
             curl_setopt($this->curl, CURLOPT_VERBOSE, true);
             curl_setopt($this->curl, CURLOPT_STDERR, $this->log);
         }
-
         do {
             if ($exec = curl_exec($this->curl)) {
                 $this->setResponseHttpCode(curl_getinfo($this->curl, CURLINFO_HTTP_CODE));
@@ -538,7 +601,6 @@ abstract class AbstractAPI
             }
 
             if ($this->isDebug()) {
-
                 fclose($this->log);
                 $this->log = ob_get_clean();
             }
