@@ -83,6 +83,8 @@ class Inter extends AbstractAPI
             unset($data['dataEmissao']);
             unset($data['dataLimite']);
             $data['numDiasAgenda'] = (int) $boleto->getDiasBaixaAutomatica();
+            $data['pagador']['cpfCnpj'] = $data['pagador']['cnpjCpf'];
+            unset($data['pagador']['cnpjCpf']);
         }
         $retorno = $this->oAuth2()->post(
             $this->version == 1
