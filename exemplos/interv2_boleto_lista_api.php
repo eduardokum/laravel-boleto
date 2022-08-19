@@ -18,10 +18,10 @@ $beneficiario = new \Eduardokum\LaravelBoleto\Pessoa(
 $api = new Eduardokum\LaravelBoleto\Api\Banco\Inter([
     'versao' => 2,
     'beneficiario' => $beneficiario,
-    'client_id' => '1238490c-4293-48ff-be74-17d1ae33a411',
-    'client_secret' => '18ae83cf-9fd4-47ef-a2bf-bdf0f1c9d88f',
-    'certificado'      => realpath(__DIR__ . '/certs/') . DIRECTORY_SEPARATOR . 'Inter API_Certificado.crt',
-    'certificadoChave' => realpath(__DIR__ . '/certs/') . DIRECTORY_SEPARATOR . 'Inter API_Chave.key',
+    'client_id' => 'id',
+    'client_secret' => '',
+    'certificado'      => realpath(__DIR__ . '/certs/') . DIRECTORY_SEPARATOR . 'cert.crt',
+    'certificadoChave' => realpath(__DIR__ . '/certs/') . DIRECTORY_SEPARATOR . 'key.key',
 ]);
 $retorno = $api->retrieveList();
 
