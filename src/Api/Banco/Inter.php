@@ -82,6 +82,7 @@ class Inter extends AbstractAPI
         if ($this->version == 2) {
             unset($data['dataEmissao']);
             unset($data['dataLimite']);
+            $data['numDiasAgenda'] = (int) $boleto->getDiasBaixaAutomatica();
         }
         $retorno = $this->oAuth2()->post(
             $this->version == 1
