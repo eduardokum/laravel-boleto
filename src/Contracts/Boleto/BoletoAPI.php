@@ -10,7 +10,7 @@ interface BoletoAPI extends Boleto
      *
      * @return array
      */
-    public function toArrayAPI();
+    public function toAPI();
 
     /**
      * @param $boleto
@@ -18,6 +18,6 @@ interface BoletoAPI extends Boleto
      *
      * @return AbstractBoleto
      */
-    public static function createFromAPI($boleto, $appends);
+    public static function fromAPI($boleto, $appends);
 }
 

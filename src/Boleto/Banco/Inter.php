@@ -157,7 +157,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
      *
      * @return array
      */
-    public function toArrayAPI()
+    public function toAPI()
     {
         $diasBaixaAutomatica = $this->getDiasBaixaAutomatica();
         if ($diasBaixaAutomatica == 60) {
@@ -264,7 +264,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
      * @return Inter
      * @throws \Exception
      */
-    public static function createFromAPI($boleto, $appends)
+    public static function fromAPI($boleto, $appends)
     {
         if(!array_key_exists('beneficiario', $appends)) {
             throw new \Exception('Informe o beneficiario');

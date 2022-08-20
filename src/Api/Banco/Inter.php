@@ -78,7 +78,7 @@ class Inter extends AbstractAPI
      */
     public function createBoleto(BoletoAPIContract $boleto)
     {
-        $data = $boleto->toArrayAPI();
+        $data = $boleto->toAPI();
         if ($this->version == 2) {
             unset($data['dataEmissao']);
             unset($data['dataLimite']);
@@ -220,7 +220,7 @@ class Inter extends AbstractAPI
      */
     private function arrayToBoleto($boleto)
     {
-        return \Eduardokum\LaravelBoleto\Boleto\Banco\Inter::createFromAPI($boleto, [
+        return \Eduardokum\LaravelBoleto\Boleto\Banco\Inter::fromAPI($boleto, [
             'conta'        => $this->getConta(),
             'beneficiario' => $this->getBeneficiario(),
         ]);

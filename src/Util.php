@@ -1034,4 +1034,35 @@ final class Util
         }
         return trim($appended);
     }
+
+    /**
+     * Return value or null.
+     *
+     * @param       $a
+     * @param array $parms
+     *
+     * @return int
+     * @internal param $key
+     * @internal param int $default
+     *
+     */
+    public static function whichOne($a, ...$parms)
+    {
+        if (is_array($parms[0])) {
+            $parms = $parms[0];
+        }
+        foreach ($parms as $parm) {
+            if (is_object($a)) {
+                if (isset($a->{$parm})) {
+                    return $a->{$parm};
+                }
+            } else {
+                if (array_key_exists($parm, $a)) {
+                    return $a[$parm];
+                }
+            }
+        }
+
+        return null;
+    }
 }
