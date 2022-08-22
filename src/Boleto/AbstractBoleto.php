@@ -1400,6 +1400,20 @@ abstract class AbstractBoleto implements BoletoContract
     }
 
     /**
+     * Define um código de barras caso existir
+     *
+     * @param  string $campoCodigoBarras
+     *
+     * @return AbstractBoleto
+     */
+    
+    public function setCampoCodigoBarras($campoCodigoBarras){
+        $this->campoCodigoBarras = $campoCodigoBarras;
+        return $this;
+    }
+
+
+    /**
      * Retorna o logotipo do banco em Base64, pronto para ser inserido na página
      *
      * @return string
