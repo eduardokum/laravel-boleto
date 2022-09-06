@@ -343,6 +343,14 @@ abstract class AbstractBoleto implements BoletoContract
     public $valorRecebido;
 
     /**
+     *
+     * Recebe a imagem em base 64 do QR Code do PIX
+     *
+     * @var ?string
+     */
+    private $pixQrCode = null;
+
+    /**
      * AbstractBoleto constructor.
      *
      * @param array $params
@@ -1665,6 +1673,22 @@ abstract class AbstractBoleto implements BoletoContract
     }
 
     /**
+     * @return ?string
+     */
+    public function getPixQrCode(): ?string
+    {
+        return $this->pixQrCode;
+    }
+
+    /**
+     * @param string $pixQrCode
+     */
+    public function setPixQrCode(string $pixQrCode): void
+    {
+        $this->pixQrCode = $pixQrCode;
+    }
+
+    /**
      * @param $situacao
      *
      * @return bool
@@ -1868,7 +1892,8 @@ abstract class AbstractBoleto implements BoletoContract
                 'carteira_nome' => $this->getCarteiraNome(),
                 'uso_banco' => $this->getUsoBanco(),
                 'status' => $this->getStatus(),
-                'mostrar_endereco_ficha_compensacao' => $this->getMostrarEnderecoFichaCompensacao()
+                'mostrar_endereco_ficha_compensacao' => $this->getMostrarEnderecoFichaCompensacao(),
+                'pix_qrcode' => $this->getPixQrCode(),
             ], $this->variaveis_adicionais
         );
     }
