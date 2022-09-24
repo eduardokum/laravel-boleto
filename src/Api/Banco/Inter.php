@@ -106,8 +106,6 @@ class Inter extends AbstractAPI
      */
     public function retrieveList($inputedParams = [])
     {
-        $inputedParams['situacao'] = Arr::get($inputedParams, 'filtrarPor', 'TODOS');
-        $inputedParams['filtrarPor'] = Arr::get($inputedParams, 'situacao', 'EXPIRADO,PAGO,EMABERTO,VENCIDO,CANCELADO');
         $params = array_filter([
             'situacao'       => $this->version == 1 ? null : Arr::get($inputedParams, 'situacao', 'EXPIRADO,PAGO,EMABERTO,VENCIDO,CANCELADO'),
             'filtrarPor'     => $this->version == 2 ? null : Arr::get($inputedParams, 'filtrarPor', 'TODOS'),
