@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: simetriatecnologia
@@ -118,7 +119,7 @@ class Santander extends AbstractRemessa implements RemessaContract
     {
         $this->iniciaDetalhe();
         $this->add(1, 3, Util::onlyNumbers($this->getCodigoBanco()));
-        $this->add(4, 7, '0001');
+        $this->add(4, 7, $this->getIdremessa());
         $this->add(8, 8, '3');
         $this->add(9, 13, Util::formatCnab('9', $this->iRegistrosLote, 5));
         $this->add(14, 14, 'P');
@@ -192,7 +193,7 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->iniciaDetalhe();
 
         $this->add(1, 3, Util::onlyNumbers($this->getCodigoBanco()));
-        $this->add(4, 7, '0001');
+        $this->add(4, 7, $this->getIdremessa());
         $this->add(8, 8, '3');
         $this->add(9, 13, Util::formatCnab('9', $this->iRegistrosLote, 5));
         $this->add(14, 14, 'Q');
@@ -222,12 +223,12 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(219, 221, Util::formatCnab('9', '000', 3));
         $this->add(222, 240, '');
 
-        if($boleto->getSacadorAvalista()) {
+        if ($boleto->getSacadorAvalista()) {
             $this->add(154, 154, strlen(Util::onlyNumbers($boleto->getSacadorAvalista()->getDocumento())) == 14 ? 2 : 1);
             $this->add(155, 169, Util::formatCnab('9', Util::onlyNumbers($boleto->getSacadorAvalista()->getDocumento()), 15));
             $this->add(170, 209, Util::formatCnab('X', $boleto->getSacadorAvalista()->getNome(), 30));
         }
-        
+
         return $this;
     }
 
@@ -307,8 +308,8 @@ class Santander extends AbstractRemessa implements RemessaContract
     public function getCodigoTransmissao()
     {
         return Util::formatCnab('9', $this->getAgencia(), 4)
-        . Util::formatCnab('9', '0000', 4)
-        . Util::formatCnab('9', $this->getCodigoCliente(), 7);
+            . Util::formatCnab('9', '0000', 4)
+            . Util::formatCnab('9', $this->getCodigoCliente(), 7);
     }
 
     /**
