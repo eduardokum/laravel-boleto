@@ -1,4 +1,5 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa;
 
 use Carbon\Carbon;
@@ -100,6 +101,12 @@ abstract class AbstractRemessa
      */
     protected $agencia;
     /**
+     * Dígito da conta
+     *
+     * @var int
+     */
+    protected $agenciaDv;
+    /**
      * Conta
      *
      * @var int
@@ -154,7 +161,8 @@ abstract class AbstractRemessa
      *
      * @param $data
      */
-    public function setDataRemessa($data){
+    public function setDataRemessa($data)
+    {
         $this->dataRemessa = $data;
     }
 
@@ -165,8 +173,9 @@ abstract class AbstractRemessa
      *
      * @return string;
      */
-    public function getDataRemessa($format){
-        if(is_null($this->dataRemessa)){
+    public function getDataRemessa($format)
+    {
+        if (is_null($this->dataRemessa)) {
             return Carbon::now()->format($format);
         }
         return $this->dataRemessa->format($format);
@@ -196,8 +205,8 @@ abstract class AbstractRemessa
     {
         $args = func_get_args();
         foreach ($args as $arg) {
-            ! is_array($arg) || call_user_func_array([$this, __FUNCTION__], $arg);
-            ! is_string($arg) || array_push($this->camposObrigatorios, $arg);
+            !is_array($arg) || call_user_func_array([$this, __FUNCTION__], $arg);
+            !is_string($arg) || array_push($this->camposObrigatorios, $arg);
         }
 
         return $this;
@@ -279,6 +288,30 @@ abstract class AbstractRemessa
     }
 
     /**
+     * Define a agência
+     *
+     * @param  int $agenciaDv
+     *
+     * @return AbstractRemessa
+     */
+    public function setAgenciaDv($agenciaDv)
+    {
+        $this->agenciaDv = (string) $agenciaDv;
+
+        return $this;
+    }
+
+    /**
+     * Retorna a agência
+     *
+     * @return int
+     */
+    public function getAgenciaDv()
+    {
+        return $this->agenciaDv;
+    }
+
+    /**
      * Define o número da conta
      *
      * @param  int $conta
@@ -311,7 +344,7 @@ abstract class AbstractRemessa
      */
     public function setContaDv($contaDv)
     {
-        $this->contaDv = substr($contaDv, - 1);
+        $this->contaDv = substr($contaDv, -1);
 
         return $this;
     }
@@ -336,7 +369,7 @@ abstract class AbstractRemessa
      */
     public function setCarteira($carteira)
     {
-        if (! in_array($carteira, $this->getCarteiras())) {
+        if (!in_array($carteira, $this->getCarteiras())) {
             throw new \Exception("Carteira não disponível!");
         }
         $this->carteira = $carteira;
@@ -521,11 +554,11 @@ abstract class AbstractRemessa
     public function save($path, $suggestName = false)
     {
         $folder = dirname($path);
-        if (! is_dir($folder)) {
+        if (!is_dir($folder)) {
             mkdir($folder, 0777, true);
         }
 
-        if (! is_writable(dirname($path))) {
+        if (!is_writable(dirname($path))) {
             throw new \Exception('Path ' . $folder . ' não possui permissao de escrita');
         }
 
