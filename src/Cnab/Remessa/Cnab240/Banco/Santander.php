@@ -242,7 +242,7 @@ class Santander extends AbstractRemessa implements RemessaContract
     {
         $this->iniciaDetalhe();
         $this->add(1, 3, Util::onlyNumbers($this->getCodigoBanco()));
-        $this->add(4, 7, '0001');
+        $this->add(4, 7, sprintf("%04d", $this->getIdremessa()));
         $this->add(8, 8, '3');
         $this->add(9, 13, Util::formatCnab('9', $this->iRegistrosLote, 5));
         $this->add(14, 14, 'R');
