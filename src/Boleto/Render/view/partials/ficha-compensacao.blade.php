@@ -95,16 +95,22 @@
         </td>
     </tr>
     <tr>
-        <td colspan="7">
+        <td colspan="{{ isset($pix_qrcode) ? 6 : 7 }}">
             <div class="titulo">Instruções de responsabilidade do beneficiário. Qualquer dúvida sobre este boleto, contate o beneficiário</div>
         </td>
+        @if(isset($pix_qrcode))
+            <td colspan="1" rowspan="5">
+                <p class="titulo" style="text-align: center">Pague via PIX</p>
+                <img src="{{ $pix_qrcode }}" style="height: 100%; width: 100%;">
+            </td>
+        @endif
         <td>
             <div class="titulo">(-) Descontos / Abatimentos</div>
             <div class="conteudo rtl"></div>
         </td>
     </tr>
     <tr>
-        <td colspan="7" class="notopborder">
+        <td colspan="{{ isset($pix_qrcode) ? 6 : 7 }}" class="notopborder">
             <div class="conteudo">{{ $instrucoes[0] }}</div>
             <div class="conteudo">{{ $instrucoes[1] }}</div>
         </td>
@@ -114,7 +120,7 @@
         </td>
     </tr>
     <tr>
-        <td colspan="7" class="notopborder">
+        <td colspan="{{ isset($pix_qrcode) ? 6 : 7 }}" class="notopborder">
             <div class="conteudo">{{ $instrucoes[2] }}</div>
             <div class="conteudo">{{ $instrucoes[3] }}</div>
         </td>
@@ -124,7 +130,7 @@
         </td>
     </tr>
     <tr>
-        <td colspan="7" class="notopborder">
+        <td colspan="{{ isset($pix_qrcode) ? 6 : 7 }}" class="notopborder">
             <div class="conteudo">{{ $instrucoes[4] }}</div>
             <div class="conteudo">{{ $instrucoes[5] }}</div>
         </td>
@@ -134,7 +140,7 @@
         </td>
     </tr>
     <tr>
-        <td colspan="7" class="notopborder">
+        <td colspan="{{ isset($pix_qrcode) ? 6 : 7 }}" class="notopborder">
             <div class="conteudo">{{ $instrucoes[6] }}</div>
             <div class="conteudo">{{ $instrucoes[7] }}</div>
         </td>
