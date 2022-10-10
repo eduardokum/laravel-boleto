@@ -39,8 +39,6 @@
         }
     },
     "config": {
-        "allow-plugins": {
-            "kylekatarnls/update-helper": true
-        }
+        "allow-plugins": true
     }
 }
