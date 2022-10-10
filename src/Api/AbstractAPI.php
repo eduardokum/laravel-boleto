@@ -349,6 +349,15 @@ abstract class AbstractAPI
     }
 
     /**
+     * @return $this
+     */
+    public function unsetDebug()
+    {
+        $this->debug = false;
+        return $this;
+    }
+
+    /**
      * @return bool
      */
     public function isDebug()
@@ -363,6 +372,15 @@ abstract class AbstractAPI
     {
         return $this->log .
             print_r($this->getRequestInfo(), true);
+    }
+
+    /**
+     * @return $this
+     */
+    public function clearLog()
+    {
+        $this->log = null;
+        return $this;
     }
 
     /**
