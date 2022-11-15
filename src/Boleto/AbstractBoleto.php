@@ -1282,7 +1282,7 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @return int
      */
-    public function getDiasBaixaAutomatica($default = 60)
+    public function getDiasBaixaAutomatica($default = 0)
     {
         return $this->diasBaixaAutomatica > 0 ? $this->diasBaixaAutomatica : $default;
     }
