@@ -128,7 +128,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @return $this
+     * @return Bradesco
      * @throws \Exception
      */
     protected function header()
@@ -157,13 +157,17 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     /**
      * @param BoletoContract $boleto
      *
-     * @return $this
+     * @return Bradesco
      * @throws \Exception
      */
     public function addBoleto(BoletoContract $boleto)
     {
         $this->boletos[] = $boleto;
-        $this->iniciaDetalhe();
+        if ($chaveNfe = $boleto->getChaveNfe()) {
+            $this->iniciaDetalheExtendido();
+        } else {
+            $this->iniciaDetalhe();
+        }
 
         $this->add(1, 1, '1');
         $this->add(2, 6, '');
@@ -231,12 +235,15 @@ class Bradesco extends AbstractRemessa implements RemessaContract
         $this->add(327, 334, Util::formatCnab('9', Util::onlyNumbers($boleto->getPagador()->getCep()), 8));
         $this->add(335, 394, Util::formatCnab('X', $boleto->getSacadorAvalista() ? $boleto->getSacadorAvalista()->getNome() : '', 60));
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
+        if ($chaveNfe) {
+            $this->add(401, 444, Util::formatCnab('9', $chaveNfe, 44));
+        }
 
         return $this;
     }
 
     /**
-     * @return $this
+     * @return Bradesco
      * @throws \Exception
      */
     protected function trailer()

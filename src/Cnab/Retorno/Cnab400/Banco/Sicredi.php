@@ -282,29 +282,31 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
         } elseif ($d->hasOcorrencia('33')) {
             $this->totais['alterados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
-        } elseif ($d->hasOcorrencia('03', '27', '30')) {
+        } elseif ($d->hasOcorrencia('03','24', '27', '30', '32')) {
             $this->totais['erros']++;
-            if($d->hasOcorrencia('03')) {
+	        if($d->hasOcorrencia('03')) {
                 if(isset($this->rejeicoes[$this->rem(319, 320, $detalhe)])){
                     $d->setRejeicao($this->rejeicoes[$this->rem(319, 320, $detalhe)]);
                 }
             }
+            $d->setOcorrenciaTipo($d::OCORRENCIA_ERRO);
         } else {
             $d->setOcorrenciaTipo($d::OCORRENCIA_OUTROS);
         }
 
-        $stringErrors = sprintf('%010s', $this->rem(319, 328, $detalhe));
-        $errorsRetorno = str_split($stringErrors, 2) + array_fill(0, 5, '') + array_fill(0, 5, '');
-        if (trim($stringErrors, '0') != '') {
+        $msgAdicional = sprintf('%010s', $this->rem(319, 328, $detalhe));
+        $msgAdicRetorno = str_split($msgAdicional, 2) + array_fill(0, 5, '') + array_fill(0, 5, '');
+
+        if (trim($msgAdicional, '0') != '') {
 
             //Caso seja detalhe de Tarifa ('28' => 'Tarifa') Buscar as mensagens especificas e não classificar como erro
             if ($d->hasOcorrencia('28')) {
                 $motivo = [];
-                $motivo[] = Arr::get($this->ocorrenciasTarifas, $errorsRetorno[0], '');
-                $motivo[] = Arr::get($this->ocorrenciasTarifas, $errorsRetorno[1], '');
-                $motivo[] = Arr::get($this->ocorrenciasTarifas, $errorsRetorno[2], '');
-                $motivo[] = Arr::get($this->ocorrenciasTarifas, $errorsRetorno[3], '');
-                $motivo[] = Arr::get($this->ocorrenciasTarifas, $errorsRetorno[4], '');
+                $motivo[] = Arr::get($this->ocorrenciasTarifas, $msgAdicRetorno[0], '');
+                $motivo[] = Arr::get($this->ocorrenciasTarifas, $msgAdicRetorno[1], '');
+                $motivo[] = Arr::get($this->ocorrenciasTarifas, $msgAdicRetorno[2], '');
+                $motivo[] = Arr::get($this->ocorrenciasTarifas, $msgAdicRetorno[3], '');
+                $motivo[] = Arr::get($this->ocorrenciasTarifas, $msgAdicRetorno[4], '');
 
                 $motivo = array_filter($motivo);
 
@@ -312,13 +314,28 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
                     $d->setRejeicao(implode(PHP_EOL, $motivo));
                 }
 
-            } else {
+            //Caso haja outra mensagem adicional para tratar e não seja ocorrência de erro então
+            //concatenar a mensagem com o texto da descricao atual
+            } else
+                if ( $d->getOcorrenciaTipo() !=  $d::OCORRENCIA_ERRO ){
+                $ocorrencia = Util::appendStrings(
+                    $d->getOcorrenciaDescricao(),
+                    Arr::get($this->rejeicoes, $msgAdicRetorno[0], ''),
+                    Arr::get($this->rejeicoes, $msgAdicRetorno[1], ''),
+                    Arr::get($this->rejeicoes, $msgAdicRetorno[2], ''),
+                    Arr::get($this->rejeicoes, $msgAdicRetorno[3], ''),
+                    Arr::get($this->rejeicoes, $msgAdicRetorno[4], '')
+                );
+                $d->setOcorrenciaDescricao($ocorrencia);
+            }
+            else {
+
                 $error = [];
-                $error[] = Arr::get($this->rejeicoes, $errorsRetorno[0], '');
-                $error[] = Arr::get($this->rejeicoes, $errorsRetorno[1], '');
-                $error[] = Arr::get($this->rejeicoes, $errorsRetorno[2], '');
-                $error[] = Arr::get($this->rejeicoes, $errorsRetorno[3], '');
-                $error[] = Arr::get($this->rejeicoes, $errorsRetorno[4], '');
+                $error[] = Arr::get($this->rejeicoes, $msgAdicRetorno[0], '');
+                $error[] = Arr::get($this->rejeicoes, $msgAdicRetorno[1], '');
+                $error[] = Arr::get($this->rejeicoes, $msgAdicRetorno[2], '');
+                $error[] = Arr::get($this->rejeicoes, $msgAdicRetorno[3], '');
+                $error[] = Arr::get($this->rejeicoes, $msgAdicRetorno[4], '');
 
                 $error = array_filter($error);
 

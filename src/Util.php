@@ -4,6 +4,7 @@ namespace Eduardokum\LaravelBoleto;
 use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Illuminate\Support\Str;
 
 /**
  * Class Util
@@ -24,6 +25,7 @@ final class Util
         '000' => 'Banco Bankpar S.A.',
         '740' => 'Banco Barclays S.A.',
         '107' => 'Banco BBM S.A.',
+        '077' => 'Banco Inter S.A.',
         '031' => 'Banco Beg S.A.',
         '739' => 'Banco BGN S.A.',
         '096' => 'Banco BM&F de Serviços de Liquidação e Custódia S.A',
@@ -109,6 +111,7 @@ final class Util
         '082' => 'Banco Topázio S.A.',
         'M20' => 'Banco Toyota do Brasil S.A.',
         '634' => 'Banco Triângulo S.A.',
+        '136' => 'Banco Unicred do Brasil',
         'M14' => 'Banco Volkswagen S.A.',
         'M23' => 'Banco Volvo (Brasil) S.A.',
         '655' => 'Banco Votorantim S.A.',
@@ -299,7 +302,8 @@ final class Util
     /**
      * Função para limpar acentos de uma string
      *
-     * @param  string $string
+     * @param string $string
+     *
      * @return string
      */
     public static function normalizeChars($string)
@@ -317,7 +321,8 @@ final class Util
 
             'ß' => 'sz', 'þ' => 'thorn', 'º' => '', 'ª' => '', '°' => '',
         );
-        return preg_replace('/[^0-9a-zA-Z !*\-$\(\)\[\]\{\},.;:\/\\#%&@+=]/', '', strtr($string, $normalizeChars));
+
+        return preg_replace('/[^0-9a-zA-Z !+=*\-,.;:%@]/', '', strtr($string, $normalizeChars));
     }
 
     /**
@@ -806,7 +811,7 @@ final class Util
     {
         $i--;
 
-        if ($i > 398 || $f > 400) {
+        if (($i > 398 || $f > 400) && ($i != 401 && $f != 444)) {
             throw new \Exception('$ini ou $fim ultrapassam o limite máximo de 400');
         }
 
@@ -904,12 +909,12 @@ final class Util
     public static function fillClass(&$obj, array $params)
     {
         foreach ($params as $param => $value) {
-            $param = str_replace(' ', '', ucwords(str_replace('_', ' ', $param)));
+            $param = Str::camel($param);
             if (method_exists($obj, 'getProtectedFields') && in_array(lcfirst($param), $obj->getProtectedFields())) {
                 continue;
             }
-            if (method_exists($obj, 'set' . ucwords($param))) {
-                $obj->{'set' . ucwords($param)}($value);
+            if (method_exists($obj, 'set' . Str::camel($param))) {
+                $obj->{'set' . Str::camel($param)}($value);
             }
         }
     }
@@ -977,6 +982,7 @@ final class Util
             BoletoContract::COD_BANCO_BB => 'Banco\\Bb',
             BoletoContract::COD_BANCO_SANTANDER => 'Banco\\Santander',
             BoletoContract::COD_BANCO_CEF => 'Banco\\Caixa',
+            BoletoContract::COD_BANCO_INTER => 'Banco\\Inter',
             BoletoContract::COD_BANCO_BRADESCO => 'Banco\\Bradesco',
             BoletoContract::COD_BANCO_ITAU => 'Banco\\Itau',
             BoletoContract::COD_BANCO_HSBC => 'Banco\\Hsbc',
@@ -984,6 +990,7 @@ final class Util
             BoletoContract::COD_BANCO_BANRISUL => 'Banco\\Banrisul',
             BoletoContract::COD_BANCO_BANCOOB => 'Banco\\Bancoob',
             BoletoContract::COD_BANCO_BNB => 'Banco\\Bnb',
+            BoletoContract::COD_BANCO_UNICRED => 'Banco\\Unicred',
         ];
 
         if (array_key_exists($banco, $aBancos)) {

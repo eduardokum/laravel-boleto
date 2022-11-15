@@ -23,7 +23,7 @@ class Blade
      * Location where to store cached views
      * @var string
      */
-    public $cachePath;
+    public $cachePath = null;
 
     /**
      * @var \Illuminate\Container\Container
@@ -40,7 +40,7 @@ class Blade
      * @param array  $viewPaths
      * @param string $cachePath
      */
-    function __construct($viewPaths = array(), $cachePath) {
+    function __construct($viewPaths = array(), $cachePath = null) {
 
         $this->container = new Container;
         $this->viewPaths = (array) $viewPaths;

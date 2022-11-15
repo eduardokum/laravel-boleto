@@ -181,8 +181,6 @@ class Banrisul extends AbstractBoleto implements BoletoContract
      */
     public function getAgenciaCodigoBeneficiario()
     {
-        $codigoCliente = $this->getCodigoCliente();
-
-        return $codigoCliente;
+        return $this->getCodigoCliente();
     }
 }

@@ -222,7 +222,7 @@ class Bb extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @return $this
+     * @return Bb
      * @throws \Exception
      */
     protected function header()
@@ -256,13 +256,17 @@ class Bb extends AbstractRemessa implements RemessaContract
     /**
      * @param BoletoContract $boleto
      *
-     * @return mixed|void
+     * @return Bb
      * @throws \Exception
      */
     public function addBoleto(BoletoContract $boleto)
     {
         $this->boletos[] = $boleto;
-        $this->iniciaDetalhe();
+        if ($chaveNfe = $boleto->getChaveNfe()) {
+            $this->iniciaDetalheExtendido();
+        } else {
+            $this->iniciaDetalhe();
+        }
 
         $this->add(1, 1, 7);
         $this->add(2, 3, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? '02' : '01');
@@ -336,6 +340,9 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(392, 393, $diasProtesto);
         $this->add(394, 394, '');
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
+        if ($chaveNfe) {
+            $this->add(401, 444, Util::formatCnab('9', $chaveNfe, 44));
+        }
 
         if ($boleto->getMulta() > 0) {
             $this->iniciaDetalhe();
@@ -348,10 +355,12 @@ class Bb extends AbstractRemessa implements RemessaContract
             $this->add(23, 394, '');
             $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
         }
+
+        return $this;
     }
 
     /**
-     * @return $this
+     * @return Bb
      * @throws \Exception
      */
     protected function trailer()

@@ -195,6 +195,27 @@ class CalculoDV
     {
         return Util::modulo11($nossoNumero);
     }
+	
+    /*
+    |--------------------------------------------------------------------------
+    | 136 - Unicred
+    |--------------------------------------------------------------------------
+    */
+    public static function unicredAgencia($agencia)
+    {
+        $dv = Util::modulo11($agencia);
+        return $dv == 11 ? 0 : $dv;
+    }
+
+    public static function unicredContaCorrente($contaCorrente)
+    {
+        return Util::modulo11($contaCorrente);
+    }
+
+    public static function unicredNossoNumero($nossoNumero)
+    {
+        return Util::modulo11( Util::numberFormatGeral($nossoNumero, 10) );
+    }
 
     /*
     |--------------------------------------------------------------------------

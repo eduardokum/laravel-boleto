@@ -5,6 +5,7 @@ use Carbon\Carbon;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Illuminate\Support\Str;
 
 abstract class AbstractRemessa
 {
@@ -138,6 +139,14 @@ abstract class AbstractRemessa
     public function __construct($params = [])
     {
         Util::fillClass($this, $params);
+    }
+
+    /**
+     * @return string
+     */
+    public function getFimLinha()
+    {
+        return $this->fimLinha;
     }
 
     /**
@@ -375,7 +384,7 @@ abstract class AbstractRemessa
     public function isValid(&$messages)
     {
         foreach ($this->camposObrigatorios as $campo) {
-            $test = call_user_func([$this, 'get' . ucwords($campo)]);
+            $test = call_user_func([$this, 'get' . Str::camel($campo)]);
             if ($test === '' || is_null($test)) {
                 $messages .= "Campo $campo está em branco";
                 return false;
@@ -473,18 +482,19 @@ abstract class AbstractRemessa
      * Valida se a linha esta correta.
      *
      * @param array $a
+     * @param int   $extendido
      *
      * @return string
      * @throws \Exception
      */
-    protected function valida(array $a)
+    protected function valida(array $a, $extendido = 0)
     {
         if ($this->tamanho_linha === false) {
             throw new \Exception('Classe remessa deve informar o tamanho da linha');
         }
 
         $a = array_filter($a, 'mb_strlen');
-        if (count($a) != $this->tamanho_linha) {
+        if (count($a) != $this->tamanho_linha + $extendido) {
             throw new \Exception(sprintf('$a não possui %s posições, possui: %s', $this->tamanho_linha, count($a)));
         }
 
@@ -502,12 +512,13 @@ abstract class AbstractRemessa
     /**
      * Salva o arquivo no path informado
      *
-     * @param $path
+     * @param      $path
+     * @param bool $suggestName
      *
      * @return mixed
      * @throws \Exception
      */
-    public function save($path)
+    public function save($path, $suggestName = false)
     {
         $folder = dirname($path);
         if (! is_dir($folder)) {
@@ -518,10 +529,22 @@ abstract class AbstractRemessa
             throw new \Exception('Path ' . $folder . ' não possui permissao de escrita');
         }
 
+        if ($suggestName) {
+            $path = rtrim(dirname($path), '/') . '/' . ltrim($this->nomeSugerido(), '/');
+        }
+
         $string = $this->gerar();
         file_put_contents($path, $string);
 
         return $path;
+    }
+
+    /**
+     * @return string
+     */
+    public function nomeSugerido()
+    {
+        return 'remessa.txt';
     }
 
     /**
@@ -534,7 +557,7 @@ abstract class AbstractRemessa
     public function download($filename = null)
     {
         if ($filename === null) {
-            $filename = 'remessa.txt';
+            $filename = $this->nomeSugerido();
         }
         header('Content-type: text/plain');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
