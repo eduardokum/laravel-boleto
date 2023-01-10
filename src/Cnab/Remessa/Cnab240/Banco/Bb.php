@@ -77,6 +77,20 @@ class Bb extends AbstractRemessa implements RemessaContract
     protected $variacaoCarteira;
 
     /**
+     * Variação da carteira
+     *
+     * @var string
+     */
+    protected $identificacaoDistribuicao;
+
+    /**
+     * Variação da carteira
+     *
+     * @var string
+     */
+    protected $qtdeContasConc;
+
+    /**
      * @return mixed
      */
     public function getConvenio()
@@ -141,6 +155,54 @@ class Bb extends AbstractRemessa implements RemessaContract
     }
 
     /**
+     * Retorna identificação da distribuição. Campo C010 da Febraban.
+     *
+     * @return string
+     */
+    public function getIdentificacaoDistribuicao()
+    {
+        return $this->identificacaoDistribuicao;
+    }
+
+    /**
+     * Seta a identificação da distribuição. Campo C010 da Febraban.
+     *
+     * @param string $identificacaoDistribuicao
+     *
+     * @return Bb
+     */
+    public function setIdentificacaoDistribuicao($identificacaoDistribuicao)
+    {
+        $this->identificacaoDistribuicao = $identificacaoDistribuicao;
+
+        return $this;
+    }
+
+    /**
+     * Retorna Quantidade de Contas para Conciliação (Lotes). Código G037 da Febraban.
+     *
+     * @return string
+     */
+    public function getQtdeContasConc()
+    {
+        return $this->qtdeContasConc;
+    }
+
+    /**
+     * Seta a Quantidade de Contas para Conciliação (Lotes). Código G037 da Febraban.
+     *
+     * @param string $identificacaoDistribuicao
+     *
+     * @return Bb
+     */
+    public function setQtdeContasConc($qtdeContasConc)
+    {
+        $this->qtdeContasConc = $qtdeContasConc;
+
+        return $this;
+    }
+
+    /**
      * @param BoletoContract $boleto
      *
      * @return $this
@@ -196,7 +258,7 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(59, 59, '');
         $this->add(60, 60, '');
         $this->add(61, 61, '');
-        $this->add(62, 62, '');
+        $this->add(62, 62, Util::formatCnab('9', $this->getIdentificacaoDistribuicao() ?? '0', 1));
         $this->add(63, 77, Util::formatCnab('9', $boleto->getNumeroDocumento(), 15)); //valor do número do documento
         $this->add(78, 85, $boleto->getDataVencimento()->format('dmY'));
         $this->add(86, 100, Util::formatCnab('9', $boleto->getValor(), 15, 2));
@@ -445,7 +507,7 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(9, 17, '');
         $this->add(18, 23, Util::formatCnab('9', 1, 6));
         $this->add(24, 29, Util::formatCnab('9', $this->getCount(), 6));
-        $this->add(30, 35, '000001');
+        $this->add(30, 35, Util::formatCnab('9', $this->getQtdeContasConc() ?? '000001', 6));
         $this->add(36, 240, '');
 
         return $this;
