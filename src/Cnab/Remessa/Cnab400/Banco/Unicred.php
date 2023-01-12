@@ -1,7 +1,6 @@
 <?php
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
-use DeepCopyTest\B;
 use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
@@ -140,7 +139,7 @@ class Unicred extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @param BoletoContract $boleto
+     * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Unicred $boleto
      *
      * @return $this
      * @throws \Exception

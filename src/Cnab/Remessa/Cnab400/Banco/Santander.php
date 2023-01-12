@@ -152,7 +152,7 @@ class Santander extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @param BoletoContract $boleto
+     * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Santander $boleto
      *
      * @return Santander
      * @throws \Exception

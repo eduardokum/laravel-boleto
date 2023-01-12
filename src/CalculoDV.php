@@ -1,6 +1,8 @@
 <?php
 namespace Eduardokum\LaravelBoleto;
 
+use const PHP_EOL;
+
 class CalculoDV
 {
 
@@ -237,6 +239,44 @@ class CalculoDV
     {
         return Util::modulo11($carteira . Util::numberFormatGeral($nossoNumero, 11), 2, 7, 0, 'P');
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | 224 - Fibra
+    |--------------------------------------------------------------------------
+    */
+    public static function fibraAgencia($agencia)
+    {
+        return Util::modulo11($agencia);
+    }
+
+    public static function fibraConta($conta)
+    {
+        return Util::modulo11($conta);
+    }
+
+    public static function fibraNossoNumero($agencia, $nossaCarteira, $numero_boleto)
+    {
+        $n = Util::numberFormatGeral($agencia, 4)
+            . Util::numberFormatGeral($nossaCarteira, 3)
+            . Util::numberFormatGeral($numero_boleto, 10);
+
+        $n = strrev($n);
+        $factor=2;
+        $sum = 0;
+        for ($i = mb_strlen($n); $i > 0; $i--) {
+            $parcial = ((int) mb_substr($n, $i - 1, 1))*$factor;
+            if ($parcial > 9) {
+                $parcial = (int) mb_substr($parcial, 0, 1) + (int) mb_substr($parcial, 1, 1);
+            }
+            $sum += $parcial;
+            if ($factor == 2) {
+                $factor = 0;
+            }
+            $factor++;
+        }
+        return 10 - $sum%10;
+    }
 	
     /*
     |--------------------------------------------------------------------------
@@ -271,6 +311,44 @@ class CalculoDV
             . Util::numberFormatGeral($carteira, 3)
             . Util::numberFormatGeral($numero_boleto, 8);
         return Util::modulo10($n);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | 643 - Pine
+    |--------------------------------------------------------------------------
+    */
+    public static function pineAgencia($agencia)
+    {
+        return Util::modulo11($agencia);
+    }
+
+    public static function pineConta($conta)
+    {
+        return Util::modulo11($conta);
+    }
+
+    public static function pineNossoNumero($agencia, $nossaCarteira, $numero_boleto)
+    {
+        $n = Util::numberFormatGeral($agencia, 4)
+            . Util::numberFormatGeral($nossaCarteira, 3)
+            . Util::numberFormatGeral($numero_boleto, 10);
+
+        $n = strrev($n);
+        $factor=2;
+        $sum = 0;
+        for ($i = mb_strlen($n); $i > 0; $i--) {
+            $parcial = ((int) mb_substr($n, $i - 1, 1))*$factor;
+            if ($parcial > 9) {
+                $parcial = (int) mb_substr($parcial, 0, 1) + (int) mb_substr($parcial, 1, 1);
+            }
+            $sum += $parcial;
+            if ($factor == 2) {
+                $factor = 0;
+            }
+            $factor++;
+        }
+        return 10 - $sum%10;
     }
 
     /*

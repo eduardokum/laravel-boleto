@@ -153,7 +153,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @param BoletoContract $boleto
+     * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Bancoob $boleto
      *
      * @return Bancoob
      * @throws \Exception
@@ -161,7 +161,6 @@ class Bancoob extends AbstractRemessa implements RemessaContract
     public function addBoleto(BoletoContract $boleto)
     {
         $this->boletos[] = $boleto;
-
         if ($chaveNfe = $boleto->getChaveNfe()) {
             $this->iniciaDetalheExtendido();
         } else {

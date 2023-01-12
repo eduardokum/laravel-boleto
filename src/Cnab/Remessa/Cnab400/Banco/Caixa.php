@@ -145,7 +145,7 @@ class Caixa  extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @param BoletoContract $boleto
+     * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Caixa $boleto
      *
      * @return Caixa
      * @throws \Exception

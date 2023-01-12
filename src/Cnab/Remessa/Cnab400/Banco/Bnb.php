@@ -106,7 +106,7 @@ class Bnb extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @param BoletoContract $boleto
+     * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Bnb $boleto
      *
      * @return Bnb
      * @throws \Exception

@@ -506,7 +506,12 @@ final class Util
     public static function fatorVencimento($date, $format = 'Y-m-d')
     {
         $date = ($date instanceof Carbon) ? $date : Carbon::createFromFormat($format, $date)->setTime(0, 0, 0);
-        return (new Carbon('1997-10-07'))->diffInDays($date);
+        $fator = (new Carbon('1997-10-07'))->diffInDays($date);
+        $limit = $fator % 9000;
+        if ($limit >= 1000) {
+            return $limit;
+        }
+        return $limit + 9000;
     }
 
     /**
@@ -961,7 +966,9 @@ final class Util
             'valor' => ((float) substr($barras, 9, 10)) / 100,
             'campo_livre' => substr($barras, -25),
         ];
+
         $class = __NAMESPACE__ . '\\Boleto\\' . self::getBancoClass($variaveis['banco']);
+
         if (method_exists($class, 'parseCampoLivre')) {
             $variaveis['campo_livre_parsed'] = $class::parseCampoLivre($variaveis['campo_livre']);
         } else {
@@ -981,18 +988,20 @@ final class Util
 
         $aBancos = [
             BoletoContract::COD_BANCO_BB => 'Banco\\Bb',
+            BoletoContract::COD_BANCO_BNB => 'Banco\\Bnb',
             BoletoContract::COD_BANCO_SANTANDER => 'Banco\\Santander',
-            BoletoContract::COD_BANCO_CEF => 'Banco\\Caixa',
+            BoletoContract::COD_BANCO_BANRISUL => 'Banco\\Banrisul',
             BoletoContract::COD_BANCO_INTER => 'Banco\\Inter',
+            BoletoContract::COD_BANCO_CEF => 'Banco\\Caixa',
+            BoletoContract::COD_BANCO_UNICRED => 'Banco\\Unicred',
             BoletoContract::COD_BANCO_BRADESCO => 'Banco\\Bradesco',
+            BoletoContract::COD_BANCO_FIBRA => 'Banco\\Fibra',
             BoletoContract::COD_BANCO_ITAU => 'Banco\\Itau',
             BoletoContract::COD_BANCO_HSBC => 'Banco\\Hsbc',
+            BoletoContract::COD_BANCO_DELCRED => 'Banco\\Delbank',
+            BoletoContract::COD_BANCO_PINE => 'Banco\\Pine',
             BoletoContract::COD_BANCO_SICREDI => 'Banco\\Sicredi',
-            BoletoContract::COD_BANCO_BANRISUL => 'Banco\\Banrisul',
             BoletoContract::COD_BANCO_BANCOOB => 'Banco\\Bancoob',
-            BoletoContract::COD_BANCO_BNB => 'Banco\\Bnb',
-            BoletoContract::COD_BANCO_UNICRED => 'Banco\\Unicred',
-            BoletoContract::COD_BANCO_DELCRED => 'Banco\\Delbank'
         ];
 
         if (array_key_exists($banco, $aBancos)) {

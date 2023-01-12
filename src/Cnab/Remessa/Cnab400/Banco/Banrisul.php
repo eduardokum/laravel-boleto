@@ -235,7 +235,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @param BoletoContract $boleto
+     * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Banrisul $boleto
      *
      * @return Banrisul
      * @throws \Exception

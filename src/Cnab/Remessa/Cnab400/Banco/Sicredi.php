@@ -141,7 +141,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @param BoletoContract $boleto
+     * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Sicredi $boleto
      *
      * @return Sicredi
      * @throws \Exception

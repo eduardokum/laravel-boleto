@@ -45,27 +45,12 @@ class Factory
             $namespace = __NAMESPACE__ . '\\Cnab240\\';
         }
 
-        $aBancos = [
-            BoletoContract::COD_BANCO_BB => 'Banco\\Bb',
-            BoletoContract::COD_BANCO_SANTANDER => 'Banco\\Santander',
-            BoletoContract::COD_BANCO_CEF => 'Banco\\Caixa',
-            BoletoContract::COD_BANCO_INTER => 'Banco\\Inter',
-            BoletoContract::COD_BANCO_BRADESCO => 'Banco\\Bradesco',
-            BoletoContract::COD_BANCO_ITAU => 'Banco\\Itau',
-            BoletoContract::COD_BANCO_HSBC => 'Banco\\Hsbc',
-            BoletoContract::COD_BANCO_SICREDI => 'Banco\\Sicredi',
-            BoletoContract::COD_BANCO_BANRISUL => 'Banco\\Banrisul',
-            BoletoContract::COD_BANCO_BANCOOB => 'Banco\\Bancoob',
-            BoletoContract::COD_BANCO_BNB => 'Banco\\Bnb',
-            BoletoContract::COD_BANCO_UNICRED => 'Banco\\Unicred',
-            BoletoContract::COD_BANCO_DELCRED => 'Banco\\Delbank',
-        ];
+        $bancoClass = $namespace . Util::getBancoClass($banco);
 
-        if (array_key_exists($banco, $aBancos)) {
-            $bancoClass = $namespace . Util::getBancoClass($banco);
-            return new $bancoClass($file_content);
+        if (!class_exists($bancoClass)) {
+            throw new \Exception("Banco não possui essa versão de CNAB");
         }
 
-        throw new \Exception("Banco: $banco, inválido");
+        return new $bancoClass($file_content);
     }
 }

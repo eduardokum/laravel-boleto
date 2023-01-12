@@ -127,7 +127,7 @@ abstract class AbstractRemessa
     /**
      * Define as carteiras disponíveis para cada banco
      *
-     * @var array
+     * @var array|bool
      */
     protected $carteiras = [];
 
@@ -369,7 +369,7 @@ abstract class AbstractRemessa
      */
     public function setCarteira($carteira)
     {
-        if (!in_array($carteira, $this->getCarteiras())) {
+        if ($this->getCarteiras() !== false && !in_array($carteira, $this->getCarteiras())) {
             throw new \Exception("Carteira não disponível!");
         }
         $this->carteira = $carteira;
@@ -400,7 +400,7 @@ abstract class AbstractRemessa
     /**
      * Retorna as carteiras disponíveis para este banco
      *
-     * @return array
+     * @return array|bool
      */
     public function getCarteiras()
     {

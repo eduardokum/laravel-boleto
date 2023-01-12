@@ -164,7 +164,7 @@ class Itau extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @param BoletoContract $boleto
+     * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Itau $boleto
      *
      * @return Itau
      * @throws \Exception

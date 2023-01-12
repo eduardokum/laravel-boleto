@@ -141,7 +141,7 @@ class Hsbc extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @param BoletoContract $boleto
+     * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Hsbc $boleto
      *
      * @return Hsbc
      * @throws \Exception
@@ -221,7 +221,7 @@ class Hsbc extends AbstractRemessa implements RemessaContract
         $this->add(350, 351, Util::formatCnab('X', $boleto->getPagador()->getUf(), 2));
         $this->add(352, 390, Util::formatCnab('X', $boleto->getSacadorAvalista() ? $boleto->getSacadorAvalista()->getNome() : '', 39));
         $this->add(391, 391, '');
-        $this->add(392, 393, Util::formatCnab('9', $boleto->getDiasProtesto('  '), 2));
+        $this->add(392, 393, Util::formatCnab('9', $boleto->getDiasProtesto(''), 2));
         $this->add(394, 394, $boleto->getMoeda());
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
         if ($chaveNfe) {

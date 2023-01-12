@@ -74,7 +74,7 @@ class Inter extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @param BoletoContract $boleto
+     * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Inter $boleto
      *
      * @return Inter
      * @throws \Exception
