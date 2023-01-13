@@ -194,9 +194,6 @@ class Pine extends AbstractRemessa implements RemessaContract
         if ($chaveNfe = $boleto->getChaveNfe()) {
             $this->iniciaDetalhe();
             $this->add(1, 1, '4');
-            $this->add(2, 16, Util::formatCnab('X', 12425, 15));
-            $this->add(17, 29, Util::formatCnab('9', Util::formatCnab('9', 1427.93, 13, 2), 13));
-            $this->add(30, 37, '10012023');
             $this->add(38, 81, Util::formatCnab('9', $chaveNfe, 44));
             $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
         }
