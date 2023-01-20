@@ -95,6 +95,7 @@ class UtilTest extends TestCase
         $this->assertEquals('7019', Util::fatorVencimento('2016-12-25'));
         $this->assertEquals('2016-12-25', Util::fatorVencimentoBack('7019'));
         $this->assertEquals('3606', Util::dataJuliano('2016-12-25'));
+        $this->assertEquals('1174', Util::fatorVencimento('2025-08-15'));
     }
 
     public function testNumeros() {
