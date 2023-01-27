@@ -38,7 +38,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
     const PROTESTO_NAO_PROTESTAR = '3';
     const PROTESTO_AUTOMATICO = '9';
 
-    public function __construct(array $params)
+    public function __construct(array $params = [])
     {
         parent::__construct($params);
         $this->setCarteira('A'); //Carteira Simples 'A'

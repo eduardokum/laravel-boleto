@@ -33,7 +33,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
     const INSTRUCAO_SEM = '00';
     const INSTRUCAO_PROTESTO = '06';
 
-    public function __construct(array $params)
+    public function __construct(array $params = [])
     {
         parent::__construct($params);
         $this->setCarteira('A'); //Carteira Simples 'A'
