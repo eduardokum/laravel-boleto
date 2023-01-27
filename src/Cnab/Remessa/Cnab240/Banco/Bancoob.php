@@ -76,6 +76,28 @@ class Bancoob extends AbstractRemessa implements RemessaContract
      */
     protected $fimArquivo = "";
 
+    protected $convenio;
+
+    /**
+     * @return mixed
+     */
+    public function getConvenio()
+    {
+        return $this->convenio;
+    }
+
+    /**
+     * @param mixed $convenio
+     *
+     * @return Bancoob
+     */
+    public function setConvenio($convenio)
+    {
+        $this->convenio = ltrim($convenio, 0);
+
+        return $this;
+    }
+    
     /**
      * @param BoletoContract $boleto
      *

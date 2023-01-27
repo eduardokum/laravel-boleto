@@ -79,6 +79,13 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     protected $codigoCliente;
 
     /**
+     * Codigo do cliente office banking junto ao banco.
+     *
+     * @var string
+     */
+    protected $codigoClienteOfficeBanking;
+
+    /**
      * Retorna o codigo do cliente.
      *
      * @return mixed
@@ -98,6 +105,30 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     public function setCodigoCliente($codigoCliente)
     {
         $this->codigoCliente = $codigoCliente;
+
+        return $this;
+    }
+
+    /**
+     * Retorna o codigo do cliente office banking.
+     *
+     * @return mixed
+     */
+    public function getCodigoClienteOfficeBanking()
+    {
+        return $this->codigoClienteOfficeBanking;
+    }
+
+    /**
+     * Seta o codigo do cliente office banking.
+     *
+     * @param mixed $officeBanking
+     *
+     * @return Banrisul
+     */
+    public function setCodigoClienteOfficeBanking($officeBanking)
+    {
+        $this->codigoClienteOfficeBanking = $officeBanking;
 
         return $this;
     }
