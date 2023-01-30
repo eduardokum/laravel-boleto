@@ -101,10 +101,12 @@ class RemessaCnab240Test extends TestCase
 //    }
 
     public function testRemessaItauCnab240(){
+        
         $boleto = new Boleto\Itau([
             'logo' => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '033.png',
             'dataVencimento' => new \Carbon\Carbon(),
             'valor' => 100,
+            'valorAbatimento' => 15.00,
             'multa' => false,
             'juros' => false,
             'numero' => 1,

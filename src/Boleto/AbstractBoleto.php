@@ -51,7 +51,17 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @var float
      */
+    
     protected $valor;
+
+     /**
+     * Valor do abatimento
+     *
+     * @var float
+     */
+    protected $valorAbatimento;
+
+
     /**
      * Desconto total do boleto
      *
@@ -1047,6 +1057,7 @@ abstract class AbstractBoleto implements BoletoContract
         return $this;
     }
 
+    
     /**
      * Retorna o valor total do boleto (incluindo taxas)
      *
@@ -1055,6 +1066,30 @@ abstract class AbstractBoleto implements BoletoContract
     public function getValor()
     {
         return Util::nFloat($this->valor, 2, false);
+    }
+
+     /**
+     * Define o valor do abatimento
+     *
+     * @param  string $valorAbatimento
+     *
+     * @return AbstractBoleto
+     */
+    public function setValorAbatimento($valorAbatimento)
+    {
+        $this->valorAbatimento = Util::nFloat($valorAbatimento, 2, false);
+
+        return $this;
+    }
+
+    /**
+     * Retorna o valor do abatimento
+     *
+     * @return string
+     */
+    public function getValorAbatimento()
+    {
+        return Util::nFloat($this->valorAbatimento, 2, false);
     }
 
     /**

@@ -200,7 +200,7 @@ class Hsbc extends AbstractRemessa implements RemessaContract
             $this->add(206, 215, Util::formatCnab('9', $boleto->getMulta(), 2, 2));
             $this->add(206, 218, Util::formatCnab('9', $boleto->getJurosApos(), 3));
         } else {
-            $this->add(206, 218, Util::formatCnab('9', 0, 13, 2));
+            $this->add(206, 218, Util::formatCnab('9', $boleto->getValorAbatimento(), 13, 2));
         }
         $this->add(161, 173, Util::formatCnab('9', $boleto->getMoraDia(), 13, 2));
         $this->add(174, 179, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmy') : '000000');

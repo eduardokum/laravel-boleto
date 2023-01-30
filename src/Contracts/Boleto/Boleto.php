@@ -125,6 +125,12 @@ interface Boleto
      */
     public function getValor();
 
+
+    /**
+     * @return mixed
+     */
+    public function getValorAbatimento();
+
     /**
      * @return mixed
      */
