@@ -82,11 +82,7 @@ class Inter extends AbstractRemessa implements RemessaContract
     public function addBoleto(BoletoContract $boleto)
     {
         $this->boletos[] = $boleto;
-        if ($chaveNfe = $boleto->getChaveNfe()) {
-            $this->iniciaDetalheExtendido();
-        } else {
-            $this->iniciaDetalhe();
-        }
+        $this->iniciaDetalhe();
 
         $demonstrativo = array_filter($boleto->getDescricaoDemonstrativo());
 
@@ -127,9 +123,6 @@ class Inter extends AbstractRemessa implements RemessaContract
         $this->add(317, 324, Util::formatCnab('9', Util::onlyNumbers($boleto->getPagador()->getCep()), 8));
         $this->add(325, 394, Util::formatCnab('X', array_key_exists(0, $demonstrativo) ? $demonstrativo[0] : '', 70));
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
-        if ($chaveNfe) {
-            $this->add(401, 444, Util::formatCnab('9', $chaveNfe, 44));
-        }
 
         if (count($demonstrativo) > 1) {
             $this->iniciaDetalhe();
