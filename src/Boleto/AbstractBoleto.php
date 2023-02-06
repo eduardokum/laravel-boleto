@@ -924,6 +924,16 @@ abstract class AbstractBoleto implements BoletoContract
     {
         return array_slice((array)$this->instrucoes + [null, null, null, null, null, null, null, null], 0, 8);
     }
+    
+    public function setLinhaDigitavel($linha_digitavel)
+    {
+        $this->campoLinhaDigitavel = $linha_digitavel;
+    }
+
+    public function setCodigoBarras($codigo_barras)
+    {
+        $this->campoCodigoBarras = $codigo_barras;
+    }
 
     /**
      * Define um array com instruções (máximo 5) para impressao
