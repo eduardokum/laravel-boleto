@@ -778,7 +778,7 @@ final class Util
     public static function remove($i, $f, &$array)
     {
         if (is_string($array)) {
-            $array = preg_split('//u', rtrim($array, chr(10) . chr(13) . "\n" . "\r"), null, PREG_SPLIT_NO_EMPTY);
+            $array = preg_split('//u', rtrim($array, chr(10) . chr(13) . "\n" . "\r"), -1, PREG_SPLIT_NO_EMPTY);
         }
 
         $i--;
