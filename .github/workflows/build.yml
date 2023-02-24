@@ -19,6 +19,8 @@ jobs:
                 dependency-version: [ prefer-stable ]
                 os: [ ubuntu-latest ]
                 include:
+                    -   laravel: 10.*
+                        testbench: 8.*
                     -   laravel: 9.*
                         testbench: 7.*
                     -   laravel: 8.*
