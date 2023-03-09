@@ -130,7 +130,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(60, 60, '1'); //'1' = Tradicional
         $this->add(61, 61, '2'); //'2' = Beneficiário emite
         $this->add(62, 62, '2'); //'2' = Beneficiário distribui
-        $this->add(63, 77, Util::formatCnab('9', $boleto->getNumeroDocumento(), 15));
+        $this->add(63, 77, Util::formatCnab('X', $boleto->getNumeroDocumento(), 15));
         $this->add(78, 85, $boleto->getDataVencimento()->format('dmY'));
         $this->add(86, 100, Util::formatCnab('9', $boleto->getValor(), 15, 2));
         $this->add(101, 105, '00000');
