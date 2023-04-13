@@ -247,7 +247,7 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(85, 87, '');
         $this->add(88, 88, ($boleto->getSacadorAvalista() ? 'A' : ''));
         $this->add(89, 91, '');
-        $this->add(92, 94, Util::formatCnab('9', $this->getVariacaoCarteira(), 3));
+        $this->add(92, 94, '019');
         $this->add(95, 95, '0');
         $this->add(96, 101, '000000');
         $this->add(102, 106, '');
