@@ -33,7 +33,10 @@ class Pessoa implements PessoaContract
      * @var string
      */
     protected $documento;
-
+    /**
+     * @var string
+     */
+    protected $email;
     /**
      * @var boolean
      */
@@ -50,7 +53,7 @@ class Pessoa implements PessoaContract
      *
      * @return Pessoa
      */
-    public static function create($nome, $documento, $endereco = null, $bairro = null, $cep = null, $cidade = null, $uf = null)
+    public static function create($nome, $documento, $endereco = null, $bairro = null, $cep = null, $cidade = null, $uf = null, $email = null)
     {
         return new static([
             'nome' => $nome,
@@ -60,6 +63,7 @@ class Pessoa implements PessoaContract
             'uf' => $uf,
             'cidade' => $cidade,
             'documento' => $documento,
+            'email' => $email,
         ]);
     }
 
@@ -317,6 +321,27 @@ class Pessoa implements PessoaContract
 
         return $this;
     }
+
+    /**
+     * @param string $email
+     *
+     * @return Pessoa
+     */
+    public function setEmail(string $email)
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
     /**
      * @return array
      */
@@ -333,6 +358,7 @@ class Pessoa implements PessoaContract
             'nome_documento' => $this->getNomeDocumento(),
             'endereco2' => $this->getCepCidadeUf(),
 			'endereco_completo' => $this->getEnderecoCompleto(),
+			'email' => $this->getEmail(),
             'dda' => $this->isDda(),
         ];
     }
