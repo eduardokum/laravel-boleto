@@ -777,7 +777,7 @@ class RemessaCnab400Test extends TestCase
         $boleto = new Boleto\Inter(
             [
                 'logo'            => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '077.png',
-                'dataVencimento'  => (new \Carbon\Carbon())->addDays(),
+                'dataVencimento'  => new \Carbon\Carbon(),
                 'valor'           => 10,
                 'multa'           => false,
                 'juros'           => false,

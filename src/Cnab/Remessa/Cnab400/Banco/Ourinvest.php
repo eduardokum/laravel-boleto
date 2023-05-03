@@ -196,7 +196,7 @@ class Ourinvest extends AbstractRemessa implements RemessaContract
         return sprintf(
             'CB%02s%02s01.REM',
             date('d'),
-            date('m'),
+            date('m')
         );
     }
 
