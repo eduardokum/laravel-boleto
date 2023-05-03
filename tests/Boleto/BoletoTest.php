@@ -485,6 +485,93 @@ class BoletoTest extends TestCase
         $this->assertNotNull($boleto->renderPDF());
     }
 
+    public function testBoletoPine()
+    {
+        $boleto = new Boleto\Pine(
+            [
+                'logo'                   => realpath(__DIR__ . '/../../logos/') . DIRECTORY_SEPARATOR . '643.png',
+                'dataVencimento'         => new \Carbon\Carbon('2023-03-09'),
+                'valor'                  => 10,
+                'multa'                  => false,
+                'juros'                  => false,
+                'numero'                 => 1,
+                'numeroDocumento'        => 1,
+                'range'                  => 0,
+                'pagador'                => self::$pagador,
+                'beneficiario'           => self::$beneficiario,
+                'carteira'               => '112',
+                'agencia'                => '0001',
+                'codigoCliente'          => '12345',
+                'conta'                  => '1234',
+                'modalidadeCarteira'     => '1',
+                'descricaoDemonstrativo' => ['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'],
+                'instrucoes'             => ['instrucao 1', 'instrucao 2', 'instrucao 3'],
+                'aceite'                 => 'N',
+                'especieDoc'             => 'DM',
+            ]
+        );
+        $this->assertThat($boleto->toArray(), (new IsType(IsType::TYPE_ARRAY)));
+        $this->assertNotNull($boleto->renderHTML());
+        $this->assertNotNull($boleto->renderPDF());
+    }
+
+    public function testBoletoFibra()
+    {
+        $boleto = new Boleto\Fibra(
+            [
+                'logo'                   => realpath(__DIR__ . '/../../logos/') . DIRECTORY_SEPARATOR . '224.png',
+                'dataVencimento'         => new \Carbon\Carbon('2023-01-04'),
+                'valor'                  => 10,
+                'multa'                  => false,
+                'juros'                  => false,
+                'numero'                 => 1,
+                'numeroDocumento'        => 1,
+                'range'                  => 0,
+                'pagador'                => self::$pagador,
+                'beneficiario'           => self::$beneficiario,
+                'modalidadeCarteira'     => 'D',
+                'carteira'               => 112,
+                'agencia'                => '0001',
+                'codigoCliente'          => '12345',
+                'conta'                  => '1234567',
+                'descricaoDemonstrativo' => ['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'],
+                'instrucoes'             => ['instrucao 1', 'instrucao 2', 'instrucao 3'],
+                'aceite'                 => 'N',
+                'especieDoc'             => 'DM',
+            ]
+        );
+        $this->assertThat($boleto->toArray(), (new IsType(IsType::TYPE_ARRAY)));
+        $this->assertNotNull($boleto->renderHTML());
+        $this->assertNotNull($boleto->renderPDF());
+    }
+
+    public function testBoletoOurinvest()
+    {
+        $boleto = new Boleto\Ourinvest(
+            [
+                'logo'                   => realpath(__DIR__ . '/../../logos/') . DIRECTORY_SEPARATOR . '712.png',
+                'dataVencimento' => new \Carbon\Carbon(),
+                'valor' => 100,
+                'multa' => false,
+                'juros' => false,
+                'numero' => 2,
+                'numeroDocumento' => 2,
+                'pagador' => self::$pagador,
+                'beneficiario' => self::$beneficiario,
+                'carteira' => '19',
+                'agencia' => 0001,
+                'conta' => 9999999,
+                'descricaoDemonstrativo' => ['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'],
+                'instrucoes' =>  ['instrucao 1', 'instrucao 2', 'instrucao 3'],
+                'aceite' => 'S',
+                'especieDoc' => 'DM'
+            ]
+        );
+        $this->assertThat($boleto->toArray(), (new IsType(IsType::TYPE_ARRAY)));
+        $this->assertNotNull($boleto->renderHTML());
+        $this->assertNotNull($boleto->renderPDF());
+    }
+
     public function testBoletoBBWithQRCodePix()
     {
         $boleto = new Boleto\Bb(

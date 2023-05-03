@@ -19,6 +19,7 @@ class PessoaTest extends TestCase
         $uf = 'UF';
         $cidade = 'CIDADE';
         $documento = '99999999999';
+        $email = 'email@dominio.com';
 
         $pessoa = new Pessoa(
             [
@@ -29,6 +30,7 @@ class PessoaTest extends TestCase
                 'uf' => $uf,
                 'cidade' => $cidade,
                 'documento' => $documento,
+                'email' => $email
             ]
         );
 
@@ -38,6 +40,7 @@ class PessoaTest extends TestCase
         $this->assertEquals(Util::maskString($cep, '#####-###'), $pessoa->getCep());
         $this->assertEquals($uf, $pessoa->getUf());
         $this->assertEquals($cidade, $pessoa->getCidade());
+        $this->assertEquals($email, $pessoa->getEmail());
         $this->assertEquals(Util::maskString($documento, '###.###.###-##'), $pessoa->getDocumento());
         $this->assertEquals('CPF', $pessoa->getTipoDocumento());
 
@@ -85,6 +88,7 @@ class PessoaTest extends TestCase
         $uf = 'UF';
         $cidade = 'CIDADE';
         $documento = '99999999999';
+        $email = 'email@dominio.com';
 
         $pessoa = new Pessoa(
             [
@@ -95,10 +99,11 @@ class PessoaTest extends TestCase
                 'uf' => $uf,
                 'cidade' => $cidade,
                 'documento' => $documento,
+                'email' => $email,
             ]
         );
 
-        $pessoa2 = Pessoa::create($nome, $documento, $endereco, $bairro, $cep, $cidade, $uf);
+        $pessoa2 = Pessoa::create($nome, $documento, $endereco, $bairro, $cep, $cidade, $uf, $email);
 
         $pessoa_contrutor = new \ReflectionClass($pessoa);
         $pessoa_create = new \ReflectionClass($pessoa2);

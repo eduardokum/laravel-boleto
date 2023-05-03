@@ -170,4 +170,10 @@ class Inter extends AbstractRemessa implements RemessaContract
             $this->getIdremessa()
         );
     }
+
+    public function save($path, $suggestName = true)
+    {
+        return parent::save($path, $suggestName);
+    }
+
 }

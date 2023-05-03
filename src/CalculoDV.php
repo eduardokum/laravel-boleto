@@ -16,9 +16,9 @@ class CalculoDV
         return Util::modulo11($agencia, 2, 9, 0, 'X');
     }
 
-    public static function bbContaCorrente($contaCorrente)
+    public static function bbContaCorrente($conta)
     {
-        return Util::modulo11($contaCorrente, 2, 9, 0, 'X');
+        return Util::modulo11($conta, 2, 9, 0, 'X');
     }
 
     public static function bbNossoNumero($nossoNumero)
@@ -83,11 +83,11 @@ class CalculoDV
     | 033 - Santander
     |--------------------------------------------------------------------------
     */
-    public static function santanderContaCorrente($agencia, $contaCorrente)
+    public static function santanderContaCorrente($agencia, $conta)
     {
         $n = Util::numberFormatGeral($agencia, 4)
             . '00'
-            . Util::numberFormatGeral($contaCorrente, 8);
+            . Util::numberFormatGeral($conta, 8);
         $chars = array_reverse(str_split($n, 1));
         $sums = array_reverse(str_split('97310097131973', 1));
         $sum = 0;
@@ -128,9 +128,9 @@ class CalculoDV
         return $dv1.$dv2;
     }
 
-    public static function banrisulContaCorrente($contaCorrente)
+    public static function banrisulContaCorrente($conta)
     {
-        $chars = array_reverse(str_split($contaCorrente, 1));
+        $chars = array_reverse(str_split($conta, 1));
         $sums = str_split('234567423', 1);
 
         $sum = 0;
@@ -186,10 +186,10 @@ class CalculoDV
         return Util::modulo11(Util::numberFormatGeral($agencia, 5));
     }
 
-    public static function cefContaCorrente($agencia, $contaCorrente)
+    public static function cefContaCorrente($agencia, $conta)
     {
         $n = Util::numberFormatGeral($agencia, 5)
-            . Util::numberFormatGeral($contaCorrente, 11);
+            . Util::numberFormatGeral($conta, 11);
         return Util::modulo11($n);
     }
 
@@ -209,9 +209,9 @@ class CalculoDV
         return $dv == 11 ? 0 : $dv;
     }
 
-    public static function unicredContaCorrente($contaCorrente)
+    public static function unicredContaCorrente($conta)
     {
-        return Util::modulo11($contaCorrente);
+        return Util::modulo11($conta);
     }
 
     public static function unicredNossoNumero($nossoNumero)
@@ -230,9 +230,9 @@ class CalculoDV
         return $dv == 11 ? 0 : $dv;
     }
     
-    public static function bradescoContaCorrente($contaCorrente)
+    public static function bradescoContaCorrente($conta)
     {
-        return Util::modulo11($contaCorrente, 2, 9, 0, 'P');
+        return Util::modulo11($conta, 2, 9, 0, 'P');
     }
 
     public static function bradescoNossoNumero($carteira, $nossoNumero)
@@ -297,10 +297,10 @@ class CalculoDV
     | 341 - Itau
     |--------------------------------------------------------------------------
     */
-    public static function itauContaCorrente($agencia, $contaCorrente)
+    public static function itauContaCorrente($agencia, $conta)
     {
         $n = Util::numberFormatGeral($agencia, 4)
-            . Util::numberFormatGeral($contaCorrente, 5);
+            . Util::numberFormatGeral($conta, 5);
         return Util::modulo10($n);
     }
 
@@ -369,6 +369,27 @@ class CalculoDV
 
     /*
     |--------------------------------------------------------------------------
+    | 712 - Ourinvest
+    |--------------------------------------------------------------------------
+    */
+
+    public static function ourinvestNossoNumero($carteira, $nossoNumero)
+    {
+        return Util::modulo11(Util::numberFormatGeral($carteira, 2) . Util::numberFormatGeral($nossoNumero, 11), 2, 7, 0, 'P');
+    }
+
+    public static function ourinvestAgencia($agencia)
+    {
+        return null;
+    }
+
+    public static function ourinvestConta($conta)
+    {
+        return Util::modulo10($conta);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | 756 - Bancoob - Falta o calculo conta e confirmar agencia
     |--------------------------------------------------------------------------
     */
@@ -377,9 +398,9 @@ class CalculoDV
         return Util::modulo11($agencia);
     }
 
-    public static function bancoobContaCorrente($contaCorrente)
+    public static function bancoobContaCorrente($conta)
     {
-        return Util::modulo11($contaCorrente);
+        return Util::modulo11($conta);
     }
 
     public static function bancoobNossoNumero($agencia, $convenio, $numero_boleto)

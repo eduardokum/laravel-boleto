@@ -96,7 +96,7 @@ class Inter extends AbstractRetorno implements RetornoCnab400
             ->setDataVencimento($this->rem(119, 124, $detalhe))
             ->setDataCredito($this->rem(173, 178, $detalhe))
             ->setValor(Util::nFloat(((float) $this->rem(125, 137, $detalhe))/100, 2, false))
-            ->setValorRecebido(Util::nFloat($this->rem(160, 172, $detalhe)/100, 2, false));
+            ->setValorRecebido(Util::nFloat(((float) $this->rem(160, 172, $detalhe))/100, 2, false));
 
         if ($d->hasOcorrencia('06')) {
             $this->totais['liquidados']++;

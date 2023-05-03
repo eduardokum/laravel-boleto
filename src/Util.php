@@ -141,6 +141,7 @@ final class Util
         '751' => 'Scotiabank Brasil S.A. Banco Múltiplo',
         '409' => 'UNIBANCO - União de Bancos Brasileiros S.A.',
         '230' => 'Unicard Banco Múltiplo S.A.',
+        '712' => 'Banco Ourinvest',
         'XXX' => 'Desconhecido',
     ];
 
@@ -668,6 +669,7 @@ final class Util
             self::adiciona($retorno[0], 31, 36, self::remove(31, 36, $remessa[0]));
             break;
         case Contracts\Boleto\Boleto::COD_BANCO_BRADESCO:
+        case Contracts\Boleto\Boleto::COD_BANCO_OURINVEST:
             self::adiciona($retorno[0], 27, 46, self::remove(27, 46, $remessa[0]));
             break;
         case Contracts\Boleto\Boleto::COD_BANCO_ITAU:
@@ -700,6 +702,9 @@ final class Util
         array_pop($remessa); // remove o trailer
 
         foreach ($remessa as $detalhe) {
+            if (!in_array(self::remove(1, 2, $detalhe), [0, 1, 9])) {
+                continue;
+            }
             $i = count($retorno);
             $retorno[$i] = array_fill(0, 400, '0');
             self::adiciona($retorno[$i], 1, 1, '1');
@@ -727,6 +732,7 @@ final class Util
                 self::adiciona($retorno[$i], 57, 73, self::remove(57, 73, $detalhe));
                 break;
             case Contracts\Boleto\Boleto::COD_BANCO_BRADESCO:
+            case Contracts\Boleto\Boleto::COD_BANCO_OURINVEST:
                 self::adiciona($retorno[$i], 25, 29, self::remove(25, 29, $detalhe));
                 self::adiciona($retorno[$i], 30, 36, self::remove(30, 36, $detalhe));
                 self::adiciona($retorno[$i], 37, 37, self::remove(37, 37, $detalhe));
@@ -1000,6 +1006,7 @@ final class Util
             BoletoContract::COD_BANCO_HSBC => 'Banco\\Hsbc',
             BoletoContract::COD_BANCO_DELCRED => 'Banco\\Delbank',
             BoletoContract::COD_BANCO_PINE => 'Banco\\Pine',
+            BoletoContract::COD_BANCO_OURINVEST => 'Banco\\Ourinvest',
             BoletoContract::COD_BANCO_SICREDI => 'Banco\\Sicredi',
             BoletoContract::COD_BANCO_BANCOOB => 'Banco\\Bancoob',
         ];
