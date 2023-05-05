@@ -62,5 +62,3 @@ $remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Ourinvest(
 $remessa->addBoleto($boleto);
 
 $file = $remessa->save(__DIR__ . DIRECTORY_SEPARATOR . 'arquivos' . DIRECTORY_SEPARATOR . 'ourinvest.txt');
-
-file_put_contents(__DIR__ . DIRECTORY_SEPARATOR . 'arquivos' . DIRECTORY_SEPARATOR . 'ourinvest.ret', Util::criarRetornoFake($file));
