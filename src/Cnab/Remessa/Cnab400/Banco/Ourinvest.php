@@ -160,7 +160,7 @@ class Ourinvest extends AbstractRemessa implements RemessaContract
         if ($boleto->getSacadorAvalista()) {
             $this->add(335, 349, Util::formatCnab('9', Util::onlyNumbers($boleto->getSacadorAvalista()->getDocumento()), 15));
             $this->add(350, 351, Util::formatCnab('X', '', 2));
-            $this->add(352, 394, Util::formatCnab('X', '', $boleto->getSacadorAvalista()->getNome()));
+            $this->add(352, 394, Util::formatCnab('X',  $boleto->getSacadorAvalista()->getNome(), 43));
         }
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
         if ($chaveNfe = $boleto->getChaveNfe()) {
