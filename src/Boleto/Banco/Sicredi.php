@@ -1,10 +1,11 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
-use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
-use Eduardokum\LaravelBoleto\CalculoDV;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 class Sicredi extends AbstractBoleto implements BoletoContract
 {
@@ -20,18 +21,21 @@ class Sicredi extends AbstractBoleto implements BoletoContract
      * @var string
      */
     protected $localPagamento = 'Pagável preferencialmente nas cooperativas de crédito do sicredi';
+
     /**
      * Código do banco
      *
      * @var string
      */
     protected $codigoBanco = self::COD_BANCO_SICREDI;
+
     /**
      * Define as carteiras disponíveis para este banco
      *
      * @var array
      */
     protected $carteiras = ['1', '2', '3'];
+
     /**
      * Espécie do documento, coódigo para remessa
      *
@@ -50,6 +54,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
         'DSI' => '99', // Duplicata de Serviço por Indicação
         'OS' => '99', // Outros
     ];
+
     /**
      * Espécie do documento, coódigo para remessa
      *
@@ -68,26 +73,30 @@ class Sicredi extends AbstractBoleto implements BoletoContract
         'DSI' => 'J', // Duplicata de Serviço por Indicação
         'OS' => 'K', // Outros
     ];
+
     /**
      * Se possui registro o boleto (tipo = 1 com registro e 3 sem registro)
      *
      * @var bool
      */
     protected $registro = true;
+
     /**
      * Código do posto do cliente no banco.
      *
      * @var int
      */
     protected $posto;
+
     /**
      * Byte que compoe o nosso número.
      *
      * @var int
      */
     protected $byte = 2;
+
     /**
-     * Código do cliente (é código do cedente, também chamado de código do beneficiário) é o código do emissor junto ao banco, geralmente é o próprio número da conta sem o dígito verificador. 
+     * Código do cliente (é código do cedente, também chamado de código do beneficiário) é o código do emissor junto ao banco, geralmente é o próprio número da conta sem o dígito verificador.
      * O código do cliente/cedente/beneficiário será diferente desse padrão em casos como quando um cliente bancário faz a migração da sua conta entre agências.
      *
      * @var string
@@ -103,8 +112,10 @@ class Sicredi extends AbstractBoleto implements BoletoContract
     public function setComRegistro($registro)
     {
         $this->registro = $registro;
+
         return $this;
     }
+
     /**
      * Retorna se é com registro.
      *
@@ -114,6 +125,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
     {
         return $this->registro;
     }
+
     /**
      * Define o posto do cliente
      *
@@ -123,8 +135,10 @@ class Sicredi extends AbstractBoleto implements BoletoContract
     public function setPosto($posto)
     {
         $this->posto = $posto;
+
         return $this;
     }
+
     /**
      * Retorna o posto do cliente
      *
@@ -149,8 +163,10 @@ class Sicredi extends AbstractBoleto implements BoletoContract
             throw new \Exception('O byte deve ser compreendido entre 1 e 9');
         }
         $this->byte = $byte;
+
         return $this;
     }
+
     /**
      * Retorna o byte
      *
@@ -160,6 +176,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
     {
         return $this->byte;
     }
+
     /**
      * Seta o codigo do cliente.
      *
@@ -173,6 +190,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
 
         return $this;
     }
+
     /**
      * Retorna o codigo do cliente.
      *
@@ -182,6 +200,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
     {
         return $this->codigoCliente;
     }
+
     /**
      * Retorna o campo Agência/Beneficiário do boleto
      *
@@ -191,6 +210,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
     {
         return sprintf('%04s.%02s.%05s', $this->getAgencia(), $this->getPosto(), $this->getCodigoCliente());
     }
+
     /**
      * Gera o Nosso Número.
      *
@@ -201,9 +221,11 @@ class Sicredi extends AbstractBoleto implements BoletoContract
         $ano = $this->getDataDocumento()->format('y');
         $byte = $this->getByte();
         $numero_boleto = Util::numberFormatGeral($this->getNumero(), 5);
-        return  $ano . $byte . $numero_boleto
-            . CalculoDV::sicrediNossoNumero($this->getAgencia(), $this->getPosto(), $this->getCodigoCliente(), $ano, $byte, $numero_boleto);
+
+        return  $ano.$byte.$numero_boleto
+            .CalculoDV::sicrediNossoNumero($this->getAgencia(), $this->getPosto(), $this->getCodigoCliente(), $ano, $byte, $numero_boleto);
     }
+
     /**
      * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
      *
@@ -213,6 +235,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
     {
         return Util::maskString($this->getNossoNumero(), '##/######-#');
     }
+
     /**
      * Método para gerar o código da posição de 20 a 44
      *
@@ -244,7 +267,8 @@ class Sicredi extends AbstractBoleto implements BoletoContract
      *
      * @return array
      */
-    public static function parseCampoLivre($campoLivre) {
+    public static function parseCampoLivre($campoLivre)
+    {
         return [
             'convenio' => null,
             'agenciaDv' => null,

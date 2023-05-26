@@ -1,36 +1,50 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Api;
 
-use Eduardokum\LaravelBoleto\Contracts\Boleto\BoletoAPI as BoletoAPIContract;
-use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
-use Eduardokum\LaravelBoleto\Pessoa;
-use Eduardokum\LaravelBoleto\Util;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Pessoa;
+use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\BoletoAPI as BoletoAPIContract;
 
 abstract class AbstractAPI
 {
     protected $baseUrl = null;
+
     protected $conta = null;
+
     protected $certificado = null;
+
     protected $certificadoChave = null;
+
     protected $certificadoSenha = null;
+
     protected $identificador = null;
+
     protected $client_id = null;
+
     protected $client_secret = null;
+
     protected $senha = null;
+
     protected $cnpj = null;
+
     protected $access_token = null;
 
     protected $debug = false;
+
     protected $log = null;
+
     protected $beneficiario;
 
     private $curl = null;
-    private $responseHttpCode = null;
-    private $requestInfo = null;
-    private $temps = [];
 
+    private $responseHttpCode = null;
+
+    private $requestInfo = null;
+
+    private $temps = [];
 
     /**
      * Campos que são necessários para o boleto
@@ -59,7 +73,7 @@ abstract class AbstractAPI
         Util::fillClass($this, $params);
         $missing = [];
         foreach ($this->camposObrigatorios as $campo) {
-            $test = call_user_func([$this, 'get' . Str::camel($campo)]);
+            $test = call_user_func([$this, 'get'.Str::camel($campo)]);
             if ($test === '' || is_null($test)) {
                 $missing[] = $campo;
             }
@@ -69,10 +83,8 @@ abstract class AbstractAPI
         }
     }
 
-    /**
-     *
-     */
-    function __destruct() {
+    public function __destruct()
+    {
         foreach ($this->temps as $temp) {
             @unlink($temp);
         }
@@ -89,10 +101,15 @@ abstract class AbstractAPI
 //    }
 
     abstract protected function headers();
+
     abstract public function createBoleto(BoletoAPIContract $boleto);
+
     abstract public function retrieveNossoNumero($nossoNumero);
+
     abstract public function cancelNossoNumero($nossoNumero, $motivo);
+
     abstract public function retrieveList($inputedParams = []);
+
     abstract public function getPdfNossoNumero($nossoNumero);
 
     public function retrieve(BoletoAPIContract $boleto)
@@ -117,7 +134,7 @@ abstract class AbstractAPI
      */
     public function getBaseUrl()
     {
-        return rtrim($this->baseUrl, '/') . '/';
+        return rtrim($this->baseUrl, '/').'/';
     }
 
     /**
@@ -136,6 +153,7 @@ abstract class AbstractAPI
     public function setConta($conta)
     {
         $this->conta = $conta;
+
         return $this;
     }
 
@@ -336,6 +354,7 @@ abstract class AbstractAPI
     public function setBeneficiario($beneficiario): AbstractAPI
     {
         Util::addPessoa($this->beneficiario, $beneficiario);
+
         return $this;
     }
 
@@ -345,6 +364,7 @@ abstract class AbstractAPI
     public function setDebug()
     {
         $this->debug = true;
+
         return $this;
     }
 
@@ -354,6 +374,7 @@ abstract class AbstractAPI
     public function unsetDebug()
     {
         $this->debug = false;
+
         return $this;
     }
 
@@ -370,7 +391,7 @@ abstract class AbstractAPI
      */
     public function getLog()
     {
-        return $this->log .
+        return $this->log.
             print_r($this->getRequestInfo(), true);
     }
 
@@ -380,6 +401,7 @@ abstract class AbstractAPI
     public function clearLog()
     {
         $this->log = null;
+
         return $this;
     }
 
@@ -399,6 +421,7 @@ abstract class AbstractAPI
     protected function setResponseHttpCode($responseHttpCode)
     {
         $this->responseHttpCode = $responseHttpCode;
+
         return $this;
     }
 
@@ -418,6 +441,7 @@ abstract class AbstractAPI
     protected function setRequestInfo($requestInfo)
     {
         $this->requestInfo = $requestInfo;
+
         return $this;
     }
 
@@ -431,7 +455,7 @@ abstract class AbstractAPI
         $this->init()
             ->setHeaders(array_filter([
                 'Accept' => $raw ? null : 'application/json',
-                'Content-type' => $raw ? 'application/x-www-form-urlencoded' : 'application/json'
+                'Content-type' => $raw ? 'application/x-www-form-urlencoded' : 'application/json',
             ]));
 
         // clean string
@@ -439,10 +463,11 @@ abstract class AbstractAPI
             return Util::normalizeChars($data);
         }, $post);
 
-        curl_setopt($this->curl, CURLOPT_URL, $this->getBaseUrl() . $url);
+        curl_setopt($this->curl, CURLOPT_URL, $this->getBaseUrl().$url);
         curl_setopt($this->curl, CURLOPT_POST, 1);
         curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt($this->curl, CURLOPT_POSTFIELDS, $raw ? http_build_query($post) : json_encode($post));
+
         return $this->execute();
     }
 
@@ -461,8 +486,9 @@ abstract class AbstractAPI
                 'Accept' => 'application/json',
             ]);
 
-        curl_setopt($this->curl, CURLOPT_URL, $this->getBaseUrl() . $url);
+        curl_setopt($this->curl, CURLOPT_URL, $this->getBaseUrl().$url);
         curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'GET');
+
         return $this->execute();
     }
 
@@ -472,13 +498,13 @@ abstract class AbstractAPI
     private function init()
     {
         if ($this->getCertificado()
-            && !file_exists($this->getCertificado())
+            && ! file_exists($this->getCertificado())
             && openssl_x509_read($this->getCertificado())) {
             $this->setCertificado($this->tempFile($this->getCertificado()));
         }
 
         if ($this->getCertificadoChave()
-            && !file_exists($this->getCertificadoChave())
+            && ! file_exists($this->getCertificadoChave())
             && openssl_pkey_get_private($this->getCertificadoChave())) {
             $this->setCertificadoChave($this->tempFile($this->getCertificadoChave()));
         }
@@ -494,9 +520,10 @@ abstract class AbstractAPI
         if ($senha = $this->getCertificadoSenha()) {
             curl_setopt($curl, CURLOPT_KEYPASSWD, $senha);
         }
-        curl_setopt($curl, CURLOPT_CAPATH, "/etc/ssl/certs/");
+        curl_setopt($curl, CURLOPT_CAPATH, '/etc/ssl/certs/');
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'POST');
         $this->curl = $curl;
+
         return $this;
     }
 
@@ -507,14 +534,10 @@ abstract class AbstractAPI
      */
     private function setHeaders($headers = [])
     {
-        $headers = array_unique(
-            array_merge(
-                $this->convertHeaders($headers),
-                $this->convertHeaders($this->headers())
-            )
-        );
+        $headers = array_unique(array_merge($this->convertHeaders($headers), $this->convertHeaders($this->headers())));
 
         curl_setopt($this->curl, CURLOPT_HTTPHEADER, $headers);
+
         return $this;
     }
 
@@ -533,6 +556,7 @@ abstract class AbstractAPI
                 $compiledHeader[] = "$param: $value";
             }
         }
+
         return $compiledHeader;
     }
 
@@ -571,19 +595,10 @@ abstract class AbstractAPI
     {
         if ($this->getResponseHttpCode() < 200 || $this->getResponseHttpCode() > 299) {
             if (in_array($this->getResponseHttpCode(), [401, 403]) && empty($retorno->body_text)) {
-                throw new Exception\UnauthorizedException(
-                    $this->getBaseUrl(),
-                    $this->getCertificado(),
-                    $this->getCertificadoChave(),
-                    $this->getCertificadoSenha()
-                );
+                throw new Exception\UnauthorizedException($this->getBaseUrl(), $this->getCertificado(), $this->getCertificadoChave(), $this->getCertificadoSenha());
             }
 
-            throw new Exception\HttpException(
-                $this->getResponseHttpCode(),
-                $this->getRequestInfo(),
-                $retorno->body_text
-            );
+            throw new Exception\HttpException($this->getResponseHttpCode(), $this->getRequestInfo(), $retorno->body_text);
         }
     }
 
@@ -615,6 +630,7 @@ abstract class AbstractAPI
                 }
                 $retorno = $this->parseResponse($exec);
                 $this->handleException($retorno);
+
                 return $retorno;
             }
 
@@ -629,15 +645,16 @@ abstract class AbstractAPI
             } else {
                 $keep = false;
             }
-            $loop ++;
-        } while($keep == true);
+            $loop++;
+        } while ($keep == true);
 
         $error = curl_error($this->curl);
         curl_close($this->curl);
         $this->curl = null;
-        if (!$this->getResponseHttpCode() && $error) {
+        if (! $this->getResponseHttpCode() && $error) {
             throw new Exception\CurlException($error);
         }
+
         return false;
     }
 
@@ -651,6 +668,7 @@ abstract class AbstractAPI
         $tmpFile = tempnam(sys_get_temp_dir(), 'certificate');
         $this->temps[] = $tmpFile;
         file_put_contents($tmpFile, $content);
+
         return $tmpFile;
     }
 
@@ -660,8 +678,9 @@ abstract class AbstractAPI
      *
      * @return array
      */
-    private function arrayMapRecursive($callback, $input) {
-        $output= Array();
+    private function arrayMapRecursive($callback, $input)
+    {
+        $output = [];
         foreach ($input as $key => $data) {
             if (is_array($data)) {
                 $output[$key] = $this->arrayMapRecursive($callback, $data);
@@ -669,6 +688,7 @@ abstract class AbstractAPI
                 $output[$key] = $callback($data);
             }
         }
+
         return $output;
     }
 }

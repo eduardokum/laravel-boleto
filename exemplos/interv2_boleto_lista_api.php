@@ -4,24 +4,22 @@ use Eduardokum\LaravelBoleto\Boleto\Banco\Inter;
 
 require 'autoload.php';
 
-$beneficiario = new \Eduardokum\LaravelBoleto\Pessoa(
-    [
-        'nome' => 'ACME',
-        'endereco' => 'Rua um, 123',
-        'cep' => '99999-999',
-        'uf' => 'UF',
-        'cidade' => 'CIDADE',
-        'documento' => '99.999.999/9999-99',
-    ]
-);
+$beneficiario = new \Eduardokum\LaravelBoleto\Pessoa([
+    'nome' => 'ACME',
+    'endereco' => 'Rua um, 123',
+    'cep' => '99999-999',
+    'uf' => 'UF',
+    'cidade' => 'CIDADE',
+    'documento' => '99.999.999/9999-99',
+]);
 
 $api = new Eduardokum\LaravelBoleto\Api\Banco\Inter([
     'versao' => 2,
     'beneficiario' => $beneficiario,
     'client_id' => 'id',
     'client_secret' => '',
-    'certificado'      => realpath(__DIR__ . '/certs/') . DIRECTORY_SEPARATOR . 'cert.crt',
-    'certificadoChave' => realpath(__DIR__ . '/certs/') . DIRECTORY_SEPARATOR . 'key.key',
+    'certificado'      => realpath(__DIR__.'/certs/').DIRECTORY_SEPARATOR.'cert.crt',
+    'certificadoChave' => realpath(__DIR__.'/certs/').DIRECTORY_SEPARATOR.'key.key',
 ]);
 $retorno = $api->retrieveList();
 

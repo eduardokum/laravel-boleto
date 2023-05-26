@@ -1,14 +1,14 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
-use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
-use Eduardokum\LaravelBoleto\CalculoDV;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 class Itau extends AbstractBoleto implements BoletoContract
 {
-
     /**
      * Local de pagamento
      *
@@ -22,6 +22,7 @@ class Itau extends AbstractBoleto implements BoletoContract
      * @var string
      */
     protected $codigoBanco = self::COD_BANCO_ITAU;
+
     /**
      * Variáveis adicionais.
      *
@@ -30,12 +31,14 @@ class Itau extends AbstractBoleto implements BoletoContract
     public $variaveis_adicionais = [
         'carteira_nome' => '',
     ];
+
     /**
      * Define as carteiras disponíveis para este banco
      *
      * @var array
      */
     protected $carteiras = ['112', '115', '188', '109', '121', '180', '110', '111'];
+
     /**
      * Espécie do documento, coódigo para remessa
      *
@@ -56,6 +59,7 @@ class Itau extends AbstractBoleto implements BoletoContract
         'EC' => '16',
         'CPS' => '17',
     ];
+
     /**
      * Seta dias para baixa automática
      *
@@ -71,6 +75,7 @@ class Itau extends AbstractBoleto implements BoletoContract
         }
         $baixaAutomatica = (int) $baixaAutomatica;
         $this->diasBaixaAutomatica = $baixaAutomatica > 0 ? $baixaAutomatica : 0;
+
         return $this;
     }
 
@@ -87,8 +92,10 @@ class Itau extends AbstractBoleto implements BoletoContract
         $agencia = Util::numberFormatGeral($this->getAgencia(), 4);
         $conta = Util::numberFormatGeral($this->getConta(), 5);
         $dv = CalculoDV::itauNossoNumero($agencia, $conta, $carteira, $numero_boleto);
-        return $numero_boleto . $dv;
+
+        return $numero_boleto.$dv;
     }
+
     /**
      * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
      *
@@ -96,8 +103,9 @@ class Itau extends AbstractBoleto implements BoletoContract
      */
     public function getNossoNumeroBoleto()
     {
-        return $this->getCarteira() . '/' . substr_replace($this->getNossoNumero(), '-', -1, 0);
+        return $this->getCarteira().'/'.substr_replace($this->getNossoNumero(), '-', -1, 0);
     }
+
     /**
      * Método para gerar o código da posição de 20 a 44
      *
@@ -127,7 +135,8 @@ class Itau extends AbstractBoleto implements BoletoContract
      *
      * @return array
      */
-    public static function parseCampoLivre($campoLivre) {
+    public static function parseCampoLivre($campoLivre)
+    {
         return [
             'convenio' => null,
             'agenciaDv' => null,
@@ -141,14 +150,18 @@ class Itau extends AbstractBoleto implements BoletoContract
             'contaCorrenteDv' => substr($campoLivre, 21, 1),
         ];
     }
+
     /**
      * Método que retorna o digito da conta do Itau
      *
      * @return int
      */
-    public function getContaDv(){
-        if($this->contaDv !== NULL)
+    public function getContaDv()
+    {
+        if ($this->contaDv !== null) {
             return $this->contaDv;
+        }
+
         return  CalculoDV::itauContaCorrente($this->getAgencia(), $this->getConta());
     }
 }

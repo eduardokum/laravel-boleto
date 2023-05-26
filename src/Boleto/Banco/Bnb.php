@@ -1,10 +1,11 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
-use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
-use Eduardokum\LaravelBoleto\CalculoDV;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 class Bnb extends AbstractBoleto implements BoletoContract
 {
@@ -21,6 +22,7 @@ class Bnb extends AbstractBoleto implements BoletoContract
      * @var string
      */
     protected $codigoBanco = self::COD_BANCO_BNB;
+
     /**
      * Variáveis adicionais.
      *
@@ -29,12 +31,14 @@ class Bnb extends AbstractBoleto implements BoletoContract
     public $variaveis_adicionais = [
         'carteira_nome' => '',
     ];
+
     /**
      * Define as carteiras disponíveis para este banco
      *
      * @var array
      */
     protected $carteiras = ['21', '31', '41'];
+
     /**
      * Espécie do documento, coódigo para remessa
      *
@@ -45,8 +49,9 @@ class Bnb extends AbstractBoleto implements BoletoContract
         'NP' => '02',
         'CH' => '03',
         'CN' => '04',
-        'RC' => '05'
+        'RC' => '05',
     ];
+
     /**
      * Seta dias para baixa automática
      *
@@ -62,6 +67,7 @@ class Bnb extends AbstractBoleto implements BoletoContract
         }
         $baixaAutomatica = (int) $baixaAutomatica;
         $this->diasBaixaAutomatica = $baixaAutomatica > 0 ? $baixaAutomatica : 0;
+
         return $this;
     }
 
@@ -74,8 +80,10 @@ class Bnb extends AbstractBoleto implements BoletoContract
     protected function gerarNossoNumero()
     {
         $numero_boleto = $this->getNumero();
-        return Util::numberFormatGeral($numero_boleto, 7) . CalculoDV::bnbNossoNumero($this->getNumero());
+
+        return Util::numberFormatGeral($numero_boleto, 7).CalculoDV::bnbNossoNumero($this->getNumero());
     }
+
     /**
      * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
      *
@@ -115,7 +123,8 @@ class Bnb extends AbstractBoleto implements BoletoContract
      *
      * @return array
      */
-    public static function parseCampoLivre($campoLivre) {
+    public static function parseCampoLivre($campoLivre)
+    {
         return [
             'codigoCliente' => null,
             'convenio' => null,

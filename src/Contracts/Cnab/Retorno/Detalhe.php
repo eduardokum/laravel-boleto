@@ -104,12 +104,12 @@ interface Detalhe
     public function getError();
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function hasError();
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function hasOcorrencia();
 

@@ -1,15 +1,21 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Boleto\Render;
 
 abstract class AbstractPdf extends \FPDF
 {
     // INCLUDE JS
     protected $javascript;
+
     protected $n_js;
+
     protected $angle = 0;
+
     // PAGE GROUP
     protected $NewPageGroup; // variable indicating whether a new group was requested
+
     protected $PageGroups = []; // variable containing the number of pages of the groups
+
     protected $CurrPageGroup; // variable containing the alias of the current page group
 
     protected function IncludeJS($script)
@@ -30,13 +36,13 @@ abstract class AbstractPdf extends \FPDF
         $this->_newobj();
         $this->n_js = $this->n;
         $this->_out('<<');
-        $this->_out('/Names [(EmbeddedJS) ' . ($this->n + 1) . ' 0 R]');
+        $this->_out('/Names [(EmbeddedJS) '.($this->n + 1).' 0 R]');
         $this->_out('>>');
         $this->_out('endobj');
         $this->_newobj();
         $this->_out('<<');
         $this->_out('/S /JavaScript');
-        $this->_out('/JS ' . $this->_textstring($this->javascript));
+        $this->_out('/JS '.$this->_textstring($this->javascript));
         $this->_out('>>');
         $this->_out('endobj');
     }
@@ -44,7 +50,7 @@ abstract class AbstractPdf extends \FPDF
     public function _putresources()
     {
         parent::_putresources();
-        if (!empty($this->javascript)) {
+        if (! empty($this->javascript)) {
             $this->_putjavascript();
         }
     }
@@ -52,8 +58,8 @@ abstract class AbstractPdf extends \FPDF
     public function _putcatalog()
     {
         parent::_putcatalog();
-        if (!empty($this->javascript)) {
-            $this->_out('/Names <</JavaScript ' . ($this->n_js) . ' 0 R>>');
+        if (! empty($this->javascript)) {
+            $this->_out('/Names <</JavaScript '.($this->n_js).' 0 R>>');
         }
     }
 
@@ -80,11 +86,11 @@ abstract class AbstractPdf extends \FPDF
         parent::_beginpage($orientation, $size, $rotation);
         if ($this->NewPageGroup) {
             // start a new group
-            if (!is_array($this->PageGroups)) {
+            if (! is_array($this->PageGroups)) {
                 $this->PageGroups = [];
             }
-            $n =  sizeof($this->PageGroups) + 1;
-            $alias = '{' . $n . '}';
+            $n = sizeof($this->PageGroups) + 1;
+            $alias = '{'.$n.'}';
             $this->PageGroups[$alias] = 1;
             $this->CurrPageGroup = $alias;
             $this->NewPageGroup = false;
@@ -96,7 +102,7 @@ abstract class AbstractPdf extends \FPDF
     public function _putpages()
     {
         $nb = $this->page;
-        if (!empty($this->PageGroups)) {
+        if (! empty($this->PageGroups)) {
             // do page number replacement
             foreach ($this->PageGroups as $k => $v) {
                 for ($n = 1; $n <= $nb; $n++) {
@@ -110,8 +116,9 @@ abstract class AbstractPdf extends \FPDF
     protected function _()
     {
         $args = func_get_args();
-        $var  = utf8_decode(array_shift($args));
-        $s    = vsprintf($var, $args);
+        $var = utf8_decode(array_shift($args));
+        $s = vsprintf($var, $args);
+
         return $s;
     }
 
@@ -148,11 +155,11 @@ abstract class AbstractPdf extends \FPDF
      */
     public function i25($xpos, $ypos, $code, $basewidth = 1, $height = 10)
     {
-        $code = (strlen($code)%2 != 0 ? '0' : '') . $code;
+        $code = (strlen($code) % 2 != 0 ? '0' : '').$code;
         $wide = $basewidth;
-        $narrow = $basewidth/3;
+        $narrow = $basewidth / 3;
 
-        $barChar = array();
+        $barChar = [];
         // wide/narrow codes for the digits
         $barChar['0'] = 'nnwwn';
         $barChar['1'] = 'wnnnw';
@@ -171,23 +178,23 @@ abstract class AbstractPdf extends \FPDF
         $this->SetFillColor(0);
 
         // add start and stop codes
-        $code = 'AA' . strtolower($code) . 'ZA';
+        $code = 'AA'.strtolower($code).'ZA';
 
         for ($i = 0; $i < strlen($code); $i = $i + 2) {
             // choose next pair of digits
             $charBar = $code[$i];
             $charSpace = $code[$i + 1];
             // check whether it is a valid digit
-            if (!isset($barChar[$charBar])) {
-                $this->Error('Invalid character in barcode: ' . $charBar);
+            if (! isset($barChar[$charBar])) {
+                $this->Error('Invalid character in barcode: '.$charBar);
             }
-            if (!isset($barChar[$charSpace])) {
-                $this->Error('Invalid character in barcode: ' . $charSpace);
+            if (! isset($barChar[$charSpace])) {
+                $this->Error('Invalid character in barcode: '.$charSpace);
             }
             // create a wide/narrow-sequence (first digit=bars, second digit=spaces)
             $seq = '';
             for ($s = 0; $s < strlen($barChar[$charBar]); $s++) {
-                $seq .= $barChar[$charBar][$s] . $barChar[$charSpace][$s];
+                $seq .= $barChar[$charBar][$s].$barChar[$charSpace][$s];
             }
             for ($bar = 0; $bar < strlen($seq); $bar++) {
                 // set lineWidth depending on value
@@ -197,14 +204,13 @@ abstract class AbstractPdf extends \FPDF
                     $lineWidth = $wide;
                 }
                 // draw every second value, because the second digit of the pair is represented by the spaces
-                if ($bar%2 == 0) {
+                if ($bar % 2 == 0) {
                     $this->Rect($xpos, $ypos, $lineWidth, $height, 'F');
                 }
                 $xpos += $lineWidth;
             }
         }
     }
-
 
     public function __construct($orientation = 'P', $unit = 'mm', $size = 'A4')
     {
@@ -227,6 +233,7 @@ abstract class AbstractPdf extends \FPDF
         if ($print) {
             $this->IncludeJS("print('true');");
         }
+
         return parent::Output($name, $dest);
     }
 }

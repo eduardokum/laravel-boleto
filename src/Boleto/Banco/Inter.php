@@ -1,12 +1,13 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
 use Carbon\Carbon;
-use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\BoletoAPI as BoletoAPIContract;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto;
-use Eduardokum\LaravelBoleto\Util;
 use Illuminate\Support\Arr;
+use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\BoletoAPI as BoletoAPIContract;
 
 class Inter extends AbstractBoleto implements BoletoAPIContract
 {
@@ -15,14 +16,18 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
         parent::__construct($params);
         $this->setCamposObrigatorios('operacao');
     }
+
     protected $agencia = '0001';
+
     protected $carteira = '112';
+
     /**
      * Código do banco
      *
      * @var string
      */
     protected $codigoBanco = Boleto::COD_BANCO_INTER;
+
     /**
      * Define as carteiras disponíveis para este banco
      * '02' => Com registro | '09' => Com registro | '06' => Sem Registro | '21' => Com Registro - Pagável somente no Bradesco | '22' => Sem Registro - Pagável somente no Bradesco | '25' => Sem Registro - Emissão na Internet | '26' => Com Registro - Emissão na Internet
@@ -30,6 +35,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
      * @var array
      */
     protected $carteiras = ['112'];
+
     /**
      * Espécie do documento, coódigo para remessa
      *
@@ -37,15 +43,18 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
      */
     protected $especiesCodigo = [
     ];
+
     /**
      * @var string
      */
     protected $operacao;
+
     /**
      * @var string[]
      */
     protected $protectedFields = [
     ];
+
     /**
      * @return string
      */
@@ -53,6 +62,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
     {
         return $this->operacao;
     }
+
     /**
      * @param $operacao
      *
@@ -64,6 +74,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
 
         return $this;
     }
+
     /**
      * Gera o Nosso Número.
      *
@@ -81,20 +92,18 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
      */
     public function getNossoNumeroBoleto()
     {
-        return sprintf(
-                '00019/112/%011s-%01s',
-                substr($this->getNossoNumero(), 0, -1),
-                substr($this->getNossoNumero(), -1)
-            );
+        return sprintf('00019/112/%011s-%01s', substr($this->getNossoNumero(), 0, -1), substr($this->getNossoNumero(), -1));
     }
 
     /**
      * @return string
      */
-    public function getAgenciaCodigoBeneficiario(){
-        return $this->getAgencia() . Util::modulo11($this->getAgencia()) . ' / ' .
-            $this->getConta() . Util::modulo11($this->getConta());
+    public function getAgenciaCodigoBeneficiario()
+    {
+        return $this->getAgencia().Util::modulo11($this->getAgencia()).' / '.
+            $this->getConta().Util::modulo11($this->getConta());
     }
+
     /**
      * Método para gerar o código da posição de 20 a 44
      *
@@ -124,10 +133,11 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
      */
     public function setDiasBaixaAutomatica($baixaAutomatica)
     {
-        if (!in_array($baixaAutomatica, [0, 30, 60])) {
+        if (! in_array($baixaAutomatica, [0, 30, 60])) {
             throw new \Exception('Baixa automática válida somente 0, 30, 60');
         }
         $this->diasBaixaAutomatica = $baixaAutomatica >= 0 ? $baixaAutomatica : 0;
+
         return $this;
     }
 
@@ -138,7 +148,8 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
      *
      * @return array
      */
-    public static function parseCampoLivre($campoLivre) {
+    public static function parseCampoLivre($campoLivre)
+    {
         return [
             'convenio' => substr($campoLivre, 7, 7),
             'agenciaDv' => null,
@@ -168,13 +179,14 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
             $diasBaixaAutomatica = 'ZERO';
         }
 
-        $enderecoSplit = function($endereco) {
+        $enderecoSplit = function ($endereco) {
             $endereco = explode(',', $endereco);
+
             return [
                 'endereco' => $endereco[0],
                 'numero' => array_key_exists(1, $endereco)
                     ? Util::onlyNumbers(explode(' ', trim($endereco[1]))[0])
-                    : 0
+                    : 0,
             ];
         };
 
@@ -225,7 +237,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
 
         $mensagem = array_filter($this->getDescricaoDemonstrativo());
         foreach ($mensagem as $k => $m) {
-            $mensagem['linha' . ($k+1)] = $m;
+            $mensagem['linha'.($k + 1)] = $m;
             unset($mensagem[$k]);
         }
 
@@ -266,10 +278,10 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
      */
     public static function fromAPI($boleto, $appends)
     {
-        if(!array_key_exists('beneficiario', $appends)) {
+        if (! array_key_exists('beneficiario', $appends)) {
             throw new \Exception('Informe o beneficiario');
         }
-        if(!array_key_exists('conta', $appends)) {
+        if (! array_key_exists('conta', $appends)) {
             throw new \Exception('Informe a conta');
         }
         $ipte = Util::IPTE2Variveis($boleto->linhaDigitavel);
@@ -280,7 +292,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
             'VENCIDO' => AbstractBoleto::SITUACAO_ABERTO,
             'EXPIRADO' => AbstractBoleto::SITUACAO_BAIXADO,
         ];
-        
+
         $dateUS = preg_match('/[0-9]{4}-[0-9]{2}-[0-9]{2}.*/', $boleto->dataHoraSituacao);
 
         return new self(array_merge(array_filter([
@@ -299,7 +311,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
             'pagador'         => array_filter([
                 'nome'      => isset($boleto->pagador) ? $boleto->pagador->nome : $boleto->nomeSacado,
                 'documento' => isset($boleto->pagador) ? $boleto->pagador->cpfCnpj : $boleto->cnpjCpfSacado,
-                'endereco' => isset($boleto->pagador) ? trim($boleto->pagador->endereco . ', ' . $boleto->pagador->endereco . ' ' . $boleto->pagador->complemento) : null,
+                'endereco' => isset($boleto->pagador) ? trim($boleto->pagador->endereco.', '.$boleto->pagador->endereco.' '.$boleto->pagador->complemento) : null,
                 'bairro' => isset($boleto->pagador) ? $boleto->pagador->bairro : null,
                 'cep' => isset($boleto->pagador) ? $boleto->pagador->cep : null,
                 'uf' => isset($boleto->pagador) ? $boleto->pagador->uf : null,
@@ -314,25 +326,30 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
         ]), $appends));
     }
 
-
     /**
      * DEFAULTS
      */
     public function setCarteira($carteira)
     {
         $this->carteira = '112';
+
         return $this;
     }
+
     public function setAgencia($agencia)
     {
         $this->agencia = '0001';
+
         return $this;
     }
+
     public function setEspecieDoc($especieDoc)
     {
         $this->especieDoc = 'DM';
+
         return $this;
     }
+
     public function setNossoNumero($nossoNumero)
     {
         $nnClean = substr(Util::onlyNumbers($nossoNumero), -11);

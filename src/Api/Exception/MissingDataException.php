@@ -1,4 +1,5 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Api\Exception;
 
 use Exception;
@@ -10,7 +11,7 @@ class MissingDataException extends Exception
     public function __construct(array $data)
     {
         $this->data = $data;
-        parent::__construct('Os seguinte campos são obrigatórios: ' . implode(', ', $this->data));
+        parent::__construct('Os seguinte campos são obrigatórios: '.implode(', ', $this->data));
     }
 
     /**

@@ -1,11 +1,12 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco;
 
+use Illuminate\Support\Arr;
+use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\AbstractRetorno;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
-use Eduardokum\LaravelBoleto\Util;
-use Illuminate\Support\Arr;
 
 class Ourinvest extends AbstractRetorno implements RetornoCnab400
 {
@@ -22,19 +23,19 @@ class Ourinvest extends AbstractRetorno implements RetornoCnab400
      * @var array
      */
     private $ocorrencias = [
-        "00" => "Nenhuma ocorrência informada",
-        "06" => "Liquidação normal (sem motivo)",
-        "09" => "Baixado Automat. via Arquivo",
-        "10" => "Baixado conforme instruções da Agência",
-        "12" => "Abatimento Concedido (sem motivo)",
-        "13" => "Abatimento Cancelado (sem motivo)",
-        "14" => "Vencimento Alterado (sem motivo)",
-        "15" => "Liquidação em Cartório (sem motivo)",
-        "16" => "Título Pago em Cheque - Vinculado",
-        "17" => "Liquidação após baixa ou Título não registrado (sem motivo)",
-        "20" => "Confirmação Recebimento Instrução Sustação de Protesto (sem motivo)",
-        "23" => "Entrada do Título em Cartório (sem motivo)",
-        "28" => "Débito de tarifas/custas",
+        '00' => 'Nenhuma ocorrência informada',
+        '06' => 'Liquidação normal (sem motivo)',
+        '09' => 'Baixado Automat. via Arquivo',
+        '10' => 'Baixado conforme instruções da Agência',
+        '12' => 'Abatimento Concedido (sem motivo)',
+        '13' => 'Abatimento Cancelado (sem motivo)',
+        '14' => 'Vencimento Alterado (sem motivo)',
+        '15' => 'Liquidação em Cartório (sem motivo)',
+        '16' => 'Título Pago em Cheque - Vinculado',
+        '17' => 'Liquidação após baixa ou Título não registrado (sem motivo)',
+        '20' => 'Confirmação Recebimento Instrução Sustação de Protesto (sem motivo)',
+        '23' => 'Entrada do Título em Cartório (sem motivo)',
+        '28' => 'Débito de tarifas/custas',
     ];
 
     /**
@@ -113,14 +114,14 @@ class Ourinvest extends AbstractRetorno implements RetornoCnab400
             ->setDataOcorrencia($this->rem(111, 116, $detalhe))
             ->setDataVencimento($this->rem(147, 152, $detalhe))
             ->setDataCredito($this->rem(296, 301, $detalhe))
-            ->setValor(Util::nFloat($this->rem(153, 165, $detalhe)/100, 2, false))
-            ->setValorTarifa(Util::nFloat($this->rem(176, 188, $detalhe)/100, 2, false))
-            ->setValorIOF(Util::nFloat($this->rem(215, 227, $detalhe)/100, 2, false))
-            ->setValorAbatimento(Util::nFloat($this->rem(228, 240, $detalhe)/100, 2, false))
-            ->setValorDesconto(Util::nFloat($this->rem(241, 253, $detalhe)/100, 2, false))
-            ->setValorRecebido(Util::nFloat($this->rem(254, 266, $detalhe)/100, 2, false))
-            ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe)/100, 2, false))
-            ->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe)/100, 2, false));
+            ->setValor(Util::nFloat($this->rem(153, 165, $detalhe) / 100, 2, false))
+            ->setValorTarifa(Util::nFloat($this->rem(176, 188, $detalhe) / 100, 2, false))
+            ->setValorIOF(Util::nFloat($this->rem(215, 227, $detalhe) / 100, 2, false))
+            ->setValorAbatimento(Util::nFloat($this->rem(228, 240, $detalhe) / 100, 2, false))
+            ->setValorDesconto(Util::nFloat($this->rem(241, 253, $detalhe) / 100, 2, false))
+            ->setValorRecebido(Util::nFloat($this->rem(254, 266, $detalhe) / 100, 2, false))
+            ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe) / 100, 2, false))
+            ->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe) / 100, 2, false));
 
         $msgAdicional = str_split(sprintf('%08s', $this->rem(319, 328, $detalhe)), 2) + array_fill(0, 5, '');
         if ($d->hasOcorrencia('06', '15', '17', '20')) {
@@ -140,17 +141,11 @@ class Ourinvest extends AbstractRetorno implements RetornoCnab400
             $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
         } elseif ($d->hasOcorrencia('03')) {
             $this->totais['erros']++;
-            $error = Util::appendStrings(
-                Arr::get($this->rejeicoes, $msgAdicional[0], ''),
-                Arr::get($this->rejeicoes, $msgAdicional[1], ''),
-                Arr::get($this->rejeicoes, $msgAdicional[2], ''),
-                Arr::get($this->rejeicoes, $msgAdicional[3], ''),
-                Arr::get($this->rejeicoes, $msgAdicional[4], '')
-            );
-            if($d->hasOcorrencia('03')) {
-               if(isset($this->rejeicoes[$this->rem(319, 320, $detalhe)])){
-                  $d->setRejeicao($this->rejeicoes[$this->rem(319, 320, $detalhe)]);
-               }
+            $error = Util::appendStrings(Arr::get($this->rejeicoes, $msgAdicional[0], ''), Arr::get($this->rejeicoes, $msgAdicional[1], ''), Arr::get($this->rejeicoes, $msgAdicional[2], ''), Arr::get($this->rejeicoes, $msgAdicional[3], ''), Arr::get($this->rejeicoes, $msgAdicional[4], ''));
+            if ($d->hasOcorrencia('03')) {
+                if (isset($this->rejeicoes[$this->rem(319, 320, $detalhe)])) {
+                    $d->setRejeicao($this->rejeicoes[$this->rem(319, 320, $detalhe)]);
+                }
             }
             $d->setError($error);
         } else {
@@ -170,7 +165,7 @@ class Ourinvest extends AbstractRetorno implements RetornoCnab400
     {
         $this->getTrailer()
             ->setQuantidadeTitulos($this->rem(18, 25, $trailer))
-            ->setValorTitulos(Util::nFloat($this->rem(26, 39, $trailer)/100, 2, false))
+            ->setValorTitulos(Util::nFloat($this->rem(26, 39, $trailer) / 100, 2, false))
             ->setQuantidadeErros((int) $this->totais['erros'])
             ->setQuantidadeEntradas((int) $this->totais['entradas'])
             ->setQuantidadeLiquidados((int) $this->totais['liquidados'])

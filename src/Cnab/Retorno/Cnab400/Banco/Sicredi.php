@@ -1,11 +1,12 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco;
 
+use Illuminate\Support\Arr;
+use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\AbstractRetorno;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
-use Eduardokum\LaravelBoleto\Util;
-use Illuminate\Support\Arr;
 
 class Sicredi extends AbstractRetorno implements RetornoCnab400
 {
@@ -258,7 +259,7 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
             ->setDataVencimento($this->rem(147, 152, $detalhe))
             ->setValor(Util::nFloat($this->rem(153, 165, $detalhe), 2, false) / 100)
             ->setValorTarifa(Util::nFloat($this->rem(176, 188, $detalhe), 2, false) / 100)
-            ->setValorOutrasDespesas(Util::nFloat($this->rem(189, 201, $detalhe), 2, false) / 100 )
+            ->setValorOutrasDespesas(Util::nFloat($this->rem(189, 201, $detalhe), 2, false) / 100)
             ->setValorAbatimento(Util::nFloat($this->rem(228, 240, $detalhe), 2, false) / 100)
             ->setValorDesconto(Util::nFloat($this->rem(241, 253, $detalhe), 2, false) / 100)
             ->setValorRecebido(Util::nFloat($this->rem(254, 266, $detalhe), 2, false) / 100)
@@ -267,7 +268,7 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
             ->setDataCredito($this->rem(329, 336, $detalhe), 'Ymd');
 
         if ($d->hasOcorrencia('06', '15', '16')) {
-			$this->totais['valor_recebido'] += $d->getValorRecebido();
+            $this->totais['valor_recebido'] += $d->getValorRecebido();
             $this->totais['liquidados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
         } elseif ($d->hasOcorrencia('02')) {
@@ -282,10 +283,10 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
         } elseif ($d->hasOcorrencia('33')) {
             $this->totais['alterados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
-        } elseif ($d->hasOcorrencia('03','24', '27', '30', '32')) {
+        } elseif ($d->hasOcorrencia('03', '24', '27', '30', '32')) {
             $this->totais['erros']++;
-	        if($d->hasOcorrencia('03')) {
-                if(isset($this->rejeicoes[$this->rem(319, 320, $detalhe)])){
+            if ($d->hasOcorrencia('03')) {
+                if (isset($this->rejeicoes[$this->rem(319, 320, $detalhe)])) {
                     $d->setRejeicao($this->rejeicoes[$this->rem(319, 320, $detalhe)]);
                 }
             }
@@ -298,7 +299,6 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
         $msgAdicRetorno = str_split($msgAdicional, 2) + array_fill(0, 5, '') + array_fill(0, 5, '');
 
         if (trim($msgAdicional, '0') != '') {
-
             //Caso seja detalhe de Tarifa ('28' => 'Tarifa') Buscar as mensagens especificas e não classificar como erro
             if ($d->hasOcorrencia('28')) {
                 $motivo = [];
@@ -310,26 +310,16 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
 
                 $motivo = array_filter($motivo);
 
-                if (count($motivo) > 0){
+                if (count($motivo) > 0) {
                     $d->setRejeicao(implode(PHP_EOL, $motivo));
                 }
 
-            //Caso haja outra mensagem adicional para tratar e não seja ocorrência de erro então
-            //concatenar a mensagem com o texto da descricao atual
-            } else
-                if ( $d->getOcorrenciaTipo() !=  $d::OCORRENCIA_ERRO ){
-                $ocorrencia = Util::appendStrings(
-                    $d->getOcorrenciaDescricao(),
-                    Arr::get($this->rejeicoes, $msgAdicRetorno[0], ''),
-                    Arr::get($this->rejeicoes, $msgAdicRetorno[1], ''),
-                    Arr::get($this->rejeicoes, $msgAdicRetorno[2], ''),
-                    Arr::get($this->rejeicoes, $msgAdicRetorno[3], ''),
-                    Arr::get($this->rejeicoes, $msgAdicRetorno[4], '')
-                );
+                //Caso haja outra mensagem adicional para tratar e não seja ocorrência de erro então
+                //concatenar a mensagem com o texto da descricao atual
+            } elseif ($d->getOcorrenciaTipo() != $d::OCORRENCIA_ERRO) {
+                $ocorrencia = Util::appendStrings($d->getOcorrenciaDescricao(), Arr::get($this->rejeicoes, $msgAdicRetorno[0], ''), Arr::get($this->rejeicoes, $msgAdicRetorno[1], ''), Arr::get($this->rejeicoes, $msgAdicRetorno[2], ''), Arr::get($this->rejeicoes, $msgAdicRetorno[3], ''), Arr::get($this->rejeicoes, $msgAdicRetorno[4], ''));
                 $d->setOcorrenciaDescricao($ocorrencia);
-            }
-            else {
-
+            } else {
                 $error = [];
                 $error[] = Arr::get($this->rejeicoes, $msgAdicRetorno[0], '');
                 $error[] = Arr::get($this->rejeicoes, $msgAdicRetorno[1], '');
@@ -339,7 +329,7 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
 
                 $error = array_filter($error);
 
-                if (count($error) > 0){
+                if (count($error) > 0) {
                     $d->setError(implode(PHP_EOL, $error));
                 }
             }

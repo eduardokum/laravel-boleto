@@ -1,49 +1,60 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400;
 
 use Carbon\Carbon;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Header as HeaderContract;
 use Eduardokum\LaravelBoleto\MagicTrait;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Header as HeaderContract;
 
 class Header implements HeaderContract
 {
     use MagicTrait;
+
     /**
      * @var string
      */
     protected $operacaoCodigo;
+
     /**
      * @var string
      */
     protected $operacao;
+
     /**
      * @var string
      */
     protected $servicoCodigo;
+
     /**
      * @var string
      */
     protected $servico;
+
     /**
      * @var string
      */
     protected $agencia;
+
     /**
      * @var string
      */
     protected $agenciaDv;
+
     /**
      * @var string
      */
     protected $conta;
+
     /**
      * @var string
      */
     protected $contaDv;
+
     /**
      * @var Carbon
      */
     protected $data;
+
     /**
      * @var string
      */

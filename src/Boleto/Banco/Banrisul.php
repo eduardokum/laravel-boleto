@@ -2,10 +2,10 @@
 
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
-use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
-use Eduardokum\LaravelBoleto\CalculoDV;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 class Banrisul extends AbstractBoleto implements BoletoContract
 {
@@ -86,6 +86,7 @@ class Banrisul extends AbstractBoleto implements BoletoContract
         }
         $baixaAutomatica = (int) $baixaAutomatica;
         $this->diasBaixaAutomatica = $baixaAutomatica > 0 ? $baixaAutomatica : 0;
+
         return $this;
     }
 
@@ -98,9 +99,11 @@ class Banrisul extends AbstractBoleto implements BoletoContract
     {
         $numero_boleto = $this->getNumero();
         $nossoNumero = Util::numberFormatGeral($numero_boleto, 8)
-            . CalculoDV::banrisulNossoNumero(Util::numberFormatGeral($numero_boleto, 8));
+            .CalculoDV::banrisulNossoNumero(Util::numberFormatGeral($numero_boleto, 8));
+
         return $nossoNumero;
     }
+
     /**
      * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
      *
@@ -110,6 +113,7 @@ class Banrisul extends AbstractBoleto implements BoletoContract
     {
         return substr_replace($this->getNossoNumero(), '-', -2, 0);
     }
+
     /**
      * Método para gerar o código da posição de 20 a 44
      *
@@ -139,7 +143,8 @@ class Banrisul extends AbstractBoleto implements BoletoContract
      *
      * @return array
      */
-    public static function parseCampoLivre($campoLivre) {
+    public static function parseCampoLivre($campoLivre)
+    {
         return [
             'carteira' => substr($campoLivre, 0, 1),
             'agencia' => substr($campoLivre, 2, 4),

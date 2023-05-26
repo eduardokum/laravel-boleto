@@ -1,4 +1,5 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Api\Exception;
 
 use Exception;
@@ -6,9 +7,13 @@ use Exception;
 class UnauthorizedException extends Exception
 {
     private $baseUrl;
+
     private $conta;
+
     private $certificado;
+
     private $certificadoChave;
+
     /**
      * @var null
      */

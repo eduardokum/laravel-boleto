@@ -8,15 +8,14 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco;
 
+use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
-use Eduardokum\LaravelBoleto\Util;
 
 class Bb extends AbstractRemessa implements RemessaContract
 {
-
     const OCORRENCIA_REMESSA = '01';
     const OCORRENCIA_PEDIDO_BAIXA = '02';
     const OCORRENCIA_CONCESSAO_ABATIMENTO = '04';
@@ -29,7 +28,6 @@ class Bb extends AbstractRemessa implements RemessaContract
     const OCORRENCIA_RECUSA_SACADO = '30';
     const OCORRENCIA_ALT_OUTROS_DADOS = '31';
     const OCORRENCIA_ALT_MODALIDADE = '40';
-
     const PROTESTO_SEM = '0';
     const PROTESTO_DIAS_CORRIDOS = '1';
     const PROTESTO_DIAS_UTEIS = '2';
@@ -151,9 +149,10 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->boletos[] = $boleto;
         $this->segmentoP($boleto);
         $this->segmentoQ($boleto);
-		if($boleto->getStatus() == $boleto::STATUS_REGISTRO) {
-			$this->segmentoR($boleto);
-		}
+        if ($boleto->getStatus() == $boleto::STATUS_REGISTRO) {
+            $this->segmentoR($boleto);
+        }
+
         return $this;
     }
 
@@ -271,7 +270,7 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(210, 212, '000');
         $this->add(213, 240, '');
 
-        if($boleto->getSacadorAvalista()) {
+        if ($boleto->getSacadorAvalista()) {
             $this->add(154, 154, strlen(Util::onlyNumbers($boleto->getSacadorAvalista()->getDocumento())) == 14 ? 2 : 1);
             $this->add(155, 169, Util::formatCnab('9', Util::onlyNumbers($boleto->getSacadorAvalista()->getDocumento()), 15));
             $this->add(170, 209, Util::formatCnab('X', $boleto->getSacadorAvalista()->getNome(), 30));
@@ -456,11 +455,13 @@ class Bb extends AbstractRemessa implements RemessaContract
      *
      * @return mixed|string
      */
-    private function nossoNumero(BoletoContract $boleto) {
+    private function nossoNumero(BoletoContract $boleto)
+    {
         $convenio = (int) Util::onlyNumbers($this->getConvenio());
         if ($convenio > 1000000) {
             return $boleto->getNossoNumero();
         }
-        return $boleto->getNossoNumero() . CalculoDV::bbNossoNumero($boleto->getNossoNumero());
+
+        return $boleto->getNossoNumero().CalculoDV::bbNossoNumero($boleto->getNossoNumero());
     }
 }

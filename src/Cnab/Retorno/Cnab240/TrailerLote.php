@@ -2,29 +2,30 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
-use \Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\TrailerLote as TrailerLoteContract;
 use Eduardokum\LaravelBoleto\MagicTrait;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\TrailerLote as TrailerLoteContract;
 
 class TrailerLote implements TrailerLoteContract
 {
     use MagicTrait;
+
     /**
-     * @var integer
+     * @var int
      */
     protected $loteServico;
 
     /**
-     * @var integer
+     * @var int
      */
     protected $TipoRegistro;
 
     /**
-     * @var integer
+     * @var int
      */
     protected $qtdRegistroLote;
 
     /**
-     * @var integer
+     * @var int
      */
     protected $qtdTitulosCobrancaSimples;
 
@@ -34,7 +35,7 @@ class TrailerLote implements TrailerLoteContract
     protected $valorTotalTitulosCobranca;
 
     /**
-     * @var integer
+     * @var int
      */
     protected $qtdTitulosCobrancaVinculada;
 
@@ -44,7 +45,7 @@ class TrailerLote implements TrailerLoteContract
     protected $valorTotalTitulosCobrancaVinculada;
 
     /**
-     * @var integer
+     * @var int
      */
     protected $qtdTitulosCobrancaCaucionada;
 
@@ -54,7 +55,7 @@ class TrailerLote implements TrailerLoteContract
     protected $valorTotalTitulosCobrancaCaucionada;
 
     /**
-     * @var integer
+     * @var int
      */
     protected $qtdTitulosCobrancaDescontada;
 
@@ -64,7 +65,7 @@ class TrailerLote implements TrailerLoteContract
     protected $valorTotalTitulosCobrancaDescontada;
 
     /**
-     * @var integer
+     * @var int
      */
     protected $numeroAvisoLancamento;
 

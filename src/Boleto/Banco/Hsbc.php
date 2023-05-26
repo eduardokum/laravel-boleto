@@ -1,11 +1,12 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
+use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use Eduardokum\LaravelBoleto\Util;
 
-class Hsbc  extends AbstractBoleto implements BoletoContract
+class Hsbc extends AbstractBoleto implements BoletoContract
 {
     public function __construct(array $params = [])
     {
@@ -19,12 +20,14 @@ class Hsbc  extends AbstractBoleto implements BoletoContract
      * @var string
      */
     protected $codigoBanco = self::COD_BANCO_HSBC;
+
     /**
      * Define as carteiras disponíveis para este banco
      *
      * @var array
      */
     protected $carteiras = ['CSB'];
+
     /**
      * Espécie do documento, coódigo para remessa
      *
@@ -39,18 +42,21 @@ class Hsbc  extends AbstractBoleto implements BoletoContract
         'DS' => '10',
         'PD' => '98',
     ];
+
     /**
      * Código de range de composição do nosso numero.
      *
      * @var string
      */
     protected $range;
+
     /**
      * Espécie do documento, geralmente DM (Duplicata Mercantil)
      *
      * @var string
      */
     protected $especieDoc = 'PD';
+
     /**
      * @return string
      */
@@ -58,6 +64,7 @@ class Hsbc  extends AbstractBoleto implements BoletoContract
     {
         return $this->range;
     }
+
     /**
      * @param string $range
      *
@@ -69,6 +76,7 @@ class Hsbc  extends AbstractBoleto implements BoletoContract
 
         return $this;
     }
+
     /**
      * Define o campo Espécie Doc, HSBC sempre PD
      *
@@ -78,8 +86,10 @@ class Hsbc  extends AbstractBoleto implements BoletoContract
     public function setEspecieDoc($especieDoc)
     {
         $this->especieDoc = 'PD';
+
         return $this;
     }
+
     /**
      * Retorna o campo Agência/Beneficiário do boleto
      *
@@ -90,15 +100,16 @@ class Hsbc  extends AbstractBoleto implements BoletoContract
         $agencia = rtrim(sprintf('%s-%s', $this->getAgencia(), $this->getAgenciaDv()), '-');
 
         if ($this->getContaDv() !== null && strlen($this->getContaDv()) == 1) {
-            $conta = substr($this->getConta(), 0, -1) . '-' .substr($this->getConta(), -1).$this->getContaDv();
+            $conta = substr($this->getConta(), 0, -1).'-'.substr($this->getConta(), -1).$this->getContaDv();
         } elseif ($this->getContaDv() !== null && strlen($this->getContaDv()) == 2) {
-            $conta = substr($this->getConta(), 0, -1) . '-' .substr($this->getConta(), -1).$this->getContaDv();
+            $conta = substr($this->getConta(), 0, -1).'-'.substr($this->getConta(), -1).$this->getContaDv();
         } else {
             $conta = $this->getConta();
         }
 
         return sprintf('%s / %s', $agencia, $conta);
     }
+
     /**
      * Gera o Nosso Número.
      *
@@ -108,9 +119,11 @@ class Hsbc  extends AbstractBoleto implements BoletoContract
     {
         $range = Util::numberFormatGeral($this->getRange(), 5);
         $numero_boleto = Util::numberFormatGeral($this->getNumero(), 5);
-        $dv = Util::modulo11($range . $numero_boleto, 2, 7);
-        return $range . $numero_boleto . $dv;
+        $dv = Util::modulo11($range.$numero_boleto, 2, 7);
+
+        return $range.$numero_boleto.$dv;
     }
+
     /**
      * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
      *
@@ -120,6 +133,7 @@ class Hsbc  extends AbstractBoleto implements BoletoContract
     {
         return substr_replace($this->getNossoNumero(), '-', -1, 0);
     }
+
     /**
      * Método para gerar o código da posição de 20 a 44
      *
@@ -134,7 +148,7 @@ class Hsbc  extends AbstractBoleto implements BoletoContract
         $campoLivre = $this->getNossoNumero();
         $campoLivre .= Util::numberFormatGeral($this->getAgencia(), 4);
         $campoLivre .= Util::numberFormatGeral($this->getConta(), 6);
-        $campoLivre .= $this->getContaDv() ? $this->getContaDv() : Util::modulo11(Util::numberFormatGeral($this->getAgencia(), 4) . Util::numberFormatGeral($this->getConta(), 6));
+        $campoLivre .= $this->getContaDv() ? $this->getContaDv() : Util::modulo11(Util::numberFormatGeral($this->getAgencia(), 4).Util::numberFormatGeral($this->getConta(), 6));
         $campoLivre .= '001';
 
         return $this->campoLivre = $campoLivre;
@@ -147,7 +161,8 @@ class Hsbc  extends AbstractBoleto implements BoletoContract
      *
      * @return array
      */
-    public static function parseCampoLivre($campoLivre) {
+    public static function parseCampoLivre($campoLivre)
+    {
         return [
             'convenio' => null,
             'agenciaDv' => null,

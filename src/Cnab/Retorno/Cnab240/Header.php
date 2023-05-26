@@ -3,14 +3,15 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
 use Carbon\Carbon;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Header as HeaderContract;
 use Eduardokum\LaravelBoleto\MagicTrait;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Header as HeaderContract;
 
 class Header implements HeaderContract
 {
     use MagicTrait;
+
     /**
-     * @var integer
+     * @var int
      */
     protected $codBanco;
 
@@ -20,7 +21,7 @@ class Header implements HeaderContract
     protected $nomeBanco;
 
     /**
-     * @var integer
+     * @var int
      */
     protected $codigoRemessaRetorno;
 
@@ -48,6 +49,7 @@ class Header implements HeaderContract
      * @var string
      */
     protected $agencia;
+
     /**
      * @var string
      */
@@ -247,7 +249,6 @@ class Header implements HeaderContract
     }
 
     /**
-     *
      * @param string $numeroSequencialArquivo
      * @return $this
      */

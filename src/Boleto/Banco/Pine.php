@@ -1,10 +1,11 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
-use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
-use Eduardokum\LaravelBoleto\CalculoDV;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 class Pine extends AbstractBoleto implements BoletoContract
 {
@@ -19,11 +20,13 @@ class Pine extends AbstractBoleto implements BoletoContract
      * @var string
      */
     protected $codigoBanco = self::COD_BANCO_PINE;
+
     /**
      * Define as carteiras disponíveis para este banco
      * @var array
      */
     protected $carteiras = false;
+
     /**
      * Espécie do documento, código para remessa do CNAB240
      * @var string
@@ -39,28 +42,33 @@ class Pine extends AbstractBoleto implements BoletoContract
         'CAR' => '31', //Cartão de crédito
         'O'   => '99',  //Outros,
     ];
+
     /**
      * Linha de local de pagamento
      *
      * @var string
      */
     protected $localPagamento = 'Canais eletrônicos, agências ou correspondentes bancários de todo o BRASIL';
+
     /**
      * Código de range de composição do nosso numero.
      *
      * @var int
      */
     protected $range = 0;
+
     /**
      * @var string
      */
     protected $codigoCliente;
+
     /**
      * Modalidade da carteira
      *
      * @var string
      */
     protected $modalidadeCarteira;
+
     /**
      * @return int
      */
@@ -68,6 +76,7 @@ class Pine extends AbstractBoleto implements BoletoContract
     {
         return $this->range;
     }
+
     /**
      * @param int $range
      *
@@ -79,6 +88,7 @@ class Pine extends AbstractBoleto implements BoletoContract
 
         return $this;
     }
+
     /**
      * Define o número do codigo do Cliente
      *
@@ -88,8 +98,10 @@ class Pine extends AbstractBoleto implements BoletoContract
     public function setCodigoCliente($codigoCliente)
     {
         $this->codigoCliente = $codigoCliente;
+
         return $this;
     }
+
     /**
      * Retorna o número do codigo Cliente
      *
@@ -99,6 +111,7 @@ class Pine extends AbstractBoleto implements BoletoContract
     {
         return $this->codigoCliente;
     }
+
     /**
      * Retorna a modalidade da carteira
      *
@@ -120,13 +133,14 @@ class Pine extends AbstractBoleto implements BoletoContract
     public function setModalidadeCarteira($modalidadeCarteira)
     {
         $modalidadeCarteira = Util::upper($modalidadeCarteira);
-        if (!in_array($modalidadeCarteira, ['1', '2', '5', '6', 'D'])) {
+        if (! in_array($modalidadeCarteira, ['1', '2', '5', '6', 'D'])) {
             throw new \Exception('Modalidade da carteira inválida');
         }
         $this->modalidadeCarteira = $modalidadeCarteira;
 
         return $this;
     }
+
     /**
      * Gera o Nosso Número.
      *
@@ -140,8 +154,10 @@ class Pine extends AbstractBoleto implements BoletoContract
             $nn = ((int) $this->getRange()) + ((int) $this->getNumero());
             $nn .= CalculoDV::pineNossoNumero($this->getAgencia(), $this->getCarteira(), $nn);
         }
+
         return Util::numberFormatGeral($nn, 11);
     }
+
     /**
      * Método para gerar o código da posição de 20 a 44
      *
@@ -171,7 +187,8 @@ class Pine extends AbstractBoleto implements BoletoContract
      *
      * @return array
      */
-    static public function parseCampoLivre($campoLivre) {
+    public static function parseCampoLivre($campoLivre)
+    {
         return [
             'convenio' => null,
             'parcela' => null,
@@ -191,7 +208,8 @@ class Pine extends AbstractBoleto implements BoletoContract
     /**
      * @return string
      */
-    public function getAgenciaCodigoBeneficiario(){
-        return sprintf('%s%s / %s%s',$this->getAgencia(), CalculoDV::pineAgencia($this->getAgencia()), $this->getConta(), CalculoDV::pineConta($this->getConta()));
+    public function getAgenciaCodigoBeneficiario()
+    {
+        return sprintf('%s%s / %s%s', $this->getAgencia(), CalculoDV::pineAgencia($this->getAgencia()), $this->getConta(), CalculoDV::pineConta($this->getConta()));
     }
 }
