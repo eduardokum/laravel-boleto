@@ -103,9 +103,9 @@ jobs:
                 id: cache-env
                 uses: shivammathur/cache-extensions@v1
                 with:
-                    php-version: ${{ matrix.php }}
-                    extensions: ${{ env.extensions }}
-                    key: php-extensions-cache-v1
+                  php-version: ${{ matrix.php }}
+                  extensions: ${{ env.extensions }}
+                  key: php-extensions-cache-v1
 
             -   name: Setup PHP  ${{ matrix.php }}
                 uses: shivammathur/setup-php@v2
