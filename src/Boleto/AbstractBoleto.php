@@ -883,7 +883,7 @@ abstract class AbstractBoleto implements BoletoContract
     {
         $chaveNfe = Util::onlyNumbers($chaveNfe);
 
-        if (strlen($chaveNfe) != 44) {
+        if (strlen($chaveNfe) != 44 && !empty($chaveNfe)) {
             throw new \Exception('Chave de nfe não possui 44 posições');
         }
 
@@ -899,6 +899,9 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getChaveNfe()
     {
+        if (strlen($this->chaveNfe) != 44) {
+            return null;
+        }
         return $this->chaveNfe;
     }
 
