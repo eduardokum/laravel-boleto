@@ -408,9 +408,9 @@ class CalculoDV
         return null;
     }
 
-    public static function ourinvestConta($conta)
+    public static function ourinvestConta($conta, $agencia = '0001')
     {
-        return Util::modulo10($conta);
+        return Util::modulo10(Util::numberFormatGeral($agencia, 4).Util::numberFormatGeral($conta, 7));
     }
 
     /*

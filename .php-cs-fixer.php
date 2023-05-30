@@ -4,6 +4,10 @@ use PhpCsFixer\Finder;
 
 $rules = [
     '@PSR2' => true,
+    'no_unused_imports' => true,
+    'single_line_after_imports' => true,
+    'single_quote' => true,
+    'space_after_semicolon' => true,
 //    'array_indentation' => true,
 //    'array_syntax' => ['syntax' => 'short'],
 //    'binary_operator_spaces' => [
