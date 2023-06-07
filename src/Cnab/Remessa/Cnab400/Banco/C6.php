@@ -148,7 +148,7 @@ class C6 extends AbstractRemessa implements RemessaContract
         $this->add(1, 1, '1');
         $this->add(2, 3, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? '02' : '01');
         $this->add(4, 17, Util::formatCnab('9L', $this->getBeneficiario()->getDocumento(), 14));
-        $this->add(18, 29, Util::formatCnab('X', $this->getCodigoCliente(), 12));
+        $this->add(18, 29, Util::formatCnab('9', $this->getCodigoCliente(), 12));
         $this->add(30, 37, '');
         $this->add(38, 62, Util::formatCnab('X', $boleto->getNumeroControle(), 25)); // numero de controle
         $this->add(63, 74, Util::formatCnab('9', $boleto->getNossoNumero(), 12));
