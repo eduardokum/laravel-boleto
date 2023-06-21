@@ -118,6 +118,11 @@ interface Boleto
 
     /**
      * @return \Carbon\Carbon
+    */
+    public function getDataDesconto2();
+
+    /**
+     * @return \Carbon\Carbon
      */
     public function getDataProcessamento();
 
@@ -135,6 +140,11 @@ interface Boleto
      * @return mixed
      */
     public function getDesconto();
+
+    /**
+     * @return mixed
+    */
+    public function getDesconto2();
 
     /**
      * @return mixed
