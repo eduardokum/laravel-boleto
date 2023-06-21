@@ -308,9 +308,9 @@ class Bb extends AbstractRemessa implements RemessaContract
         if ($boleto->getStatus() == $boleto::STATUS_CUSTOM) {
             $this->add(16, 17, sprintf('%2.02s', $boleto->getComando()));
         }
-        $this->add(18, 18, '0');
-        $this->add(19, 26, '00000000');
-        $this->add(27, 41, '000000000000000');
+        $this->add(18, 18, $boleto->getDesconto2() > 0 ? '1' : '0');
+        $this->add(19, 26, $boleto->getDesconto2() > 0 ? $boleto->getDataDesconto2()->format('dmY') : '00000000');
+        $this->add(27, 41, $boleto->getDesconto2() >0 ? Util::formatCnab('9', $boleto->getDesconto2(), 15, 2 ) : '000000000000000');
         $this->add(42, 42, '0');
         $this->add(43, 50, '00000000');
         $this->add(51, 65, '000000000000000');
@@ -326,7 +326,7 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(229, 230, '');
         $this->add(231, 231, '0');
         $this->add(232, 240, '');
-
+        
         return $this;
     }
 
