@@ -1,11 +1,12 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco;
 
+use Illuminate\Support\Arr;
+use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\AbstractRetorno;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
-use Eduardokum\LaravelBoleto\Util;
-use Illuminate\Support\Arr;
 
 class Unicred extends AbstractRetorno implements RetornoCnab400
 {
@@ -22,19 +23,19 @@ class Unicred extends AbstractRetorno implements RetornoCnab400
      * @var array
      */
     private $ocorrencias = [
-        "01" => "Pago (Título protestado pago em cartório)",
-        "02" => "Instrução Confirmada",
-        "03" => "Instrução Rejeitada",
-        "04" => "Sustado Judicial (Título protestado sustado judicialmente)",
-        "06" => "Liquidação Normal",
-        "07" => "Liquidação em Condicional (Título liquidado em cartório com cheque do próprio devedor)",
-        "08" => "Sustado Definitivo (Título protestado sustado judicialmente)",
-        "09" => "Liquidação de Título Descontado",
-        "10" => "Protesto solicitado",
-        "11" => "Protesto Em cartório",
-        "12" => "Sustação solicitada",
-        "13" => "Títulos Descontado (título utilizado como garantia em operação de desconto)",
-        "14" => "Títulos Descontável (título com desistência de garantia em operação de desconto)",
+        '01' => 'Pago (Título protestado pago em cartório)',
+        '02' => 'Instrução Confirmada',
+        '03' => 'Instrução Rejeitada',
+        '04' => 'Sustado Judicial (Título protestado sustado judicialmente)',
+        '06' => 'Liquidação Normal',
+        '07' => 'Liquidação em Condicional (Título liquidado em cartório com cheque do próprio devedor)',
+        '08' => 'Sustado Definitivo (Título protestado sustado judicialmente)',
+        '09' => 'Liquidação de Título Descontado',
+        '10' => 'Protesto solicitado',
+        '11' => 'Protesto Em cartório',
+        '12' => 'Sustação solicitada',
+        '13' => 'Títulos Descontado (título utilizado como garantia em operação de desconto)',
+        '14' => 'Títulos Descontável (título com desistência de garantia em operação de desconto)',
     ];
 
     /**
@@ -203,7 +204,6 @@ class Unicred extends AbstractRetorno implements RetornoCnab400
         '170' => 'Dados do Cedente em branco ou inválido',
     ];
 
-
     /**
      * Array com os Códigos de Tipo de Instrução Origem (Posições 327 a 328 do retorno)
      *
@@ -282,7 +282,7 @@ class Unicred extends AbstractRetorno implements RetornoCnab400
          * Portanto, quando não refere-se a quitação de valores esse campo vem preenchido com '000000', e nesse caso
          * será utilizada então a data de geração do arquivo como data de ocorrência
          */
-        $this->dataOcorrencia = ((!empty($this->rem(111, 116, $detalhe)) && ($this->rem(111, 116, $detalhe)!= '000000'))?$this->rem(111, 116, $detalhe):$this->dataGeracaoArquivo);
+        $this->dataOcorrencia = ((! empty($this->rem(111, 116, $detalhe)) && ($this->rem(111, 116, $detalhe) != '000000')) ? $this->rem(111, 116, $detalhe) : $this->dataGeracaoArquivo);
 
         $d = $this->detalheAtual();
 
@@ -296,20 +296,19 @@ class Unicred extends AbstractRetorno implements RetornoCnab400
             ->setDataOcorrencia($this->dataOcorrencia)//Data de geração do arquivo de remessa ou data de quitação do registro
             ->setDataVencimento($this->rem(147, 152, $detalhe))
             ->setDataCredito($this->rem(176, 181, $detalhe))
-            ->setValor(Util::nFloat($this->rem(153, 165, $detalhe)/100, 2, false))
-            ->setValorTarifa(Util::nFloat($this->rem(182, 188, $detalhe)/100, 2, false))
+            ->setValor(Util::nFloat($this->rem(153, 165, $detalhe) / 100, 2, false))
+            ->setValorTarifa(Util::nFloat($this->rem(182, 188, $detalhe) / 100, 2, false))
             // ->setValorIOF(Util::nFloat($this->rem(215, 227, $detalhe)/100, 2, false))
-            ->setValorAbatimento(Util::nFloat($this->rem(228, 240, $detalhe)/100, 2, false))
-            ->setValorDesconto(Util::nFloat($this->rem(241, 253, $detalhe)/100, 2, false))
-            ->setValorRecebido(Util::nFloat($this->rem(254, 266, $detalhe)/100, 2, false))
-            ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe)/100, 2, false));
-            // ->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe)/100, 2, false));
-
+            ->setValorAbatimento(Util::nFloat($this->rem(228, 240, $detalhe) / 100, 2, false))
+            ->setValorDesconto(Util::nFloat($this->rem(241, 253, $detalhe) / 100, 2, false))
+            ->setValorRecebido(Util::nFloat($this->rem(254, 266, $detalhe) / 100, 2, false))
+            ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe) / 100, 2, false));
+        // ->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe)/100, 2, false));
 
         //Adicionar array_fill para garantir que array tenha 5 casas
-        $msgAdicional = str_split( $this->rem(319, 326, $detalhe), 2) + array_fill(0, 5, '');
+        $msgAdicional = str_split($this->rem(319, 326, $detalhe), 2) + array_fill(0, 5, '');
 
-        if ($d->hasOcorrencia('01','06', '09')) { //'07'
+        if ($d->hasOcorrencia('01', '06', '09')) { //'07'
             $this->totais['valor_recebido'] += $d->getValorRecebido();
             $this->totais['liquidados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
@@ -319,22 +318,15 @@ class Unicred extends AbstractRetorno implements RetornoCnab400
         } elseif ($d->hasOcorrencia('09', '10')) {
             $this->totais['baixados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_BAIXADA);
-        } elseif ($d->hasOcorrencia('10','11')) {
+        } elseif ($d->hasOcorrencia('10', '11')) {
             $this->totais['protestados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_PROTESTADA);
-        //} elseif ($d->hasOcorrencia('14')) {
-          //  $this->totais['alterados']++;
-           // $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
+            //} elseif ($d->hasOcorrencia('14')) {
+            //  $this->totais['alterados']++;
+            // $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
         } elseif ($d->hasOcorrencia('03')) {
-
             $this->totais['erros']++;
-            $error = Util::appendStrings(
-                Arr::get($this->rejeicoes, $msgAdicional[0], ''),
-                Arr::get($this->rejeicoes, $msgAdicional[1], ''),
-                Arr::get($this->rejeicoes, $msgAdicional[2], ''),
-                Arr::get($this->rejeicoes, $msgAdicional[3], ''),
-                Arr::get($this->rejeicoes, $msgAdicional[4], '')
-            );
+            $error = Util::appendStrings(Arr::get($this->rejeicoes, $msgAdicional[0], ''), Arr::get($this->rejeicoes, $msgAdicional[1], ''), Arr::get($this->rejeicoes, $msgAdicional[2], ''), Arr::get($this->rejeicoes, $msgAdicional[3], ''), Arr::get($this->rejeicoes, $msgAdicional[4], ''));
 
             $d->setError($error);
         } else {
@@ -354,7 +346,7 @@ class Unicred extends AbstractRetorno implements RetornoCnab400
     {
         $this->getTrailer()
             ->setQuantidadeTitulos((int) $this->count())
-            ->setValorTitulos( (float) Util::nFloat($this->totais['valor_recebido'], 2, false) )
+            ->setValorTitulos((float) Util::nFloat($this->totais['valor_recebido'], 2, false))
             ->setQuantidadeErros((int) $this->totais['erros'])
             ->setQuantidadeEntradas((int) $this->totais['entradas'])
             ->setQuantidadeLiquidados((int) $this->totais['liquidados'])

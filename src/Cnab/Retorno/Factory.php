@@ -1,9 +1,9 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno;
 
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno;
 use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno;
 
 class Factory
 {
@@ -15,15 +15,16 @@ class Factory
      */
     public static function make($file)
     {
-        if (!$file_content = Util::file2array($file)) {
-            throw new \Exception("Arquivo: não existe");
+        if (! $file_content = Util::file2array($file)) {
+            throw new \Exception('Arquivo: não existe');
         }
 
-        if (!Util::isHeaderRetorno($file_content[0])) {
+        if (! Util::isHeaderRetorno($file_content[0])) {
             throw new \Exception("Arquivo: $file, não é um arquivo de retorno");
         }
 
         $instancia = self::getBancoClass($file_content);
+
         return $instancia->processar();
     }
 
@@ -39,16 +40,16 @@ class Factory
         $namespace = '';
         if (Util::isCnab400($file_content)) {
             $banco = mb_substr($file_content[0], 76, 3);
-            $namespace = __NAMESPACE__ . '\\Cnab400\\';
+            $namespace = __NAMESPACE__.'\\Cnab400\\';
         } elseif (Util::isCnab240($file_content)) {
             $banco = mb_substr($file_content[0], 0, 3);
-            $namespace = __NAMESPACE__ . '\\Cnab240\\';
+            $namespace = __NAMESPACE__.'\\Cnab240\\';
         }
 
-        $bancoClass = $namespace . Util::getBancoClass($banco);
+        $bancoClass = $namespace.Util::getBancoClass($banco);
 
-        if (!class_exists($bancoClass)) {
-            throw new \Exception("Banco não possui essa versão de CNAB");
+        if (! class_exists($bancoClass)) {
+            throw new \Exception('Banco não possui essa versão de CNAB');
         }
 
         return new $bancoClass($file_content);

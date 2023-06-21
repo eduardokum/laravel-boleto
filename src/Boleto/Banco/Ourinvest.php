@@ -1,10 +1,11 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
-use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
-use Eduardokum\LaravelBoleto\CalculoDV;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 class Ourinvest extends AbstractBoleto implements BoletoContract
 {
@@ -13,11 +14,13 @@ class Ourinvest extends AbstractBoleto implements BoletoContract
      * @var string
      */
     protected $codigoBanco = self::COD_BANCO_OURINVEST;
+
     /**
      * Define as carteiras disponíveis para este banco
      * @var array
      */
     protected $carteiras = false;
+
     /**
      * Espécie do documento, código para remessa do CNAB240
      * @var string
@@ -28,11 +31,13 @@ class Ourinvest extends AbstractBoleto implements BoletoContract
         'DS'  => '12', //Duplicata de Serviço
         'O'   => '99',  //Outros,
     ];
+
     /**
      * Emissão do boleto por conta do beneficiário (true) por conta do banco (false)
      * @var bool
      */
     protected $emissaoPropria = true;
+
     /**
      * Linha de local de pagamento
      *
@@ -56,6 +61,7 @@ class Ourinvest extends AbstractBoleto implements BoletoContract
     public function setEmissaoPropria($emissaoPropria)
     {
         $this->emissaoPropria = $emissaoPropria;
+
         return $this;
     }
 
@@ -68,9 +74,10 @@ class Ourinvest extends AbstractBoleto implements BoletoContract
     protected function gerarNossoNumero()
     {
         return $this->isEmissaoPropria()
-            ? Util::numberFormatGeral($this->getNumero(), 11) . CalculoDV::ourinvestNossoNumero($this->getCarteira(), $this->getNumero())
+            ? Util::numberFormatGeral($this->getNumero(), 11).CalculoDV::ourinvestNossoNumero($this->getCarteira(), $this->getNumero())
             : Util::numberFormatGeral(0, 12);
     }
+
     /**
      * Método para gerar o código da posição de 20 a 44
      *
@@ -99,7 +106,8 @@ class Ourinvest extends AbstractBoleto implements BoletoContract
      *
      * @return array
      */
-    static public function parseCampoLivre($campoLivre) {
+    public static function parseCampoLivre($campoLivre)
+    {
         return [
             'convenio' => null,
             'parcela' => null,
@@ -119,7 +127,8 @@ class Ourinvest extends AbstractBoleto implements BoletoContract
     /**
      * @return string
      */
-    public function getAgenciaCodigoBeneficiario(){
-        return sprintf('%04s-%s / %07s-%s',$this->getAgencia(), CalculoDV::ourinvestAgencia($this->getAgencia()), $this->getConta(), CalculoDV::ourinvestConta($this->getConta()));
+    public function getAgenciaCodigoBeneficiario()
+    {
+        return sprintf('%04s-%s / %07s-%s', $this->getAgencia(), CalculoDV::ourinvestAgencia($this->getAgencia()), $this->getConta(), CalculoDV::ourinvestConta($this->getConta()));
     }
 }

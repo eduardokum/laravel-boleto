@@ -1,11 +1,12 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco;
 
+use Illuminate\Support\Arr;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\AbstractRetorno;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use Illuminate\Support\Arr;
 
 class Itau extends AbstractRetorno implements RetornoCnab400
 {
@@ -251,12 +252,7 @@ class Itau extends AbstractRetorno implements RetornoCnab400
             $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
         } elseif ($d->hasOcorrencia('03', '15', '16', '17', '18', '60')) {
             $this->totais['erros']++;
-            $error = Util::appendStrings(
-                Arr::get($this->rejeicoes, $msgAdicional[0], ''),
-                Arr::get($this->rejeicoes, $msgAdicional[1], ''),
-                Arr::get($this->rejeicoes, $msgAdicional[2], ''),
-                Arr::get($this->rejeicoes, $msgAdicional[3], '')
-            );
+            $error = Util::appendStrings(Arr::get($this->rejeicoes, $msgAdicional[0], ''), Arr::get($this->rejeicoes, $msgAdicional[1], ''), Arr::get($this->rejeicoes, $msgAdicional[2], ''), Arr::get($this->rejeicoes, $msgAdicional[3], ''));
             $d->setError($error);
         } else {
             $d->setOcorrenciaTipo($d::OCORRENCIA_OUTROS);

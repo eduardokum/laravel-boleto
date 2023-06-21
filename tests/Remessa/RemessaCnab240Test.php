@@ -2,41 +2,37 @@
 
 namespace Eduardokum\LaravelBoleto\Tests\Remessa;
 
-use Eduardokum\LaravelBoleto\Boleto\Banco as Boleto;
-use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco as Remessa;
 use Eduardokum\LaravelBoleto\Pessoa;
 use Eduardokum\LaravelBoleto\Tests\TestCase;
+use Eduardokum\LaravelBoleto\Boleto\Banco as Boleto;
+use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco as Remessa;
 
 class RemessaCnab240Test extends TestCase
 {
-
     protected static $pagador;
+
     protected static $beneficiario;
 
     public static function setUpBeforeClass() : void
     {
-        self::$beneficiario = new Pessoa(
-            [
-                'nome' => 'ACME',
-                'endereco' => 'Rua um, 123',
-                'cep' => '99999-999',
-                'uf' => 'UF',
-                'cidade' => 'CIDADE',
-                'documento' => '99.999.999/9999-99',
-            ]
-        );
+        self::$beneficiario = new Pessoa([
+            'nome' => 'ACME',
+            'endereco' => 'Rua um, 123',
+            'cep' => '99999-999',
+            'uf' => 'UF',
+            'cidade' => 'CIDADE',
+            'documento' => '99.999.999/9999-99',
+        ]);
 
-        self::$pagador = new Pessoa(
-            [
-                'nome' => 'Cliente',
-                'endereco' => 'Rua um, 123',
-                'bairro' => 'Bairro',
-                'cep' => '99999-999',
-                'uf' => 'UF',
-                'cidade' => 'CIDADE',
-                'documento' => '999.999.999-99',
-            ]
-        );
+        self::$pagador = new Pessoa([
+            'nome' => 'Cliente',
+            'endereco' => 'Rua um, 123',
+            'bairro' => 'Bairro',
+            'cep' => '99999-999',
+            'uf' => 'UF',
+            'cidade' => 'CIDADE',
+            'documento' => '999.999.999-99',
+        ]);
     }
 
     public static function tearDownAfterClass() : void
@@ -46,10 +42,11 @@ class RemessaCnab240Test extends TestCase
             'files',
             'cnab240',
         ];
-        $files = glob(implode(DIRECTORY_SEPARATOR, $aFiles) . '/*'); // get all file names
-        foreach($files as $file){
-            if(is_file($file))
+        $files = glob(implode(DIRECTORY_SEPARATOR, $aFiles).'/*'); // get all file names
+        foreach($files as $file) {
+            if(is_file($file)) {
                 @unlink($file);
+            }
         }
     }
 //
@@ -100,9 +97,10 @@ class RemessaCnab240Test extends TestCase
 //        $this->assertEquals($file, $file2);
 //    }
 
-    public function testRemessaItauCnab240(){
+    public function testRemessaItauCnab240()
+    {
         $boleto = new Boleto\Itau([
-            'logo' => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '033.png',
+            'logo' => realpath(__DIR__.'/../logos/').DIRECTORY_SEPARATOR.'033.png',
             'dataVencimento' => new \Carbon\Carbon(),
             'valor' => 100,
             'multa' => false,
@@ -133,7 +131,7 @@ class RemessaCnab240Test extends TestCase
             __DIR__,
             'files',
             'cnab240',
-            'itau.txt'
+            'itau.txt',
         ]);
 
         $file2 = $remessa->save($file);

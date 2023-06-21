@@ -9,11 +9,11 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco;
 
+use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
-use Eduardokum\LaravelBoleto\Util;
 
 class Bancoob extends AbstractRemessa implements RemessaContract
 {
@@ -34,7 +34,6 @@ class Bancoob extends AbstractRemessa implements RemessaContract
     const OCORRENCIA_EXC_NEGATIVACAO = '68';
     const OCORRENCIA_CANC_NEGATIVACAO = '69';
     const OCORRENCIA_DESCONTAR_TITULOS_DIA = '93';
-
     const PROTESTO_DIAS_CORRIDOS = '1';
     const PROTESTO_DIAS_UTEIS = '2';
     const PROTESTO_NAO_PROTESTAR = '3';
@@ -53,7 +52,6 @@ class Bancoob extends AbstractRemessa implements RemessaContract
      * @var string
      */
     protected $codigoBanco = BoletoContract::COD_BANCO_BANCOOB;
-
 
     /**
      * Define as carteiras disponíveis para cada banco
@@ -74,7 +72,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
      *
      * @var null
      */
-    protected $fimArquivo = "";
+    protected $fimArquivo = '';
 
     /**
      * @param BoletoContract $boleto
@@ -88,6 +86,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->segmentoP($boleto);
         $this->segmentoQ($boleto);
         $this->segmentoR($boleto);
+
         return $this;
     }
 
@@ -145,7 +144,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(118, 118, ($boleto->getJuros() !== null && $boleto->getJuros() > 0) ? '2' : '0');    //0 = ISENTO | 1 = R$ ao dia | 2 = % ao mês
         $this->add(119, 126, ($boleto->getJuros() !== null && $boleto->getJuros() > 0) ? $boleto->getDataVencimento()->copy()->addDays($boleto->getJurosApos() ?: 1)->format('dmY') : '00000000');
         $this->add(127, 141, Util::formatCnab('9', $boleto->getJuros(), 15, 2)); //Taxa mensal
-        $this->add(142, 142, $boleto->getDesconto() > 0  ? '1' : '0'); //0 = SEM DESCONTO | 1 = VALOR FIXO | 2 = PERCENTUAL
+        $this->add(142, 142, $boleto->getDesconto() > 0 ? '1' : '0'); //0 = SEM DESCONTO | 1 = VALOR FIXO | 2 = PERCENTUAL
         $this->add(143, 150, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmY') : '00000000');
         $this->add(151, 165, Util::formatCnab('9', $boleto->getDesconto(), 15, 2));
         $this->add(166, 180, Util::formatCnab('9', 0, 15, 2));
@@ -202,7 +201,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(210, 212, '000');
         $this->add(213, 240, Util::formatCnab('X', '', 28));
 
-        if($boleto->getSacadorAvalista()) {
+        if ($boleto->getSacadorAvalista()) {
             $this->add(154, 154, strlen(Util::onlyNumbers($boleto->getSacadorAvalista()->getDocumento())) == 14 ? 2 : 1);
             $this->add(155, 169, Util::formatCnab('9', Util::onlyNumbers($boleto->getSacadorAvalista()->getDocumento()), 15));
             $this->add(170, 209, Util::formatCnab('X', $boleto->getSacadorAvalista()->getNome(), 40));
@@ -240,7 +239,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(43, 50, '00000000');
         $this->add(51, 65, '000000000000000');
         $this->add(66, 66, $boleto->getMulta() > 0 ? '2' : '0'); //0 = ISENTO | 1 = VALOR FIXO | 2 = PERCENTUAL
-        $this->add(67, 74, $boleto->getMulta() > 0 ?  $boleto->getDataVencimento()->copy()->addDay()->format('dmY') : '00000000');
+        $this->add(67, 74, $boleto->getMulta() > 0 ? $boleto->getDataVencimento()->copy()->addDay()->format('dmY') : '00000000');
         $this->add(75, 89, Util::formatCnab('9', $boleto->getMulta(), 15, 2));  //2,20 = 0000000000220
         $this->add(90, 199, '');
         $this->add(200, 207, '00000000');
@@ -290,6 +289,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(172, 191, '');
         $this->add(192, 211, '');
         $this->add(212, 240, '');
+
         return $this;
     }
 
@@ -338,7 +338,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
     {
         $this->iniciaTrailerLote();
 
-        $valor = array_reduce($this->boletos, function($valor, $boleto) {
+        $valor = array_reduce($this->boletos, function ($valor, $boleto) {
             return $valor + $boleto->getValor();
         }, 0);
 

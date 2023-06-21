@@ -8,15 +8,13 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco;
 
-use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
-use Eduardokum\LaravelBoleto\Util;
 
 class Sicredi extends AbstractRemessa implements RemessaContract
 {
-
     const OCORRENCIA_REMESSA = '01';
     const OCORRENCIA_PEDIDO_BAIXA = '02';
     const OCORRENCIA_CONCESSAO_ABATIMENTO = '04';
@@ -32,7 +30,6 @@ class Sicredi extends AbstractRemessa implements RemessaContract
     const OCORRENCIA_ALT_DESCONTO = '16';
     const OCORRENCIA_NAO_CONCEDER_DESCONTO = '17';
     const OCORRENCIA_ALT_OUTROS_DADOS = '31';
-
     const PROTESTO_SEM = '3';
     const PROTESTO_DIAS_CORRIDOS = '1';
     const PROTESTO_NAO_PROTESTAR = '3';
@@ -76,6 +73,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
     public function setCarteira($carteira)
     {
         $this->carteira = 'A';
+
         return $this;
     }
 
@@ -91,9 +89,10 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->segmentoP($boleto);
         $this->segmentoQ($boleto);
         $this->segmentoR($boleto);
-        if($boleto->getSacadorAvalista()) {
+        if ($boleto->getSacadorAvalista()) {
             $this->segmentoY01($boleto);
         }
+
         return $this;
     }
 
@@ -170,7 +169,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
      */
     protected function segmentoR(BoletoContract $boleto)
     {
-        if (!$boleto->getMulta() > 0 && !$boleto->getDesconto() > 0) {
+        if (! $boleto->getMulta() > 0 && ! $boleto->getDesconto() > 0) {
             return $this;
         }
 
@@ -277,7 +276,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(213, 232, '');
         $this->add(233, 240, '');
 
-        if($boleto->getSacadorAvalista()) {
+        if ($boleto->getSacadorAvalista()) {
             $this->add(154, 154, strlen(Util::onlyNumbers($boleto->getSacadorAvalista()->getDocumento())) == 14 ? 2 : 1);
             $this->add(155, 169, Util::formatCnab('9', Util::onlyNumbers($boleto->getSacadorAvalista()->getDocumento()), 15));
             $this->add(170, 209, Util::formatCnab('X', $boleto->getSacadorAvalista()->getNome(), 30));
@@ -358,7 +357,6 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(192, 211, '');
         $this->add(212, 240, '');
 
-
         return $this;
     }
 
@@ -407,7 +405,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
     {
         $this->iniciaTrailerLote();
 
-        $valor = array_reduce($this->boletos, function($valor, $boleto) {
+        $valor = array_reduce($this->boletos, function ($valor, $boleto) {
             return $valor + $boleto->getValor();
         }, 0);
 

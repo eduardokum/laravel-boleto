@@ -8,11 +8,11 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco;
 
+use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
-use Eduardokum\LaravelBoleto\Util;
 
 class Itau extends AbstractRemessa implements RemessaContract
 {
@@ -33,7 +33,6 @@ class Itau extends AbstractRemessa implements RemessaContract
     const OCORRENCIA_EXC_NEGATIVACAO = '68';
     const OCORRENCIA_CANC_NEGATIVACAO = '69';
     const OCORRENCIA_DESCONTAR_TITULOS_DIA = '93';
-
     const PROTESTO_SEM = '0';
     const PROTESTO_DIAS_CORRIDOS = '1';
     const PROTESTO_DIAS_UTEIS = '2';
@@ -47,7 +46,6 @@ class Itau extends AbstractRemessa implements RemessaContract
      * @var string
      */
     protected $codigoBanco = BoletoContract::COD_BANCO_ITAU;
-
 
     /**
      * Define as carteiras disponíveis para cada banco
@@ -67,9 +65,10 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->boletos[] = $boleto;
         $this->segmentoP($boleto);
         $this->segmentoQ($boleto);
-        if($boleto->getSacadorAvalista()) {
+        if ($boleto->getSacadorAvalista()) {
             $this->segmentoY($boleto);
         }
+
         return $this;
     }
 
@@ -188,7 +187,7 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(210, 212, '000');
         $this->add(213, 240, '');
 
-        if($boleto->getSacadorAvalista()) {
+        if ($boleto->getSacadorAvalista()) {
             $this->add(154, 154, strlen(Util::onlyNumbers($boleto->getSacadorAvalista()->getDocumento())) == 14 ? 2 : 1);
             $this->add(155, 169, Util::formatCnab('9', Util::onlyNumbers($boleto->getSacadorAvalista()->getDocumento()), 15));
             $this->add(170, 199, Util::formatCnab('X', $boleto->getSacadorAvalista()->getNome(), 30));
@@ -270,6 +269,7 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(172, 225, '');
         $this->add(226, 228, '000');
         $this->add(229, 240, '');
+
         return $this;
     }
 
@@ -320,7 +320,7 @@ class Itau extends AbstractRemessa implements RemessaContract
     {
         $this->iniciaTrailerLote();
 
-        $valor = array_reduce($this->boletos, function($valor, $boleto) {
+        $valor = array_reduce($this->boletos, function ($valor, $boleto) {
             return $valor + $boleto->getValor();
         }, 0);
 

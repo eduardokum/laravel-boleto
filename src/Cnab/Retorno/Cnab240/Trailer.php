@@ -2,29 +2,30 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
-use \Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Trailer as TrailerContract;
 use Eduardokum\LaravelBoleto\MagicTrait;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Trailer as TrailerContract;
 
 class Trailer implements TrailerContract
 {
     use MagicTrait;
+
     /**
-     * @var integer
+     * @var int
      */
     protected $numeroLote;
 
     /**
-     * @var integer
+     * @var int
      */
     protected $tipoRegistro;
 
     /**
-     * @var integer
+     * @var int
      */
     protected $qtdLotesArquivo;
 
     /**
-     * @var integer
+     * @var int
      */
     protected $qtdRegistroArquivo;
 

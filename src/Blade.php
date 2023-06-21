@@ -1,15 +1,16 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto;
 
-use Illuminate\Container\Container;
+use Illuminate\View\Factory;
 use Illuminate\Events\Dispatcher;
+use Illuminate\Container\Container;
+use Illuminate\View\FileViewFinder;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\View\Compilers\BladeCompiler;
 use Illuminate\View\Engines\PhpEngine;
 use Illuminate\View\Engines\CompilerEngine;
 use Illuminate\View\Engines\EngineResolver;
-use Illuminate\View\FileViewFinder;
-use Illuminate\View\Factory;
+use Illuminate\View\Compilers\BladeCompiler;
 
 class Blade
 {
@@ -40,8 +41,8 @@ class Blade
      * @param array  $viewPaths
      * @param string $cachePath
      */
-    function __construct($viewPaths = array(), $cachePath = null) {
-
+    public function __construct($viewPaths = [], $cachePath = null)
+    {
         $this->container = new Container;
         $this->viewPaths = (array) $viewPaths;
         $this->cachePath = $cachePath;
@@ -60,7 +61,7 @@ class Blade
 
     public function registerFilesystem()
     {
-        $this->container->singleton('files', function(){
+        $this->container->singleton('files', function () {
             return new Filesystem;
         });
     }
@@ -74,10 +75,11 @@ class Blade
     {
         $self = $this;
 
-        $this->container->singleton('view.engine.resolver', function($app) use ($self) {
+        $this->container->singleton('view.engine.resolver', function ($app) use ($self) {
             $resolver = new EngineResolver;
             $self->registerPhpEngine($resolver);
             $self->registerBladeEngine($resolver);
+
             return $resolver;
         });
     }
@@ -90,7 +92,9 @@ class Blade
      */
     public function registerPhpEngine($resolver)
     {
-        $resolver->register('php', function() { return new PhpEngine; });
+        $resolver->register('php', function () {
+            return new PhpEngine;
+        });
     }
 
     /**
@@ -104,12 +108,13 @@ class Blade
         $self = $this;
         $app = $this->container;
 
-        $this->container->singleton('blade.compiler', function($app) use ($self) {
+        $this->container->singleton('blade.compiler', function ($app) use ($self) {
             $cache = $self->cachePath;
+
             return new BladeCompiler($app['files'], $cache);
         });
 
-        $resolver->register('blade', function() use ($app) {
+        $resolver->register('blade', function () use ($app) {
             return new CompilerEngine($app['blade.compiler']);
         });
     }
@@ -122,7 +127,7 @@ class Blade
     public function registerViewFinder()
     {
         $self = $this;
-        $this->container->singleton('view.finder', function($app) use ($self) {
+        $this->container->singleton('view.finder', function ($app) use ($self) {
             $paths = $self->viewPaths;
 
             return new FileViewFinder($app['files'], $paths);
@@ -131,7 +136,6 @@ class Blade
 
     /**
      * Register the view environment.
-     *
      */
     public function registerFactory()
     {

@@ -8,14 +8,14 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno;
 
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Detalhe as Detalhe240Contract;
+use Eduardokum\LaravelBoleto\Util;
+use Illuminate\Support\Collection;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Header as Header240Contract;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Header as Header400Contract;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Detalhe as Detalhe240Contract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Trailer as Trailer240Contract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Detalhe as Detalhe400Contract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Trailer as Trailer400Contract;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Header as Header400Contract;
-use Illuminate\Support\Collection;
-use Eduardokum\LaravelBoleto\Util;
 
 abstract class AbstractRetorno implements \Countable, \SeekableIterator
 {
@@ -75,16 +75,15 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
     private $_position = 1;
 
     /**
-     *
-     * @param String $file
+     * @param string $file
      * @throws \Exception
      */
     public function __construct($file)
     {
         $this->_position = 1;
 
-        if (!$this->file = Util::file2array($file)) {
-            throw new \Exception("Arquivo: não existe");
+        if (! $this->file = Util::file2array($file)) {
+            throw new \Exception('Arquivo: não existe');
         }
 
         $r = new \ReflectionClass('\Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto');
@@ -96,13 +95,13 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
             }
         }
 
-        if (!Util::isHeaderRetorno($this->file[0])) {
-            throw new \Exception(sprintf("Arquivo de retorno inválido"));
+        if (! Util::isHeaderRetorno($this->file[0])) {
+            throw new \Exception(sprintf('Arquivo de retorno inválido'));
         }
 
         $banco = Util::isCnab400($this->file[0]) ? mb_substr($this->file[0], 76, 3) : mb_substr($this->file[0], 0, 3);
-        if (!in_array($banco, $bancosDisponiveis)) {
-            throw new \Exception(sprintf("Banco: %s, inválido", $banco));
+        if (! in_array($banco, $bancosDisponiveis)) {
+            throw new \Exception(sprintf('Banco: %s, inválido', $banco));
         }
     }
 
@@ -201,6 +200,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
     {
         return $this->processado;
     }
+
     /**
      * Seta cnab como processado
      *
@@ -209,6 +209,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
     protected function setProcessado()
     {
         $this->processado = true;
+
         return $this;
     }
 
@@ -246,7 +247,6 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
         return Util::remove($i, $f, $array);
     }
 
-
     public function current()
     {
         return $this->detalhe[$this->_position];
@@ -254,7 +254,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
 
     public function next()
     {
-        ++$this->_position;
+        $this->_position++;
     }
 
     public function key()
@@ -280,7 +280,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
     public function seek($position)
     {
         $this->_position = $position;
-        if (!$this->valid()) {
+        if (! $this->valid()) {
             throw new \OutOfBoundsException('"Posição inválida "$position"');
         }
     }

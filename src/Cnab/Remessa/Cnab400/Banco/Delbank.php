@@ -1,16 +1,15 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
-use Eduardokum\LaravelBoleto\CalculoDV;
-use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 
 class Delbank extends AbstractRemessa implements RemessaContract
 {
     const ESPECIE_DUPLICATA = '01';
-
     const OCORRENCIA_REMESSA = '01';
     const OCORRENCIA_PEDIDO_BAIXA = '02';
     const OCORRENCIA_CONCESSAO_ABATIMENTO = '04';
@@ -22,7 +21,6 @@ class Delbank extends AbstractRemessa implements RemessaContract
     const OCORRENCIA_PEDIDO_NAO_PROTESTO = '10';
     const OCORRENCIA_SUSTAR_PROTESTO_BAIXAR_TITULO = '18';
     const OCORRENCIA_ALT_OUTROS_DADOS = '47';
-
     const INSTRUCAO_SEM = '10';
     const INSTRUCAO_PROTESTAR_XX = '94';
 
@@ -31,7 +29,6 @@ class Delbank extends AbstractRemessa implements RemessaContract
         parent::__construct($params);
         $this->addCampoObrigatorio('idremessa');
     }
-
 
     /**
      * Código do banco
@@ -45,7 +42,6 @@ class Delbank extends AbstractRemessa implements RemessaContract
      *
      * @var array
      */
-
     protected $carteiras = ['112', '121'];
 
     /**
@@ -127,11 +123,11 @@ class Delbank extends AbstractRemessa implements RemessaContract
     public function addBoleto(BoletoContract $boleto)
     {
         $this->boletos[] = $boleto;
-		$this->iniciaDetalhe();
+        $this->iniciaDetalhe();
 
         $this->add(1, 1, '1');
         $this->add(2, 3, '04');
-        $this->add(4, 17, Util::onlyNumbers($this->getBeneficiario()->getDocumento()) );
+        $this->add(4, 17, Util::onlyNumbers($this->getBeneficiario()->getDocumento()));
         $this->add(18, 37, Util::formatCnab('X', $this->getCodigoCliente(), 20));
         $this->add(38, 62, Util::formatCnab('X', $boleto->getNumeroControle(), 25)); // numero de controle
         $this->add(63, 73, Util::formatCnab('9', $boleto->getNossoNumero(), 11));
@@ -142,31 +138,31 @@ class Delbank extends AbstractRemessa implements RemessaContract
         $this->add(104, 105, Util::formatCnab('9', 0, 2));
         $this->add(106, 107, '');
         $this->add(108, 108, '1'); // CARTEIRA
-		if($boleto->getCarteira() == "121"){
-			$this->add(108, 108, '6'); // CARTEIRA
-		}
-		
+        if ($boleto->getCarteira() == '121') {
+            $this->add(108, 108, '6'); // CARTEIRA
+        }
+
         $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
-		
-		// BAIXA
+
+        // BAIXA
         if ($boleto->getStatus() == $boleto::STATUS_BAIXA) {
             $this->add(109, 110, self::OCORRENCIA_PEDIDO_BAIXA);
         }
-		
-		// ALTERAR VENCIMENTO
+
+        // ALTERAR VENCIMENTO
         if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
             $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO);
         }
-		
-		// ALTERAR DATA
+
+        // ALTERAR DATA
         if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO_DATA) {
             $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO);
         }
-		
+
         if ($boleto->getStatus() == $boleto::STATUS_CUSTOM) {
             $this->add(109, 110, sprintf('%2.02s', $boleto->getComando()));
         }
-		
+
         $this->add(111, 120, Util::formatCnab('X', $boleto->getNumeroControle(), 10));
         $this->add(121, 126, $boleto->getDataVencimento()->format('dmy'));
         $this->add(127, 139, Util::formatCnab('9', $boleto->getValor(), 13, 2));
@@ -201,13 +197,12 @@ class Delbank extends AbstractRemessa implements RemessaContract
         $this->add(386, 391, '');
         $this->add(392, 393, '');
         if ($boleto->getDiasProtesto() > 0) {
-			$this->add(392, 393, Util::formatCnab('9', Util::onlyNumbers($boleto->getDiasProtesto()), 2));
-		}
+            $this->add(392, 393, Util::formatCnab('9', Util::onlyNumbers($boleto->getDiasProtesto()), 2));
+        }
         $this->add(394, 394, '');
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
-		
-		if (sizeof($boleto->getInstrucoes()) > 0)
-		{
+
+        if (sizeof($boleto->getInstrucoes()) > 0) {
             $this->iniciaDetalhe();
             $this->add(1, 1, '2');
             $this->add(2, 2, '0');
@@ -217,9 +212,9 @@ class Delbank extends AbstractRemessa implements RemessaContract
             $this->add(210, 278, Util::formatCnab('X', $boleto->getInstrucoes()[3], 69));
             $this->add(279, 347, Util::formatCnab('X', $boleto->getInstrucoes()[4], 69));
             $this->add(348, 394, '');
-			$this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
+            $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
         }
-		
+
         return $this;
     }
 

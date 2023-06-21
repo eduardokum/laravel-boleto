@@ -1,11 +1,12 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
+use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
-use Eduardokum\LaravelBoleto\Util;
 
 class Santander extends AbstractRemessa implements RemessaContract
 {
@@ -15,7 +16,6 @@ class Santander extends AbstractRemessa implements RemessaContract
     const ESPECIE_RECIBO = '05';
     const ESPECIE_DUPLICATA_SERVICO = '06';
     const ESPECIE_LETRA_CAMBIO = '07';
-
     const OCORRENCIA_REMESSA = '01';
     const OCORRENCIA_PEDIDO_BAIXA = '02';
     const OCORRENCIA_CONCESSAO_ABATIMENTO = '04';
@@ -25,7 +25,6 @@ class Santander extends AbstractRemessa implements RemessaContract
     const OCORRENCIA_ALT_SEUNUMERO = '08';
     const OCORRENCIA_PROTESTAR = '09';
     const OCORRENCIA_SUSTAR_PROTESTO = '18';
-
     const INSTRUCAO_SEM = '00';
     const INSTRUCAO_BAIXAR_APOS_VENC_15 = '02';
     const INSTRUCAO_BAIXAR_APOS_VENC_30 = '03';
@@ -39,7 +38,6 @@ class Santander extends AbstractRemessa implements RemessaContract
         parent::__construct($params);
         $this->addCampoObrigatorio('codigoCliente');
     }
-
 
     /**
      * Código do banco
@@ -114,8 +112,8 @@ class Santander extends AbstractRemessa implements RemessaContract
         }
 
         return Util::formatCnab('9', $this->getAgencia(), 4)
-            . Util::formatCnab('9', substr($this->getCodigoCliente(), 0, 7), 8)
-            . Util::formatCnab('9', $conta, 8);
+            .Util::formatCnab('9', substr($this->getCodigoCliente(), 0, 7), 8)
+            .Util::formatCnab('9', $conta, 8);
     }
 
     /**
@@ -229,7 +227,7 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(352, 381, Util::formatCnab('X', $boleto->getSacadorAvalista() ? $boleto->getSacadorAvalista()->getNome() : '', 30));
         $this->add(382, 382, '');
         $this->add(383, 383, 'I');
-        $this->add(384, 385, substr($this->getConta(), -1) . CalculoDV::santanderContaCorrente($this->getAgencia(), $this->getConta()));
+        $this->add(384, 385, substr($this->getConta(), -1).CalculoDV::santanderContaCorrente($this->getAgencia(), $this->getConta()));
         if (strlen($this->getConta()) == 9) {
             $this->add(384, 385, substr($this->getConta(), -2));
         }

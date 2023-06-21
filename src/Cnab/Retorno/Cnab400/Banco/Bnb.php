@@ -1,11 +1,12 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco;
 
+use Illuminate\Support\Arr;
+use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\AbstractRetorno;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
-use Eduardokum\LaravelBoleto\Util;
-use Illuminate\Support\Arr;
 
 class Bnb extends AbstractRetorno implements RetornoCnab400
 {
@@ -56,7 +57,7 @@ class Bnb extends AbstractRetorno implements RetornoCnab400
         '69' => 'Erro ocorrencia 19',
         '70' => 'Erro ocorrencia 20',
         '71' => 'Erro ocorrencia 21',
-        '72' => 'Erro ocorrencia 22'
+        '72' => 'Erro ocorrencia 22',
     ];
 
     /**
@@ -106,7 +107,7 @@ class Bnb extends AbstractRetorno implements RetornoCnab400
         $d = $this->detalheAtual();
         // Verifica data de crédotp (não vem no retorno mas uso pra saber se foi liquidado)
         if ($this->rem(254, 266, $detalhe) == '0000000000000') {
-            $dataCredito = "";
+            $dataCredito = '';
         } else {
             $dataCredito = $this->rem(111, 116, $detalhe);
         }
@@ -119,13 +120,13 @@ class Bnb extends AbstractRetorno implements RetornoCnab400
             ->setDataOcorrencia($this->rem(111, 116, $detalhe))
             ->setDataVencimento($this->rem(147, 152, $detalhe))
             ->setDataCredito($dataCredito)
-            ->setValor(Util::nFloat($this->rem(153, 165, $detalhe)/100, 2, false))
-            ->setValorTarifa(Util::nFloat($this->rem(176, 188, $detalhe)/100, 2, false))
+            ->setValor(Util::nFloat($this->rem(153, 165, $detalhe) / 100, 2, false))
+            ->setValorTarifa(Util::nFloat($this->rem(176, 188, $detalhe) / 100, 2, false))
             ->setValorIOF(Util::nFloat(0.00, 2, false))
-            ->setValorAbatimento(Util::nFloat($this->rem(228, 240, $detalhe)/100, 2, false))
-            ->setValorDesconto(Util::nFloat($this->rem(241, 253, $detalhe)/100, 2, false))
-            ->setValorRecebido(Util::nFloat($this->rem(254, 266, $detalhe)/100, 2, false))
-            ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe)/100, 2, false))
+            ->setValorAbatimento(Util::nFloat($this->rem(228, 240, $detalhe) / 100, 2, false))
+            ->setValorDesconto(Util::nFloat($this->rem(241, 253, $detalhe) / 100, 2, false))
+            ->setValorRecebido(Util::nFloat($this->rem(254, 266, $detalhe) / 100, 2, false))
+            ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe) / 100, 2, false))
             ->setValorMulta(Util::nFloat(0.00, 2, false));
 
         if ($d->hasOcorrencia('06', '07', '08')) {
@@ -163,7 +164,7 @@ class Bnb extends AbstractRetorno implements RetornoCnab400
     {
         $this->getTrailer()
             ->setQuantidadeTitulos((int) $this->rem(18, 25, $trailer))
-            ->setValorTitulos((float) Util::nFloat($this->rem(26, 39, $trailer)/100, 2, false))
+            ->setValorTitulos((float) Util::nFloat($this->rem(26, 39, $trailer) / 100, 2, false))
             ->setQuantidadeErros((int) $this->totais['erros'])
             ->setQuantidadeEntradas((int) $this->totais['entradas'])
             ->setQuantidadeLiquidados((int) $this->totais['liquidados'])

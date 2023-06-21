@@ -1,11 +1,12 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Api\Banco;
 
 use Carbon\Carbon;
+use Illuminate\Support\Arr;
+use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Api\AbstractAPI;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\BoletoAPI as BoletoAPIContract;
-use Eduardokum\LaravelBoleto\Util;
-use Illuminate\Support\Arr;
 
 class Inter extends AbstractAPI
 {
@@ -32,7 +33,7 @@ class Inter extends AbstractAPI
                 'certificado',
                 'certificadoChave',
                 'client_id',
-                'client_secret'
+                'client_secret',
             ];
             $this->baseUrl = 'https://cdpj.partners.bancointer.com.br';
         }
@@ -48,9 +49,10 @@ class Inter extends AbstractAPI
             'client_id'     => $this->getClientId(),
             'client_secret' => $this->getClientSecret(),
             'scope'         => 'boleto-cobranca.read boleto-cobranca.write',
-            'grant_type'    => 'client_credentials'
+            'grant_type'    => 'client_credentials',
         ], true)->body;
-        return $this->setAccessToken('Bearer ' . $grant->access_token);
+
+        return $this->setAccessToken('Bearer '.$grant->access_token);
     }
 
     /**
@@ -63,6 +65,7 @@ class Inter extends AbstractAPI
                 'Authorization' => $this->getAccessToken(),
             ]);
         }
+
         return [
             'x-inter-conta-corrente' => $this->getConta(),
         ];
@@ -86,13 +89,11 @@ class Inter extends AbstractAPI
             $data['pagador']['cpfCnpj'] = $data['pagador']['cnpjCpf'];
             unset($data['pagador']['cnpjCpf']);
         }
-        $retorno = $this->oAuth2()->post(
-            $this->version == 1
+        $retorno = $this->oAuth2()->post($this->version == 1
                 ? 'openbanking/v1/certificado/boletos'
-                : 'cobranca/v2/boletos',
-            $data
-        );
+                : 'cobranca/v2/boletos', $data);
         $boleto->setNossoNumero($retorno->body->nossoNumero);
+
         return $boleto;
     }
 
@@ -117,23 +118,24 @@ class Inter extends AbstractAPI
             'size'           => $this->version == 1 ? 100 : null,
             'paginaAtual'    => $this->version == 2 ? 0 : null,
             'itensPorPagina' => $this->version == 2 ? 1000 : null,
-        ], function($v) { return !is_null($v); });
+        ], function ($v) {
+            return ! is_null($v);
+        });
 
         $aRetorno = [];
         do {
-            $retorno = $this->oAuth2()->get(
-                ($this->version == 1
+            $retorno = $this->oAuth2()->get(($this->version == 1
                     ? 'openbanking/v1/certificado/boletos?'
                     : 'cobranca/v2/boletos?')
-                . http_build_query($params)
-            );
+                .http_build_query($params));
             array_push($aRetorno, ...$retorno->body->content);
             if ($this->version == 1) {
                 $params['page'] += 1;
             } else {
                 $params['paginaAtual'] += 1;
             }
-        } while (!$retorno->body->last);
+        } while (! $retorno->body->last);
+
         return array_map([$this, 'arrayToBoleto'], $aRetorno);
     }
 
@@ -147,11 +149,9 @@ class Inter extends AbstractAPI
      */
     public function retrieveNossoNumero($nossoNumero)
     {
-        return $this->oAuth2()->get(
-            $this->version == 1
-                ? 'openbanking/v1/certificado/boletos/' . $nossoNumero
-                : 'cobranca/v2/boletos/' . $nossoNumero
-        )->body;
+        return $this->oAuth2()->get($this->version == 1
+                ? 'openbanking/v1/certificado/boletos/'.$nossoNumero
+                : 'cobranca/v2/boletos/'.$nossoNumero)->body;
     }
 
     /**
@@ -182,17 +182,15 @@ class Inter extends AbstractAPI
             ];
         }
 
-        if (!in_array(Util::upper($motivo), $motivosValidos)) {
+        if (! in_array(Util::upper($motivo), $motivosValidos)) {
             $motivo = 'ACERTOS';
         }
-        return $this->oAuth2()->post(
-            $this->version == 1
-                ? 'openbanking/v1/certificado/boletos/' . $nossoNumero . '/baixas'
-                : 'cobranca/v2/boletos/' . $nossoNumero . '/cancelar',
-            $this->version == 1
+
+        return $this->oAuth2()->post($this->version == 1
+                ? 'openbanking/v1/certificado/boletos/'.$nossoNumero.'/baixas'
+                : 'cobranca/v2/boletos/'.$nossoNumero.'/cancelar', $this->version == 1
                 ? ['codigoBaixa' => $motivo]
-                : ['motivoCancelamento' => $motivo]
-        )->body;
+                : ['motivoCancelamento' => $motivo])->body;
     }
 
     /**
@@ -205,11 +203,9 @@ class Inter extends AbstractAPI
      */
     public function getPdfNossoNumero($nossoNumero)
     {
-        return $this->oAuth2()->get(
-            $this->version == 1
-                ? 'openbanking/v1/certificado/boletos/' . $nossoNumero . '/pdf'
-                : 'cobranca/v2/boletos/' . $nossoNumero . '/pdf'
-        )->body;
+        return $this->oAuth2()->get($this->version == 1
+                ? 'openbanking/v1/certificado/boletos/'.$nossoNumero.'/pdf'
+                : 'cobranca/v2/boletos/'.$nossoNumero.'/pdf')->body;
     }
 
     /**

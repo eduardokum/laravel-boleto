@@ -1,8 +1,9 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400;
 
-use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa as AbstractRemessaGeneric;
 use ForceUTF8\Encoding;
+use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa as AbstractRemessaGeneric;
 
 abstract class AbstractRemessa extends AbstractRemessaGeneric
 {
@@ -80,8 +81,8 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
      */
     public function gerar()
     {
-        if (!$this->isValid($messages)) {
-            throw new \Exception('Campos requeridos pelo banco, aparentam estar ausentes ' . $messages);
+        if (! $this->isValid($messages)) {
+            throw new \Exception('Campos requeridos pelo banco, aparentam estar ausentes '.$messages);
         }
 
         $stringRemessa = '';
@@ -90,21 +91,19 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
         }
 
         $this->header();
-        $stringRemessa .= $this->valida($this->getHeader()) . $this->fimLinha;
+        $stringRemessa .= $this->valida($this->getHeader()).$this->fimLinha;
 
         foreach ($this->getDetalhes() as $i => $detalhe) {
             if ($this->tamanhos_linha[self::DETALHE][$i] != 400) {
-                $stringRemessa .= $this->valida($detalhe, $this->tamanhos_linha[self::DETALHE][$i] - 400) . $this->fimLinha;
+                $stringRemessa .= $this->valida($detalhe, $this->tamanhos_linha[self::DETALHE][$i] - 400).$this->fimLinha;
             } else {
-                $stringRemessa .= $this->valida($detalhe) . $this->fimLinha;
+                $stringRemessa .= $this->valida($detalhe).$this->fimLinha;
             }
-
         }
 
         $this->trailer();
-        $stringRemessa .= $this->valida($this->getTrailer()) . $this->fimArquivo;
+        $stringRemessa .= $this->valida($this->getTrailer()).$this->fimArquivo;
 
         return Encoding::toUTF8($stringRemessa);
     }
 }
-

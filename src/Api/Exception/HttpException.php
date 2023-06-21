@@ -1,15 +1,16 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Api\Exception;
 
 use Exception;
 
 class HttpException extends Exception
 {
-
     private $http_code;
+
     private $info;
 
-    public function __construct($http_code, $info, $message = "", $code = 0, $previous = null)
+    public function __construct($http_code, $info, $message = '', $code = 0, $previous = null)
     {
         parent::__construct($message, $code, $previous);
         $this->http_code = $http_code;
@@ -34,12 +35,6 @@ class HttpException extends Exception
 
     public function __toString()
     {
-        return sprintf(
-            "\nMessage:%s\nHttpCode: %s\nInfo:%s\n\nTrace:%s",
-            trim($this->getMessage()),
-            $this->getHttpCode(),
-            is_array($this->getInfo()) ? print_r($this->getInfo(), true) : $this->getInfo(),
-            $this->getTraceAsString()
-        );
+        return sprintf("\nMessage:%s\nHttpCode: %s\nInfo:%s\n\nTrace:%s", trim($this->getMessage()), $this->getHttpCode(), is_array($this->getInfo()) ? print_r($this->getInfo(), true) : $this->getInfo(), $this->getTraceAsString());
     }
 }

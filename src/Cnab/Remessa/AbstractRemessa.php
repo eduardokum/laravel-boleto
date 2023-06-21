@@ -3,14 +3,13 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa;
 
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use Illuminate\Support\Str;
 
 abstract class AbstractRemessa
 {
-
     const HEADER = 'header';
     const HEADER_LOTE = 'header_lote';
     const DETALHE = 'detalhe';
@@ -88,42 +87,49 @@ abstract class AbstractRemessa
      * @var
      */
     protected $idremessa;
+
     /**
      * A data que será informada no header da remessa
      *
      * @var Carbon;
      */
     protected $dataRemessa = null;
+
     /**
      * Agência
      *
      * @var int
      */
     protected $agencia;
+
     /**
      * Dígito da conta
      *
      * @var int
      */
     protected $agenciaDv;
+
     /**
      * Conta
      *
      * @var int
      */
     protected $conta;
+
     /**
      * Dígito da conta
      *
      * @var int
      */
     protected $contaDv;
+
     /**
      * Carteira de cobrança.
      *
      * @var
      */
     protected $carteira;
+
     /**
      * Define as carteiras disponíveis para cada banco
      *
@@ -178,8 +184,10 @@ abstract class AbstractRemessa
         if (is_null($this->dataRemessa)) {
             return Carbon::now()->format($format);
         }
+
         return $this->dataRemessa->format($format);
     }
+
     /**
      * Seta os campos obrigatórios
      *
@@ -187,7 +195,7 @@ abstract class AbstractRemessa
      */
     protected function setCamposObrigatorios()
     {
-        $args                     = func_get_args();
+        $args = func_get_args();
         $this->camposObrigatorios = [];
         foreach ($args as $arg) {
             $this->addCampoObrigatorio($arg);
@@ -205,8 +213,8 @@ abstract class AbstractRemessa
     {
         $args = func_get_args();
         foreach ($args as $arg) {
-            !is_array($arg) || call_user_func_array([$this, __FUNCTION__], $arg);
-            !is_string($arg) || array_push($this->camposObrigatorios, $arg);
+            ! is_array($arg) || call_user_func_array([$this, __FUNCTION__], $arg);
+            ! is_string($arg) || array_push($this->camposObrigatorios, $arg);
         }
 
         return $this;
@@ -369,8 +377,8 @@ abstract class AbstractRemessa
      */
     public function setCarteira($carteira)
     {
-        if ($this->getCarteiras() !== false && !in_array($carteira, $this->getCarteiras())) {
-            throw new \Exception("Carteira não disponível!");
+        if ($this->getCarteiras() !== false && ! in_array($carteira, $this->getCarteiras())) {
+            throw new \Exception('Carteira não disponível!');
         }
         $this->carteira = $carteira;
 
@@ -412,14 +420,15 @@ abstract class AbstractRemessa
      *
      * @param $messages
      *
-     * @return boolean
+     * @return bool
      */
     public function isValid(&$messages)
     {
         foreach ($this->camposObrigatorios as $campo) {
-            $test = call_user_func([$this, 'get' . Str::camel($campo)]);
+            $test = call_user_func([$this, 'get'.Str::camel($campo)]);
             if ($test === '' || is_null($test)) {
                 $messages .= "Campo $campo está em branco";
+
                 return false;
             }
         }
@@ -469,8 +478,8 @@ abstract class AbstractRemessa
     /**
      * Função para add valor a linha nas posições informadas.
      *
-     * @param integer $i
-     * @param integer $f
+     * @param int $i
+     * @param int $f
      * @param         $value
      *
      * @return array
@@ -554,16 +563,16 @@ abstract class AbstractRemessa
     public function save($path, $suggestName = false)
     {
         $folder = dirname($path);
-        if (!is_dir($folder)) {
+        if (! is_dir($folder)) {
             mkdir($folder, 0777, true);
         }
 
-        if (!is_writable(dirname($path))) {
-            throw new \Exception('Path ' . $folder . ' não possui permissao de escrita');
+        if (! is_writable(dirname($path))) {
+            throw new \Exception('Path '.$folder.' não possui permissao de escrita');
         }
 
         if ($suggestName) {
-            $path = rtrim(dirname($path), '/') . '/' . ltrim($this->nomeSugerido(), '/');
+            $path = rtrim(dirname($path), '/').'/'.ltrim($this->nomeSugerido(), '/');
         }
 
         $string = $this->gerar();
@@ -593,7 +602,7 @@ abstract class AbstractRemessa
             $filename = $this->nomeSugerido();
         }
         header('Content-type: text/plain');
-        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Content-Disposition: attachment; filename="'.$filename.'"');
         echo $this->gerar();
     }
 }

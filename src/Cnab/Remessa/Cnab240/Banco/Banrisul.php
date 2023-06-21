@@ -8,15 +8,14 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco;
 
+use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
-use Eduardokum\LaravelBoleto\Util;
 
 class Banrisul extends AbstractRemessa implements RemessaContract
 {
-
     const OCORRENCIA_REMESSA = '01';
     const OCORRENCIA_PEDIDO_BAIXA = '02';
     const OCORRENCIA_CONCESSAO_ABATIMENTO = '04';
@@ -28,7 +27,6 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     const OCORRENCIA_CANC_MORA = '13';
     const OCORRENCIA_PROTESTO_FALENCIA = '15';
     const OCORRENCIA_ALT_OUTROS_DADOS = '31';
-
     const PROTESTO_SEM = '0';
     const PROTESTO_DIAS_CORRIDOS = '1';
     const PROTESTO_NAO_PROTESTAR = '3';
@@ -45,7 +43,6 @@ class Banrisul extends AbstractRemessa implements RemessaContract
      * @var string
      */
     protected $codigoBanco = BoletoContract::COD_BANCO_BANRISUL;
-
 
     /**
      * Define as carteiras disponíveis para cada banco
@@ -69,7 +66,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
      * U -> CSB e CCB sem registro
      * @var array
      */
-    protected $carteiras = ['1','2', '3', 'B', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'N', 'P', 'R', 'S', 'T', 'U'];
+    protected $carteiras = ['1', '2', '3', 'B', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'N', 'P', 'R', 'S', 'T', 'U'];
 
     /**
      * Codigo do cliente junto ao banco.
@@ -113,9 +110,10 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->boletos[] = $boleto;
         $this->segmentoP($boleto);
         $this->segmentoQ($boleto);
-        if($boleto->getSacadorAvalista()) {
+        if ($boleto->getSacadorAvalista()) {
             $this->segmentoY01($boleto);
         }
+
         return $this;
     }
 
@@ -226,7 +224,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(210, 212, '000');
         $this->add(213, 240, '');
 
-        if($boleto->getSacadorAvalista()) {
+        if ($boleto->getSacadorAvalista()) {
             $this->add(154, 154, strlen(Util::onlyNumbers($boleto->getSacadorAvalista()->getDocumento())) == 14 ? 2 : 1);
             $this->add(155, 169, Util::formatCnab('9', Util::onlyNumbers($boleto->getSacadorAvalista()->getDocumento()), 15));
             $this->add(170, 209, Util::formatCnab('X', $boleto->getSacadorAvalista()->getNome(), 30));
@@ -362,7 +360,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     {
         $this->iniciaTrailerLote();
 
-        $valor = array_reduce($this->boletos, function($valor, $boleto) {
+        $valor = array_reduce($this->boletos, function ($valor, $boleto) {
             return $valor + $boleto->getValor();
         }, 0);
 

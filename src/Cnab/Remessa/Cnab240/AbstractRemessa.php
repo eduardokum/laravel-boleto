@@ -1,8 +1,9 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240;
 
-use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa as AbstractRemessaGeneric;
 use ForceUTF8\Encoding;
+use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa as AbstractRemessaGeneric;
 
 abstract class AbstractRemessa extends AbstractRemessaGeneric
 {
@@ -46,7 +47,6 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
      * @return mixed
      */
     abstract protected function headerLote();
-
 
     /**
      * Função que gera o trailer (footer) do arquivo.
@@ -151,8 +151,8 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
      */
     public function gerar()
     {
-        if (!$this->isValid($messages)) {
-            throw new \Exception('Campos requeridos pelo banco, aparentam estar ausentes ' . $messages);
+        if (! $this->isValid($messages)) {
+            throw new \Exception('Campos requeridos pelo banco, aparentam estar ausentes '.$messages);
         }
 
         $stringRemessa = '';
@@ -161,20 +161,20 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
         }
 
         $this->header();
-        $stringRemessa .= $this->valida($this->getHeader()) . $this->fimLinha;
+        $stringRemessa .= $this->valida($this->getHeader()).$this->fimLinha;
 
         $this->headerLote();
-        $stringRemessa .= $this->valida($this->getHeaderLote()) . $this->fimLinha;
+        $stringRemessa .= $this->valida($this->getHeaderLote()).$this->fimLinha;
 
         foreach ($this->getDetalhes() as $i => $detalhe) {
-            $stringRemessa .= $this->valida($detalhe) . $this->fimLinha;
+            $stringRemessa .= $this->valida($detalhe).$this->fimLinha;
         }
 
         $this->trailerLote();
-        $stringRemessa .= $this->valida($this->getTrailerLote()) . $this->fimLinha;
+        $stringRemessa .= $this->valida($this->getTrailerLote()).$this->fimLinha;
 
         $this->trailer();
-        $stringRemessa .= $this->valida($this->getTrailer()) . $this->fimArquivo;
+        $stringRemessa .= $this->valida($this->getTrailer()).$this->fimArquivo;
 
         return Encoding::toUTF8($stringRemessa);
     }
