@@ -141,4 +141,47 @@ class RemessaCnab240Test extends TestCase
         $this->assertFileExists($file);
         $this->assertEquals($file, $file2);
     }
+
+
+    public function testRemessaBBcnab240()
+    {
+        $boleto = new Boleto\Bb;
+        $boleto->setLogo(realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '001.png')
+        ->setDataVencimento(new  \Carbon\Carbon())
+        ->setValor('1000')
+        ->setDesconto('10')
+        ->setDataDesconto(new \Carbon\Carbon())
+        ->setDesconto2('40')
+        ->setDataDesconto2(new \Carbon\Carbon('2023-06-19'))
+        ->setNumero(00000162000015)
+        ->setNumeroDocumento(00000162000015)
+        ->setAceite('S')
+        ->setBeneficiario(self::$beneficiario)
+        ->setPagador(self::$pagador)
+        ->setDescricaoDemonstrativo(['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'])
+        ->setInstrucoes(['instrucao 1', 'instrucao 2', 'instrucao 3'])
+        ->setCarteira(11)
+        ->setAgencia(1111)
+        ->setConta(22222)
+        ->setConvenio('1115122');
+
+        $remessa = new Remessa\Bb;
+        $remessa->setBeneficiario(self::$beneficiario)
+        ->setCarteira(11)
+        ->setAgencia(1111)
+        ->setConvenio('1115122')
+        ->setVariacaoCarteira('017')
+        ->setConta(22222);
+
+        $remessa->addBoleto($boleto);
+
+        $file = implode(DIRECTORY_SEPARATOR, [
+            __DIR__,
+            'files',
+            'cnab240',
+            'bb.txt'
+        ]);
+        $file2 = $remessa->save($file);
+        $this->assertEquals($file, $file2);
+    }
 }
