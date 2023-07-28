@@ -128,6 +128,7 @@ final class Util
         '070' => 'BRB - Banco de Brasília S.A.',
         '104' => 'Caixa Econômica Federal',
         '477' => 'Citibank S.A.',
+        '133' => 'Cresol',
         '081' => 'Concórdia Banco S.A.',
         '487' => 'Deutsche Bank S.A. - Banco Alemão',
         '064' => 'Goldman Sachs do Brasil Banco Múltiplo S.A.',
@@ -670,6 +671,7 @@ final class Util
             break;
         case Contracts\Boleto\Boleto::COD_BANCO_BRADESCO:
         case Contracts\Boleto\Boleto::COD_BANCO_OURINVEST:
+        case Contracts\Boleto\Boleto::COD_BANCO_CRESOL:
             self::adiciona($retorno[0], 27, 46, self::remove(27, 46, $remessa[0]));
             break;
         case Contracts\Boleto\Boleto::COD_BANCO_ITAU:
@@ -733,6 +735,7 @@ final class Util
                 break;
             case Contracts\Boleto\Boleto::COD_BANCO_BRADESCO:
             case Contracts\Boleto\Boleto::COD_BANCO_OURINVEST:
+            case Contracts\Boleto\Boleto::COD_BANCO_CRESOL:
                 self::adiciona($retorno[$i], 25, 29, self::remove(25, 29, $detalhe));
                 self::adiciona($retorno[$i], 30, 36, self::remove(30, 36, $detalhe));
                 self::adiciona($retorno[$i], 37, 37, self::remove(37, 37, $detalhe));
@@ -1009,6 +1012,7 @@ final class Util
             BoletoContract::COD_BANCO_OURINVEST => 'Banco\\Ourinvest',
             BoletoContract::COD_BANCO_SICREDI => 'Banco\\Sicredi',
             BoletoContract::COD_BANCO_BANCOOB => 'Banco\\Bancoob',
+            BoletoContract::COD_BANCO_CRESOL => 'Banco\\Cresol',
         ];
 
         if (array_key_exists($banco, $aBancos)) {
