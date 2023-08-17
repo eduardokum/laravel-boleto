@@ -184,4 +184,8 @@ class RemessaCnab240Test extends TestCase
         $file2 = $remessa->save($file);
         $this->assertEquals($file, $file2);
     }
+
+
+
+
 }
