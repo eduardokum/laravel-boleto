@@ -271,8 +271,152 @@ class RemessaCnab240Test extends TestCase
         $arrayArquivo =  file($file2, FILE_IGNORE_NEW_LINES);
         $conteudo = $arrayArquivo[$linhaSegmento -1];
 
-        $codigioConvenio =  substr($conteudo,62, 1);
-        $this->assertEquals('0', $codigioConvenio);
+        $indentificaoDistribuicao =  substr($conteudo,62, 1);
+        $this->assertEquals('0', $indentificaoDistribuicao);
+    }
+
+
+
+    /**
+     * @throws Exception
+     */
+    public  function  testSegementoPBancoDoBrasil()
+    {
+
+        $linhaSegmento = 7;
+
+        $beneficiario = new Pessoa(
+            [
+                'nome' => 'EVOLUÇÃO EDUCAÇÃO INFANTIL',
+                'endereco' => 'Rua um, 123',
+                'cep' => '55026145',
+                'uf' => 'PE',
+                'cidade' => 'CARUARU',
+                'documento' => '31.355.289/0001-95',
+            ]
+        );
+
+        $pagador = new Pessoa(
+            [
+                'nome' => 'ALBERES LUIZ DA SILVA',
+                'endereco' => 'RUA MARIA DO CARMO PONTES',
+                'bairro' => 'Bairro',
+                'cep' => '55024735',
+                'uf' => 'PE',
+                'cidade' => 'CIDADE',
+                'documento' => 'CARUARU',
+            ]
+        );
+        $boleto = new Boleto\Bb;
+        $boleto->setLogo(realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '001.png')
+            ->setDataVencimento(new \Carbon\Carbon('2023-08-05'))
+            ->setValor('1000')
+            ->setNumero(549908869455)
+            ->setNumeroDocumento(549908869455)
+            ->setAceite('S')
+            ->setBeneficiario($beneficiario)
+            ->setPagador($pagador)
+            ->setDescricaoDemonstrativo(['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'])
+            ->setInstrucoes(['instrucao 1', 'instrucao 2', 'instrucao 3'])
+            ->setCarteira(17)
+            ->setAgencia(5742)
+            ->setConta(26326)
+            ->setConvenio('3563937');
+
+        $remessa = new Remessa\Bb;
+        $remessa->setBeneficiario($beneficiario)
+            ->setCarteira(17)
+            ->setAgencia(5742)
+            ->setConvenio('3563937')
+            ->setVariacaoCarteira('019')
+            ->setConta(22222);
+
+        $remessa->addBoleto($boleto);
+
+        $file = implode(DIRECTORY_SEPARATOR, [
+            __DIR__,
+            'files',
+            'cnab240',
+            'bb.txt'
+        ]);
+        $file2 = $remessa->save($file);
+        $arrayArquivo =  file($file2, FILE_IGNORE_NEW_LINES);
+        $conteudo = $arrayArquivo[$linhaSegmento -1];
+
+        $quantidadeContas =  substr($conteudo,29, 6);
+        $this->assertEquals('000000', $quantidadeContas);
+    }
+
+
+
+    /**
+     * @throws Exception
+     */
+    public  function  testTraillerancoDoBrasilQuantidadeContas()
+    {
+
+        $linhaSegmento = 7;
+
+        $beneficiario = new Pessoa(
+            [
+                'nome' => 'EVOLUÇÃO EDUCAÇÃO INFANTIL',
+                'endereco' => 'Rua um, 123',
+                'cep' => '55026145',
+                'uf' => 'PE',
+                'cidade' => 'CARUARU',
+                'documento' => '31.355.289/0001-95',
+            ]
+        );
+
+        $pagador = new Pessoa(
+            [
+                'nome' => 'ALBERES LUIZ DA SILVA',
+                'endereco' => 'RUA MARIA DO CARMO PONTES',
+                'bairro' => 'Bairro',
+                'cep' => '55024735',
+                'uf' => 'PE',
+                'cidade' => 'CIDADE',
+                'documento' => 'CARUARU',
+            ]
+        );
+        $boleto = new Boleto\Bb;
+        $boleto->setLogo(realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '001.png')
+            ->setDataVencimento(new \Carbon\Carbon('2023-08-05'))
+            ->setValor('1000')
+            ->setNumero(549908869455)
+            ->setNumeroDocumento(549908869455)
+            ->setAceite('S')
+            ->setBeneficiario($beneficiario)
+            ->setPagador($pagador)
+            ->setDescricaoDemonstrativo(['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'])
+            ->setInstrucoes(['instrucao 1', 'instrucao 2', 'instrucao 3'])
+            ->setCarteira(17)
+            ->setAgencia(5742)
+            ->setConta(26326)
+            ->setConvenio('3563937');
+
+        $remessa = new Remessa\Bb;
+        $remessa->setBeneficiario($beneficiario)
+            ->setCarteira(17)
+            ->setAgencia(5742)
+            ->setConvenio('3563937')
+            ->setVariacaoCarteira('019')
+            ->setConta(22222);
+
+        $remessa->addBoleto($boleto);
+
+        $file = implode(DIRECTORY_SEPARATOR, [
+            __DIR__,
+            'files',
+            'cnab240',
+            'bb.txt'
+        ]);
+        $file2 = $remessa->save($file);
+        $arrayArquivo =  file($file2, FILE_IGNORE_NEW_LINES);
+        $conteudo = $arrayArquivo[$linhaSegmento -1];
+
+        $quantidadeContas =  substr($conteudo,29, 6);
+        $this->assertEquals('000000', $quantidadeContas);
     }
 
 
