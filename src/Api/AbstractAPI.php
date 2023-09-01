@@ -90,15 +90,15 @@ abstract class AbstractAPI
         }
     }
 
-//
-//    public function __construct($baseUrl, $conta, $certificado, $certificadoChave, $certificadoSenha = null)
-//    {
-//        $this->baseUrl = $baseUrl;
-//        $this->conta = $conta;
-//        $this->certificado = $certificado;
-//        $this->certificadoChave = $certificadoChave;
-//        $this->certificadoSenha = $certificadoSenha;
-//    }
+    //
+    //    public function __construct($baseUrl, $conta, $certificado, $certificadoChave, $certificadoSenha = null)
+    //    {
+    //        $this->baseUrl = $baseUrl;
+    //        $this->conta = $conta;
+    //        $this->certificado = $certificado;
+    //        $this->certificadoChave = $certificadoChave;
+    //        $this->certificadoSenha = $certificadoSenha;
+    //    }
 
     abstract protected function headers();
 
