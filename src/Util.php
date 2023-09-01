@@ -1016,6 +1016,7 @@ final class Util
             BoletoContract::COD_BANCO_ITAU => 'Banco\\Itau',
             BoletoContract::COD_BANCO_HSBC => 'Banco\\Hsbc',
             BoletoContract::COD_BANCO_DELCRED => 'Banco\\Delbank',
+            BoletoContract::COD_BANCO_RENDIMENTO => 'Banco\\Rendimento',
             BoletoContract::COD_BANCO_PINE => 'Banco\\Pine',
             BoletoContract::COD_BANCO_OURINVEST => 'Banco\\Ourinvest',
             BoletoContract::COD_BANCO_SICREDI => 'Banco\\Sicredi',

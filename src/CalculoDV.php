@@ -338,6 +338,46 @@ class CalculoDV
 
     /*
     |--------------------------------------------------------------------------
+    | 633 - Rendimento
+    |--------------------------------------------------------------------------
+    */
+    public static function rendimentoAgencia($agencia)
+    {
+        return Util::modulo11($agencia);
+    }
+
+    public static function rendimentoConta($conta)
+    {
+        return Util::modulo11($conta);
+    }
+
+    public static function rendimentoNossoNumero($agencia, $nossaCarteira, $numero_boleto)
+    {
+        $n = Util::numberFormatGeral($agencia, 4)
+            .Util::numberFormatGeral($nossaCarteira, 3)
+            .Util::numberFormatGeral($numero_boleto, 10);
+
+        $n = strrev($n);
+        $factor = 2;
+        $sum = 0;
+
+        for ($i = mb_strlen($n); $i > 0; $i--) {
+            $x = ((int) mb_substr($n, $i - 1, 1));
+            $parcial =  $x * $factor;
+            if ($parcial > 9) {
+                $parcial = (int) mb_substr($parcial, 0, 1) + (int) mb_substr($parcial, 1, 1);
+            }
+            $sum += $parcial;
+            if ($factor == 2) {
+                $factor = 0;
+            }
+            $factor++;
+        }
+        return 10 - $sum % 10;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | 643 - Pine
     |--------------------------------------------------------------------------
     */

@@ -21,6 +21,7 @@ interface Boleto
     const COD_BANCO_BNB = '004';
     const COD_BANCO_UNICRED = '136';
     const COD_BANCO_FIBRA = '224';
+    const COD_BANCO_RENDIMENTO = '633';
     const COD_BANCO_PINE = '643';
     const COD_BANCO_OURINVEST = '712';
     const STATUS_REGISTRO = 1;
