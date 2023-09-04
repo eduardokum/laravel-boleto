@@ -42,7 +42,7 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Rendimento([
     'especieDoc'             => 'DM',
 ]);
 
-$remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Pine([
+$remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Rendimento([
     'agencia'       => '0001',
     'conta'         => '1234',
     'contaDv'       => 9,
