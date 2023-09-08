@@ -12,7 +12,7 @@ class Rendimento extends AbstractBoleto implements BoletoContract
     public function __construct(array $params = [])
     {
         parent::__construct($params);
-        $this->addCampoObrigatorio('range', 'codigoCliente', 'modalidadeCarteira');
+        $this->setCamposObrigatorios('numero', 'agencia', 'carteira', 'modalidadeCarteira', 'codigoCliente');
     }
 
     /**
@@ -51,7 +51,7 @@ class Rendimento extends AbstractBoleto implements BoletoContract
     protected $localPagamento = 'Canais eletrônicos, agências ou correspondentes bancários de todo o BRASIL';
 
     /**
-     * Código de range de composição do nosso numero.
+     * Código de range de composição do nosso número.
      *
      * @var int
      */
@@ -210,6 +210,6 @@ class Rendimento extends AbstractBoleto implements BoletoContract
      */
     public function getAgenciaCodigoBeneficiario()
     {
-        return sprintf('%s%s / %s%s', $this->getAgencia(), CalculoDV::rendimentoAgencia($this->getAgencia()), $this->getConta(), CalculoDV::rendimentoConta($this->getConta()));
+        return sprintf('%s / %s', $this->getAgencia(), $this->getCodigoCliente());
     }
 }
