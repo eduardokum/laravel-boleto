@@ -212,4 +212,13 @@ class Pine extends AbstractBoleto implements BoletoContract
     {
         return sprintf('%s%s / %s%s', $this->getAgencia(), CalculoDV::pineAgencia($this->getAgencia()), $this->getConta(), CalculoDV::pineConta($this->getConta()));
     }
+
+    /**
+     * @return bool
+     */
+    public function imprimeBoleto()
+    {
+        return Util::upper($this->getModalidadeCarteira()) == 'D';
+    }
+
 }

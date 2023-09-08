@@ -452,6 +452,9 @@ class Pdf extends AbstractPdf implements PdfContract
      */
     public function addBoleto(BoletoContract $boleto)
     {
+        if (!$boleto->imprimeBoleto()) {
+            throw new \Exception('Boleto com modalidade/carteira não disponível para impressão');
+        }
         $this->totalBoletos += 1;
         $this->boleto[] = $boleto;
 

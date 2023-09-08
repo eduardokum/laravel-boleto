@@ -150,7 +150,7 @@ class Rendimento extends AbstractBoleto implements BoletoContract
     protected function gerarNossoNumero()
     {
         $nn = 0;
-        if ($this->getModalidadeCarteira() == '6') {
+        if ($this->getModalidadeCarteira() == 6) {
             $nn = ((int) $this->getRange()) + ((int) $this->getNumero());
             $nn .= CalculoDV::rendimentoNossoNumero($this->getAgencia(), $this->getCarteira(), $nn);
         }
@@ -211,5 +211,13 @@ class Rendimento extends AbstractBoleto implements BoletoContract
     public function getAgenciaCodigoBeneficiario()
     {
         return sprintf('%s / %s', $this->getAgencia(), $this->getCodigoCliente());
+    }
+
+    /**
+     * @return bool
+     */
+    public function imprimeBoleto()
+    {
+        return $this->getModalidadeCarteira() == 6;
     }
 }

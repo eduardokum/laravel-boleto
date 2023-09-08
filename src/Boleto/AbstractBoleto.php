@@ -1794,6 +1794,11 @@ abstract class AbstractBoleto implements BoletoContract
         return $this->isSituacao(self::SITUACAO_PROTESTADO);
     }
 
+    public function imprimeBoleto()
+    {
+        return true;
+    }
+
     /**
      * Render PDF
      *

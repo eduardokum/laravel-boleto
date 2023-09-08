@@ -82,6 +82,9 @@ class Html implements HtmlContract
      */
     public function addBoleto(BoletoContract $boleto)
     {
+        if (!$boleto->imprimeBoleto()) {
+            throw new \Exception('Boleto com modalidade/carteira não disponível para impressão');
+        }
         $dados = $boleto->toArray();
         $dados['codigo_barras'] = $this->getImagemCodigoDeBarras($dados['codigo_barras']);
         $this->boleto[] = $dados;

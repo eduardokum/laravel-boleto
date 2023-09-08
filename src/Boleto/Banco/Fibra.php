@@ -219,4 +219,12 @@ class Fibra extends AbstractBoleto implements BoletoContract
     {
         return sprintf('%s%s / %s%s', $this->getAgencia(), CalculoDV::fibraAgencia($this->getAgencia()), $this->getConta(), CalculoDV::fibraConta($this->getConta()));
     }
+
+    /**
+     * @return bool
+     */
+    public function imprimeBoleto()
+    {
+        return Util::upper($this->getModalidadeCarteira()) == 'D';
+    }
 }

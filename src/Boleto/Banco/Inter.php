@@ -358,4 +358,12 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
         }
         $this->campoNossoNumero = $nnClean;
     }
+
+    /**
+     * @return bool
+     */
+    public function imprimeBoleto()
+    {
+        return  $this->campoNossoNumero > 0;
+    }
 }

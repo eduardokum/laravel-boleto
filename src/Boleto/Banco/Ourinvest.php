@@ -131,4 +131,12 @@ class Ourinvest extends AbstractBoleto implements BoletoContract
     {
         return sprintf('%04s-%s / %07s-%s', $this->getAgencia(), CalculoDV::ourinvestAgencia($this->getAgencia()), $this->getConta(), CalculoDV::ourinvestConta($this->getConta()));
     }
+
+    /**
+     * @return bool
+     */
+    public function imprimeBoleto()
+    {
+        return $this->isEmissaoPropria();
+    }
 }
