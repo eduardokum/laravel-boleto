@@ -33,7 +33,7 @@ class Rendimento extends AbstractRemessa implements RemessaContract
     public function __construct(array $params = [])
     {
         parent::__construct($params);
-        $this->addCampoObrigatorio('codigoCliente');
+        $this->setCamposObrigatorios('agencia', 'beneficiario', 'codigoCliente');
     }
 
     /**
@@ -48,7 +48,7 @@ class Rendimento extends AbstractRemessa implements RemessaContract
      *
      * @var array
      */
-    protected $carteiras = [112, 121];
+    protected $carteiras = false;
 
     /**
      * Caracter de fim de linha

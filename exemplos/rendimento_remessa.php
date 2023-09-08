@@ -45,7 +45,6 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Rendimento([
 $remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Rendimento([
     'agencia'       => '0001',
     'conta'         => '1234',
-    'contaDv'       => 9,
     'carteira'      => 121,
     'beneficiario'  => $beneficiario,
     'codigoCliente' => '5447390',
