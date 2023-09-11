@@ -132,6 +132,10 @@ class Rendimento extends AbstractRemessa implements RemessaContract
      */
     public function addBoleto(BoletoContract $boleto)
     {
+        if (!Str::startsWith($this->getCodigoCliente(), $this->getAgencia())) {
+            $this->setCodigoCliente(Util::numberFormatGeral($this->getAgencia(), 4) . Util::numberFormatGeral($this->getCodigoCliente(), 10));
+        }
+
         $this->boletos[] = $boleto;
         $this->iniciaDetalhe();
 
