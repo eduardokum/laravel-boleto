@@ -450,7 +450,7 @@ abstract class AbstractRemessa
      *
      * @return mixed
      */
-    abstract public function addBoleto(BoletoContract $detalhe);
+    abstract public function addBoleto(BoletoContract $boleto);
 
     /**
      * Função que gera o trailer (footer) do arquivo.

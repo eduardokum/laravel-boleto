@@ -16,6 +16,13 @@ class Rendimento extends AbstractBoleto implements BoletoContract
     }
 
     /**
+     * Moeda
+     *
+     * @var int
+     */
+    protected $moeda = 0;
+
+    /**
      * Código do banco
      * @var string
      */
