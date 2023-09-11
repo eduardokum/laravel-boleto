@@ -35,16 +35,16 @@ abstract class AbstractPdf extends \FPDF
     {
         $this->_newobj();
         $this->n_js = $this->n;
-        $this->_out('<<');
-        $this->_out('/Names [(EmbeddedJS) '.($this->n + 1).' 0 R]');
-        $this->_out('>>');
-        $this->_out('endobj');
+        $this->_put('<<');
+        $this->_put('/Names [(EmbeddedJS) '.($this->n + 1).' 0 R]');
+        $this->_put('>>');
+        $this->_put('endobj');
         $this->_newobj();
-        $this->_out('<<');
-        $this->_out('/S /JavaScript');
-        $this->_out('/JS '.$this->_textstring($this->javascript));
-        $this->_out('>>');
-        $this->_out('endobj');
+        $this->_put('<<');
+        $this->_put('/S /JavaScript');
+        $this->_put('/JS '.$this->_textstring($this->javascript));
+        $this->_put('>>');
+        $this->_put('endobj');
     }
 
     public function _putresources()
@@ -59,7 +59,7 @@ abstract class AbstractPdf extends \FPDF
     {
         parent::_putcatalog();
         if (! empty($this->javascript)) {
-            $this->_out('/Names <</JavaScript '.($this->n_js).' 0 R>>');
+            $this->_put('/Names <</JavaScript '.($this->n_js).' 0 R>>');
         }
     }
 
@@ -225,15 +225,10 @@ abstract class AbstractPdf extends \FPDF
      * D: send to the browser and force download.<br>
      * F: save to a local<br>
      * S: return as a string. name is ignored.
-     * @param bool   $print 1 imprime 0 nao imprime
      * @return string
      */
-    public function Output($name = '', $dest = 'I', $print = false)
+    public function Output($name = '', $dest = 'I', $isUTF8=false)
     {
-        if ($print) {
-            $this->IncludeJS("print('true');");
-        }
-
-        return parent::Output($name, $dest);
+        return parent::Output($name, $dest, $isUTF8);
     }
 }

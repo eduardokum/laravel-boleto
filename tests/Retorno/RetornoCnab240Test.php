@@ -10,7 +10,7 @@ class RetornoCnab240Test extends TestCase
 {
     public function testRetornoSantanderCnab240()
     {
-        $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make(__DIR__.'/files/cnab240/santander.ret');
+        $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make(__DIR__ . '/files/cnab240/santander.ret');
         $retorno->processar();
 
         $this->assertNotNull($retorno->getHeader());

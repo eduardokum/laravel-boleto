@@ -496,21 +496,26 @@ class Pdf extends AbstractPdf implements PdfContract
             throw new \Exception('Nenhum Boleto adicionado');
         }
 
+
         for ($i = 0; $i < $this->totalBoletos; $i++) {
             $this->SetDrawColor('0', '0', '0');
             $this->AddPage();
             $this->instrucoes($i)->logoEmpresa($i)->Topo($i)->Bottom($i)->codigoBarras($i);
         }
-        if ($dest == self::OUTPUT_SAVE) {
-            $this->Output($save_path, $dest, $this->print);
 
+        if ($this->print) {
+            $this->IncludeJS("print('true');");
+        }
+
+        if ($dest == self::OUTPUT_SAVE) {
+            $this->Output($save_path, $dest);
             return $save_path;
         }
         if ($nameFile == null) {
             $nameFile = Str::random(32);
         }
 
-        return $this->Output($nameFile.'.pdf', $dest, $this->print);
+        return $this->Output($nameFile.'.pdf', $dest);
     }
 
     /**
