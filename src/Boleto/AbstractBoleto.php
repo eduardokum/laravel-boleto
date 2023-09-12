@@ -589,6 +589,20 @@ abstract class AbstractBoleto implements BoletoContract
     }
 
     /**
+     * Define o número da conta
+     *
+     * @param  string $conta
+     *
+     * @return AbstractBoleto
+     */
+    public function setContaCorrente($conta)
+    {
+        $this->conta = (string) $conta;
+
+        return $this;
+    }
+
+    /**
      * Retorna o número da conta
      *
      * @return string
@@ -606,6 +620,20 @@ abstract class AbstractBoleto implements BoletoContract
      * @return AbstractBoleto
      */
     public function setContaDv($contaDv)
+    {
+        $this->contaDv = $contaDv;
+
+        return $this;
+    }
+
+    /**
+     * Define o dígito verificador da conta
+     *
+     * @param  string $contaDv
+     *
+     * @return AbstractBoleto
+     */
+    public function setContaCorrenteDv($contaDv)
     {
         $this->contaDv = $contaDv;
 
