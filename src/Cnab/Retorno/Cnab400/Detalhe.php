@@ -312,7 +312,8 @@ class Detalhe implements DetalheContract
     /**
      * @return string
      */
-    public function getQrCodePix() {
+    public function getQrCodePix()
+    {
         return $this->qrCodePix;
     }
 
@@ -321,7 +322,8 @@ class Detalhe implements DetalheContract
      *
      * @return Detalhe
      */
-    public function setQrCodePix($qrCodePix) {
+    public function setQrCodePix($qrCodePix)
+    {
         $this->qrCodePix = $qrCodePix;
 
         return $this;
@@ -330,7 +332,8 @@ class Detalhe implements DetalheContract
     /**
      * @return string
      */
-    public function getCodigoErroPix() {
+    public function getCodigoErroPix()
+    {
         return $this->codigoErroPix;
     }
 
@@ -339,7 +342,8 @@ class Detalhe implements DetalheContract
      *
      * @return Detalhe
      */
-    public function setCodigoErroPix($codigoErroPix) {
+    public function setCodigoErroPix($codigoErroPix)
+    {
         $this->codigoErroPix = $codigoErroPix;
 
         return $this;
