@@ -2,16 +2,15 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
-use Carbon\Carbon;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Detalhe as DetalheContract;
-use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
-use Eduardokum\LaravelBoleto\MagicTrait;
-use Eduardokum\LaravelBoleto\Util;
 use Exception;
+use Carbon\Carbon;
+use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\MagicTrait;
+use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Detalhe as DetalheContract;
 
 class Detalhe implements DetalheContract
 {
-
     use MagicTrait;
 
     /**
@@ -58,6 +57,7 @@ class Detalhe implements DetalheContract
      * @var Carbon
      */
     protected $dataOcorrencia;
+
     /**
      * @var Carbon
      */
@@ -92,18 +92,22 @@ class Detalhe implements DetalheContract
      * @var string
      */
     protected $valorIOF;
+
     /**
      * @var string
      */
     protected $valorAbatimento;
+
     /**
      * @var string
      */
     protected $valorDesconto;
+
     /**
      * @var string
      */
     protected $valorMora;
+
     /**
      * @var string
      */
@@ -133,7 +137,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function hasOcorrencia()
     {
@@ -592,7 +596,7 @@ class Detalhe implements DetalheContract
      */
     public function hasError()
     {
-        return $this->getOcorrencia() == self::OCORRENCIA_ERRO;
+        return $this->getOcorrenciaTipo() == self::OCORRENCIA_ERRO;
     }
 
     /**
@@ -615,7 +619,6 @@ class Detalhe implements DetalheContract
         return $this;
     }
 
-
     /**
      * @return string
      */
@@ -632,7 +635,7 @@ class Detalhe implements DetalheContract
     public function setError($error)
     {
         $this->ocorrenciaTipo = self::OCORRENCIA_ERRO;
-        $this->error          = $error;
+        $this->error = $error;
 
         return $this;
     }

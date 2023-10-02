@@ -1,4 +1,5 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Contracts\Cnab;
 
 use Illuminate\Support\Collection;

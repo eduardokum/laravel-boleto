@@ -2,10 +2,10 @@
 
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
-use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
-use Eduardokum\LaravelBoleto\CalculoDV;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 class Santander extends AbstractBoleto implements BoletoContract
 {
@@ -21,12 +21,14 @@ class Santander extends AbstractBoleto implements BoletoContract
      * @var string
      */
     protected $codigoBanco = self::COD_BANCO_SANTANDER;
+
     /**
      * Define as carteiras disponíveis para este banco
      *
      * @var array
      */
     protected $carteiras = ['101', '201'];
+
     /**
      * Espécie do documento, código para remessa 240
      *
@@ -43,8 +45,9 @@ class Santander extends AbstractBoleto implements BoletoContract
         'BCC' => '31',
         'BDP' => '32',
         'CH'  => '97',
-        'ND'  => '98'
+        'ND'  => '98',
     ];
+
     /**
      * Espécie do documento, código para remessa 400
      *
@@ -60,12 +63,14 @@ class Santander extends AbstractBoleto implements BoletoContract
         'BDP' => '08',
         'BCC' => '19',
     ];
+
     /**
      * Mostrar o endereço do beneficiário abaixo da razão e CNPJ na ficha de compensação
      *
-     * @var boolean
+     * @var bool
      */
     protected $mostrarEnderecoFichaCompensacao = true;
+
     /**
      * Define os nomes das carteiras para exibição no boleto
      *
@@ -74,14 +79,16 @@ class Santander extends AbstractBoleto implements BoletoContract
     protected $carteirasNomes = [
         '101' => 'Cobrança Simples ECR',
         '102' => 'Cobrança Simples CSR',
-        '201' => 'Penhor'
+        '201' => 'Penhor',
     ];
+
     /**
      * Define o valor do IOS - Seguradoras (Se 7% informar 7. Limitado a 9%) - Demais clientes usar 0 (zero)
      *
      * @var int
      */
     protected $ios = 0;
+
     /**
      * Variaveis adicionais.
      *
@@ -106,7 +113,8 @@ class Santander extends AbstractBoleto implements BoletoContract
     public function getAgenciaCodigoBeneficiario()
     {
         $agencia = rtrim(sprintf('%s-%s', $this->getAgencia(), $this->getAgenciaDv()), '-');
-        return sprintf('%s / %s',$agencia, $this->getCodigoCliente());
+
+        return sprintf('%s / %s', $agencia, $this->getCodigoCliente());
     }
 
     /**
@@ -172,6 +180,7 @@ class Santander extends AbstractBoleto implements BoletoContract
                 $carteira = '102';
                 break;
         }
+
         return parent::setCarteira($carteira);
     }
 
@@ -208,11 +217,12 @@ class Santander extends AbstractBoleto implements BoletoContract
         if ($this->getDiasProtesto() > 0) {
             throw new \Exception('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
         }
-        if (!in_array($baixaAutomatica, [15, 30])) {
+        if (! in_array($baixaAutomatica, [15, 30])) {
             throw new \Exception('O Banco Santander so aceita 15 ou 30 dias após o vencimento para baixa automática');
         }
-        $baixaAutomatica = (int)$baixaAutomatica;
+        $baixaAutomatica = (int) $baixaAutomatica;
         $this->diasBaixaAutomatica = $baixaAutomatica > 0 ? $baixaAutomatica : 0;
+
         return $this;
     }
 
@@ -223,9 +233,8 @@ class Santander extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        $numero_boleto = $this->getNumero();
-        return Util::numberFormatGeral($numero_boleto, 12)
-            . CalculoDV::santanderNossoNumero($numero_boleto);
+        return Util::numberFormatGeral($this->getNumero(), 12)
+            .CalculoDV::santanderNossoNumero($this->getNumero());
     }
 
     /**
@@ -238,10 +247,11 @@ class Santander extends AbstractBoleto implements BoletoContract
         if ($this->campoLivre) {
             return $this->campoLivre;
         }
-        return $this->campoLivre = '9' . Util::numberFormatGeral($this->getCodigoCliente(), 7)
-            . Util::numberFormatGeral($this->getNossoNumero(), 13)
-            . Util::numberFormatGeral($this->getIos(), 1)
-            . Util::numberFormatGeral($this->getCarteira(), 3);
+
+        return $this->campoLivre = '9'.Util::numberFormatGeral($this->getCodigoCliente(), 7)
+            .Util::numberFormatGeral($this->getNossoNumero(), 13)
+            .Util::numberFormatGeral($this->getIos(), 1)
+            .Util::numberFormatGeral($this->getCarteira(), 3);
     }
 
     /**

@@ -1,4 +1,5 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Contracts\Boleto;
 
 use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
@@ -7,15 +8,22 @@ interface Boleto
 {
     const COD_BANCO_BB = '001';
     const COD_BANCO_SANTANDER = '033';
+    const COD_BANCO_INTER = '077';
     const COD_BANCO_CEF = '104';
     const COD_BANCO_BRADESCO = '237';
+    const COD_BANCO_C6 = '336';
     const COD_BANCO_ITAU = '341';
     const COD_BANCO_HSBC = '399';
+    const COD_BANCO_DELCRED = '435';
     const COD_BANCO_SICREDI = '748';
     const COD_BANCO_BANRISUL = '041';
     const COD_BANCO_BANCOOB = '756';
     const COD_BANCO_BNB = '004';
-
+    const COD_BANCO_UNICRED = '136';
+    const COD_BANCO_FIBRA = '224';
+    const COD_BANCO_RENDIMENTO = '633';
+    const COD_BANCO_PINE = '643';
+    const COD_BANCO_OURINVEST = '712';
     const STATUS_REGISTRO = 1;
     const STATUS_ALTERACAO = 2;
     const STATUS_BAIXA = 3;
@@ -176,7 +184,7 @@ interface Boleto
     public function getPagador();
 
     /**
-     * @return mixed
+     * @return array
      */
     public function getDescricaoDemonstrativo();
 
@@ -297,12 +305,15 @@ interface Boleto
      *
      * @return array
      */
-    static public function parseCampoLivre($campoLivre);
-
+    public static function parseCampoLivre($campoLivre);
 
     /**
      * @return mixed
      */
     public function getMostrarEnderecoFichaCompensacao();
-}
 
+    /**
+     * @return bool
+     */
+    public function imprimeBoleto();
+}

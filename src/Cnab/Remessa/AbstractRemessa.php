@@ -1,14 +1,15 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa;
 
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 abstract class AbstractRemessa
 {
-
     const HEADER = 'header';
     const HEADER_LOTE = 'header_lote';
     const DETALHE = 'detalhe';
@@ -86,40 +87,53 @@ abstract class AbstractRemessa
      * @var
      */
     protected $idremessa;
+
     /**
      * A data que será informada no header da remessa
      *
      * @var Carbon;
      */
     protected $dataRemessa = null;
+
     /**
      * Agência
      *
      * @var int
      */
     protected $agencia;
+
+    /**
+     * Dígito da conta
+     *
+     * @var int
+     */
+    protected $agenciaDv;
+
     /**
      * Conta
      *
      * @var int
      */
     protected $conta;
+
     /**
      * Dígito da conta
      *
      * @var int
      */
     protected $contaDv;
+
     /**
      * Carteira de cobrança.
      *
      * @var
      */
     protected $carteira;
+
     /**
      * Define as carteiras disponíveis para cada banco
      *
-     * @var array
+     * @var array|bool
      */
     protected $carteiras = [];
 
@@ -153,7 +167,8 @@ abstract class AbstractRemessa
      *
      * @param $data
      */
-    public function setDataRemessa($data){
+    public function setDataRemessa($data)
+    {
         $this->dataRemessa = $data;
     }
 
@@ -164,12 +179,15 @@ abstract class AbstractRemessa
      *
      * @return string;
      */
-    public function getDataRemessa($format){
-        if(is_null($this->dataRemessa)){
+    public function getDataRemessa($format)
+    {
+        if (is_null($this->dataRemessa)) {
             return Carbon::now()->format($format);
         }
+
         return $this->dataRemessa->format($format);
     }
+
     /**
      * Seta os campos obrigatórios
      *
@@ -177,7 +195,7 @@ abstract class AbstractRemessa
      */
     protected function setCamposObrigatorios()
     {
-        $args                     = func_get_args();
+        $args = func_get_args();
         $this->camposObrigatorios = [];
         foreach ($args as $arg) {
             $this->addCampoObrigatorio($arg);
@@ -278,6 +296,30 @@ abstract class AbstractRemessa
     }
 
     /**
+     * Define a agência
+     *
+     * @param  int $agenciaDv
+     *
+     * @return AbstractRemessa
+     */
+    public function setAgenciaDv($agenciaDv)
+    {
+        $this->agenciaDv = (string) $agenciaDv;
+
+        return $this;
+    }
+
+    /**
+     * Retorna a agência
+     *
+     * @return int
+     */
+    public function getAgenciaDv()
+    {
+        return $this->agenciaDv;
+    }
+
+    /**
      * Define o número da conta
      *
      * @param  int $conta
@@ -310,7 +352,7 @@ abstract class AbstractRemessa
      */
     public function setContaDv($contaDv)
     {
-        $this->contaDv = substr($contaDv, - 1);
+        $this->contaDv = substr($contaDv, -1);
 
         return $this;
     }
@@ -335,8 +377,8 @@ abstract class AbstractRemessa
      */
     public function setCarteira($carteira)
     {
-        if (! in_array($carteira, $this->getCarteiras())) {
-            throw new \Exception("Carteira não disponível!");
+        if ($this->getCarteiras() !== false && ! in_array($carteira, $this->getCarteiras())) {
+            throw new \Exception('Carteira não disponível!');
         }
         $this->carteira = $carteira;
 
@@ -366,7 +408,7 @@ abstract class AbstractRemessa
     /**
      * Retorna as carteiras disponíveis para este banco
      *
-     * @return array
+     * @return array|bool
      */
     public function getCarteiras()
     {
@@ -378,14 +420,15 @@ abstract class AbstractRemessa
      *
      * @param $messages
      *
-     * @return boolean
+     * @return bool
      */
     public function isValid(&$messages)
     {
         foreach ($this->camposObrigatorios as $campo) {
-            $test = call_user_func([$this, 'get' . ucwords($campo)]);
+            $test = call_user_func([$this, 'get'.Str::camel($campo)]);
             if ($test === '' || is_null($test)) {
                 $messages .= "Campo $campo está em branco";
+
                 return false;
             }
         }
@@ -407,7 +450,7 @@ abstract class AbstractRemessa
      *
      * @return mixed
      */
-    abstract public function addBoleto(BoletoContract $detalhe);
+    abstract public function addBoleto(BoletoContract $boleto);
 
     /**
      * Função que gera o trailer (footer) do arquivo.
@@ -435,8 +478,8 @@ abstract class AbstractRemessa
     /**
      * Função para add valor a linha nas posições informadas.
      *
-     * @param integer $i
-     * @param integer $f
+     * @param int $i
+     * @param int $f
      * @param         $value
      *
      * @return array
@@ -511,12 +554,13 @@ abstract class AbstractRemessa
     /**
      * Salva o arquivo no path informado
      *
-     * @param $path
+     * @param      $path
+     * @param bool $suggestName
      *
      * @return mixed
      * @throws \Exception
      */
-    public function save($path)
+    public function save($path, $suggestName = false)
     {
         $folder = dirname($path);
         if (! is_dir($folder)) {
@@ -524,13 +568,25 @@ abstract class AbstractRemessa
         }
 
         if (! is_writable(dirname($path))) {
-            throw new \Exception('Path ' . $folder . ' não possui permissao de escrita');
+            throw new \Exception('Path '.$folder.' não possui permissao de escrita');
+        }
+
+        if ($suggestName) {
+            $path = rtrim(dirname($path), '/').'/'.ltrim($this->nomeSugerido(), '/');
         }
 
         $string = $this->gerar();
         file_put_contents($path, $string);
 
         return $path;
+    }
+
+    /**
+     * @return string
+     */
+    public function nomeSugerido()
+    {
+        return 'remessa.txt';
     }
 
     /**
@@ -543,10 +599,10 @@ abstract class AbstractRemessa
     public function download($filename = null)
     {
         if ($filename === null) {
-            $filename = 'remessa.txt';
+            $filename = $this->nomeSugerido();
         }
         header('Content-type: text/plain');
-        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Content-Disposition: attachment; filename="'.$filename.'"');
         echo $this->gerar();
     }
 }

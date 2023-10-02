@@ -1,10 +1,11 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
+use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
-use Eduardokum\LaravelBoleto\Util;
 
 class Hsbc extends AbstractRemessa implements RemessaContract
 {
@@ -16,7 +17,6 @@ class Hsbc extends AbstractRemessa implements RemessaContract
     const ESPECIE_COMPL_BOLETO_CLIENTE = '08';
     const ESPECIE_EMISSAO_TOTAL_BANCO = '09';
     const ESPECIE_EMISSAO_TOTAL_CLIENTE = '98';
-
     const OCORRENCIA_REMESSA = '01';
     const OCORRENCIA_PEDIDO_BAIXA = '02';
     const OCORRENCIA_CONCESSAO_ABATIMENTO = '04';
@@ -35,7 +35,6 @@ class Hsbc extends AbstractRemessa implements RemessaContract
     const OCORRENCIA_INC_SACADO_ELETRONICO = '50';
     const OCORRENCIA_EXC_SACADO_ELETRONICO = '51';
     const OCORRENCIA_PROTESTO_FALIMENTARES = '57';
-
     const INSTRUCAO_SEM = '00';
     const INSTRUCAO_MULTA_PERC_XX_APOS_XX = '15';
     const INSTRUCAO_MULTA_PERC_XX_APOS_MAXIMO = '16';
@@ -68,7 +67,6 @@ class Hsbc extends AbstractRemessa implements RemessaContract
         parent::__construct($params);
         $this->addCampoObrigatorio('contaDv');
     }
-
 
     /**
      * Código do banco
@@ -141,7 +139,7 @@ class Hsbc extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @param BoletoContract $boleto
+     * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Hsbc $boleto
      *
      * @return Hsbc
      * @throws \Exception
@@ -221,7 +219,7 @@ class Hsbc extends AbstractRemessa implements RemessaContract
         $this->add(350, 351, Util::formatCnab('X', $boleto->getPagador()->getUf(), 2));
         $this->add(352, 390, Util::formatCnab('X', $boleto->getSacadorAvalista() ? $boleto->getSacadorAvalista()->getNome() : '', 39));
         $this->add(391, 391, '');
-        $this->add(392, 393, Util::formatCnab('9', $boleto->getDiasProtesto('  '), 2));
+        $this->add(392, 393, Util::formatCnab('9', $boleto->getDiasProtesto(''), 2));
         $this->add(394, 394, $boleto->getMoeda());
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
         if ($chaveNfe) {

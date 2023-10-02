@@ -1,18 +1,18 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
+use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 
 class Bancoob extends AbstractRemessa implements RemessaContract
 {
     const ESPECIE_DUPLICATA = '01';
     const ESPECIE_NOTA_PROMISSORIA = '02';
     const ESPECIE_DUPLICATA_SERVICO = '12';
-
     const OCORRENCIA_REMESSA = '01';
     const OCORRENCIA_PEDIDO_BAIXA = '02';
     const OCORRENCIA_CONCESSAO_ABATIMENTO = '04';
@@ -25,7 +25,6 @@ class Bancoob extends AbstractRemessa implements RemessaContract
     const OCORRENCIA_ALT_PAGADOR = '12';
     const OCORRENCIA_ALT_OUTROS_DADOS = '31';
     const OCORRENCIA_BAIXAR = '34';
-
     const INSTRUCAO_SEM = '00';
     const INSTRUCAO_COBRAR_JUROS = '01';
     const INSTRUCAO_NAO_PROTESTAR = '07';
@@ -95,7 +94,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
      *
      * @var null
      */
-    protected $fimArquivo = "";
+    protected $fimArquivo = '';
 
     /**
      * Convenio com o banco
@@ -153,7 +152,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @param BoletoContract $boleto
+     * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Bancoob $boleto
      *
      * @return Bancoob
      * @throws \Exception
@@ -161,7 +160,6 @@ class Bancoob extends AbstractRemessa implements RemessaContract
     public function addBoleto(BoletoContract $boleto)
     {
         $this->boletos[] = $boleto;
-
         if ($chaveNfe = $boleto->getChaveNfe()) {
             $this->iniciaDetalheExtendido();
         } else {
@@ -222,7 +220,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
             if (defined($const)) {
                 $this->add(157, 158, constant($const));
             } else {
-                throw new \Exception("A instrução para protesto em ".$boleto->getDiasProtesto()." dias não existe no banco.");
+                throw new \Exception('A instrução para protesto em '.$boleto->getDiasProtesto().' dias não existe no banco.');
             }
         }
         $this->add(161, 166, Util::formatCnab('9', $boleto->getJuros(), 6, 4));

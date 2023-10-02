@@ -2,11 +2,11 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
+use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 
 class Bb extends AbstractRemessa implements RemessaContract
 {
@@ -14,7 +14,6 @@ class Bb extends AbstractRemessa implements RemessaContract
     const TIPO_COBRANCA_VENDOR = '08VDR';
     const TIPO_COBRANCA_VINCULADA = '02VIN';
     const TIPO_COBRANCA_SIMPLES = '';
-
     const ESPECIE_DUPLICATA = '01';
     const ESPECIE_NOTA_PROMISSORIA = '02';
     const ESPECIE_NOTA_SEGURO = '03';
@@ -28,7 +27,6 @@ class Bb extends AbstractRemessa implements RemessaContract
     const ESPECIE_DIV_ATV_UNIAO = '25';
     const ESPECIE_DIV_ATV_ESTADO = '26';
     const ESPECIE_DIV_ATV_MUNICIPIO = '27';
-
     const OCORRENCIA_REMESSA = '01';
     const OCORRENCIA_PEDIDO_BAIXA = '02';
     const OCORRENCIA_PEDIDO_DEBITO = '03';
@@ -51,7 +49,6 @@ class Bb extends AbstractRemessa implements RemessaContract
     const OCORRENCIA_DISPENSAR_LIMITE_REC = '38';
     const OCORRENCIA_ALT_LIMITE_REC = '39';
     const OCORRENCIA_ALT_MODALIDADE = '40';
-
     const INSTRUCAO_SEM = '00';
     const INSTRUCAO_COBRAR_JUROS = '01';
     const INSTRUCAO_NAO_PROTESTAR = '07';
@@ -75,7 +72,6 @@ class Bb extends AbstractRemessa implements RemessaContract
         parent::__construct($params);
         $this->addCampoObrigatorio('convenio', 'convenioLider');
     }
-
 
     /**
      * Código do banco
@@ -254,7 +250,7 @@ class Bb extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @param BoletoContract $boleto
+     * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Bb $boleto
      *
      * @return Bb
      * @throws \Exception

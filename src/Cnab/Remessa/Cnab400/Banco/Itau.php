@@ -1,11 +1,12 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
+use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
-use Eduardokum\LaravelBoleto\Util;
 
 class Itau extends AbstractRemessa implements RemessaContract
 {
@@ -23,7 +24,6 @@ class Itau extends AbstractRemessa implements RemessaContract
     const ESPECIE_ENCARGOS_CONDOMINIAIS = '16';
     const ESPECIE_NOTA_SERVICOS = '17';
     const ESPECIE_DIVERSOS = '99';
-
     const OCORRENCIA_REMESSA = '01';
     const OCORRENCIA_PEDIDO_BAIXA = '02';
     const OCORRENCIA_CONCESSAO_ABATIMENTO = '04';
@@ -43,7 +43,6 @@ class Itau extends AbstractRemessa implements RemessaContract
     const OCORRENCIA_NAO_CONCORDA_SACADO = '38';
     const OCORRENCIA_DISPENSA_JUROS = '47';
     const OCORRENCIA_BOLETO_PIX = '71';
-
     const INSTRUCAO_SEM = '00';
     const INSTRUCAO_DEVOL_VENC_5 = '02';
     const INSTRUCAO_DEVOL_VENC_30 = '03';
@@ -165,7 +164,7 @@ class Itau extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @param BoletoContract $boleto
+     * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Itau $boleto
      *
      * @return Itau
      * @throws \Exception

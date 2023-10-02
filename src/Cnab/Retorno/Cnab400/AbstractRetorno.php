@@ -1,12 +1,9 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400;
 
-use Eduardokum\LaravelBoleto\Util;
-use \Eduardokum\LaravelBoleto\Cnab\Retorno\AbstractRetorno as AbstractRetornoGeneric;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Header as HeaderContract;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Detalhe as DetalheContract;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Trailer as TrailerContract;
 use Illuminate\Support\Collection;
+use Eduardokum\LaravelBoleto\Cnab\Retorno\AbstractRetorno as AbstractRetornoGeneric;
 
 /**
  * Class AbstractRetorno
@@ -15,12 +12,11 @@ use Illuminate\Support\Collection;
  * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Header getHeader()
  * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Trailer getTrailer()
  * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Detalhe detalheAtual()
- * @package Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400
  */
 abstract class AbstractRetorno extends AbstractRetornoGeneric
 {
     /**
-     * @param String $file
+     * @param string $file
      * @throws \Exception
      */
     public function __construct($file)
@@ -34,21 +30,21 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
     /**
      * @param array $header
      *
-     * @return boolean
+     * @return bool
      */
     abstract protected function processarHeader(array $header);
 
     /**
      * @param array $detalhe
      *
-     * @return boolean
+     * @return bool
      */
     abstract protected function processarDetalhe(array $detalhe);
 
     /**
      * @param array $trailer
      *
-     * @return boolean
+     * @return bool
      */
     abstract protected function processarTrailer(array $trailer);
 
@@ -109,11 +105,12 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
         $array = [
             'header' => $this->header->toArray(),
             'trailer' => $this->trailer->toArray(),
-            'detalhes' => new Collection()
+            'detalhes' => new Collection(),
         ];
         foreach ($this->detalhe as $detalhe) {
             $array['detalhes']->push($detalhe->toArray());
         }
+
         return $array;
     }
 }

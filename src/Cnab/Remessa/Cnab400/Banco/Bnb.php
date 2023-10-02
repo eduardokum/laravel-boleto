@@ -1,11 +1,12 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
+use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
-use Eduardokum\LaravelBoleto\Util;
 
 class Bnb extends AbstractRemessa implements RemessaContract
 {
@@ -15,7 +16,6 @@ class Bnb extends AbstractRemessa implements RemessaContract
     const ESPECIE_CARNE = '04';
     const ESPECIE_RECIBO = '05';
     const ESPECIE_OUTROS = '19';
-
     const OCORRENCIA_REMESSA = '01';
     const OCORRENCIA_PEDIDO_BAIXA = '02';
     const OCORRENCIA_CONCESSAO_ABATIMENTO = '04';
@@ -29,7 +29,6 @@ class Bnb extends AbstractRemessa implements RemessaContract
     const OCORRENCIA_PEDIDO_DEVOLUCAO = '32';
     const OCORRENCIA_PEDIDO_DEVOLUCAO_ENTREGUE_SACADO = '33';
     const OCORRENCIA_PEDIDO_DOS_TITULOS_EM_ABERTO = '99';
-
     const INSTRUCAO_SEM = '00';
     const INSTRUCAO_ACATAR_INSTRUCOES_TITULO = '05';
     const INSTRUCAO_NAO_COBRAR_ENCARGOS = '08';
@@ -74,6 +73,7 @@ class Bnb extends AbstractRemessa implements RemessaContract
         if ($this->getCarteira() == '21') {
             return '4';
         }
+
         return '1';
     }
 
@@ -106,7 +106,7 @@ class Bnb extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @param BoletoContract $boleto
+     * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Bnb $boleto
      *
      * @return Bnb
      * @throws \Exception

@@ -1,10 +1,11 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
-use \Eduardokum\LaravelBoleto\Cnab\Retorno\AbstractRetorno as AbstractRetornoGeneric;
+use Illuminate\Support\Collection;
+use Eduardokum\LaravelBoleto\Cnab\Retorno\AbstractRetorno as AbstractRetornoGeneric;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\HeaderLote as HeaderLoteContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\TrailerLote as TrailerLoteContract;
-use Illuminate\Support\Collection;
 
 /**
  * Class AbstractRetorno
@@ -13,7 +14,6 @@ use Illuminate\Support\Collection;
  * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Header getHeader()
  * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Trailer getTrailer()
  * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Detalhe detalheAtual()
- * @package Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240
  */
 abstract class AbstractRetorno extends AbstractRetornoGeneric
 {
@@ -28,7 +28,7 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
     private $trailerLote;
 
     /**
-     * @param String $file
+     * @param string $file
      * @throws \Exception
      */
     public function __construct($file)
@@ -60,35 +60,35 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
     /**
      * @param array $header
      *
-     * @return boolean
+     * @return bool
      */
     abstract protected function processarHeader(array $header);
 
     /**
      * @param array $headerLote
      *
-     * @return boolean
+     * @return bool
      */
     abstract protected function processarHeaderLote(array $headerLote);
 
     /**
      * @param array $detalhe
      *
-     * @return boolean
+     * @return bool
      */
     abstract protected function processarDetalhe(array $detalhe);
 
     /**
      * @param array $trailer
      *
-     * @return boolean
+     * @return bool
      */
     abstract protected function processarTrailerLote(array $trailer);
 
     /**
      * @param array $trailer
      *
-     * @return boolean
+     * @return bool
      */
     abstract protected function processarTrailer(array $trailer);
 
@@ -160,12 +160,13 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
             'headerLote' => $this->headerLote->toArray(),
             'trailerLote' => $this->trailerLote->toArray(),
             'trailer' => $this->trailer->toArray(),
-            'detalhes' => new Collection()
+            'detalhes' => new Collection(),
         ];
 
         foreach ($this->detalhe as $detalhe) {
             $array['detalhes']->push($detalhe->toArray());
         }
+
         return $array;
     }
 

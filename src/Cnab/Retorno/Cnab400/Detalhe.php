@@ -8,7 +8,6 @@ use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Detalhe as DetalheCo
 
 class Detalhe implements DetalheContract
 {
-
     use MagicTrait;
 
     /**
@@ -20,30 +19,37 @@ class Detalhe implements DetalheContract
      * @var string
      */
     protected $nossoNumero;
+
     /**
      * @var string
      */
     protected $numeroDocumento;
+
     /**
      * @var string
      */
     protected $numeroControle;
+
     /**
      * @var string
      */
     protected $codigoLiquidacao;
+
     /**
      * @var string
      */
     protected $ocorrencia;
+
     /**
      * @var string
      */
     protected $ocorrenciaTipo;
+
     /**
      * @var string
      */
     protected $ocorrenciaDescricao;
+
     /**
      * @var string
      */
@@ -56,50 +62,62 @@ class Detalhe implements DetalheContract
      * @var Carbon
      */
     protected $dataOcorrencia;
+
     /**
      * @var Carbon
      */
     protected $dataVencimento;
+
     /**
      * @var Carbon
      */
     protected $dataCredito;
+
     /**
      * @var string
      */
     protected $valor;
+
     /**
      * @var string
      */
     protected $valorTarifa;
+
     /**
      * @var string
      */
     protected $valorOutrasDespesas;
+
     /**
      * @var string
      */
     protected $valorIOF;
+
     /**
      * @var string
      */
     protected $valorAbatimento;
+
     /**
      * @var string
      */
     protected $valorDesconto;
+
     /**
      * @var string
      */
     protected $valorRecebido;
+
     /**
      * @var string
      */
     protected $valorMora;
+
     /**
      * @var string
      */
     protected $valorMulta;
+
     /**
      * @var string
      */
@@ -210,7 +228,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function hasOcorrencia()
     {
@@ -606,7 +624,7 @@ class Detalhe implements DetalheContract
      */
     public function hasError()
     {
-        return $this->getOcorrencia() == self::OCORRENCIA_ERRO;
+        return $this->getOcorrenciaTipo() == self::OCORRENCIA_ERRO;
     }
 
     /**
@@ -625,7 +643,7 @@ class Detalhe implements DetalheContract
     public function setError($error)
     {
         $this->ocorrenciaTipo = self::OCORRENCIA_ERRO;
-        $this->error          = $error;
+        $this->error = $error;
 
         return $this;
     }

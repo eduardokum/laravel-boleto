@@ -1,13 +1,14 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
-use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
-use Eduardokum\LaravelBoleto\CalculoDV;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto;
 use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
-class Bradesco  extends AbstractBoleto implements BoletoContract
+class Bradesco extends AbstractBoleto implements BoletoContract
 {
     /**
      * Código do banco
@@ -15,6 +16,7 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
      * @var string
      */
     protected $codigoBanco = Boleto::COD_BANCO_BRADESCO;
+
     /**
      * Define as carteiras disponíveis para este banco
      * '02' => Com registro | '09' => Com registro | '06' => Sem Registro | '21' => Com Registro - Pagável somente no Bradesco | '22' => Sem Registro - Pagável somente no Bradesco | '25' => Sem Registro - Emissão na Internet | '26' => Com Registro - Emissão na Internet
@@ -22,6 +24,7 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
      * @var array
      */
     protected $carteiras = ['02', '04', '09', '21', '26'];
+
     /**
      * Trata-se de código utilizado para identificar mensagens especificas ao cedente, sendo
      * que o mesmo consta no cadastro do Banco, quando não houver código cadastrado preencher
@@ -30,6 +33,7 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
      * @var int
      */
     protected $cip = '000';
+
     /**
      * Variaveis adicionais.
      *
@@ -39,6 +43,7 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
         'cip' => '000',
         'mostra_cip' => true,
     ];
+
     /**
      * Espécie do documento, coódigo para remessa
      *
@@ -56,6 +61,7 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
         'BP' => '30', //Boleto de Proposta
         'O'  => '99', //Outros,
     ];
+
     /**
      * Espécie do documento, coódigo para remessa
      *
@@ -74,12 +80,14 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
         'BDP' => '32', // Boleto de Proposta
         'O'   => '99', // Outros
     ];
+
     /**
      * Mostrar o endereço do beneficiário abaixo da razão e CNPJ na ficha de compensação
      *
-     * @var boolean
+     * @var bool
      */
     protected $mostrarEnderecoFichaCompensacao = true;
+
     /**
      * Gera o Nosso Número.
      *
@@ -88,7 +96,7 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
     protected function gerarNossoNumero()
     {
         return Util::numberFormatGeral($this->getNumero(), 11)
-            . CalculoDV::bradescoNossoNumero($this->getCarteira(), $this->getNumero());
+            .CalculoDV::bradescoNossoNumero($this->getCarteira(), $this->getNumero());
     }
 
     /**
@@ -106,6 +114,7 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
         }
         $baixaAutomatica = (int) $baixaAutomatica;
         $this->diasBaixaAutomatica = $baixaAutomatica > 0 ? $baixaAutomatica : 0;
+
         return $this;
     }
 
@@ -116,8 +125,9 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
      */
     public function getNossoNumeroBoleto()
     {
-        return Util::numberFormatGeral($this->getCarteira(), 2) . ' / ' .  substr_replace($this->getNossoNumero(), '-', -1, 0);
+        return Util::numberFormatGeral($this->getCarteira(), 2).' / '.substr_replace($this->getNossoNumero(), '-', -1, 0);
     }
+
     /**
      * Método para gerar o código da posição de 20 a 44
      *
@@ -145,7 +155,8 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
      *
      * @return array
      */
-    public static function parseCampoLivre($campoLivre) {
+    public static function parseCampoLivre($campoLivre)
+    {
         return [
             'convenio' => null,
             'agenciaDv' => null,
@@ -169,6 +180,7 @@ class Bradesco  extends AbstractBoleto implements BoletoContract
     {
         $this->cip = $cip;
         $this->variaveis_adicionais['cip'] = $this->getCip();
+
         return $this;
     }
 

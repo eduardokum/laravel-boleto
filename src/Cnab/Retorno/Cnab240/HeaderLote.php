@@ -3,12 +3,13 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
 use Carbon\Carbon;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\HeaderLote as HeaderLoteContract;
 use Eduardokum\LaravelBoleto\MagicTrait;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\HeaderLote as HeaderLoteContract;
 
 class HeaderLote implements HeaderLoteContract
 {
     use MagicTrait;
+
     /**
      * @var string
      */
@@ -198,7 +199,6 @@ class HeaderLote implements HeaderLoteContract
     }
 
     /**
-     *
      * @param string $tipoOperacao
      * @return $this
      */
@@ -208,7 +208,6 @@ class HeaderLote implements HeaderLoteContract
 
         return $this;
     }
-
 
     /**
      * @return string
@@ -230,7 +229,6 @@ class HeaderLote implements HeaderLoteContract
         return $this;
     }
 
-
     /**
      * @return string
      */
@@ -251,7 +249,6 @@ class HeaderLote implements HeaderLoteContract
         return $this;
     }
 
-
     /**
      * @return string
      */
@@ -261,7 +258,6 @@ class HeaderLote implements HeaderLoteContract
     }
 
     /**
-     *
      * @param $tipoInscricao
      *
      * @return $this
@@ -272,7 +268,6 @@ class HeaderLote implements HeaderLoteContract
 
         return $this;
     }
-
 
     /**
      * @return string
@@ -433,7 +428,6 @@ class HeaderLote implements HeaderLoteContract
 
         return $this;
     }
-
 
     /**
      * @return string
