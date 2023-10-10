@@ -372,7 +372,8 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
      * @return mixed
      * @throws Exception
      */
-    public function alterarBoleto() {
+    public function alterarBoleto()
+    {
         throw new Exception('Banco Inter só possui comando de registro.');
     }
 
@@ -380,7 +381,8 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
      * @return mixed
      * @throws Exception
      */
-    public function alterarDataDeVencimento() {
+    public function alterarDataDeVencimento()
+    {
         throw new Exception('Banco Inter só possui comando de registro.');
     }
 
@@ -389,7 +391,8 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
      * @return mixed
      * @throws Exception
      */
-    public function comandarInstrucao($instrucao) {
+    public function comandarInstrucao($instrucao)
+    {
         throw new Exception('Banco Inter só possui comando de registro.');
     }
 
@@ -397,7 +400,8 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
      * @return mixed
      * @throws Exception
      */
-    public function baixarBoleto() {
+    public function baixarBoleto()
+    {
         throw new Exception('Banco Inter só possui comando de registro.');
     }
 }
