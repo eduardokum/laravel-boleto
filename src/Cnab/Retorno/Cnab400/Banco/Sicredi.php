@@ -314,8 +314,8 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
                     $d->setRejeicao(implode(PHP_EOL, $motivo));
                 }
 
-            //Caso haja outra mensagem adicional para tratar e não seja ocorrência de erro então
-            //concatenar a mensagem com o texto da descricao atual
+                //Caso haja outra mensagem adicional para tratar e não seja ocorrência de erro então
+                //concatenar a mensagem com o texto da descricao atual
             } elseif ($d->getOcorrenciaTipo() != $d::OCORRENCIA_ERRO) {
                 $ocorrencia = Util::appendStrings($d->getOcorrenciaDescricao(), Arr::get($this->rejeicoes, $msgAdicRetorno[0], ''), Arr::get($this->rejeicoes, $msgAdicRetorno[1], ''), Arr::get($this->rejeicoes, $msgAdicRetorno[2], ''), Arr::get($this->rejeicoes, $msgAdicRetorno[3], ''), Arr::get($this->rejeicoes, $msgAdicRetorno[4], ''));
                 $d->setOcorrenciaDescricao($ocorrencia);
