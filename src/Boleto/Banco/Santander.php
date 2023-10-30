@@ -238,6 +238,16 @@ class Santander extends AbstractBoleto implements BoletoContract
     }
 
     /**
+     * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
+     *
+     * @return string
+     */
+    public function getNossoNumeroBoleto()
+    {
+        return substr($this->getNossoNumero(), 0, -1) . '-' . substr($this->getNossoNumero(), -1);
+    }
+
+    /**
      * Método para gerar o código da posição de 20 a 44
      *
      * @return string
