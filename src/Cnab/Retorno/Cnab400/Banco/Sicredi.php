@@ -257,14 +257,14 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
             ->setOcorrenciaDescricao(Arr::get($this->ocorrencias, $d->getOcorrencia(), 'Desconhecida'))
             ->setDataOcorrencia($this->rem(111, 116, $detalhe))
             ->setDataVencimento($this->rem(147, 152, $detalhe))
-            ->setValor(Util::nFloat($this->rem(153, 165, $detalhe), 2, false) / 100)
-            ->setValorTarifa(Util::nFloat($this->rem(176, 188, $detalhe), 2, false) / 100)
-            ->setValorOutrasDespesas(Util::nFloat($this->rem(189, 201, $detalhe), 2, false) / 100)
-            ->setValorAbatimento(Util::nFloat($this->rem(228, 240, $detalhe), 2, false) / 100)
-            ->setValorDesconto(Util::nFloat($this->rem(241, 253, $detalhe), 2, false) / 100)
-            ->setValorRecebido(Util::nFloat($this->rem(254, 266, $detalhe), 2, false) / 100)
-            ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe), 2, false) / 100)
-            ->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe), 2, false) / 100)
+            ->setValor(Util::nFloat($this->rem(153, 165, $detalhe) / 100, 2, false))
+            ->setValorTarifa(Util::nFloat($this->rem(176, 188, $detalhe) / 100, 2, false))
+            ->setValorOutrasDespesas(Util::nFloat($this->rem(189, 201, $detalhe) / 100, 2, false))
+            ->setValorAbatimento(Util::nFloat($this->rem(228, 240, $detalhe) / 100, 2, false))
+            ->setValorDesconto(Util::nFloat($this->rem(241, 253, $detalhe) / 100, 2, false))
+            ->setValorRecebido(Util::nFloat($this->rem(254, 266, $detalhe) / 100, 2, false))
+            ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe) / 100, 2, false))
+            ->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe) / 100, 2, false))
             ->setDataCredito($this->rem(329, 336, $detalhe), 'Ymd');
 
         if ($d->hasOcorrencia('06', '15', '16')) {
@@ -314,8 +314,6 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
                     $d->setRejeicao(implode(PHP_EOL, $motivo));
                 }
 
-            //Caso haja outra mensagem adicional para tratar e não seja ocorrência de erro então
-            //concatenar a mensagem com o texto da descricao atual
             } elseif ($d->getOcorrenciaTipo() != $d::OCORRENCIA_ERRO) {
                 $ocorrencia = Util::appendStrings($d->getOcorrenciaDescricao(), Arr::get($this->rejeicoes, $msgAdicRetorno[0], ''), Arr::get($this->rejeicoes, $msgAdicRetorno[1], ''), Arr::get($this->rejeicoes, $msgAdicRetorno[2], ''), Arr::get($this->rejeicoes, $msgAdicRetorno[3], ''), Arr::get($this->rejeicoes, $msgAdicRetorno[4], ''));
                 $d->setOcorrenciaDescricao($ocorrencia);
