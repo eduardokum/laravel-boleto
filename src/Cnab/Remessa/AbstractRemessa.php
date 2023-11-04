@@ -137,6 +137,14 @@ abstract class AbstractRemessa
      * @var PessoaContract
      */
     protected $beneficiario;
+    /**
+     * @var string
+     */
+    private $mensagem1;
+    /**
+     * @var string
+     */
+    private $mensagem2;
 
     /**
      * Construtor
@@ -501,6 +509,41 @@ abstract class AbstractRemessa
         return collect($this->aRegistros[self::DETALHE]);
     }
 
+    /**
+     * @param $mensagem
+     * @return AbstractRemessa
+     */
+    public function  setMensagem1($mensagem)
+    {
+        $this->mensagem1 = $mensagem;
+        return $this;
+    }
+
+    /**
+     * @param $mensagem
+     * @return AbstractRemessa
+     */
+    public  function  setMensagem2($mensagem)
+    {
+        $this->mensagem2 = $mensagem;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getMensagem1()
+    {
+        return $this->mensagem1? $this->mensagem1 : '';
+    }
+
+    /**
+     * @return string
+     */
+    protected function getMensagem2()
+    {
+        return $this->mensagem2? $this->mensagem2 : '';
+    }
     /**
      * Retorna o trailer do arquivo.
      *

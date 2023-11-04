@@ -370,6 +370,16 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @throws \Exception
      */
+
+    /**
+     * @var string
+     */
+    private $mensagem1;
+    /**
+     * @var string
+     */
+    private $mensagem2;
+
     public function __construct($params = [])
     {
         Util::fillClass($this, $params);
@@ -1721,6 +1731,44 @@ abstract class AbstractBoleto implements BoletoContract
         return $this;
     }
 
+
+
+    /**
+     * @param $mensagem
+     * @return AbstractBoleto
+     */
+    public function  setMensagem1($mensagem)
+    {
+        $this->mensagem1 = $mensagem;
+        return $this;
+    }
+
+    /**
+     * @param $mensagem
+     * @return AbstractBoleto
+     */
+    public  function  setMensagem2($mensagem)
+    {
+        $this->mensagem2 = $mensagem;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getMensagem1()
+    {
+        return $this->mensagem1? $this->mensagem1 : '';
+    }
+
+    /**
+     * @return string
+     */
+    protected function getMensagem2()
+    {
+        return $this->mensagem2? $this->mensagem2 : '';
+    }
+
     /**
      * @return mixed
      */
@@ -1946,6 +1994,8 @@ abstract class AbstractBoleto implements BoletoContract
                     'endereco2' => $this->getPagador()->getCepCidadeUf(),
                     'endereco_completo' => $this->getPagador()->getEnderecoCompleto(),
                 ],
+                'mensagem1'=> $this->getMensagem1(),
+                'mensagem2' => $this->getMensagem2(),
                 'demonstrativo' => $this->getDescricaoDemonstrativo(),
                 'instrucoes' => $this->getInstrucoes(),
                 'instrucoes_impressao' => $this->getInstrucoesImpressao(),
