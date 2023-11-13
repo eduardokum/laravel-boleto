@@ -120,7 +120,8 @@ abstract class AbstractAPI
      * @return mixed
      * @throws Exception
      */
-    public function createWebhook($url, $type = 'all') {
+    public function createWebhook($url, $type = 'all')
+    {
         throw new Exception('Método não disponível no banco');
     }
 

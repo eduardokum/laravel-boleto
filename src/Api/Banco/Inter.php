@@ -244,7 +244,8 @@ class Inter extends AbstractAPI
             $motivo = 'ACERTOS';
         }
 
-        return $this->oAuth2()->post($this->url('cancel', $nossoNumero),
+        return $this->oAuth2()->post(
+            $this->url('cancel', $nossoNumero),
             $this->version == 1
                 ? ['codigoBaixa' => $motivo]
                 : ['motivoCancelamento' => $motivo]
@@ -322,7 +323,8 @@ class Inter extends AbstractAPI
      * @param $param
      * @return string
      */
-    private function url($type, $param = null) {
+    private function url($type, $param = null)
+    {
         $aUrls = [
             1 => [
                 'create' => 'openbanking/v1/certificado/boletos',
