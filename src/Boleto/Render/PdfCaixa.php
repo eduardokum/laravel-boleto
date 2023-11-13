@@ -400,9 +400,16 @@ class PdfCaixa extends AbstractPdf implements PdfContract
         $this->Cell(25, $this->cell, $this->_(''), 'R');
         $this->Cell(50, $this->cell, $this->_(Util::nReal($this->boleto[$i]->getValor())), 'R', 1, 'R');
 
+        $yStartPix = $this->GetY();
         $this->SetFont($this->PadraoFont, '', $this->fdes);
-        $this->Cell(120, $this->desc, $this->_('Instruções de responsabilidade do beneficiário. Qualquer dúvida sobre este boleto, contate o beneficiário'), 'TLR');
-        $this->Cell(50, $this->desc, $this->_('(-) Desconto'), 'TR', 1);
+        $this->Cell(95, $this->desc, $this->_('Instruções de responsabilidade do beneficiário. '), 'TL');
+        $xStartPix = $this->GetX();
+        $this->Cell(25, $this->desc, '', 'TR');
+        $this->Cell(50, $this->desc, $this->_('(-) Desconto)'), 'TR', 1);
+
+        $this->SetFont($this->PadraoFont, '', $this->fdes);
+        $this->Cell(120, $this->cell, $this->_('Qualquer dúvida sobre este boleto, contate o beneficiário'), 'LR');
+        $this->Cell(50, $this->cell, $this->_(''), 'R', 1);
 
         $xInstrucoes = $this->GetX();
         $yInstrucoes = $this->GetY();
@@ -469,6 +476,17 @@ class PdfCaixa extends AbstractPdf implements PdfContract
 
             $this->SetXY($xOriginal, $yOriginal);
         }
+
+        if ($this->boleto[$i]->getPixQrCode() !== null) {
+            $this->SetXY($xStartPix, $yStartPix);
+            $this->SetFont($this->PadraoFont, '', $this->fdes);
+            $this->Cell(25, $this->cell, 'Pague via PIX', '', '', 'C');
+            $this->Image($this->boleto[$i]->getPixQrCodeImage(), $xStartPix + 1, $yStartPix + 5, 23, 23, 'png');
+            $this->Line($xStartPix, $yStartPix, $xStartPix, $yEndPix);
+
+            $this->SetXY($xOriginal, $yOriginal);
+        }
+
         $this->SetFont($this->PadraoFont, '', $this->fdes);
         $this->Cell(120, $this->desc, $this->_(''));
         $this->Cell(50, $this->desc, $this->_('Autenticação Mecânica - Ficha de Compensação'), 'LR', 1);

@@ -3,6 +3,8 @@
 namespace Eduardokum\LaravelBoleto\Boleto;
 
 use Carbon\Carbon;
+use chillerlan\QRCode\QRCode;
+use chillerlan\QRCode\QROptions;
 use Illuminate\Support\Str;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Boleto\Render\Pdf;
@@ -38,6 +40,11 @@ abstract class AbstractBoleto implements BoletoContract
     protected $protectedFields = [
         'nossoNumero',
     ];
+
+    /**
+     * @var string
+     */
+    protected $id;
 
     /**
      * Código do banco
@@ -451,6 +458,24 @@ abstract class AbstractBoleto implements BoletoContract
         }
 
         return $this;
+    }
+
+    /**
+     * @param $id
+     * @return AbstractBoleto
+     */
+    public function setID($id)
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getID()
+    {
+        return $this->id;
     }
 
     /**
@@ -1764,6 +1789,33 @@ abstract class AbstractBoleto implements BoletoContract
         return $this->pixQrCode;
     }
 
+
+    /**
+     * @return ?string
+     */
+    public function getPixQrCodeImage(): ?string
+    {
+        if ($this->getPixQrCode() == null) {
+            return null;
+        }
+
+        if (Util::isBase64($this->getPixQrCode())) {
+            $img = explode(',', $this->getPixQrCode(), 2)[1];
+            return 'data://text/plain;base64,' . $img;
+        }
+
+        if (Str::startsWith($this->getPixQrCode(), 'data:image')) {
+            return $this->getPixQrCode();
+        }
+
+        $options = new QROptions([
+            'eccLevel' => QRCode::ECC_M,
+            'outputType' => QRCode::OUTPUT_IMAGE_PNG,
+            'quietzoneSize' => 0,
+        ]);
+        return (new QRCode($options))->render($this->getPixQrCode());
+    }
+
     /**
      * @param string $pixQrCode
      */
@@ -1982,6 +2034,7 @@ abstract class AbstractBoleto implements BoletoContract
             'status' => $this->getStatus(),
             'mostrar_endereco_ficha_compensacao' => $this->getMostrarEnderecoFichaCompensacao(),
             'pix_qrcode' => $this->getPixQrCode(),
+            'pix_qrcode_image' => $this->getPixQrCodeImage(),
         ], $this->variaveis_adicionais);
     }
 }

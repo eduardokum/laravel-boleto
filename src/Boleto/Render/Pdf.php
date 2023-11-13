@@ -304,16 +304,19 @@ class Pdf extends AbstractPdf implements PdfContract
         $this->Cell(25, $this->cell, $this->_(($this->boleto[$i]->getCodigoBanco() == '001') ? Util::nReal($this->boleto[$i]->getValor()) : ''), 'R');
         $this->Cell(50, $this->cell, $this->_(Util::nReal($this->boleto[$i]->getValor())), 'R', 1, 'R');
 
+        $yStartPix = $this->GetY();
         $this->SetFont($this->PadraoFont, '', $this->fdes);
-        $this->Cell(120, $this->desc, $this->_('Instruções de responsabilidade do beneficiário. Qualquer dúvida sobre este boleto, contate o beneficiário'), 'TLR');
+        $this->Cell(95, $this->desc, $this->_('Instruções de responsabilidade do beneficiário. '), 'TL');
+        $xStartPix = $this->GetX();
+        $this->Cell(25, $this->desc, '', 'TR');
         $this->Cell(50, $this->desc, $this->_('(-) Desconto / Abatimentos)'), 'TR', 1);
+
+        $this->SetFont($this->PadraoFont, '', $this->fdes);
+        $this->Cell(120, $this->cell, $this->_('Qualquer dúvida sobre este boleto, contate o beneficiário'), 'LR');
+        $this->Cell(50, $this->cell, $this->_(''), 'R', 1);
 
         $xInstrucoes = $this->GetX();
         $yInstrucoes = $this->GetY();
-
-        $this->SetFont($this->PadraoFont, '', $this->fdes);
-        $this->Cell(120, $this->cell, $this->_(''), 'LR');
-        $this->Cell(50, $this->cell, $this->_(''), 'R', 1);
 
         $this->Cell(120, $this->desc, $this->_(''), 'LR');
         $this->Cell(50, $this->desc, $this->_('(-) Outras deduções'), 'TR', 1);
@@ -338,6 +341,8 @@ class Pdf extends AbstractPdf implements PdfContract
 
         $this->Cell(120, $this->cell, $this->_(''), 'BLR');
         $this->Cell(50, $this->cell, $this->_(''), 'BR', 1);
+
+        $yEndPix = $this->GetY();
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
         $this->Cell(0, $this->desc, $this->_('Pagador'), 'LR', 1);
@@ -372,13 +377,11 @@ class Pdf extends AbstractPdf implements PdfContract
         }
 
         if ($this->boleto[$i]->getPixQrCode() !== null) {
-            $img = explode(',', $this->boleto[$i]->getPixQrCode(), 2)[1];
-            $pic = 'data://text/plain;base64,'.$img;
-
-            $this->SetXY(112, 216);
-            $this->SetFont($this->PadraoFont, '', 6);
-            $this->Cell(60, $this->cell, 'Pague via PIX', '', '', 'L');
-            $this->Image($pic, 110, 220, 20, 20, 'png');
+            $this->SetXY($xStartPix, $yStartPix);
+            $this->SetFont($this->PadraoFont, '', $this->fdes);
+            $this->Cell(25, $this->cell, 'Pague via PIX', '', '', 'C');
+            $this->Image($this->boleto[$i]->getPixQrCodeImage(), $xStartPix + 1, $yStartPix + 5, 23, 23, 'png');
+            $this->Line($xStartPix, $yStartPix, $xStartPix, $yEndPix);
 
             $this->SetXY($xOriginal, $yOriginal);
         }

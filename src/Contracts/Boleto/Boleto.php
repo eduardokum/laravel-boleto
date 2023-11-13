@@ -56,6 +56,11 @@ interface Boleto
     /**
      * @return mixed
      */
+    public function getID();
+
+    /**
+     * @return mixed
+     */
     public function getLinhaDigitavel();
 
     /**
@@ -296,6 +301,11 @@ interface Boleto
      * @return mixed
      */
     public function getComando();
+
+    /**
+     * @return mixed
+     */
+    public function getPixQrCode();
 
     /**
      * Método onde qualquer boleto deve extender para gerar o código da posição de 20 a 44

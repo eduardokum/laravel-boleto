@@ -101,7 +101,7 @@
         @if(isset($pix_qrcode))
             <td colspan="1" rowspan="5">
                 <p class="titulo" style="text-align: center">Pague via PIX</p>
-                <img src="{{ $pix_qrcode }}" style="height: 100%; width: 100%;">
+                <img src="{{ $pix_qrcode_image }}" style="height: 100%; width: 100%;">
             </td>
         @endif
         <td>

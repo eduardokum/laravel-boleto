@@ -590,4 +590,32 @@ class BoletoTest extends TestCase
         $this->assertNotNull($boletoHtml);
         $this->assertNotNull($boleto->renderPDF());
     }
+
+    public function testBoletoBBWithQRCodePixCopiaECola()
+    {
+        $boleto = new Boleto\Bb([
+            'logo' => realpath(__DIR__ . '/../../logos/') . DIRECTORY_SEPARATOR . '001.png',
+            'dataVencimento' => $this->vencimento(),
+            'valor' => $this->valor(),
+            'multa' => $this->multa(),
+            'juros' => $this->juros(),
+            'numero' => 1,
+            'numeroDocumento' => 1,
+            'pagador' => self::$pagador,
+            'beneficiario' => self::$beneficiario,
+            'carteira' => 11,
+            'convenio' => 1234567,
+            'descricaoDemonstrativo' => ['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'],
+            'instrucoes' => ['instrucao 1', 'instrucao 2', 'instrucao 3'],
+            'aceite' => $this->aceite(),
+            'especieDoc' => 'DM',
+            'pix_qrcode' => '00020126330014br.gov.bcb.pix01111335366962052040000530398654040.805802BR5919NOME6014CIDADE62580520LKH2021102118215467250300017br.gov.bcb.brcode01051.0.063044D24',
+        ]);
+
+        $boletoHtml = $boleto->renderHTML();
+
+        $this->assertThat($boleto->toArray(), (new IsType(IsType::TYPE_ARRAY)));
+        $this->assertNotNull($boletoHtml);
+        $this->assertNotNull($boleto->renderPDF());
+    }
 }

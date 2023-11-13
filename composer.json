@@ -22,7 +22,8 @@
         "setasign/fpdf":      "^1.8",
         "ext-curl":           "*",
         "ext-json":           "*",
-        "ext-openssl":        "*"
+        "ext-openssl":        "*",
+        "chillerlan/php-qrcode": "^4.3"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.0|^6.0|^7.0|^8.0|^9.0|^10.0",
