@@ -459,7 +459,9 @@ abstract class AbstractAPI
     }
 
     /**
-     * @throws HttpException|UnauthorizedException|CurlException
+     * @throws HttpException
+     * @throws UnauthorizedException
+     * @throws CurlException
      */
     protected function post($url, array $post, $raw = false)
     {
@@ -484,7 +486,9 @@ abstract class AbstractAPI
     }
 
     /**
-     * @throws HttpException|UnauthorizedException|CurlException
+     * @throws HttpException
+     * @throws UnauthorizedException
+     * @throws CurlException
      */
     protected function put($url, array $post, $raw = false)
     {
@@ -512,7 +516,9 @@ abstract class AbstractAPI
      * @param $url
      *
      * @return stdClass
-     * @throws HttpException|UnauthorizedException|CurlException
+     * @throws HttpException
+     * @throws UnauthorizedException
+     * @throws CurlException
      */
     protected function get($url)
     {
@@ -624,7 +630,8 @@ abstract class AbstractAPI
     /**
      * @param $retorno
      *
-     * @throws HttpException|UnauthorizedException
+     * @throws HttpException
+     * @throws UnauthorizedException
      */
     private function handleException($retorno)
     {
@@ -639,7 +646,9 @@ abstract class AbstractAPI
 
     /**
      * @return false|stdClass
-     * @throws CurlException|HttpException|UnauthorizedException
+     * @throws CurlException
+     * @throwsHttpException
+     * @throwsUnauthorizedException
      */
     private function execute()
     {

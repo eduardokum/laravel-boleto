@@ -86,7 +86,7 @@ class Inter extends AbstractAPI
         try {
             $this->oAuth2()->put($this->url('webhook'), ['webhookUrl' => $url]);
             return true;
-        } catch (Exception) {
+        } catch (Exception $e) {
             return false;
         }
     }
