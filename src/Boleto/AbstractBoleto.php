@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
 use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Exception;
 use Illuminate\Support\Str;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Boleto\Render\Pdf;
@@ -398,7 +399,7 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @param array $params
      *
-     * @throws Exception
+     * @throws ValidationException
      */
     public function __construct($params = [])
     {
@@ -533,7 +534,7 @@ abstract class AbstractBoleto implements BoletoContract
      * @param  string $carteira
      *
      * @return AbstractBoleto
-     * @throws Exception
+     * @throws ValidationException
      */
     public function setCarteira($carteira)
     {
@@ -571,7 +572,7 @@ abstract class AbstractBoleto implements BoletoContract
      * @param $beneficiario
      *
      * @return AbstractBoleto
-     * @throws Exception
+     * @throws ValidationException
      */
     public function setBeneficiario($beneficiario)
     {
@@ -931,7 +932,7 @@ abstract class AbstractBoleto implements BoletoContract
      * @param string $chaveNfe
      *
      * @return AbstractBoleto
-     * @throws Exception
+     * @throws ValidationException
      */
     public function setChaveNfe($chaveNfe)
     {
@@ -989,7 +990,7 @@ abstract class AbstractBoleto implements BoletoContract
      * @param string $instrucao
      *
      * @return AbstractBoleto
-     * @throws Exception
+     * @throws ValidationException
      */
     public function addInstrucao($instrucao)
     {
@@ -1007,7 +1008,7 @@ abstract class AbstractBoleto implements BoletoContract
      * @param array $instrucoes
      *
      * @return AbstractBoleto
-     * @throws Exception
+     * @throws ValidationException
      */
     public function setInstrucoes(array $instrucoes)
     {
@@ -1035,7 +1036,7 @@ abstract class AbstractBoleto implements BoletoContract
      * @param array $instrucoes_impressao
      *
      * @return AbstractBoleto
-     * @throws Exception
+     * @throws ValidationException
      */
     public function setInstrucoesImpressao(array $instrucoes_impressao)
     {
@@ -1067,7 +1068,7 @@ abstract class AbstractBoleto implements BoletoContract
      * @param string $descricaoDemonstrativo
      *
      * @return AbstractBoleto
-     * @throws Exception
+     * @throws ValidationException
      */
     public function addDescricaoDemonstrativo($descricaoDemonstrativo)
     {
@@ -1085,7 +1086,7 @@ abstract class AbstractBoleto implements BoletoContract
      * @param array $descricaoDemonstrativo
      *
      * @return AbstractBoleto
-     * @throws Exception
+     * @throws ValidationException
      */
     public function setDescricaoDemonstrativo(array $descricaoDemonstrativo)
     {
@@ -1161,7 +1162,7 @@ abstract class AbstractBoleto implements BoletoContract
      * @param $pagador
      *
      * @return AbstractBoleto
-     * @throws Exception
+     * @throws ValidationException
      */
     public function setPagador($pagador)
     {
@@ -1186,7 +1187,7 @@ abstract class AbstractBoleto implements BoletoContract
      * @param $sacadorAvalista
      *
      * @return AbstractBoleto
-     * @throws Exception
+     * @throws ValidationException
      */
     public function setSacadorAvalista($sacadorAvalista)
     {
@@ -1346,7 +1347,7 @@ abstract class AbstractBoleto implements BoletoContract
      * @param int $diasProtesto
      *
      * @return AbstractBoleto
-     * @throws Exception
+     * @throws ValidationException
      */
     public function setDiasProtesto($diasProtesto)
     {
@@ -1376,7 +1377,7 @@ abstract class AbstractBoleto implements BoletoContract
      * Seta os dias para baixa automática
      *
      * @param int $baixaAutomatica
-     * @throws Exception
+     * @throws ValidationException
      */
     public function setDiasBaixaAutomatica($baixaAutomatica)
     {
@@ -1527,7 +1528,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Mostra exception ao erroneamente tentar setar o nosso número
      *
-     * @throws Exception
+     * @throws ValidationException
      */
     public function setNossoNumero($nossoNumero)
     {
@@ -1630,7 +1631,7 @@ abstract class AbstractBoleto implements BoletoContract
      * Retorna o código de barras
      *
      * @return string
-     * @throws Exception
+     * @throws ValidationException
      */
     public function getCodigoBarras()
     {
@@ -1673,7 +1674,7 @@ abstract class AbstractBoleto implements BoletoContract
      * Retorna a linha digitável do boleto
      *
      * @return string
-     * @throws Exception
+     * @throws ValidationException
      */
     public function getLinhaDigitavel()
     {
@@ -1869,7 +1870,7 @@ abstract class AbstractBoleto implements BoletoContract
      * @param bool $instrucoes
      *
      * @return string
-     * @throws Exception
+     * @throws ValidationException
      */
     public function renderPDF($print = false, $instrucoes = true)
     {
@@ -1927,7 +1928,7 @@ abstract class AbstractBoleto implements BoletoContract
      * Return Boleto Array.
      *
      * @return array
-     * @throws Exception
+     * @throws ValidationException
      */
     public function toArray()
     {

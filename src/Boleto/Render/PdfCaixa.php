@@ -540,7 +540,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
      * @param bool $withGroup
      *
      * @return $this
-     * @throws Exception
+     * @throws ValidationException
      */
     public function addBoletos(array $boletos, $withGroup = true)
     {
@@ -600,7 +600,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
      * @param null $save_path
      *
      * @return string
-     * @throws Exception
+     * @throws ValidationException
      */
     public function gerarBoleto($dest = self::OUTPUT_STANDARD, $save_path = null, $nameFile = null)
     {

@@ -3,6 +3,7 @@
 namespace Eduardokum\LaravelBoleto\Api\Banco;
 
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Arr;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Api\AbstractAPI;
@@ -80,7 +81,7 @@ class Inter extends AbstractAPI
      * @param $url
      * @param $type
      * @return bool
-     * @throws Exception
+     * @throws ValidationException
      */
     public function createWebhook($url, $type = 'all')
     {
@@ -193,7 +194,7 @@ class Inter extends AbstractAPI
      * @throws CurlException
      * @throws HttpException
      * @throws UnauthorizedException
-     * @throws Exception
+     * @throws ValidationException
      */
     public function retrieveNossoNumero($nossoNumero)
     {
@@ -213,7 +214,7 @@ class Inter extends AbstractAPI
      * @throws CurlException
      * @throws HttpException
      * @throws UnauthorizedException
-     * @throws Exception
+     * @throws ValidationException
      */
     public function retrieveID($id)
     {
@@ -231,7 +232,7 @@ class Inter extends AbstractAPI
      * @throws CurlException
      * @throws HttpException
      * @throws UnauthorizedException
-     * @throws Exception
+     * @throws ValidationException
      */
     public function cancelNossoNumero($nossoNumero, $motivo = 'ACERTOS')
     {
@@ -275,7 +276,7 @@ class Inter extends AbstractAPI
      * @throws CurlException
      * @throws HttpException
      * @throws UnauthorizedException
-     * @throws Exception
+     * @throws ValidationException
      */
     public function cancelID($id, $motivo)
     {
@@ -292,7 +293,7 @@ class Inter extends AbstractAPI
      * @throws CurlException
      * @throws HttpException
      * @throws UnauthorizedException
-     * @throws Exception
+     * @throws ValidationException
      */
     public function getPdfNossoNumero($nossoNumero)
     {
@@ -309,7 +310,7 @@ class Inter extends AbstractAPI
      * @throws CurlException
      * @throws HttpException
      * @throws UnauthorizedException
-     * @throws Exception
+     * @throws ValidationException
      */
     public function getPdfID($id)
     {
@@ -323,7 +324,7 @@ class Inter extends AbstractAPI
      * @param $boleto
      *
      * @return BoletoInter
-     * @throws Exception
+     * @throws ValidationException
      */
     private function arrayToBoleto($boleto)
     {

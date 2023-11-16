@@ -141,7 +141,7 @@ class Pessoa implements PessoaContract
      * @param string $documento
      *
      * @return Pessoa
-     * @throws Exception
+     * @throws ValidationException
      */
     public function setDocumento($documento)
     {

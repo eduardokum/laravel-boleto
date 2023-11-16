@@ -168,7 +168,7 @@ class Santander extends AbstractBoleto implements BoletoContract
      *
      * @param string $carteira
      * @return AbstractBoleto
-     * @throws Exception
+     * @throws ValidationException
      */
     public function setCarteira($carteira)
     {
@@ -211,7 +211,7 @@ class Santander extends AbstractBoleto implements BoletoContract
      * @param int $baixaAutomatica
      *
      * @return $this
-     * @throws Exception
+     * @throws ValidationException
      */
     public function setDiasBaixaAutomatica($baixaAutomatica)
     {

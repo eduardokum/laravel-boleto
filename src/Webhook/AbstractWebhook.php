@@ -14,7 +14,7 @@ abstract class AbstractWebhook
 
     /**
      * @param $post
-     * @throws Exception
+     * @throws ValidationException
      */
     public function __construct($post)
     {
@@ -43,5 +43,8 @@ abstract class AbstractWebhook
         return $this;
     }
 
+    /**
+     * @return Boleto[]
+     */
     abstract public function processar();
 }

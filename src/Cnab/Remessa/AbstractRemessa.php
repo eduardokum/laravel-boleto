@@ -264,7 +264,7 @@ abstract class AbstractRemessa
      * @param $beneficiario
      *
      * @return AbstractRemessa
-     * @throws Exception
+     * @throws ValidationException
      */
     public function setBeneficiario($beneficiario)
     {
@@ -375,7 +375,7 @@ abstract class AbstractRemessa
      * @param  string $carteira
      *
      * @return AbstractRemessa
-     * @throws Exception
+     * @throws ValidationException
      */
     public function setCarteira($carteira)
     {
@@ -485,7 +485,7 @@ abstract class AbstractRemessa
      * @param         $value
      *
      * @return array
-     * @throws Exception
+     * @throws ValidationException
      */
     protected function add($i, $f, $value)
     {
@@ -529,7 +529,7 @@ abstract class AbstractRemessa
      * @param int   $extendido
      *
      * @return string
-     * @throws Exception
+     * @throws ValidationException
      */
     protected function valida(array $a, $extendido = 0)
     {
@@ -549,7 +549,7 @@ abstract class AbstractRemessa
      * Gera o arquivo, retorna a string.
      *
      * @return string
-     * @throws Exception
+     * @throws ValidationException
      */
     abstract public function gerar();
 
@@ -560,7 +560,7 @@ abstract class AbstractRemessa
      * @param bool $suggestName
      *
      * @return mixed
-     * @throws Exception
+     * @throws ValidationException
      */
     public function save($path, $suggestName = false)
     {
@@ -596,7 +596,7 @@ abstract class AbstractRemessa
      *
      * @param null $filename
      *
-     * @throws Exception
+     * @throws ValidationException
      */
     public function download($filename = null)
     {

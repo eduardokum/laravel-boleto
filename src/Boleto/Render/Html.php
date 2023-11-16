@@ -31,7 +31,7 @@ class Html implements HtmlContract
 
     /**
      * @return \Illuminate\View\Factory
-     * @throws Exception
+     * @throws ValidationException
      */
     private function getBlade()
     {
@@ -182,7 +182,7 @@ class Html implements HtmlContract
      * função para gerar o boleto
      *
      * @return string
-     * @throws Exception
+     * @throws ValidationException
      */
     public function gerarBoleto()
     {
@@ -202,7 +202,7 @@ class Html implements HtmlContract
      * função para gerar o carne
      *
      * @return string
-     * @throws Exception
+     * @throws ValidationException
      */
     public function gerarCarne()
     {

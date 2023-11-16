@@ -78,7 +78,7 @@ class Banrisul extends AbstractBoleto implements BoletoContract
      * @param int $baixaAutomatica
      *
      * @return $this
-     * @throws Exception
+     * @throws ValidationException
      */
     public function setDiasBaixaAutomatica($baixaAutomatica)
     {
@@ -119,7 +119,7 @@ class Banrisul extends AbstractBoleto implements BoletoContract
      * Método para gerar o código da posição de 20 a 44
      *
      * @return string
-     * @throws Exception
+     * @throws ValidationException
      */
     protected function getCampoLivre()
     {

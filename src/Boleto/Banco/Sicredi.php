@@ -156,7 +156,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
      * @param  int $byte
      *
      * @return $this
-     * @throws Exception
+     * @throws ValidationException
      */
     public function setByte($byte)
     {
@@ -241,7 +241,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
      * Método para gerar o código da posição de 20 a 44
      *
      * @return string
-     * @throws Exception
+     * @throws ValidationException
      */
     protected function getCampoLivre()
     {

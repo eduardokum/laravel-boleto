@@ -3,6 +3,7 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
 use Carbon\Carbon;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\MagicTrait;
 use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
@@ -579,7 +580,7 @@ class Detalhe implements DetalheContract
      * @param $pagador
      *
      * @return $this
-     * @throws Exception
+     * @throws ValidationException
      */
     public function setPagador($pagador)
     {

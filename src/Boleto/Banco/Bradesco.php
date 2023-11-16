@@ -106,7 +106,7 @@ class Bradesco extends AbstractBoleto implements BoletoContract
      * @param int $baixaAutomatica
      *
      * @return $this
-     * @throws Exception
+     * @throws ValidationException
      */
     public function setDiasBaixaAutomatica($baixaAutomatica)
     {

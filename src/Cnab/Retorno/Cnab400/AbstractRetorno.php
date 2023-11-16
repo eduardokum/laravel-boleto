@@ -2,12 +2,14 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400;
 
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Illuminate\Support\Collection;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\AbstractRetorno as AbstractRetornoGeneric;
 
 /**
  * Class AbstractRetorno
  *
+ * @method  Detalhe[] getDetalhes()
  * @method  Detalhe getDetalhe($i)
  * @method  Header getHeader()
  * @method  Trailer getTrailer()
@@ -17,7 +19,7 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
 {
     /**
      * @param string $file
-     * @throws Exception
+     * @throws ValidationException
      */
     public function __construct($file)
     {
@@ -61,7 +63,7 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
      * Processa o arquivo
      *
      * @return $this
-     * @throws Exception
+     * @throws ValidationException
      */
     public function processar()
     {

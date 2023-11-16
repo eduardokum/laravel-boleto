@@ -4,6 +4,7 @@ namespace Eduardokum\LaravelBoleto;
 
 use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Str;
 use Illuminate\Http\UploadedFile;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
@@ -477,7 +478,7 @@ final class Util
      * @param string  $sFill
      *
      * @return string
-     * @throws Exception
+     * @throws ValidationException
      */
     public static function formatCnab($tipo, $valor, $tamanho, $dec = 0, $sFill = '')
     {
@@ -507,7 +508,7 @@ final class Util
      * @param string               $format
      *
      * @return int
-     * @throws Exception
+     * @throws ValidationException
      */
     public static function fatorVencimento($date, $format = 'Y-m-d')
     {
@@ -603,7 +604,7 @@ final class Util
      * @param array $a
      *
      * @return string
-     * @throws Exception
+     * @throws ValidationException
      */
     public static function array2Controle(array $a)
     {
@@ -651,7 +652,7 @@ final class Util
      * @param string       $ocorrencia
      *
      * @return string
-     * @throws Exception
+     * @throws ValidationException
      * @codeCoverageIgnore
      */
     public static function criarRetornoFake($file, $ocorrencia = '02')
@@ -787,7 +788,7 @@ final class Util
      * @param $array
      *
      * @return string
-     * @throws Exception
+     * @throws ValidationException
      */
     public static function remove($i, $f, &$array)
     {
@@ -825,7 +826,7 @@ final class Util
      * @param $value
      *
      * @return array
-     * @throws Exception
+     * @throws ValidationException
      */
     public static function adiciona(&$line, $i, $f, $value)
     {
@@ -967,7 +968,7 @@ final class Util
      * @param $ipte
      *
      * @return array
-     * @throws Exception
+     * @throws ValidationException
      */
     public static function IPTE2Variveis($ipte)
     {
@@ -1019,7 +1020,7 @@ final class Util
     /**
      * @param $linhaDigitavel
      * @return string
-     * @throws Exception
+     * @throws ValidationException
      */
     public static function formatLinhaDigitavel($linhaDigitavel)
     {
@@ -1051,7 +1052,7 @@ final class Util
      * @param $banco
      *
      * @return string
-     * @throws Exception
+     * @throws ValidationException
      */
     public static function getBancoClass($banco)
     {
@@ -1088,7 +1089,7 @@ final class Util
      * @param $obj
      *
      * @return Pessoa
-     * @throws Exception
+     * @throws ValidationException
      */
     public static function addPessoa(&$property, $obj)
     {

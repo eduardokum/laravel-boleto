@@ -17,6 +17,7 @@ use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Detalhe as Detalhe24
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Trailer as Trailer240Contract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Detalhe as Detalhe400Contract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Trailer as Trailer400Contract;
+use OutOfBoundsException;
 
 abstract class AbstractRetorno implements \Countable, \SeekableIterator
 {
@@ -77,7 +78,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
 
     /**
      * @param string $file
-     * @throws Exception
+     * @throws ValidationException
      */
     public function __construct($file)
     {
@@ -97,7 +98,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
         }
 
         if (! Util::isHeaderRetorno($this->file[0])) {
-            throw new ValidationException(sprintf('Arquivo de retorno inválido'));
+            throw new ValidationException('Arquivo de retorno inválido');
         }
 
         $banco = Util::isCnab400($this->file[0]) ? mb_substr($this->file[0], 76, 3) : mb_substr($this->file[0], 0, 3);
@@ -241,7 +242,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
      * @param $array
      *
      * @return string
-     * @throws Exception
+     * @throws ValidationException
      */
     protected function rem($i, $f, &$array)
     {
@@ -282,7 +283,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
     {
         $this->_position = $offset;
         if (! $this->valid()) {
-            throw new \OutOfBoundsException('"Posição inválida "$position"');
+            throw new OutOfBoundsException('"Posição inválida "$position"');
         }
     }
 }

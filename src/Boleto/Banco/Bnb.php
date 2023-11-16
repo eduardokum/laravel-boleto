@@ -59,7 +59,7 @@ class Bnb extends AbstractBoleto implements BoletoContract
      * @param int $baixaAutomatica
      *
      * @return $this
-     * @throws Exception
+     * @throws ValidationException
      */
     public function setDiasBaixaAutomatica($baixaAutomatica)
     {
@@ -76,7 +76,7 @@ class Bnb extends AbstractBoleto implements BoletoContract
      * Gera o Nosso Número.
      *
      * @return string
-     * @throws Exception
+     * @throws ValidationException
      */
     protected function gerarNossoNumero()
     {
@@ -97,7 +97,7 @@ class Bnb extends AbstractBoleto implements BoletoContract
      * Método para gerar o código da posição de 20 a 44
      *
      * @return string
-     * @throws Exception
+     * @throws ValidationException
      */
     protected function getCampoLivre()
     {

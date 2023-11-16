@@ -215,7 +215,7 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
      * @param array $header
      *
      * @return bool
-     * @throws Exception
+     * @throws ValidationException
      */
     protected function processarHeader(array $header)
     {
@@ -245,7 +245,7 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
      * @param array $headerLote
      *
      * @return bool
-     * @throws Exception
+     * @throws ValidationException
      */
     protected function processarHeaderLote(array $headerLote)
     {
@@ -275,7 +275,7 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
      * @param array $detalhe
      *
      * @return bool
-     * @throws Exception
+     * @throws ValidationException
      */
     protected function processarDetalhe(array $detalhe)
     {
@@ -359,7 +359,7 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
      * @param array $trailer
      *
      * @return bool
-     * @throws Exception
+     * @throws ValidationException
      */
     protected function processarTrailerLote(array $trailer)
     {
@@ -383,7 +383,7 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
      * @param array $trailer
      *
      * @return bool
-     * @throws Exception
+     * @throws ValidationException
      */
     protected function processarTrailer(array $trailer)
     {

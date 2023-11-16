@@ -126,7 +126,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
 
     /**
      * @returnBancoob
-     * @throws Exception
+     * @throws ValidationException
      */
     protected function header()
     {
@@ -156,7 +156,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
      * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Bancoob $boleto
      *
      * @return Bancoob
-     * @throws Exception
+     * @throws ValidationException
      */
     public function addBoleto(BoletoContract $boleto)
     {
@@ -254,7 +254,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
 
     /**
      * @return Bancoob
-     * @throws Exception
+     * @throws ValidationException
      */
     protected function trailer()
     {

@@ -118,7 +118,7 @@ abstract class AbstractAPI
      * @param $url
      * @param $type
      * @return mixed
-     * @throws Exception
+     * @throws ValidationException
      */
     public function createWebhook($url, $type = 'all')
     {
@@ -362,7 +362,7 @@ abstract class AbstractAPI
      * @param array $beneficiario
      *
      * @return AbstractAPI
-     * @throws Exception
+     * @throws ValidationException
      */
     public function setBeneficiario($beneficiario): AbstractAPI
     {

@@ -5,6 +5,7 @@ namespace Eduardokum\LaravelBoleto\Webhook;
 use Carbon\Carbon;
 use Eduardokum\LaravelBoleto\MagicTrait;
 use Eduardokum\LaravelBoleto\Util;
+use Exception;
 
 class Boleto
 {

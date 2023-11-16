@@ -197,7 +197,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
 
     /**
      * @return Banrisul
-     * @throws Exception
+     * @throws ValidationException
      */
     protected function header()
     {
@@ -240,7 +240,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
      * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Banrisul $boleto
      *
      * @return Banrisul
-     * @throws Exception
+     * @throws ValidationException
      */
     public function addBoleto(BoletoContract $boleto)
     {
@@ -336,7 +336,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
 
     /**
      * @return Banrisul
-     * @throws Exception
+     * @throws ValidationException
      */
     protected function trailer()
     {

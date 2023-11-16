@@ -453,7 +453,7 @@ class Pdf extends AbstractPdf implements PdfContract
      * @param BoletoContract $boleto
      *
      * @return $this
-     * @throws Exception
+     * @throws ValidationException
      */
     public function addBoleto(BoletoContract $boleto)
     {
@@ -493,7 +493,7 @@ class Pdf extends AbstractPdf implements PdfContract
      * @param null $save_path
      *
      * @return string
-     * @throws Exception
+     * @throws ValidationException
      */
     public function gerarBoleto($dest = self::OUTPUT_STANDARD, $save_path = null, $nameFile = null)
     {

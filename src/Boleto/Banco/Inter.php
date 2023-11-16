@@ -130,7 +130,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
      * @param int $baixaAutomatica
      *
      * @return $this
-     * @throws Exception
+     * @throws ValidationException
      */
     public function setDiasBaixaAutomatica($baixaAutomatica)
     {
@@ -275,7 +275,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
      * @param $appends
      *
      * @return Inter
-     * @throws Exception
+     * @throws ValidationException
      */
     public static function fromAPI($boleto, $appends)
     {
@@ -370,7 +370,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
 
     /**
      * @return mixed
-     * @throws Exception
+     * @throws ValidationException
      */
     public function alterarBoleto()
     {
@@ -379,7 +379,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
 
     /**
      * @return mixed
-     * @throws Exception
+     * @throws ValidationException
      */
     public function alterarDataDeVencimento()
     {
@@ -389,7 +389,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
     /**
      * @param $instrucao
      * @return mixed
-     * @throws Exception
+     * @throws ValidationException
      */
     public function comandarInstrucao($instrucao)
     {
@@ -398,7 +398,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
 
     /**
      * @return mixed
-     * @throws Exception
+     * @throws ValidationException
      */
     public function baixarBoleto()
     {

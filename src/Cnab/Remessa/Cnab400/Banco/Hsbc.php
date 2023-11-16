@@ -107,7 +107,7 @@ class Hsbc extends AbstractRemessa implements RemessaContract
 
     /**
      * @return Hsbc
-     * @throws Exception
+     * @throws ValidationException
      */
     protected function header()
     {
@@ -143,7 +143,7 @@ class Hsbc extends AbstractRemessa implements RemessaContract
      * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Hsbc $boleto
      *
      * @return Hsbc
-     * @throws Exception
+     * @throws ValidationException
      */
     public function addBoleto(BoletoContract $boleto)
     {
@@ -232,7 +232,7 @@ class Hsbc extends AbstractRemessa implements RemessaContract
 
     /**
      * @return Hsbc
-     * @throws Exception
+     * @throws ValidationException
      */
     protected function trailer()
     {

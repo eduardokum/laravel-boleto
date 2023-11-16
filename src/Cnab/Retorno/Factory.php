@@ -12,7 +12,7 @@ class Factory
      * @param $file
      *
      * @return Retorno
-     * @throws Exception
+     * @throws ValidationException
      */
     public static function make($file)
     {
@@ -33,7 +33,7 @@ class Factory
      * @param $file_content
      *
      * @return mixed
-     * @throws Exception
+     * @throws ValidationException
      */
     private static function getBancoClass($file_content)
     {

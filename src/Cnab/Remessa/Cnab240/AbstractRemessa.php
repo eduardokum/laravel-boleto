@@ -148,7 +148,7 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
      * Gera o arquivo, retorna a string.
      *
      * @return string
-     * @throws Exception
+     * @throws ValidationException
      */
     public function gerar()
     {

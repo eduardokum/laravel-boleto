@@ -149,7 +149,7 @@ class Bb extends AbstractBoleto implements BoletoContract
     /**
      * Gera o Nosso Número.
      *
-     * @throws Exception
+     * @throws ValidationException
      * @return string
      */
     protected function gerarNossoNumero()
@@ -193,7 +193,7 @@ class Bb extends AbstractBoleto implements BoletoContract
      * Método para gerar o código da posição de 20 a 44
      *
      * @return string
-     * @throws Exception
+     * @throws ValidationException
      */
     protected function getCampoLivre()
     {
