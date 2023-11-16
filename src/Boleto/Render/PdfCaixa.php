@@ -2,6 +2,7 @@
 
 namespace Eduardokum\LaravelBoleto\Boleto\Render;
 
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Illuminate\Support\Str;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
@@ -481,7 +482,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
             $this->SetXY($xStartPix, $yStartPix);
             $this->SetFont($this->PadraoFont, '', $this->fdes);
             $this->Cell(25, $this->cell, 'Pague via PIX', '', '', 'C');
-            $this->Image($this->boleto[$i]->getPixQrCodeImage(), $xStartPix + 1, $yStartPix + 5, 23, 23, 'png');
+            $this->Image($this->boleto[$i]->getPixQrCodeBase64(), $xStartPix + 1, $yStartPix + 5, 23, 23, 'png');
             $this->Line($xStartPix, $yStartPix, $xStartPix, $yEndPix);
 
             $this->SetXY($xOriginal, $yOriginal);
@@ -539,6 +540,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
      * @param bool $withGroup
      *
      * @return $this
+     * @throws Exception
      */
     public function addBoletos(array $boletos, $withGroup = true)
     {
@@ -563,7 +565,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
     public function addBoleto(BoletoContract $boleto)
     {
         if (!$boleto->imprimeBoleto()) {
-            throw new \Exception('Boleto com modalidade/carteira não disponível para impressão');
+            throw new ValidationException('Boleto com modalidade/carteira não disponível para impressão');
         }
         $this->totalBoletos += 1;
         $this->boleto[] = $boleto;
@@ -598,12 +600,12 @@ class PdfCaixa extends AbstractPdf implements PdfContract
      * @param null $save_path
      *
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function gerarBoleto($dest = self::OUTPUT_STANDARD, $save_path = null, $nameFile = null)
     {
         if ($this->totalBoletos == 0) {
-            throw new \Exception('Nenhum Boleto adicionado');
+            throw new ValidationException('Nenhum Boleto adicionado');
         }
 
         for ($i = 0; $i < $this->totalBoletos; $i++) {

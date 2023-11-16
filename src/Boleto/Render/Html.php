@@ -5,6 +5,7 @@ namespace Eduardokum\LaravelBoleto\Boleto\Render;
 use Eduardokum\LaravelBoleto\Blade;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Render\Html as HtmlContract;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 
 class Html implements HtmlContract
 {
@@ -30,7 +31,7 @@ class Html implements HtmlContract
 
     /**
      * @return \Illuminate\View\Factory
-     * @throws \Exception
+     * @throws Exception
      */
     private function getBlade()
     {
@@ -83,7 +84,7 @@ class Html implements HtmlContract
     public function addBoleto(BoletoContract $boleto)
     {
         if (!$boleto->imprimeBoleto()) {
-            throw new \Exception('Boleto com modalidade/carteira não disponível para impressão');
+            throw new ValidationException('Boleto com modalidade/carteira não disponível para impressão');
         }
         $dados = $boleto->toArray();
         $dados['codigo_barras'] = $this->getImagemCodigoDeBarras($dados['codigo_barras']);
@@ -181,12 +182,12 @@ class Html implements HtmlContract
      * função para gerar o boleto
      *
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function gerarBoleto()
     {
         if (count($this->boleto) == 0) {
-            throw new \Exception('Nenhum Boleto adicionado');
+            throw new ValidationException('Nenhum Boleto adicionado');
         }
 
         return $this->getBlade()->make('BoletoHtmlRender::boleto', [
@@ -201,12 +202,12 @@ class Html implements HtmlContract
      * função para gerar o carne
      *
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function gerarCarne()
     {
         if (count($this->boleto) == 0) {
-            throw new \Exception('Nenhum Boleto adicionado');
+            throw new ValidationException('Nenhum Boleto adicionado');
         }
 
         return $this->getBlade()->make('BoletoHtmlRender::carne', [

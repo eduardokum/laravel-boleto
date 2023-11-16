@@ -8,6 +8,16 @@ trait MagicTrait
 {
     protected $trash = [];
 
+    public function __call($name, $arguments)
+    {
+        if (method_exists($this, $name)) {
+            return $this->{$name}($arguments);
+        }
+
+        $property = lcfirst(str_replace(['get', 'set'], ['', ''], $name));
+        return $this->{$property};
+    }
+
     /**
      * Fast set method.
      *

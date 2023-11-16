@@ -6,6 +6,7 @@ use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 
 class Sicredi extends AbstractBoleto implements BoletoContract
 {
@@ -155,12 +156,12 @@ class Sicredi extends AbstractBoleto implements BoletoContract
      * @param  int $byte
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setByte($byte)
     {
         if ($byte > 9) {
-            throw new \Exception('O byte deve ser compreendido entre 1 e 9');
+            throw new ValidationException('O byte deve ser compreendido entre 1 e 9');
         }
         $this->byte = $byte;
 
@@ -240,7 +241,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
      * Método para gerar o código da posição de 20 a 44
      *
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     protected function getCampoLivre()
     {

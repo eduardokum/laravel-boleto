@@ -2,6 +2,7 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Illuminate\Support\Collection;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\AbstractRetorno as AbstractRetornoGeneric;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\HeaderLote as HeaderLoteContract;
@@ -10,10 +11,10 @@ use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\TrailerLote as Trail
 /**
  * Class AbstractRetorno
  *
- * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Detalhe getDetalhe($i)
- * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Header getHeader()
- * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Trailer getTrailer()
- * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Detalhe detalheAtual()
+ * @method  Detalhe getDetalhe($i)
+ * @method  Header getHeader()
+ * @method  Trailer getTrailer()
+ * @method  Detalhe detalheAtual()
  */
 abstract class AbstractRetorno extends AbstractRetornoGeneric
 {
@@ -29,7 +30,7 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
 
     /**
      * @param string $file
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct($file)
     {
@@ -106,7 +107,7 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
      * Processa o arquivo
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function processar()
     {

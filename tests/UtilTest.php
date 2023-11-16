@@ -155,4 +155,20 @@ class UtilTest extends TestCase
         $this->expectException(Exception::class);
         Util::array2Controle([0 => 1]);
     }
+
+    public function testFuncaoLinhaDigitavel()
+    {
+        $this->assertEquals('75691111100101231230000000160010195360000010000', Util::codigoBarras2LinhaDigitavel('75691953600000100001111101012312300000016001'));
+    }
+
+    public function testFuncaoFormatarLinhaDigitavel()
+    {
+        $this->assertEquals('75691.1111 01012.31230 00000.16001 1 95360000010000', Util::formatLinhaDigitavel('75691111100101231230000000160010195360000010000'));
+    }
+
+    public function testFuncaoFormatarLinhaDigitavelErro()
+    {
+        $this->expectException(Exception::class);
+        Util::formatLinhaDigitavel('7569111110010123123000000016001019536000001000010');
+    }
 }

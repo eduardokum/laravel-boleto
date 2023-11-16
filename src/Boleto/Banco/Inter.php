@@ -3,7 +3,7 @@
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
 use Carbon\Carbon;
-use Exception;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Illuminate\Support\Arr;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
@@ -135,7 +135,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
     public function setDiasBaixaAutomatica($baixaAutomatica)
     {
         if (! in_array($baixaAutomatica, [0, 30, 60])) {
-            throw new Exception('Baixa automática válida somente 0, 30, 60');
+            throw new ValidationException('Baixa automática válida somente 0, 30, 60');
         }
         $this->diasBaixaAutomatica = $baixaAutomatica >= 0 ? $baixaAutomatica : 0;
 
@@ -280,10 +280,10 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
     public static function fromAPI($boleto, $appends)
     {
         if (! array_key_exists('beneficiario', $appends)) {
-            throw new Exception('Informe o beneficiario');
+            throw new ValidationException('Informe o beneficiario');
         }
         if (! array_key_exists('conta', $appends)) {
-            throw new Exception('Informe a conta');
+            throw new ValidationException('Informe a conta');
         }
         $ipte = Util::IPTE2Variveis($boleto->linhaDigitavel);
 
@@ -374,7 +374,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
      */
     public function alterarBoleto()
     {
-        throw new Exception('Banco Inter só possui comando de registro.');
+        throw new ValidationException('Banco Inter só possui comando de registro.');
     }
 
     /**
@@ -383,7 +383,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
      */
     public function alterarDataDeVencimento()
     {
-        throw new Exception('Banco Inter só possui comando de registro.');
+        throw new ValidationException('Banco Inter só possui comando de registro.');
     }
 
     /**
@@ -393,7 +393,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
      */
     public function comandarInstrucao($instrucao)
     {
-        throw new Exception('Banco Inter só possui comando de registro.');
+        throw new ValidationException('Banco Inter só possui comando de registro.');
     }
 
     /**
@@ -402,6 +402,6 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
      */
     public function baixarBoleto()
     {
-        throw new Exception('Banco Inter só possui comando de registro.');
+        throw new ValidationException('Banco Inter só possui comando de registro.');
     }
 }

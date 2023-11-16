@@ -6,6 +6,7 @@ use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 
 class Pine extends AbstractBoleto implements BoletoContract
 {
@@ -128,13 +129,13 @@ class Pine extends AbstractBoleto implements BoletoContract
      * @param mixed $modalidadeCarteira
      *
      * @return Pine
-     * @throws \Exception
+     * @throws Exception
      */
     public function setModalidadeCarteira($modalidadeCarteira)
     {
         $modalidadeCarteira = Util::upper($modalidadeCarteira);
         if (! in_array($modalidadeCarteira, ['1', '2', '5', '6', 'D'])) {
-            throw new \Exception('Modalidade da carteira inválida');
+            throw new ValidationException('Modalidade da carteira inválida');
         }
         $this->modalidadeCarteira = $modalidadeCarteira;
 
@@ -144,7 +145,7 @@ class Pine extends AbstractBoleto implements BoletoContract
     /**
      * Gera o Nosso Número.
      *
-     * @throws \Exception
+     * @throws Exception
      * @return string
      */
     protected function gerarNossoNumero()
@@ -162,7 +163,7 @@ class Pine extends AbstractBoleto implements BoletoContract
      * Método para gerar o código da posição de 20 a 44
      *
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     protected function getCampoLivre()
     {

@@ -5,6 +5,7 @@ namespace Eduardokum\LaravelBoleto\Boleto;
 use Carbon\Carbon;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Illuminate\Support\Str;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Boleto\Render\Pdf;
@@ -26,7 +27,7 @@ abstract class AbstractBoleto implements BoletoContract
     const SITUACAO_PROTESTADO = 'protestado';
 
     /**
-     * Campos que são necessários para o boleto
+     * Campos necessários para o boleto
      *
      * @var array
      */
@@ -257,7 +258,7 @@ abstract class AbstractBoleto implements BoletoContract
     protected $carteirasNomes = [];
 
     /**
-     * Entidade beneficiario (quem emite o boleto)
+     * Entidade beneficiária (quem emite o boleto)
      *
      * @var PessoaContract
      */
@@ -271,7 +272,7 @@ abstract class AbstractBoleto implements BoletoContract
     public $pagador;
 
     /**
-     * Entidade sacador avalista
+     * Entidade sacadora avalista
      *
      * @var PessoaContract
      */
@@ -327,21 +328,21 @@ abstract class AbstractBoleto implements BoletoContract
     protected $campoLivre;
 
     /**
-     * Cache do nosso numero para evitar processamento desnecessário.
+     * Cache do nosso número para evitar processamento desnecessário.
      *
      * @var string
      */
     protected $campoNossoNumero;
 
     /**
-     * Cache da linha digitabel para evitar processamento desnecessário.
+     * Cache da linha digitável para evitar processamento desnecessário.
      *
      * @var string
      */
     protected $campoLinhaDigitavel;
 
     /**
-     * Cache do codigo de barras para evitar processamento desnecessário.
+     * Cache do código de barras para evitar processamento desnecessário.
      *
      * @var string
      */
@@ -367,14 +368,14 @@ abstract class AbstractBoleto implements BoletoContract
     protected $mostrarEnderecoFichaCompensacao = false;
 
     /**
-     * Situacao do boleto no banco, pago aberto portestado...
+     * Situação do boleto no banco, pago aberto protestado...
      *
      * @var string
      */
     public $situacao;
 
     /**
-     * Data da situacao
+     * Data da situação
      *
      * @var \Carbon\Carbon
      */
@@ -397,7 +398,7 @@ abstract class AbstractBoleto implements BoletoContract
      *
      * @param array $params
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct($params = [])
     {
@@ -532,12 +533,12 @@ abstract class AbstractBoleto implements BoletoContract
      * @param  string $carteira
      *
      * @return AbstractBoleto
-     * @throws \Exception
+     * @throws Exception
      */
     public function setCarteira($carteira)
     {
         if ($this->getCarteiras() !== false && ! in_array($carteira, $this->getCarteiras())) {
-            throw new \Exception('Carteira não disponível!');
+            throw new ValidationException('Carteira não disponível!');
         }
         $this->carteira = $carteira;
 
@@ -570,7 +571,7 @@ abstract class AbstractBoleto implements BoletoContract
      * @param $beneficiario
      *
      * @return AbstractBoleto
-     * @throws \Exception
+     * @throws Exception
      */
     public function setBeneficiario($beneficiario)
     {
@@ -580,7 +581,7 @@ abstract class AbstractBoleto implements BoletoContract
     }
 
     /**
-     * Retorna a entidade beneficiario
+     * Retorna a entidade beneficiário
      *
      * @return PessoaContract
      */
@@ -748,7 +749,7 @@ abstract class AbstractBoleto implements BoletoContract
     }
 
     /**
-     * Retorna a data do juros após
+     * Retorna a data do juro após
      *
      * @return \Carbon\Carbon
      */
@@ -806,7 +807,7 @@ abstract class AbstractBoleto implements BoletoContract
     }
 
     /**
-     * Retorna o codigo da Espécie Doc
+     * Retorna o código da Espécie Doc
      *
      * @param int $default
      * @param int $tipo
@@ -930,14 +931,14 @@ abstract class AbstractBoleto implements BoletoContract
      * @param string $chaveNfe
      *
      * @return AbstractBoleto
-     * @throws \Exception
+     * @throws Exception
      */
     public function setChaveNfe($chaveNfe)
     {
         $chaveNfe = Util::onlyNumbers($chaveNfe);
 
         if (strlen($chaveNfe) != 44 && !empty($chaveNfe)) {
-            throw new \Exception('Chave de nfe não possui 44 posições');
+            throw new ValidationException('Chave de nfe não possui 44 posições');
         }
 
         $this->chaveNfe = $chaveNfe;
@@ -988,12 +989,12 @@ abstract class AbstractBoleto implements BoletoContract
      * @param string $instrucao
      *
      * @return AbstractBoleto
-     * @throws \Exception
+     * @throws Exception
      */
     public function addInstrucao($instrucao)
     {
         if (count($this->getInstrucoes()) > 8) {
-            throw new \Exception('Atingido o máximo de 5 instruções.');
+            throw new ValidationException('Atingido o máximo de 5 instruções.');
         }
         array_push($this->instrucoes, $instrucao);
 
@@ -1006,12 +1007,12 @@ abstract class AbstractBoleto implements BoletoContract
      * @param array $instrucoes
      *
      * @return AbstractBoleto
-     * @throws \Exception
+     * @throws Exception
      */
     public function setInstrucoes(array $instrucoes)
     {
         if (count($instrucoes) > 8) {
-            throw new \Exception('Máximo de 8 instruções.');
+            throw new ValidationException('Máximo de 8 instruções.');
         }
         $this->instrucoes = $instrucoes;
 
@@ -1034,12 +1035,12 @@ abstract class AbstractBoleto implements BoletoContract
      * @param array $instrucoes_impressao
      *
      * @return AbstractBoleto
-     * @throws \Exception
+     * @throws Exception
      */
     public function setInstrucoesImpressao(array $instrucoes_impressao)
     {
         if (count($instrucoes_impressao) > 5) {
-            throw new \Exception('Máximo de 5 instruções.');
+            throw new ValidationException('Máximo de 5 instruções.');
         }
         $this->instrucoes_impressao = $instrucoes_impressao;
 
@@ -1066,12 +1067,12 @@ abstract class AbstractBoleto implements BoletoContract
      * @param string $descricaoDemonstrativo
      *
      * @return AbstractBoleto
-     * @throws \Exception
+     * @throws Exception
      */
     public function addDescricaoDemonstrativo($descricaoDemonstrativo)
     {
         if (count($this->getDescricaoDemonstrativo()) > 5) {
-            throw new \Exception('Atingido o máximo de 5 demonstrativos.');
+            throw new ValidationException('Atingido o máximo de 5 demonstrativos.');
         }
         array_push($this->descricaoDemonstrativo, $descricaoDemonstrativo);
 
@@ -1084,12 +1085,12 @@ abstract class AbstractBoleto implements BoletoContract
      * @param array $descricaoDemonstrativo
      *
      * @return AbstractBoleto
-     * @throws \Exception
+     * @throws Exception
      */
     public function setDescricaoDemonstrativo(array $descricaoDemonstrativo)
     {
         if (count($descricaoDemonstrativo) > 5) {
-            throw new \Exception('Máximo de 5 demonstrativos.');
+            throw new ValidationException('Máximo de 5 demonstrativos.');
         }
         $this->descricaoDemonstrativo = $descricaoDemonstrativo;
 
@@ -1160,7 +1161,7 @@ abstract class AbstractBoleto implements BoletoContract
      * @param $pagador
      *
      * @return AbstractBoleto
-     * @throws \Exception
+     * @throws Exception
      */
     public function setPagador($pagador)
     {
@@ -1185,7 +1186,7 @@ abstract class AbstractBoleto implements BoletoContract
      * @param $sacadorAvalista
      *
      * @return AbstractBoleto
-     * @throws \Exception
+     * @throws Exception
      */
     public function setSacadorAvalista($sacadorAvalista)
     {
@@ -1345,7 +1346,7 @@ abstract class AbstractBoleto implements BoletoContract
      * @param int $diasProtesto
      *
      * @return AbstractBoleto
-     * @throws \Exception
+     * @throws Exception
      */
     public function setDiasProtesto($diasProtesto)
     {
@@ -1353,7 +1354,7 @@ abstract class AbstractBoleto implements BoletoContract
         $this->diasProtesto = $diasProtesto > 0 ? $diasProtesto : 0;
 
         if (! empty($diasProtesto) && $this->getDiasBaixaAutomatica() > 0) {
-            throw new \Exception('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
+            throw new ValidationException('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
         }
 
         return $this;
@@ -1372,19 +1373,19 @@ abstract class AbstractBoleto implements BoletoContract
     }
 
     /**
-     * Seta dias para baixa automática
+     * Seta os dias para baixa automática
      *
      * @param int $baixaAutomatica
-     * @throws \Exception
+     * @throws Exception
      */
     public function setDiasBaixaAutomatica($baixaAutomatica)
     {
         $exception = sprintf('O banco %s não suporta baixa automática, pode usar também: setDiasProtesto(%s)', basename(get_class($this)), $baixaAutomatica);
-        throw new \Exception($exception);
+        throw new ValidationException($exception);
     }
 
     /**
-     * Retorna os diasBaixaAutomatica
+     * Retorna os dias de Baixa Automática
      *
      * @param int $default
      *
@@ -1526,11 +1527,11 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Mostra exception ao erroneamente tentar setar o nosso número
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function setNossoNumero($nossoNumero)
     {
-        throw new \Exception('Não é possível definir o nosso número diretamente. Utilize o método setNumero.');
+        throw new ValidationException('Não é possível definir o nosso número diretamente. Utilize o método setNumero.');
     }
 
     /**
@@ -1548,7 +1549,7 @@ abstract class AbstractBoleto implements BoletoContract
     }
 
     /**
-     * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
+     * Método que retorna o nosso número usado no boleto. Alguns bancos possuem algumas diferenças.
      *
      * @return string
      */
@@ -1572,7 +1573,7 @@ abstract class AbstractBoleto implements BoletoContract
     abstract protected function getCampoLivre();
 
     /**
-     * Método que valida se o banco tem todos os campos obrigadotorios preenchidos
+     * Método que valida se o banco tem todos os campos obrigatórios preenchidos
      *
      * @param $messages
      *
@@ -1626,10 +1627,10 @@ abstract class AbstractBoleto implements BoletoContract
     }
 
     /**
-     * Retorna o codigo de barras
+     * Retorna o código de barras
      *
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function getCodigoBarras()
     {
@@ -1638,7 +1639,7 @@ abstract class AbstractBoleto implements BoletoContract
         }
 
         if (! $this->isValid($messages)) {
-            throw new \Exception('Campos requeridos pelo banco, aparentam estar ausentes '.$messages);
+            throw new ValidationException('Campos requeridos pelo banco, aparentam estar ausentes '.$messages);
         }
 
         $codigo = Util::numberFormatGeral($this->getCodigoBanco(), 3)
@@ -1672,7 +1673,7 @@ abstract class AbstractBoleto implements BoletoContract
      * Retorna a linha digitável do boleto
      *
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function getLinhaDigitavel()
     {
@@ -1680,25 +1681,7 @@ abstract class AbstractBoleto implements BoletoContract
             return $this->campoLinhaDigitavel;
         }
 
-        $codigo = $this->getCodigoBarras();
-
-        $s1 = substr($codigo, 0, 4).substr($codigo, 19, 5);
-        $s1 = $s1.Util::modulo10($s1);
-        $s1 = substr_replace($s1, '.', 5, 0);
-
-        $s2 = substr($codigo, 24, 10);
-        $s2 = $s2.Util::modulo10($s2);
-        $s2 = substr_replace($s2, '.', 5, 0);
-
-        $s3 = substr($codigo, 34, 10);
-        $s3 = $s3.Util::modulo10($s3);
-        $s3 = substr_replace($s3, '.', 5, 0);
-
-        $s4 = substr($codigo, 4, 1);
-
-        $s5 = substr($codigo, 5, 14);
-
-        return $this->campoLinhaDigitavel = sprintf('%s %s %s %s %s', $s1, $s2, $s3, $s4, $s5);
+        return $this->campoLinhaDigitavel = Util::formatLinhaDigitavel(Util::codigoBarras2LinhaDigitavel($this->getCodigoBarras()));
     }
 
     /**
@@ -1793,7 +1776,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * @return ?string
      */
-    public function getPixQrCodeImage(): ?string
+    public function getPixQrCodeBase64(): ?string
     {
         if ($this->getPixQrCode() == null) {
             return null;
@@ -1886,7 +1869,7 @@ abstract class AbstractBoleto implements BoletoContract
      * @param bool $instrucoes
      *
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function renderPDF($print = false, $instrucoes = true)
     {
@@ -1944,7 +1927,7 @@ abstract class AbstractBoleto implements BoletoContract
      * Return Boleto Array.
      *
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function toArray()
     {
@@ -1954,7 +1937,7 @@ abstract class AbstractBoleto implements BoletoContract
             $nosso_numero_boleto = $this->getNossoNumeroBoleto();
             $linha_digitavel = $this->getLinhaDigitavel();
             $codigo_barras = $this->getCodigoBarras();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
 
         return array_merge([
@@ -2034,7 +2017,7 @@ abstract class AbstractBoleto implements BoletoContract
             'status' => $this->getStatus(),
             'mostrar_endereco_ficha_compensacao' => $this->getMostrarEnderecoFichaCompensacao(),
             'pix_qrcode' => $this->getPixQrCode(),
-            'pix_qrcode_image' => $this->getPixQrCodeImage(),
+            'pix_qrcode_image' => $this->getPixQrCodeBase64(),
         ], $this->variaveis_adicionais);
     }
 }

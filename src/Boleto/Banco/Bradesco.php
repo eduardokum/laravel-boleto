@@ -7,6 +7,7 @@ use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 
 class Bradesco extends AbstractBoleto implements BoletoContract
 {
@@ -105,12 +106,12 @@ class Bradesco extends AbstractBoleto implements BoletoContract
      * @param int $baixaAutomatica
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setDiasBaixaAutomatica($baixaAutomatica)
     {
         if ($this->getDiasProtesto() > 0) {
-            throw new \Exception('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
+            throw new ValidationException('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
         }
         $baixaAutomatica = (int) $baixaAutomatica;
         $this->diasBaixaAutomatica = $baixaAutomatica > 0 ? $baixaAutomatica : 0;
@@ -119,7 +120,7 @@ class Bradesco extends AbstractBoleto implements BoletoContract
     }
 
     /**
-     * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
+     * Método que retorna o nosso número usado no boleto. Alguns bancos possuem algumas diferenças.
      *
      * @return string
      */

@@ -3,6 +3,8 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa;
 
 use Carbon\Carbon;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
@@ -19,7 +21,7 @@ abstract class AbstractRemessa
     protected $tamanho_linha = false;
 
     /**
-     * Campos que são necessários para a remessa
+     * Campos necessários para a remessa
      *
      * @var array
      */
@@ -61,21 +63,21 @@ abstract class AbstractRemessa
     ];
 
     /**
-     * Variavel com ponteiro para linha que esta sendo editada.
+     * Variável com ponteiro para linha que esta sendo editada.
      *
      * @var
      */
     protected $atual;
 
     /**
-     * Caracter de fim de linha
+     * Caractere de fim de linha
      *
      * @var string
      */
     protected $fimLinha = "\n";
 
     /**
-     * Caracter de fim de arquivo
+     * Caractere de fim de arquivo
      *
      * @var null
      */
@@ -138,7 +140,7 @@ abstract class AbstractRemessa
     protected $carteiras = [];
 
     /**
-     * Entidade beneficiario (quem esta gerando a remessa)
+     * Entidade beneficiária (quem está gerando a remessa)
      *
      * @var PessoaContract
      */
@@ -262,7 +264,7 @@ abstract class AbstractRemessa
      * @param $beneficiario
      *
      * @return AbstractRemessa
-     * @throws \Exception
+     * @throws Exception
      */
     public function setBeneficiario($beneficiario)
     {
@@ -373,12 +375,12 @@ abstract class AbstractRemessa
      * @param  string $carteira
      *
      * @return AbstractRemessa
-     * @throws \Exception
+     * @throws Exception
      */
     public function setCarteira($carteira)
     {
         if ($this->getCarteiras() !== false && ! in_array($carteira, $this->getCarteiras())) {
-            throw new \Exception('Carteira não disponível!');
+            throw new ValidationException('Carteira não disponível!');
         }
         $this->carteira = $carteira;
 
@@ -416,7 +418,7 @@ abstract class AbstractRemessa
     }
 
     /**
-     * Método que valida se o banco tem todos os campos obrigadotorios preenchidos
+     * Método que valida se o banco tem todos os campos obrigatórios preenchidos
      *
      * @param $messages
      *
@@ -446,7 +448,7 @@ abstract class AbstractRemessa
     /**
      * Função para adicionar detalhe ao arquivo.
      *
-     * @param BoletoContract $detalhe
+     * @param BoletoContract $boleto
      *
      * @return mixed
      */
@@ -460,7 +462,7 @@ abstract class AbstractRemessa
     abstract protected function trailer();
 
     /**
-     * Função para adicionar multiplos boletos.
+     * Função para adicionar múltiplos boletos.
      *
      * @param array $boletos
      *
@@ -483,7 +485,7 @@ abstract class AbstractRemessa
      * @param         $value
      *
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     protected function add($i, $f, $value)
     {
@@ -503,7 +505,7 @@ abstract class AbstractRemessa
     /**
      * Retorna os detalhes do arquivo
      *
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     protected function getDetalhes()
     {
@@ -527,17 +529,17 @@ abstract class AbstractRemessa
      * @param int   $extendido
      *
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     protected function valida(array $a, $extendido = 0)
     {
         if ($this->tamanho_linha === false) {
-            throw new \Exception('Classe remessa deve informar o tamanho da linha');
+            throw new ValidationException('Classe remessa deve informar o tamanho da linha');
         }
 
         $a = array_filter($a, 'mb_strlen');
         if (count($a) != $this->tamanho_linha + $extendido) {
-            throw new \Exception(sprintf('$a não possui %s posições, possui: %s', $this->tamanho_linha, count($a)));
+            throw new ValidationException(sprintf('$a não possui %s posições, possui: %s', $this->tamanho_linha, count($a)));
         }
 
         return implode('', $a);
@@ -547,7 +549,7 @@ abstract class AbstractRemessa
      * Gera o arquivo, retorna a string.
      *
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     abstract public function gerar();
 
@@ -558,7 +560,7 @@ abstract class AbstractRemessa
      * @param bool $suggestName
      *
      * @return mixed
-     * @throws \Exception
+     * @throws Exception
      */
     public function save($path, $suggestName = false)
     {
@@ -568,7 +570,7 @@ abstract class AbstractRemessa
         }
 
         if (! is_writable(dirname($path))) {
-            throw new \Exception('Path '.$folder.' não possui permissao de escrita');
+            throw new ValidationException('Path '.$folder.' não possui permissao de escrita');
         }
 
         if ($suggestName) {
@@ -590,11 +592,11 @@ abstract class AbstractRemessa
     }
 
     /**
-     * Realiza o download da string retornada do metodo gerar
+     * Realiza o download da string retornada do método gerar
      *
      * @param null $filename
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function download($filename = null)
     {

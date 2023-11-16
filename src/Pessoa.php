@@ -3,6 +3,7 @@
 namespace Eduardokum\LaravelBoleto;
 
 use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 
 class Pessoa implements PessoaContract
 {
@@ -59,7 +60,7 @@ class Pessoa implements PessoaContract
      * @param null $cep
      * @param null $cidade
      * @param null $uf
-     *
+     * @param null $email
      * @return Pessoa
      */
     public static function create($nome, $documento, $endereco = null, $bairro = null, $cep = null, $cidade = null, $uf = null, $email = null)
@@ -140,13 +141,13 @@ class Pessoa implements PessoaContract
      * @param string $documento
      *
      * @return Pessoa
-     * @throws \Exception
+     * @throws Exception
      */
     public function setDocumento($documento)
     {
         $documento = substr(Util::onlyNumbers($documento), -14);
         if (! in_array(strlen($documento), [10, 11, 14, 0])) {
-            throw new \Exception('Documento inválido');
+            throw new ValidationException('Documento inválido');
         }
         $this->documento = $documento;
 

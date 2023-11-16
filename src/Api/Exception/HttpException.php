@@ -2,9 +2,9 @@
 
 namespace Eduardokum\LaravelBoleto\Api\Exception;
 
-use Exception;
+use Eduardokum\LaravelBoleto\Exception\BaseException;
 
-class HttpException extends Exception
+class HttpException extends BaseException
 {
     private $http_code;
 

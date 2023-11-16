@@ -3,7 +3,7 @@
 namespace Eduardokum\LaravelBoleto\Api;
 
 use stdClass;
-use Exception;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Illuminate\Support\Str;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Pessoa;
@@ -53,7 +53,7 @@ abstract class AbstractAPI
     private $temps = [];
 
     /**
-     * Campos que são necessários para o boleto
+     * Campos necessários para o boleto
      *
      * @var array
      */
@@ -122,7 +122,7 @@ abstract class AbstractAPI
      */
     public function createWebhook($url, $type = 'all')
     {
-        throw new Exception('Método não disponível no banco');
+        throw new ValidationException('Método não disponível no banco');
     }
 
     public function retrieve(BoletoAPIContract $boleto)
@@ -647,8 +647,8 @@ abstract class AbstractAPI
     /**
      * @return false|stdClass
      * @throws CurlException
-     * @throwsHttpException
-     * @throwsUnauthorizedException
+     * @throws HttpException
+     * @throws UnauthorizedException
      */
     private function execute()
     {

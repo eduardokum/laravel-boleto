@@ -6,6 +6,7 @@ use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 
 class Bb extends AbstractBoleto implements BoletoContract
 {
@@ -148,7 +149,7 @@ class Bb extends AbstractBoleto implements BoletoContract
     /**
      * Gera o Nosso Número.
      *
-     * @throws \Exception
+     * @throws Exception
      * @return string
      */
     protected function gerarNossoNumero()
@@ -170,7 +171,7 @@ class Bb extends AbstractBoleto implements BoletoContract
                 $numero = Util::numberFormatGeral($convenio, 7).Util::numberFormatGeral($numero_boleto, 10);
                 break;
             default:
-                throw new \Exception('O código do convênio precisa ter 4, 6 ou 7 dígitos!');
+                throw new ValidationException('O código do convênio precisa ter 4, 6 ou 7 dígitos!');
         }
 
         return $numero;
@@ -192,7 +193,7 @@ class Bb extends AbstractBoleto implements BoletoContract
      * Método para gerar o código da posição de 20 a 44
      *
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     protected function getCampoLivre()
     {
@@ -205,7 +206,7 @@ class Bb extends AbstractBoleto implements BoletoContract
             if ($length == 6 && in_array($this->getCarteira(), ['16', '18']) && Util::numberFormatGeral($this->getVariacaoCarteira(), 3) == '017') {
                 return $this->campoLivre = Util::numberFormatGeral($this->getConvenio(), 6).$nossoNumero.'21';
             } else {
-                throw new \Exception('Só é possível criar um boleto com mais de 10 dígitos no nosso número quando a carteira é 21 e o convênio possuir 6 dígitos.');
+                throw new ValidationException('Só é possível criar um boleto com mais de 10 dígitos no nosso número quando a carteira é 21 e o convênio possuir 6 dígitos.');
             }
         }
         switch ($length) {
@@ -215,7 +216,7 @@ class Bb extends AbstractBoleto implements BoletoContract
             case 7:
                 return $this->campoLivre = '000000'.$nossoNumero.Util::numberFormatGeral($this->getCarteira(), 2);
         }
-        throw new \Exception('O código do convênio precisa ter 4, 6 ou 7 dígitos!');
+        throw new ValidationException('O código do convênio precisa ter 4, 6 ou 7 dígitos!');
     }
 
     /**

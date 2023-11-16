@@ -2,6 +2,7 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Banco;
 
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Illuminate\Support\Arr;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab240;
@@ -214,7 +215,7 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
      * @param array $header
      *
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     protected function processarHeader(array $header)
     {
@@ -244,7 +245,7 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
      * @param array $headerLote
      *
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     protected function processarHeaderLote(array $headerLote)
     {
@@ -274,7 +275,7 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
      * @param array $detalhe
      *
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     protected function processarDetalhe(array $detalhe)
     {
@@ -295,7 +296,7 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
              * ////->setNossoNumero($this->rem(38, 47, $detalhe))
              */
             if ($this->rem(38, 39, $detalhe) != '00') {
-                throw new \Exception('Verificar arquivo retorno:  O nosso número no arquivo de retorno é maior que 7 dígitos.');
+                throw new ValidationException('Verificar arquivo retorno:  O nosso número no arquivo de retorno é maior que 7 dígitos.');
             }
             $d->setNossoNumero($this->rem(40, 47, $detalhe))
                 ->setNossoNumero($this->rem(38, 47, $detalhe))
@@ -358,7 +359,7 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
      * @param array $trailer
      *
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     protected function processarTrailerLote(array $trailer)
     {
@@ -382,7 +383,7 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
      * @param array $trailer
      *
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     protected function processarTrailer(array $trailer)
     {

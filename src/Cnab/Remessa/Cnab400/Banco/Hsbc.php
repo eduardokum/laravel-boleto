@@ -6,6 +6,7 @@ use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 
 class Hsbc extends AbstractRemessa implements RemessaContract
 {
@@ -106,7 +107,7 @@ class Hsbc extends AbstractRemessa implements RemessaContract
 
     /**
      * @return Hsbc
-     * @throws \Exception
+     * @throws Exception
      */
     protected function header()
     {
@@ -142,7 +143,7 @@ class Hsbc extends AbstractRemessa implements RemessaContract
      * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Hsbc $boleto
      *
      * @return Hsbc
-     * @throws \Exception
+     * @throws Exception
      */
     public function addBoleto(BoletoContract $boleto)
     {
@@ -175,7 +176,7 @@ class Hsbc extends AbstractRemessa implements RemessaContract
             $this->add(109, 110, self::OCORRENCIA_PEDIDO_BAIXA); // BAIXA
         }
         if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
-            throw new \Exception('HSBC não suporta alteração geral, use o comando `comandarInstrucao` no boleto para enviar uma solicitação especifica');
+            throw new ValidationException('HSBC não suporta alteração geral, use o comando `comandarInstrucao` no boleto para enviar uma solicitação especifica');
         }
         if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO_DATA) {
             $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO);
@@ -231,7 +232,7 @@ class Hsbc extends AbstractRemessa implements RemessaContract
 
     /**
      * @return Hsbc
-     * @throws \Exception
+     * @throws Exception
      */
     protected function trailer()
     {

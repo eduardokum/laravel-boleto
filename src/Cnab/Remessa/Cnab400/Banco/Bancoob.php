@@ -7,6 +7,7 @@ use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 
 class Bancoob extends AbstractRemessa implements RemessaContract
 {
@@ -125,7 +126,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
 
     /**
      * @returnBancoob
-     * @throws \Exception
+     * @throws Exception
      */
     protected function header()
     {
@@ -155,7 +156,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
      * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Bancoob $boleto
      *
      * @return Bancoob
-     * @throws \Exception
+     * @throws Exception
      */
     public function addBoleto(BoletoContract $boleto)
     {
@@ -220,7 +221,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
             if (defined($const)) {
                 $this->add(157, 158, constant($const));
             } else {
-                throw new \Exception('A instrução para protesto em '.$boleto->getDiasProtesto().' dias não existe no banco.');
+                throw new ValidationException('A instrução para protesto em '.$boleto->getDiasProtesto().' dias não existe no banco.');
             }
         }
         $this->add(161, 166, Util::formatCnab('9', $boleto->getJuros(), 6, 4));
@@ -253,7 +254,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
 
     /**
      * @return Bancoob
-     * @throws \Exception
+     * @throws Exception
      */
     protected function trailer()
     {

@@ -2,7 +2,7 @@
 
 namespace Eduardokum\LaravelBoleto;
 
-use Exception;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Http\UploadedFile;
@@ -496,7 +496,7 @@ final class Util
             $left = '-';
             $type = 's';
         } else {
-            throw new Exception('Tipo inválido');
+            throw new ValidationException('Tipo inválido');
         }
 
         return sprintf("%{$left}{$sFill}{$tamanho}{$type}", mb_substr($valor, 0, $tamanho));
@@ -608,7 +608,7 @@ final class Util
     public static function array2Controle(array $a)
     {
         if (preg_match('/[0-9]/', implode('', array_keys($a)))) {
-            throw new Exception('Somente chave alfanumérica no array, para separar o controle pela chave');
+            throw new ValidationException('Somente chave alfanumérica no array, para separar o controle pela chave');
         }
 
         $controle = '';
@@ -617,7 +617,7 @@ final class Util
         }
 
         if (mb_strlen($controle) > 25) {
-            throw new Exception('Controle muito grande, máximo permitido de 25 caracteres');
+            throw new ValidationException('Controle muito grande, máximo permitido de 25 caracteres');
         }
 
         return $controle;
@@ -702,7 +702,7 @@ final class Util
                 self::adiciona($retorno[0], 47, 76, self::remove(47, 76, $remessa[0]));
                 break;
             default:
-                throw new Exception("Banco: $banco, inválido");
+                throw new ValidationException("Banco: $banco, inválido");
         }
         self::adiciona($retorno[0], 77, 79, $banco);
         self::adiciona($retorno[0], 95, 100, date('dmy'));
@@ -763,7 +763,7 @@ final class Util
                     self::adiciona($retorno[$i], 18, 30, self::remove(18, 30, $detalhe));
                     break;
                 default:
-                    throw new Exception("Banco: $banco, inválido");
+                    throw new ValidationException("Banco: $banco, inválido");
             }
         }
 
@@ -798,11 +798,11 @@ final class Util
         $i--;
 
         if ($i > 398 || $f > 400) {
-            throw new Exception('$ini ou $fim ultrapassam o limite máximo de 400');
+            throw new ValidationException('$ini ou $fim ultrapassam o limite máximo de 400');
         }
 
         if ($f < $i) {
-            throw new Exception('$ini é maior que o $fim');
+            throw new ValidationException('$ini é maior que o $fim');
         }
 
         $t = $f - $i;
@@ -832,17 +832,17 @@ final class Util
         $i--;
 
         if (($i > 398 || $f > 400) && ($i != 401 && $f != 444)) {
-            throw new Exception('$ini ou $fim ultrapassam o limite máximo de 400');
+            throw new ValidationException('$ini ou $fim ultrapassam o limite máximo de 400');
         }
 
         if ($f < $i) {
-            throw new Exception('$ini é maior que o $fim');
+            throw new ValidationException('$ini é maior que o $fim');
         }
 
         $t = $f - $i;
 
         if (mb_strlen($value) > $t) {
-            throw new Exception(sprintf('String $valor maior que o tamanho definido em $ini e $fim: $valor=%s e tamanho é de: %s', mb_strlen($value), $t));
+            throw new ValidationException(sprintf('String $valor maior que o tamanho definido em $ini e $fim: $valor=%s e tamanho é de: %s', mb_strlen($value), $t));
         }
 
         $value = sprintf("%{$t}s", $value);
@@ -996,6 +996,58 @@ final class Util
     }
 
     /**
+     * @param $codigo
+     * @return string
+     */
+    public static function codigoBarras2LinhaDigitavel($codigo)
+    {
+        $parte1 = substr($codigo, 0, 4).substr($codigo, 19, 5);
+        $parte1 .= Util::modulo10($parte1);
+
+        $parte2 = substr($codigo, 24, 10);
+        $parte2 .= Util::modulo10($parte2);
+
+        $parte3 = substr($codigo, 34, 10);
+        $parte3 .= Util::modulo10($parte3);
+
+        $parte4 = substr($codigo, 4, 1);
+
+        $parte5 = substr($codigo, 5, 14);
+        return $parte1 . $parte2 . $parte3 . $parte4 . $parte5;
+    }
+
+    /**
+     * @param $linhaDigitavel
+     * @return string
+     * @throws Exception
+     */
+    public static function formatLinhaDigitavel($linhaDigitavel)
+    {
+        // Remover espaços em branco
+        $linhaDigitavel = Util::onlyNumbers($linhaDigitavel);
+
+        // Verificar se a linha digitável possui 47 caracteres
+        if (strlen($linhaDigitavel) != 47) {
+            throw new ValidationException('A linha digitável deve ter 47 caracteres.');
+        }
+
+        $parte1 = substr($linhaDigitavel, 0, 9);
+        $parte1 = substr_replace($parte1, '.', 5, 0);
+
+        $parte2 = substr($linhaDigitavel, 10, 10);
+        $parte2 = substr_replace($parte2, '.', 5, 0);
+
+        $parte3 = substr($linhaDigitavel, 21, 10);
+        $parte3 = substr_replace($parte3, '.', 5, 0);
+
+        $parte4 = substr($linhaDigitavel, 32, 1);
+
+        $parte5 = substr($linhaDigitavel, 33, 14);
+
+        return "$parte1 $parte2 $parte3 $parte4 $parte5";
+    }
+
+    /**
      * @param $banco
      *
      * @return string
@@ -1028,7 +1080,7 @@ final class Util
             return $aBancos[$banco];
         }
 
-        throw new Exception("Banco: $banco, inválido");
+        throw new ValidationException("Banco: $banco, inválido");
     }
 
     /**
@@ -1050,7 +1102,7 @@ final class Util
 
             return $obj;
         }
-        throw new Exception('Objeto inválido, somente Pessoa e Array');
+        throw new ValidationException('Objeto inválido, somente Pessoa e Array');
     }
 
     /**

@@ -94,7 +94,7 @@ class CalculoDV
         $sums = array_reverse(str_split('97310097131973', 1));
         $sum = 0;
         foreach ($chars as $i => $char) {
-            $sum += substr($char * $sums[$i], -1);
+            $sum += (int) substr($char * $sums[$i], -1);
         }
         $unidade = substr($sum, -1);
 
@@ -295,9 +295,7 @@ class CalculoDV
     {
         $agencia = '0019';
         $numeroFormatado = Util::numberFormatGeral($nossoNumero, 10);
-        $digitoVerificador = Util::modulo10($agencia.$carteira.$numeroFormatado);
-
-        return $digitoVerificador;
+        return Util::modulo10($agencia.$carteira.$numeroFormatado);
     }
 
     /*

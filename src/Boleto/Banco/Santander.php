@@ -6,6 +6,7 @@ use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 
 class Santander extends AbstractBoleto implements BoletoContract
 {
@@ -167,7 +168,7 @@ class Santander extends AbstractBoleto implements BoletoContract
      *
      * @param string $carteira
      * @return AbstractBoleto
-     * @throws \Exception
+     * @throws Exception
      */
     public function setCarteira($carteira)
     {
@@ -210,15 +211,15 @@ class Santander extends AbstractBoleto implements BoletoContract
      * @param int $baixaAutomatica
      *
      * @return $this
-     * @throws \Exception
+     * @throws Exception
      */
     public function setDiasBaixaAutomatica($baixaAutomatica)
     {
         if ($this->getDiasProtesto() > 0) {
-            throw new \Exception('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
+            throw new ValidationException('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
         }
         if (! in_array($baixaAutomatica, [15, 30])) {
-            throw new \Exception('O Banco Santander so aceita 15 ou 30 dias após o vencimento para baixa automática');
+            throw new ValidationException('O Banco Santander so aceita 15 ou 30 dias após o vencimento para baixa automática');
         }
         $baixaAutomatica = (int) $baixaAutomatica;
         $this->diasBaixaAutomatica = $baixaAutomatica > 0 ? $baixaAutomatica : 0;

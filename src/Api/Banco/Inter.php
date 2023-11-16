@@ -2,11 +2,15 @@
 
 namespace Eduardokum\LaravelBoleto\Api\Banco;
 
-use Exception;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Api\AbstractAPI;
+use Eduardokum\LaravelBoleto\Api\Exception\CurlException;
+use Eduardokum\LaravelBoleto\Api\Exception\HttpException;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Boleto\Banco\Inter as BoletoInter;
+use Eduardokum\LaravelBoleto\Api\Exception\UnauthorizedException;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\BoletoAPI as BoletoAPIContract;
 
 class Inter extends AbstractAPI
@@ -16,7 +20,7 @@ class Inter extends AbstractAPI
     private $version = 1;
 
     /**
-     * Campos que são necessários para o boleto
+     * Campos necessários para o boleto
      *
      * @var array
      */
@@ -81,7 +85,7 @@ class Inter extends AbstractAPI
     public function createWebhook($url, $type = 'all')
     {
         if ($this->version == 1) {
-            throw new Exception('Somente versão 2 e 3 da API permite criação de webhooks');
+            throw new ValidationException('Somente versão 2 e 3 da API permite criação de webhooks');
         }
         try {
             $this->oAuth2()->put($this->url('webhook'), ['webhookUrl' => $url]);
@@ -92,12 +96,12 @@ class Inter extends AbstractAPI
     }
 
     /**
-     * @param BoletoAPIContract $boleto
+     * @param BoletoInter $boleto
      *
      * @return BoletoAPIContract
-     * @throws \Eduardokum\LaravelBoleto\Api\Exception\CurlException
-     * @throws \Eduardokum\LaravelBoleto\Api\Exception\HttpException
-     * @throws \Eduardokum\LaravelBoleto\Api\Exception\UnauthorizedException
+     * @throws CurlException
+     * @throws HttpException
+     * @throws UnauthorizedException
      */
     public function createBoleto(BoletoAPIContract $boleto)
     {
@@ -109,6 +113,17 @@ class Inter extends AbstractAPI
             $data['pagador']['cpfCnpj'] = $data['pagador']['cnpjCpf'];
             unset($data['pagador']['cnpjCpf']);
         }
+        if ($this->version == 3 && isset($data['desconto'])) {
+            $data['desconto1'] = $data['desconto'];
+            $data['desconto1']['codigoDesconto'] = $data['desconto']['codigo'];
+            unset($data['desconto1']['codigo'], $data['desconto']);
+        }
+        if ($this->version == 2 && isset($data['desconto1'])) {
+            $data['desconto'] = $data['desconto1'];
+            $data['desconto']['codigo'] = $data['desconto1']['codigoDesconto'];
+            unset($data['desconto']['codigoDesconto'], $data['desconto1']);
+        }
+
         $retorno = $this->oAuth2()->post($this->url('create'), $data);
 
         if($this->version == 3) {
@@ -127,9 +142,9 @@ class Inter extends AbstractAPI
      * @param array $inputedParams
      *
      * @return array
-     * @throws \Eduardokum\LaravelBoleto\Api\Exception\CurlException
-     * @throws \Eduardokum\LaravelBoleto\Api\Exception\HttpException
-     * @throws \Eduardokum\LaravelBoleto\Api\Exception\UnauthorizedException
+     * @throws CurlException
+     * @throws HttpException
+     * @throws UnauthorizedException
      */
     public function retrieveList($inputedParams = [])
     {
@@ -175,15 +190,15 @@ class Inter extends AbstractAPI
      * @param $nossoNumero
      *
      * @return mixed
-     * @throws \Eduardokum\LaravelBoleto\Api\Exception\CurlException
-     * @throws \Eduardokum\LaravelBoleto\Api\Exception\HttpException
-     * @throws \Eduardokum\LaravelBoleto\Api\Exception\UnauthorizedException
+     * @throws CurlException
+     * @throws HttpException
+     * @throws UnauthorizedException
      * @throws Exception
      */
     public function retrieveNossoNumero($nossoNumero)
     {
         if ($this->version == 3) {
-            throw new Exception('Versão 3 da API somente recupera boleto pelo ID da cobrança');
+            throw new ValidationException('Versão 3 da API somente recupera boleto pelo ID da cobrança');
         }
         $response = $this->oAuth2()->get($this->url('show', $nossoNumero));
         return $this->version == 1
@@ -195,15 +210,15 @@ class Inter extends AbstractAPI
      * @param $id
      *
      * @return mixed
-     * @throws \Eduardokum\LaravelBoleto\Api\Exception\CurlException
-     * @throws \Eduardokum\LaravelBoleto\Api\Exception\HttpException
-     * @throws \Eduardokum\LaravelBoleto\Api\Exception\UnauthorizedException
+     * @throws CurlException
+     * @throws HttpException
+     * @throws UnauthorizedException
      * @throws Exception
      */
     public function retrieveID($id)
     {
         if ($this->version != 3) {
-            throw new Exception('Versão 1 e 2 da API somente recupera boleto pelo nosso número');
+            throw new ValidationException('Versão 1 e 2 da API somente recupera boleto pelo nosso número');
         }
         return $this->oAuth2()->get($this->url('show', $id))->body;
     }
@@ -213,15 +228,15 @@ class Inter extends AbstractAPI
      * @param string $motivo
      *
      * @return mixed
-     * @throws \Eduardokum\LaravelBoleto\Api\Exception\CurlException
-     * @throws \Eduardokum\LaravelBoleto\Api\Exception\HttpException
-     * @throws \Eduardokum\LaravelBoleto\Api\Exception\UnauthorizedException
+     * @throws CurlException
+     * @throws HttpException
+     * @throws UnauthorizedException
      * @throws Exception
      */
     public function cancelNossoNumero($nossoNumero, $motivo = 'ACERTOS')
     {
         if ($this->version == 3) {
-            throw new Exception('Versão 3 da API somente cancela boleto pelo ID da cobrança');
+            throw new ValidationException('Versão 3 da API somente cancela boleto pelo ID da cobrança');
         }
         $motivosValidos = [
             'ACERTOS',
@@ -257,15 +272,15 @@ class Inter extends AbstractAPI
      * @param string $motivo
      *
      * @return mixed
-     * @throws \Eduardokum\LaravelBoleto\Api\Exception\CurlException
-     * @throws \Eduardokum\LaravelBoleto\Api\Exception\HttpException
-     * @throws \Eduardokum\LaravelBoleto\Api\Exception\UnauthorizedException
+     * @throws CurlException
+     * @throws HttpException
+     * @throws UnauthorizedException
      * @throws Exception
      */
     public function cancelID($id, $motivo)
     {
         if ($this->version != 3) {
-            throw new Exception('Versão 1 e 2 da API somente cancela boleto pelo nosso número');
+            throw new ValidationException('Versão 1 e 2 da API somente cancela boleto pelo nosso número');
         }
         return $this->oAuth2()->post($this->url('cancel', $id), ['motivoCancelamento' => $motivo])->body;
     }
@@ -274,15 +289,15 @@ class Inter extends AbstractAPI
      * @param $nossoNumero
      *
      * @return mixed
-     * @throws \Eduardokum\LaravelBoleto\Api\Exception\CurlException
-     * @throws \Eduardokum\LaravelBoleto\Api\Exception\HttpException
-     * @throws \Eduardokum\LaravelBoleto\Api\Exception\UnauthorizedException
+     * @throws CurlException
+     * @throws HttpException
+     * @throws UnauthorizedException
      * @throws Exception
      */
     public function getPdfNossoNumero($nossoNumero)
     {
         if ($this->version == 3) {
-            throw new Exception('Versão 3 da API somente recupera PDF pelo ID da cobrança');
+            throw new ValidationException('Versão 3 da API somente recupera PDF pelo ID da cobrança');
         }
         return $this->oAuth2()->get($this->url('pdf', $nossoNumero))->body;
     }
@@ -291,15 +306,15 @@ class Inter extends AbstractAPI
      * @param $id
      *
      * @return mixed
-     * @throws \Eduardokum\LaravelBoleto\Api\Exception\CurlException
-     * @throws \Eduardokum\LaravelBoleto\Api\Exception\HttpException
-     * @throws \Eduardokum\LaravelBoleto\Api\Exception\UnauthorizedException
+     * @throws CurlException
+     * @throws HttpException
+     * @throws UnauthorizedException
      * @throws Exception
      */
     public function getPdfID($id)
     {
         if ($this->version == 3) {
-            throw new Exception('Versão 1, 2 da API somente recupera PDF pelo nosso número');
+            throw new ValidationException('Versão 1, 2 da API somente recupera PDF pelo nosso número');
         }
         return $this->oAuth2()->get($this->url('pdf', $id))->body;
     }
@@ -307,12 +322,12 @@ class Inter extends AbstractAPI
     /**
      * @param $boleto
      *
-     * @return \Eduardokum\LaravelBoleto\Boleto\Banco\Inter
+     * @return BoletoInter
      * @throws Exception
      */
     private function arrayToBoleto($boleto)
     {
-        return \Eduardokum\LaravelBoleto\Boleto\Banco\Inter::fromAPI($boleto, [
+        return BoletoInter::fromAPI($boleto, [
             'conta'        => $this->getConta(),
             'beneficiario' => $this->getBeneficiario(),
         ]);
