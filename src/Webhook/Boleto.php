@@ -83,6 +83,10 @@ class Boleto
      * @var
      */
     public $valorTarifa;
+    /**
+     * @var
+     */
+    public $motivo;
 
     /**
      * @return mixed
@@ -347,6 +351,24 @@ class Boleto
     public function setValorTarifa($valorTarifa)
     {
         $this->valorTarifa = $valorTarifa;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMotivo()
+    {
+        return $this->motivo;
+    }
+
+    /**
+     * @param mixed $motivo
+     * @return Boleto
+     */
+    public function setMotivo($motivo)
+    {
+        $this->motivo = $motivo;
         return $this;
     }
 }

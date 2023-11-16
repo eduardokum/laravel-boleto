@@ -25,9 +25,11 @@ class Inter extends AbstractWebhook
             $boleto->setValorRecebido(Arr::get($item, 'valorTotalRecebimento', Arr::get($item, 'valor')));
             $boleto->setCodigoBarras(Arr::get($item, 'codigoBarras'));
             $boleto->setLinhaDigitavel(Arr::get($item, 'linhaDigitavel'));
+            $boleto->setMotivo(Arr::get($item, 'motivoCancelamento'));
             $boleto->setOcorrenciaTipo(
                 match(Arr::get($item, 'situacao')) {
-                    'PAGO' => Boleto::OCORRENCIA_LIQUIDADA,
+                    'A_RECEBER' => Boleto::OCORRENCIA_ENTRADA,
+                    'PAGO', 'MARCADO_RECEBIDO', 'RECEBIDO' => Boleto::OCORRENCIA_LIQUIDADA,
                     'CANCELADO', 'EXPIRADO' => Boleto::OCORRENCIA_BAIXADA,
                     default => Boleto::OCORRENCIA_OUTROS,
                 }
