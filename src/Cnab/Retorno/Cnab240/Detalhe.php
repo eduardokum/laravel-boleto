@@ -2,7 +2,6 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Carbon\Carbon;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\MagicTrait;

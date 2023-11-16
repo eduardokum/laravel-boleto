@@ -5,7 +5,6 @@ namespace Eduardokum\LaravelBoleto\Webhook;
 use Carbon\Carbon;
 use Eduardokum\LaravelBoleto\MagicTrait;
 use Eduardokum\LaravelBoleto\Util;
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
 
 class Boleto
 {
@@ -309,7 +308,8 @@ class Boleto
         $this->linhaDigitavel = Util::onlyNumbers($linhaDigitavel);
         try {
             $this->linhaDigitavelFormatada = Util::formatLinhaDigitavel($this->getLinhaDigitavel());
-        } catch (Exception $e) {}
+        } catch (Exception $e) {
+        }
         return $this;
     }
 
