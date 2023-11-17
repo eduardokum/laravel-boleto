@@ -394,4 +394,20 @@ class RetornoCnab400Test extends TestCase
             $this->assertArrayHasKey('numeroDocumento', $detalhe->toArray());
         }
     }
+
+    public function testRetornoPixCnab400()
+    {
+        $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make(__DIR__ . '/files/cnab400/santander_pix.ret');
+        $retorno->processar();
+
+        $this->assertNotNull($retorno->getHeader());
+        $this->assertNotNull($retorno->getDetalhes());
+        $this->assertNotNull($retorno->getTrailer());
+
+        $this->assertCount(1, $retorno->getDetalhes());
+
+        $this->assertNotNull($retorno->current()->getId());
+        $this->assertNotNull($retorno->current()->getPixChave());
+        $this->assertNotNull($retorno->current()->getPixChaveTipo());
+    }
 }

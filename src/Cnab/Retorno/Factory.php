@@ -11,7 +11,7 @@ class Factory
     /**
      * @param $file
      *
-     * @return Retorno
+     * @return AbstractRetorno
      * @throws ValidationException
      */
     public static function make($file)

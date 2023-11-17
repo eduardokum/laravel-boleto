@@ -104,6 +104,26 @@ interface Detalhe
     public function getError();
 
     /**
+     * @return mixed
+     */
+    public function getId();
+
+    /**
+     * @return mixed
+     */
+    public function getPixQrCode();
+
+    /**
+     * @return mixed
+     */
+    public function getPixChave();
+
+    /**
+     * @return mixed
+     */
+    public function getPixChaveTipo();
+
+    /**
      * @return bool
      */
     public function hasError();

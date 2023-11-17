@@ -124,6 +124,26 @@ class Detalhe implements DetalheContract
     protected $cheques = [];
 
     /**
+     * @var
+     */
+    protected $id;
+
+    /**
+     * @var
+     */
+    protected $pixQrCode;
+
+    /**
+     * @var
+     */
+    protected $pixChave;
+
+    /**
+     * @var
+     */
+    protected $pixChaveTipo;
+
+    /**
      * @var string
      */
     protected $error;
@@ -657,6 +677,78 @@ class Detalhe implements DetalheContract
     {
         $this->rejeicao = $rejeicao;
 
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     * @return Detalhe
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPixQrCode()
+    {
+        return $this->pixQrCode;
+    }
+
+    /**
+     * @param mixed $pixQrCode
+     * @return Detalhe
+     */
+    public function setPixQrCode($pixQrCode)
+    {
+        $this->pixQrCode = $pixQrCode;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPixChave()
+    {
+        return $this->pixChave;
+    }
+
+    /**
+     * @param mixed $pixChave
+     * @return Detalhe
+     */
+    public function setPixChave($pixChave)
+    {
+        $this->pixChave = $pixChave;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPixChaveTipo()
+    {
+        return $this->pixChaveTipo;
+    }
+
+    /**
+     * @param mixed $pixChaveTipo
+     * @return Detalhe
+     */
+    public function setPixChaveTipo($pixChaveTipo)
+    {
+        $this->pixChaveTipo = $pixChaveTipo;
         return $this;
     }
 }
