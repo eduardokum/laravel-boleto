@@ -364,7 +364,7 @@ class Santander extends AbstractRetorno implements RetornoCnab400
 
     /**
      * @param array $detalhe
-     * @return true
+     * @return bool
      * @throws ValidationException
      */
     private function processarPix(array $detalhe)
@@ -377,11 +377,12 @@ class Santander extends AbstractRetorno implements RetornoCnab400
             5 => AbstractBoleto::TIPO_CHAVEPIX_ALEATORIA,
         ];
 
-        $d = $this->detalheAtual();
-        $d->setPixChaveTipo(Arr::get($tipoChave, $this->rem(2, 2, $detalhe)));
-        $d->setPixChave(Arr::get($tipoChave, $this->rem(3, 79, $detalhe)));
-        $d->setId(Arr::get($tipoChave, $this->rem(80, 114, $detalhe)));
 
-        return true;
+        $d = $this->getDetalhe($this->increment - 1);
+        $d->setPixChaveTipo(Arr::get($tipoChave, $this->rem(2, 2, $detalhe)));
+        $d->setPixChave($this->rem(3, 79, $detalhe));
+        $d->setId($this->rem(80, 114, $detalhe));
+
+        return false;
     }
 }
