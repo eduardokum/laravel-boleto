@@ -8,6 +8,7 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco;
 
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
@@ -81,7 +82,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
      * @param BoletoContract $boleto
      *
      * @return $this
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function addBoleto(BoletoContract $boleto)
     {
@@ -100,7 +101,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
      * @param BoletoContract $boleto
      *
      * @return $this
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function segmentoP(BoletoContract $boleto)
     {
@@ -165,7 +166,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
      * @param BoletoContract $boleto
      *
      * @return $this
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function segmentoR(BoletoContract $boleto)
     {
@@ -236,7 +237,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
      * @param BoletoContract $boleto
      *
      * @return $this
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function segmentoQ(BoletoContract $boleto)
     {
@@ -289,7 +290,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
      * @param BoletoContract $boleto
      *
      * @return $this
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function segmentoY01(BoletoContract $boleto)
     {
@@ -323,7 +324,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
 
     /**
      * @return $this
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function header()
     {
@@ -362,7 +363,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
 
     /**
      * @return $this
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function headerLote()
     {
@@ -399,7 +400,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
 
     /**
      * @return $this
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function trailerLote()
     {
@@ -430,7 +431,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
 
     /**
      * @return $this
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function trailer()
     {

@@ -103,6 +103,7 @@ class Inter extends AbstractAPI
      * @throws CurlException
      * @throws HttpException
      * @throws UnauthorizedException
+     * @throws ValidationException
      */
     public function createBoleto(BoletoAPIContract $boleto)
     {

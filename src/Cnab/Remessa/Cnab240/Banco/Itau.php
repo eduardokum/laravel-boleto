@@ -8,6 +8,7 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco;
 
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\AbstractRemessa;
@@ -58,7 +59,7 @@ class Itau extends AbstractRemessa implements RemessaContract
      * @param BoletoContract $boleto
      *
      * @return $this
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function addBoleto(BoletoContract $boleto)
     {
@@ -76,7 +77,7 @@ class Itau extends AbstractRemessa implements RemessaContract
      * @param BoletoContract $boleto
      *
      * @return $this
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function segmentoP(BoletoContract $boleto)
     {
@@ -146,7 +147,7 @@ class Itau extends AbstractRemessa implements RemessaContract
      * @param BoletoContract $boleto
      *
      * @return $this
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function segmentoQ(BoletoContract $boleto)
     {
@@ -200,7 +201,7 @@ class Itau extends AbstractRemessa implements RemessaContract
      * @param BoletoContract $boleto
      *
      * @return $this
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function segmentoY(BoletoContract $boleto)
     {
@@ -234,7 +235,7 @@ class Itau extends AbstractRemessa implements RemessaContract
 
     /**
      * @return $this
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function header()
     {
@@ -275,7 +276,7 @@ class Itau extends AbstractRemessa implements RemessaContract
 
     /**
      * @return $this
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function headerLote()
     {
@@ -314,7 +315,7 @@ class Itau extends AbstractRemessa implements RemessaContract
 
     /**
      * @return $this
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function trailerLote()
     {
@@ -342,7 +343,7 @@ class Itau extends AbstractRemessa implements RemessaContract
 
     /**
      * @return $this
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function trailer()
     {

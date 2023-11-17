@@ -2,6 +2,7 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
@@ -136,7 +137,7 @@ class Itau extends AbstractRemessa implements RemessaContract
 
     /**
      * @return Itau
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function header()
     {
@@ -166,7 +167,7 @@ class Itau extends AbstractRemessa implements RemessaContract
      * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Itau $boleto
      *
      * @return Itau
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function addBoleto(BoletoContract $boleto)
     {
@@ -262,7 +263,7 @@ class Itau extends AbstractRemessa implements RemessaContract
 
     /**
      * @return Itau
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function trailer()
     {

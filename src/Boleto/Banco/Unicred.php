@@ -76,7 +76,6 @@ class Unicred extends AbstractBoleto implements BoletoContract
      * Obs.: O Nosso Número é um identificador do boleto, devendo ser atribuído
      * Nosso Número diferenciado para cada um.
      *
-     * @throws \Exception
      * @return string
      */
     protected function gerarNossoNumero()
@@ -98,7 +97,6 @@ class Unicred extends AbstractBoleto implements BoletoContract
      * Método para gerar o código da posição de 20 a 44
      *
      * @return string
-     * @throws \Exception
      */
     protected function getCampoLivre()
     {

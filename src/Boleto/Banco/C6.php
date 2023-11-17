@@ -72,7 +72,6 @@ class C6 extends AbstractBoleto implements BoletoContract
      * Gera o Nosso Número.
      *
      * @return string
-     * @throws \Exception
      */
     protected function gerarNossoNumero()
     {
@@ -93,7 +92,6 @@ class C6 extends AbstractBoleto implements BoletoContract
      * Método para gerar o código da posição de 20 a 44
      *
      * @return string
-     * @throws \Exception
      */
     protected function getCampoLivre()
     {

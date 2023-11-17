@@ -2,19 +2,20 @@
 
 namespace Eduardokum\LaravelBoleto\Boleto;
 
+use Exception;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Exception;
-use Illuminate\Support\Str;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Boleto\Render\Pdf;
 use Eduardokum\LaravelBoleto\Boleto\Render\Html;
 use Eduardokum\LaravelBoleto\Boleto\Render\PdfCaixa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Throwable;
 
 /**
  * Class AbstractBoleto
@@ -26,6 +27,12 @@ abstract class AbstractBoleto implements BoletoContract
     const SITUACAO_BAIXADO = 'baixado';
     const SITUACAO_PAGO = 'pago';
     const SITUACAO_PROTESTADO = 'protestado';
+
+    const TIPO_CHAVEPIX_CPF = 'cpf';
+    const TIPO_CHAVEPIX_CNPJ = 'cnpj';
+    const TIPO_CHAVEPIX_CELULAR = 'celular';
+    const TIPO_CHAVEPIX_EMAIL = 'email';
+    const TIPO_CHAVEPIX_ALEATORIA = 'aleatoria';
 
     /**
      * Campos necessários para o boleto
@@ -395,11 +402,21 @@ abstract class AbstractBoleto implements BoletoContract
     private $pixQrCode = null;
 
     /**
+     * Chave Pix para criação de boleto com pix
+     * @var null
+     */
+    private $pixChave = null;
+
+    /**
+     * Tipo da chave pix
+     * @var null
+     */
+    private $pixChaveTipo = null;
+
+    /**
      * AbstractBoleto constructor.
      *
      * @param array $params
-     *
-     * @throws ValidationException
      */
     public function __construct($params = [])
     {
@@ -1773,6 +1790,45 @@ abstract class AbstractBoleto implements BoletoContract
         return $this->pixQrCode;
     }
 
+    /**
+     * @return null
+     */
+    public function getPixChave()
+    {
+        return $this->pixChave;
+    }
+
+    /**
+     * @param null $pixChave
+     * @return AbstractBoleto
+     */
+    public function setPixChave($pixChave)
+    {
+        $this->pixChave = $pixChave;
+        return $this;
+    }
+
+    /**
+     * @return null
+     */
+    public function getPixChaveTipo()
+    {
+        return $this->pixChaveTipo;
+    }
+
+    /**
+     * @param null $pixChaveTipo
+     * @return AbstractBoleto
+     * @throws ValidationException
+     */
+    public function setPixChaveTipo($pixChaveTipo)
+    {
+        if (!in_array($pixChaveTipo, [self::TIPO_CHAVEPIX_CPF,self::TIPO_CHAVEPIX_CNPJ,self::TIPO_CHAVEPIX_CELULAR,self::TIPO_CHAVEPIX_EMAIL,self::TIPO_CHAVEPIX_ALEATORIA])) {
+            throw new ValidationException(sprintf('Tipo de chave %s não é válido', $pixChaveTipo));
+        }
+        $this->pixChaveTipo = $pixChaveTipo;
+        return $this;
+    }
 
     /**
      * @return ?string
@@ -1858,9 +1914,67 @@ abstract class AbstractBoleto implements BoletoContract
         return $this->isSituacao(self::SITUACAO_PROTESTADO);
     }
 
+    /**
+     * @return bool
+     */
     public function imprimeBoleto()
     {
         return true;
+    }
+
+    /**
+     * @return bool
+     * @throws ValidationException
+     */
+    public function validarPix()
+    {
+        if ($this->getPixChave() || $this->getPixChaveTipo()) {
+            if (!$this->getPixChave()) {
+                throw new ValidationException('Informado tipo de chave de Pix porém não foi informado a chave');
+            }
+            if (!$this->getPixChaveTipo()) {
+                throw new ValidationException('Informado tipo de chave de Pix porém não foi informado a chave');
+            }
+            if (!$this->getID()) {
+                throw new ValidationException('ID necessita ser informado para geração da cobrança');
+            }
+
+            switch ($this->getPixChaveTipo()) {
+                case self::TIPO_CHAVEPIX_CPF:
+                    if (!Util::validarCpf($this->getPixChave())) {
+                        throw new ValidationException(sprintf('Chave do tipo CPF é invalida: %s', $this->getPixChave()));
+                    }
+                    break;
+                case self::TIPO_CHAVEPIX_CNPJ:
+                    if (!Util::validarCnpj($this->getPixChave())) {
+                        throw new ValidationException(sprintf('Chave do tipo CNPJ é invalida: %s', $this->getPixChave()));
+                    }
+                    break;
+                case self::TIPO_CHAVEPIX_EMAIL:
+                    if (!filter_var($this->getPixChave(), FILTER_VALIDATE_EMAIL)) {
+                        throw new ValidationException(sprintf('Chave do tipo EMAIL é invalida: %s', $this->getPixChave()));
+                    }
+                    break;
+                case self::TIPO_CHAVEPIX_CELULAR:
+                    if (strlen(Util::onlyNumbers($this->getPixChave())) != 11) {
+                        throw new ValidationException(sprintf('Chave do tipo CELULAR é invalida: %s', $this->getPixChave()));
+                    }
+                    break;
+                case self::TIPO_CHAVEPIX_ALEATORIA:
+                    if (!preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/', $this->getPixChave())) {
+                        throw new ValidationException(sprintf('Chave do tipo ALEATÓRIA é invalida: %s', $this->getPixChave()));
+                    }
+                    break;
+            }
+
+            if (!$this->getPixQrCode()) {
+                $this->setPixQrCode(Util::gerarPixCopiaECola($this->getPixChave(), $this->getValor(), $this->getID(), $this->getBeneficiario()));
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -1893,7 +2007,7 @@ abstract class AbstractBoleto implements BoletoContract
      * @param bool $instrucoes
      *
      * @return string
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function renderHTML($print = false, $instrucoes = true)
     {
@@ -1940,6 +2054,8 @@ abstract class AbstractBoleto implements BoletoContract
             $codigo_barras = $this->getCodigoBarras();
         } catch (Exception $e) {
         }
+
+        $this->validarPix();
 
         return array_merge([
             'linha_digitavel' => $linha_digitavel,
@@ -2017,6 +2133,8 @@ abstract class AbstractBoleto implements BoletoContract
             'uso_banco' => $this->getUsoBanco(),
             'status' => $this->getStatus(),
             'mostrar_endereco_ficha_compensacao' => $this->getMostrarEnderecoFichaCompensacao(),
+            'pix_chave' => $this->getPixChave(),
+            'pix_chave_tipo' => $this->getPixChaveTipo(),
             'pix_qrcode' => $this->getPixQrCode(),
             'pix_qrcode_image' => $this->getPixQrCodeBase64(),
         ], $this->variaveis_adicionais);

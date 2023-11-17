@@ -4,6 +4,8 @@ namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco;
 
 use Illuminate\Support\Arr;
 use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\AbstractRetorno;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
@@ -252,7 +254,7 @@ class Santander extends AbstractRetorno implements RetornoCnab400
      * @param array $header
      *
      * @return bool
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function processarHeader(array $header)
     {
@@ -272,7 +274,7 @@ class Santander extends AbstractRetorno implements RetornoCnab400
      * @param array $detalhe
      *
      * @return bool
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function processarDetalhe(array $detalhe)
     {
@@ -282,6 +284,10 @@ class Santander extends AbstractRetorno implements RetornoCnab400
                     ->setConta($this->getHeader()->getConta()
                         .$this->rem(384, 385, $detalhe));
             }
+        }
+
+        if ($this->rem(1, 1, $detalhe) == 2) {
+            return $this->processarPix($detalhe);
         }
 
         $d = $this->detalheAtual();
@@ -352,6 +358,29 @@ class Santander extends AbstractRetorno implements RetornoCnab400
             ->setQuantidadeLiquidados((int) $this->totais['liquidados'])
             ->setQuantidadeBaixados((int) $this->totais['baixados'])
             ->setQuantidadeAlterados((int) $this->totais['alterados']);
+
+        return true;
+    }
+
+    /**
+     * @param array $detalhe
+     * @return true
+     * @throws ValidationException
+     */
+    private function processarPix(array $detalhe)
+    {
+        $tipoChave = [
+            1 => AbstractBoleto::TIPO_CHAVEPIX_CPF,
+            2 => AbstractBoleto::TIPO_CHAVEPIX_CNPJ,
+            3 => AbstractBoleto::TIPO_CHAVEPIX_CELULAR,
+            4 => AbstractBoleto::TIPO_CHAVEPIX_EMAIL,
+            5 => AbstractBoleto::TIPO_CHAVEPIX_ALEATORIA,
+        ];
+
+        $d = $this->detalheAtual();
+        $d->setPixChaveTipo(Arr::get($tipoChave, $this->rem(2, 2, $detalhe)));
+        $d->setPixChave(Arr::get($tipoChave, $this->rem(3, 79, $detalhe)));
+        $d->setId(Arr::get($tipoChave, $this->rem(80, 114, $detalhe)));
 
         return true;
     }

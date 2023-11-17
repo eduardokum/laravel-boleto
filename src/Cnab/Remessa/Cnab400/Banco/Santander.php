@@ -4,6 +4,7 @@ namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
@@ -102,7 +103,7 @@ class Santander extends AbstractRemessa implements RemessaContract
      * Retorna o codigo de transmissão.
      *
      * @return string
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function getCodigoTransmissao()
     {
@@ -125,7 +126,7 @@ class Santander extends AbstractRemessa implements RemessaContract
 
     /**
      * @return Santander
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function header()
     {
@@ -153,7 +154,7 @@ class Santander extends AbstractRemessa implements RemessaContract
      * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Santander $boleto
      *
      * @return Santander
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function addBoleto(BoletoContract $boleto)
     {
@@ -239,12 +240,36 @@ class Santander extends AbstractRemessa implements RemessaContract
             $this->add(401, 444, Util::formatCnab('9', $chaveNfe, 44));
         }
 
+        if ($boleto->validarPix()) {
+            $tipoChave = [
+                $boleto::TIPO_CHAVEPIX_CPF => 1,
+                $boleto::TIPO_CHAVEPIX_CNPJ => 2,
+                $boleto::TIPO_CHAVEPIX_CELULAR => 3,
+                $boleto::TIPO_CHAVEPIX_EMAIL => 4,
+                $boleto::TIPO_CHAVEPIX_ALEATORIA => 5,
+            ];
+            $this->iniciaDetalhe();
+            $this->add(1, 1, '8');
+            $this->add(2, 3, '00'); // '00' = Conforme Perfil do Beneficiário; '01' = Aceita qualquer valor; ‘02’ = Entre o mínimo e o máximo; ‘03’ = Não aceita pagamento com o valor divergente
+            $this->add(4, 5, '01'); // Quantidade de pagamentos
+            $this->add(6, 6, '2'); // '1' = % (percentual); '2' = valor
+            $this->add(7, 19, Util::formatCnab('9', $boleto->getValor(), 13, 2));
+            $this->add(20, 24, Util::formatCnab('9', 0, 5, 2));
+            $this->add(25, 37, Util::formatCnab('9', $boleto->getValor(), 13, 2));
+            $this->add(38, 42, Util::formatCnab('9', 0, 5, 2));
+            $this->add(43, 43, Util::formatCnab('9', $tipoChave[$boleto->getPixChaveTipo()], 1));
+            $this->add(44, 120, Util::formatCnab('X', $boleto->getPixChave(), 77));
+            $this->add(121, 155, Util::formatCnab('X', $boleto->getID(), 35));
+            $this->add(156, 394, '');
+            $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
+        }
+
         return $this;
     }
 
     /**
      * @return Santander
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function trailer()
     {

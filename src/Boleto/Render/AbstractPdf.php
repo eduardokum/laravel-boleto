@@ -2,6 +2,8 @@
 
 namespace Eduardokum\LaravelBoleto\Boleto\Render;
 
+use Exception;
+
 abstract class AbstractPdf extends \FPDF
 {
     // INCLUDE JS
@@ -151,7 +153,7 @@ abstract class AbstractPdf extends \FPDF
      * @param int $basewidth
      * @param int $height
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function i25($xpos, $ypos, $code, $basewidth = 1, $height = 10)
     {

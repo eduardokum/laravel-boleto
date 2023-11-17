@@ -1150,6 +1150,139 @@ final class Util
         return null;
     }
 
+    /**
+     * @param $cpf
+     * @return bool
+     */
+    public static function validarCpf($cpf)
+    {
+        $c = sprintf('%011s', self::onlyNumbers($cpf));
+        if (mb_strlen($c) != 11 || preg_match("/^{$c[0]}{11}$/", $c)) {
+            return false;
+        }
+        for ($s = 10, $n = 0, $i = 0; $s >= 2; $n += $c[$i++] * $s--);
+        if ($c[9] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
+            return false;
+        }
+        for ($s = 11, $n = 0, $i = 0; $s >= 2; $n += $c[$i++] * $s--);
+        if ($c[10] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * @param $cnpj
+     * @return bool
+     */
+    public static function validarCnpj($cnpj)
+    {
+        $c = sprintf('%014s', self::onlyNumbers($cnpj));
+        $b = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+        if ($c < 1) {
+            return false;
+        }
+        if (mb_strlen($c) != 14) {
+            return false;
+        }
+        for ($i = 0, $n = 0; $i < 12; $n += $c[$i] * $b[++$i]);
+        if ($c[12] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
+            return false;
+        }
+        for ($i = 0, $n = 0; $i <= 12; $n += $c[$i] * $b[$i++]);
+        if ($c[13] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * @param $documento
+     * @return bool
+     */
+    public static function validarCnpjCpf($documento)
+    {
+        $documento = Util::onlyNumbers($documento);
+        if (strlen($documento) == 11) {
+            return self::validarCpf($documento);
+        } elseif (strlen($documento) == 14) {
+            return self::validarCnpj($documento);
+        }
+        return false;
+    }
+
+    /**
+     * @param $uuid
+     * @return string
+     */
+    public static function formatarUUID($uuid)
+    {
+        $uuid = self::onlyNumbers($uuid);
+        return sprintf(
+            '%s-%s-%s-%s-%s',
+            substr($uuid, 0, 8),
+            substr($uuid, 8, 4),
+            substr($uuid, 12, 4),
+            substr($uuid, 16, 4),
+            substr($uuid, 20, 12)
+        );
+    }
+
+    /**
+     * @param $pix
+     * @param $valor
+     * @param $id
+     * @param Pessoa $beneficiario
+     * @return string
+     */
+    public static function gerarPixCopiaECola($pix, $valor, $id, Pessoa $beneficiario)
+    {
+        $crc16 = function($payload) {
+            $payload .= '6304';
+
+            $polinomio = 0x1021;
+            $resultado = 0xFFFF;
+            if (($length = strlen($payload)) > 0) {
+                for ($offset = 0; $offset < $length; $offset++) {
+                    $resultado ^= (ord($payload[$offset]) << 8);
+                    for ($bitwise = 0; $bitwise < 8; $bitwise++) {
+                        if (($resultado <<= 1) & 0x10000) {
+                            $resultado ^= $polinomio;
+                        }
+                        $resultado &= 0xFFFF;
+                    }
+                }
+            }
+
+            return '6304'.strtoupper(dechex($resultado));
+        };
+
+        $line = function ($id, $value) {
+            $size = str_pad(mb_strlen($value), 2, '0', STR_PAD_LEFT);
+
+            return $id.$size.$value;
+        };
+
+        $gui = $line('00', 'br.gov.bcb.pix');
+        $key = $line('01', $pix);
+        $txid = $line('05', $id);
+        $payload = $line('00', '01');
+        $payload .= $line('01', '12');
+        $payload .= $line('26', $gui.$key);
+        $payload .= $line('52', '0000');
+        $payload .= $line('53', '986');
+        $payload .= $line('54', $valor);
+        $payload .= $line('58', 'BR');
+        $payload .= $line('59', $beneficiario->getNome());
+        $payload .= $line('60', $beneficiario->getCidade());
+        $payload .= $line('62', $txid);
+        return $payload.$crc16($payload);
+    }
+
+    /**
+     * @param $str
+     * @return bool
+     */
     public static function isBase64($str)
     {
         try {
