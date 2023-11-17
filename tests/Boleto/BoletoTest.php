@@ -675,6 +675,7 @@ class BoletoTest extends TestCase
             'pix_chave' => '39a1178e-db6b-4407-bc7b-b674390acf5f',
             'pix_chave_tipo' => Boleto\Santander::TIPO_CHAVEPIX_ALEATORIA,
         ]);
+        $boleto->gerarPixCopiaECola();
 
         $this->assertEquals('00020101021226580014br.gov.bcb.pix013639a1178e-db6b-4407-bc7b-b674390acf5f5204000053039865406100.005802BR5904ACME6006CIDADE62220518id-da-transcao-pix630491C3', $boleto->toArray()['pix_qrcode']);
     }

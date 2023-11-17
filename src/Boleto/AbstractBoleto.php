@@ -1967,14 +1967,21 @@ abstract class AbstractBoleto implements BoletoContract
                     break;
             }
 
-            if (!$this->getPixQrCode()) {
-                $this->setPixQrCode(Util::gerarPixCopiaECola($this->getPixChave(), $this->getValor(), $this->getID(), $this->getBeneficiario()));
-            }
-
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function gerarPixCopiaECola()
+    {
+        if ($this->getPixChave() && $this->getValor() && $this->getID() && $this->getBeneficiario()) {
+            $this->setPixQrCode(Util::gerarPixCopiaECola($this->getPixChave(), $this->getValor(), $this->getID(), $this->getBeneficiario()));
+        }
+        return $this->getPixQrCode();
     }
 
     /**
