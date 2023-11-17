@@ -308,6 +308,16 @@ interface Boleto
     public function getPixQrCode();
 
     /**
+     * @return mixed
+     */
+    public function getPixChave();
+
+    /**
+     * @return mixed
+     */
+    public function getPixChaveTipo();
+
+    /**
      * Método onde qualquer boleto deve extender para gerar o código da posição de 20 a 44
      *
      * @param $campoLivre
