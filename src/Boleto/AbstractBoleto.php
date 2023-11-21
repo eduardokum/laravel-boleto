@@ -1289,7 +1289,7 @@ abstract class AbstractBoleto implements BoletoContract
         $tipoProtesto = (int)$tipoProtesto;
         $this->tipoProtesto = $tipoProtesto > 0 ? $tipoProtesto : 0;
 
-        if (!empty($tipoProtesto) && $this->getDiasProtesto() <> 0) {
+        if (!empty($tipoProtesto) && $this->getDiasProtesto() == 0) {
             throw new \Exception('Você deve informar dias de protesto se informar tipo de protesto');
         }
 
