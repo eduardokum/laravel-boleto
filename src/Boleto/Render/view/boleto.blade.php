@@ -33,7 +33,7 @@
             </div>
         @endif
 
-        <div class="linha-pontilhada" style="margin-bottom: 20px;">Recibo do pagador</div>
+        <div class="linha-pontilhada noprint" style="margin-bottom: 20px;">Recibo do pagador</div>
 
         <div class="info-empresa">
             @if ($logo)
