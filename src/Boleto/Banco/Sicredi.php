@@ -2,11 +2,11 @@
 
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
-use Eduardokum\LaravelBoleto\Util;
-use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Util;
 
 class Sicredi extends AbstractBoleto implements BoletoContract
 {
@@ -107,7 +107,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
     /**
      * Define se possui ou não registro
      *
-     * @param  bool $registro
+     * @param bool $registro
      * @return $this
      */
     public function setComRegistro($registro)
@@ -130,7 +130,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
     /**
      * Define o posto do cliente
      *
-     * @param  int $posto
+     * @param int $posto
      * @return $this
      */
     public function setPosto($posto)
@@ -153,7 +153,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
     /**
      * Define o byte
      *
-     * @param  int $byte
+     * @param int $byte
      *
      * @return $this
      * @throws ValidationException
@@ -223,8 +223,8 @@ class Sicredi extends AbstractBoleto implements BoletoContract
         $byte = $this->getByte();
         $numero_boleto = Util::numberFormatGeral($this->getNumero(), 5);
 
-        return  $ano.$byte.$numero_boleto
-            .CalculoDV::sicrediNossoNumero($this->getAgencia(), $this->getPosto(), $this->getCodigoCliente(), $ano, $byte, $numero_boleto);
+        return $ano . $byte . $numero_boleto
+            . CalculoDV::sicrediNossoNumero($this->getAgencia(), $this->getPosto(), $this->getCodigoCliente(), $ano, $byte, $numero_boleto);
     }
 
     /**

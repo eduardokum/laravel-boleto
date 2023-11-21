@@ -1,6 +1,6 @@
 <?php
 
-namespace Eduardokum\LaravelBoleto\Tests\Retorno;
+namespace Retorno;
 
 use Illuminate\Support\Collection;
 use Eduardokum\LaravelBoleto\Tests\TestCase;

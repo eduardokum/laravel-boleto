@@ -2,11 +2,11 @@
 
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
-use Eduardokum\LaravelBoleto\Util;
-use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Util;
 
 class Itau extends AbstractBoleto implements BoletoContract
 {
@@ -74,7 +74,7 @@ class Itau extends AbstractBoleto implements BoletoContract
         if ($this->getDiasProtesto() > 0) {
             throw new ValidationException('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
         }
-        $baixaAutomatica = (int) $baixaAutomatica;
+        $baixaAutomatica = (int)$baixaAutomatica;
         $this->diasBaixaAutomatica = $baixaAutomatica > 0 ? $baixaAutomatica : 0;
 
         return $this;
@@ -94,7 +94,7 @@ class Itau extends AbstractBoleto implements BoletoContract
         $conta = Util::numberFormatGeral($this->getConta(), 5);
         $dv = CalculoDV::itauNossoNumero($agencia, $conta, $carteira, $numero_boleto);
 
-        return $numero_boleto.$dv;
+        return $numero_boleto . $dv;
     }
 
     /**
@@ -104,7 +104,7 @@ class Itau extends AbstractBoleto implements BoletoContract
      */
     public function getNossoNumeroBoleto()
     {
-        return $this->getCarteira().'/'.substr_replace($this->getNossoNumero(), '-', -1, 0);
+        return $this->getCarteira() . '/' . substr_replace($this->getNossoNumero(), '-', -1, 0);
     }
 
     /**
@@ -163,6 +163,6 @@ class Itau extends AbstractBoleto implements BoletoContract
             return $this->contaDv;
         }
 
-        return  CalculoDV::itauContaCorrente($this->getAgencia(), $this->getConta());
+        return CalculoDV::itauContaCorrente($this->getAgencia(), $this->getConta());
     }
 }

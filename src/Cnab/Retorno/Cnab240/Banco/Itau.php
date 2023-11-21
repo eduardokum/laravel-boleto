@@ -2,12 +2,12 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Banco;
 
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Illuminate\Support\Arr;
-use Eduardokum\LaravelBoleto\Util;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab240;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\AbstractRetorno;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab240;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Util;
+use Illuminate\Support\Arr;
 
 class Itau extends AbstractRetorno implements RetornoCnab240
 {
@@ -380,10 +380,10 @@ class Itau extends AbstractRetorno implements RetornoCnab240
         $this->getTrailerLote()
             ->setLoteServico($this->rem(4, 7, $trailer))
             ->setTipoRegistro($this->rem(8, 8, $trailer))
-            ->setQtdRegistroLote((int) $this->rem(18, 23, $trailer))
-            ->setQtdTitulosCobrancaSimples((int) $this->rem(24, 29, $trailer))
+            ->setQtdRegistroLote((int)$this->rem(18, 23, $trailer))
+            ->setQtdTitulosCobrancaSimples((int)$this->rem(24, 29, $trailer))
             ->setValorTotalTitulosCobrancaSimples(Util::nFloat($this->rem(30, 46, $trailer) / 100, 2, false))
-            ->setQtdTitulosCobrancaVinculada((int) $this->rem(47, 52, $trailer))
+            ->setQtdTitulosCobrancaVinculada((int)$this->rem(47, 52, $trailer))
             ->setValorTotalTitulosCobrancaVinculada(Util::nFloat($this->rem(53, 69, $trailer) / 100, 2, false));
 
         return true;
@@ -400,8 +400,8 @@ class Itau extends AbstractRetorno implements RetornoCnab240
         $this->getTrailer()
             ->setNumeroLote($this->rem(4, 7, $trailer))
             ->setTipoRegistro($this->rem(8, 8, $trailer))
-            ->setQtdLotesArquivo((int) $this->rem(18, 23, $trailer))
-            ->setQtdRegistroArquivo((int) $this->rem(24, 29, $trailer));
+            ->setQtdLotesArquivo((int)$this->rem(18, 23, $trailer))
+            ->setQtdRegistroArquivo((int)$this->rem(24, 29, $trailer));
 
         return true;
     }

@@ -3,12 +3,12 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa;
 
 use Carbon\Carbon;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
 use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Util;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
-use Eduardokum\LaravelBoleto\Util;
-use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 abstract class AbstractRemessa
 {
@@ -57,7 +57,7 @@ abstract class AbstractRemessa
      * @var array
      */
     protected $aRegistros = [
-        self::HEADER  => [],
+        self::HEADER => [],
         self::DETALHE => [],
         self::TRAILER => [],
     ];
@@ -215,8 +215,8 @@ abstract class AbstractRemessa
     {
         $args = func_get_args();
         foreach ($args as $arg) {
-            ! is_array($arg) || call_user_func_array([$this, __FUNCTION__], $arg);
-            ! is_string($arg) || array_push($this->camposObrigatorios, $arg);
+            !is_array($arg) || call_user_func_array([$this, __FUNCTION__], $arg);
+            !is_string($arg) || array_push($this->camposObrigatorios, $arg);
         }
 
         return $this;
@@ -276,13 +276,13 @@ abstract class AbstractRemessa
     /**
      * Define a agência
      *
-     * @param  int $agencia
+     * @param int $agencia
      *
      * @return AbstractRemessa
      */
     public function setAgencia($agencia)
     {
-        $this->agencia = (string) $agencia;
+        $this->agencia = (string)$agencia;
 
         return $this;
     }
@@ -300,13 +300,13 @@ abstract class AbstractRemessa
     /**
      * Define a agência
      *
-     * @param  int $agenciaDv
+     * @param int $agenciaDv
      *
      * @return AbstractRemessa
      */
     public function setAgenciaDv($agenciaDv)
     {
-        $this->agenciaDv = (string) $agenciaDv;
+        $this->agenciaDv = (string)$agenciaDv;
 
         return $this;
     }
@@ -324,13 +324,13 @@ abstract class AbstractRemessa
     /**
      * Define o número da conta
      *
-     * @param  int $conta
+     * @param int $conta
      *
      * @return AbstractRemessa
      */
     public function setConta($conta)
     {
-        $this->conta = (string) $conta;
+        $this->conta = (string)$conta;
 
         return $this;
     }
@@ -348,7 +348,7 @@ abstract class AbstractRemessa
     /**
      * Define o dígito verificador da conta
      *
-     * @param  int $contaDv
+     * @param int $contaDv
      *
      * @return AbstractRemessa
      */
@@ -372,14 +372,14 @@ abstract class AbstractRemessa
     /**
      * Define o código da carteira (Com ou sem registro)
      *
-     * @param  string $carteira
+     * @param string $carteira
      *
      * @return AbstractRemessa
      * @throws ValidationException
      */
     public function setCarteira($carteira)
     {
-        if ($this->getCarteiras() !== false && ! in_array($carteira, $this->getCarteiras())) {
+        if ($this->getCarteiras() !== false && !in_array($carteira, $this->getCarteiras())) {
             throw new ValidationException('Carteira não disponível!');
         }
         $this->carteira = $carteira;
@@ -427,7 +427,7 @@ abstract class AbstractRemessa
     public function isValid(&$messages)
     {
         foreach ($this->camposObrigatorios as $campo) {
-            $test = call_user_func([$this, 'get'.Str::camel($campo)]);
+            $test = call_user_func([$this, 'get' . Str::camel($campo)]);
             if ($test === '' || is_null($test)) {
                 $messages .= "Campo $campo está em branco";
 
@@ -526,7 +526,7 @@ abstract class AbstractRemessa
      * Valida se a linha esta correta.
      *
      * @param array $a
-     * @param int   $extendido
+     * @param int $extendido
      *
      * @return string
      * @throws ValidationException
@@ -565,16 +565,16 @@ abstract class AbstractRemessa
     public function save($path, $suggestName = false)
     {
         $folder = dirname($path);
-        if (! is_dir($folder)) {
+        if (!is_dir($folder)) {
             mkdir($folder, 0777, true);
         }
 
-        if (! is_writable(dirname($path))) {
-            throw new ValidationException('Path '.$folder.' não possui permissao de escrita');
+        if (!is_writable(dirname($path))) {
+            throw new ValidationException('Path ' . $folder . ' não possui permissao de escrita');
         }
 
         if ($suggestName) {
-            $path = rtrim(dirname($path), '/').'/'.ltrim($this->nomeSugerido(), '/');
+            $path = rtrim(dirname($path), '/') . '/' . ltrim($this->nomeSugerido(), '/');
         }
 
         $string = $this->gerar();
@@ -604,7 +604,7 @@ abstract class AbstractRemessa
             $filename = $this->nomeSugerido();
         }
         header('Content-type: text/plain');
-        header('Content-Disposition: attachment; filename="'.$filename.'"');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
         echo $this->gerar();
     }
 }

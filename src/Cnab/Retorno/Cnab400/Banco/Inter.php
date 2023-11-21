@@ -2,12 +2,12 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco;
 
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Illuminate\Support\Arr;
-use Eduardokum\LaravelBoleto\Util;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\AbstractRetorno;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Util;
+use Illuminate\Support\Arr;
 
 class Inter extends AbstractRetorno implements RetornoCnab400
 {
@@ -97,8 +97,8 @@ class Inter extends AbstractRetorno implements RetornoCnab400
             ->setDataOcorrencia($this->rem(92, 97, $detalhe))
             ->setDataVencimento($this->rem(119, 124, $detalhe))
             ->setDataCredito($this->rem(173, 178, $detalhe))
-            ->setValor(Util::nFloat(((float) $this->rem(125, 137, $detalhe)) / 100, 2, false))
-            ->setValorRecebido(Util::nFloat(((float) $this->rem(160, 172, $detalhe)) / 100, 2, false));
+            ->setValor(Util::nFloat(((float)$this->rem(125, 137, $detalhe)) / 100, 2, false))
+            ->setValorRecebido(Util::nFloat(((float)$this->rem(160, 172, $detalhe)) / 100, 2, false));
 
         if ($d->hasOcorrencia('06')) {
             $this->totais['liquidados']++;
@@ -131,11 +131,11 @@ class Inter extends AbstractRetorno implements RetornoCnab400
         $this->getTrailer()
             ->setQuantidadeTitulos($this->rem(18, 25, $trailer))
             ->setValorTitulos(Util::nFloat($this->rem(121, 132, $trailer) / 100, 2, false)) //Total dos valores dos títulos Pagos
-            ->setQuantidadeErros((int) $this->totais['erros'])
-            ->setQuantidadeEntradas((int) $this->totais['entradas'])
-            ->setQuantidadeLiquidados((int) $this->totais['liquidados'])
-            ->setQuantidadeBaixados((int) $this->totais['baixados'])
-            ->setQuantidadeAlterados((int) $this->totais['alterados']);
+            ->setQuantidadeErros((int)$this->totais['erros'])
+            ->setQuantidadeEntradas((int)$this->totais['entradas'])
+            ->setQuantidadeLiquidados((int)$this->totais['liquidados'])
+            ->setQuantidadeBaixados((int)$this->totais['baixados'])
+            ->setQuantidadeAlterados((int)$this->totais['alterados']);
 
         return true;
     }

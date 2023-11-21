@@ -2,11 +2,11 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
-use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Util;
 
 class Banrisul extends AbstractRemessa implements RemessaContract
 {
@@ -127,12 +127,12 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     /**
      * Define se é teste
      *
-     * @param  bool $teste
+     * @param bool $teste
      * @return Banrisul
      */
     public function setTeste($teste)
     {
-        $this->teste = (bool) $teste;
+        $this->teste = (bool)$teste;
 
         return $this;
     }

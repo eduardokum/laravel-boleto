@@ -2,10 +2,10 @@
 
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
-use Eduardokum\LaravelBoleto\Util;
-use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Eduardokum\LaravelBoleto\Util;
 
 class Bancoob extends AbstractBoleto implements BoletoContract
 {
@@ -40,34 +40,34 @@ class Bancoob extends AbstractBoleto implements BoletoContract
      */
     protected $especiesCodigo = [
         //Equivalentes ao CNAB240
-        'CH'  => '01', //Cheque
-        'DM'  => '02', //Duplicata Mercantil
+        'CH' => '01', //Cheque
+        'DM' => '02', //Duplicata Mercantil
         'DMI' => '03', //Duplicata Mercantil p/ Indicação
-        'DS'  => '04', //Duplicata de Serviço
+        'DS' => '04', //Duplicata de Serviço
         'DSI' => '05', //Duplicata de Serviço p/ Indicação
-        'DR'  => '06', //Duplicata Rural
-        'LC'  => '07', //Letra de Câmbio
+        'DR' => '06', //Duplicata Rural
+        'LC' => '07', //Letra de Câmbio
         'NCC' => '08', //Nota de Crédito Comercial
         'NCE' => '09', //Nota de Crédito a Exportação
         'NCI' => '10', //Nota de Crédito Industrial
         'NCR' => '11', //Nota de Crédito Rural
-        'NP'  => '12', //Nota Promissória
+        'NP' => '12', //Nota Promissória
         'NPR' => '13', //Nota Promissória Rural
-        'TM'  => '14', //Triplicata Mercantil
-        'TS'  => '15', //Triplicata de Serviço
-        'NS'  => '16', //Nota de Seguro
-        'RC'  => '17', //Recibo
+        'TM' => '14', //Triplicata Mercantil
+        'TS' => '15', //Triplicata de Serviço
+        'NS' => '16', //Nota de Seguro
+        'RC' => '17', //Recibo
         'FAT' => '18', //Fatura
-        'ND'  => '19', //Nota de Débito
-        'AP'  => '20', //Apólice de Seguro
-        'ME'  => '21', //Mensalidade Escolar
-        'PC'  => '22', //Parcela de Consórcio
-        'NF'  => '23', //Nota Fiscal
-        'DD'  => '24', //Documento de Dívida
+        'ND' => '19', //Nota de Débito
+        'AP' => '20', //Apólice de Seguro
+        'ME' => '21', //Mensalidade Escolar
+        'PC' => '22', //Parcela de Consórcio
+        'NF' => '23', //Nota Fiscal
+        'DD' => '24', //Documento de Dívida
         'CPR' => '25',  //Cédula de Produto Rural,
-        'O'   => '99',  //Outros,
+        'O' => '99',  //Outros,
         //Equivalente no CNAB400 que não existe no CNAB240
-        'W'   => '100',  //Warrant CNAB400
+        'W' => '100',  //Warrant CNAB400
     ];
 
     /**
@@ -80,7 +80,7 @@ class Bancoob extends AbstractBoleto implements BoletoContract
     /**
      * Define o número do convênio. Sempre use string pois a quantidade de caracteres é validada.
      *
-     * @param  string $convenio
+     * @param string $convenio
      * @return Bancoob
      */
     public function setConvenio($convenio)
@@ -108,7 +108,7 @@ class Bancoob extends AbstractBoleto implements BoletoContract
     protected function gerarNossoNumero()
     {
         return Util::numberFormatGeral($this->getNumero(), 7)
-            .CalculoDV::bancoobNossoNumero($this->getAgencia(), $this->getConvenio(), $this->getNumero());
+            . CalculoDV::bancoobNossoNumero($this->getAgencia(), $this->getConvenio(), $this->getNumero());
     }
 
     /**

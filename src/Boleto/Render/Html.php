@@ -6,6 +6,8 @@ use Eduardokum\LaravelBoleto\Blade;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Render\Html as HtmlContract;
 use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Illuminate\Container\Container;
+use Illuminate\Contracts\View\Factory;
 
 class Html implements HtmlContract
 {
@@ -35,16 +37,16 @@ class Html implements HtmlContract
      */
     private function getBlade()
     {
-        if (! is_null($this->blade)) {
+        if (!is_null($this->blade)) {
             return $this->blade;
         }
-        $instance = \Illuminate\Container\Container::getInstance();
-        if (! is_null($instance) && $instance->resolved(\Illuminate\Contracts\View\Factory::class)) {
-            view()->addNamespace('BoletoHtmlRender', realpath(__DIR__.'/view/'));
+        $instance = Container::getInstance();
+        if (!is_null($instance) && $instance->resolved(Factory::class)) {
+            view()->addNamespace('BoletoHtmlRender', realpath(__DIR__ . '/view/'));
             $this->blade = view();
         } else {
-            $blade = new Blade(realpath(__DIR__.'/view/'), realpath(__DIR__.'/cache/'));
-            $blade->view()->addNamespace('BoletoHtmlRender', realpath(__DIR__.'/view/'));
+            $blade = new Blade(realpath(__DIR__ . '/view/'), realpath(__DIR__ . '/cache/'));
+            $blade->view()->addNamespace('BoletoHtmlRender', realpath(__DIR__ . '/view/'));
             $this->blade = $blade->view();
         }
         $blade = $this->blade->getEngineResolver()->resolve('blade')->getCompiler();
@@ -130,24 +132,24 @@ class Html implements HtmlContract
      */
     public function getImagemCodigoDeBarras($codigo_barras)
     {
-        $codigo_barras = (strlen($codigo_barras) % 2 != 0 ? '0' : '').$codigo_barras;
+        $codigo_barras = (strlen($codigo_barras) % 2 != 0 ? '0' : '') . $codigo_barras;
         $barcodes = ['00110', '10001', '01001', '11000', '00101', '10100', '01100', '00011', '10010', '01010'];
         for ($f1 = 9; $f1 >= 0; $f1--) {
             for ($f2 = 9; $f2 >= 0; $f2--) {
                 $f = ($f1 * 10) + $f2;
                 $texto = '';
                 for ($i = 1; $i < 6; $i++) {
-                    $texto .= substr($barcodes[$f1], ($i - 1), 1).substr($barcodes[$f2], ($i - 1), 1);
+                    $texto .= substr($barcodes[$f1], ($i - 1), 1) . substr($barcodes[$f2], ($i - 1), 1);
                 }
                 $barcodes[$f] = $texto;
             }
         }
 
         // Guarda inicial
-        $retorno = '<div class="barcode">'.
-            '<div class="black thin"></div>'.
-            '<div class="white thin"></div>'.
-            '<div class="black thin"></div>'.
+        $retorno = '<div class="barcode">' .
+            '<div class="black thin"></div>' .
+            '<div class="white thin"></div>' .
+            '<div class="black thin"></div>' .
             '<div class="white thin"></div>';
 
         // Draw dos dados
@@ -172,10 +174,10 @@ class Html implements HtmlContract
         }
 
         // Final
-        return $retorno.'<div class="black large"></div>'.
-        '<div class="white thin"></div>'.
-        '<div class="black thin"></div>'.
-        '</div>';
+        return $retorno . '<div class="black large"></div>' .
+            '<div class="white thin"></div>' .
+            '<div class="black thin"></div>' .
+            '</div>';
     }
 
     /**
@@ -193,8 +195,8 @@ class Html implements HtmlContract
         return $this->getBlade()->make('BoletoHtmlRender::boleto', [
             'boletos' => $this->boleto,
             'css' => $this->writeCss(),
-            'imprimir_carregamento' => (bool) $this->print,
-            'mostrar_instrucoes' => (bool) $this->showInstrucoes,
+            'imprimir_carregamento' => (bool)$this->print,
+            'mostrar_instrucoes' => (bool)$this->showInstrucoes,
         ])->render();
     }
 
@@ -213,8 +215,8 @@ class Html implements HtmlContract
         return $this->getBlade()->make('BoletoHtmlRender::carne', [
             'boletos' => $this->boleto,
             'css' => $this->writeCss(),
-            'imprimir_carregamento' => (bool) $this->print,
-            'mostrar_instrucoes' => (bool) $this->showInstrucoes,
+            'imprimir_carregamento' => (bool)$this->print,
+            'mostrar_instrucoes' => (bool)$this->showInstrucoes,
         ])->render();
     }
 }

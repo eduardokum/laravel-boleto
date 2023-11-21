@@ -4,7 +4,8 @@
         <td valign="bottom" colspan="8" class="noborder nopadding">
             <div class="logocontainer">
                 <div class="logobanco">
-                    <img src="{{ isset($logo_banco_base64) && !empty($logo_banco_base64) ? $logo_banco_base64 : 'https://dummyimage.com/150x75/fff/000000.jpg&text=+' }}" alt="logo do banco">
+                    <img src="{{ isset($logo_banco_base64) && !empty($logo_banco_base64) ? $logo_banco_base64 : 'https://dummyimage.com/150x75/fff/000000.jpg&text=+' }}"
+                         alt="logo do banco">
                 </div>
                 <div class="codbanco">{{ $codigo_banco_com_dv }}</div>
             </div>
@@ -25,7 +26,9 @@
         <td colspan="7">
             <div class="titulo">Beneficiário</div>
             <div class="conteudo">{{ $beneficiario['nome_documento'] }}</div>
-            @if($mostrar_endereco_ficha_compensacao)<div class="conteudo">{{ $beneficiario['endereco_completo'] }}</div>@endif
+            @if($mostrar_endereco_ficha_compensacao)
+                <div class="conteudo">{{ $beneficiario['endereco_completo'] }}</div>
+            @endif
         </td>
         <td>
             <div class="titulo">Agência/Código beneficiário</div>
@@ -64,9 +67,9 @@
                 <div class="titulo">Uso do banco</div>
                 <div class="conteudo">{{ $uso_banco }}</div>
             </td>
-            @endif
-            @if (isset($mostra_cip) && $mostra_cip)
-                    <!-- Campo exclusivo do Bradesco -->
+        @endif
+        @if (isset($mostra_cip) && $mostra_cip)
+            <!-- Campo exclusivo do Bradesco -->
             <td width="20">
                 <div class="titulo">CIP</div>
                 <div class="conteudo">{{ $cip }}</div>
@@ -96,7 +99,9 @@
     </tr>
     <tr>
         <td colspan="{{ isset($pix_qrcode) ? 6 : 7 }}">
-            <div class="titulo">Instruções de responsabilidade do beneficiário. Qualquer dúvida sobre este boleto, contate o beneficiário</div>
+            <div class="titulo">Instruções de responsabilidade do beneficiário. Qualquer dúvida sobre este boleto,
+                contate o beneficiário
+            </div>
         </td>
         @if(isset($pix_qrcode))
             <td colspan="1" rowspan="5">

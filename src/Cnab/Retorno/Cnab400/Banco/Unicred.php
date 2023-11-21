@@ -2,12 +2,12 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco;
 
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Illuminate\Support\Arr;
-use Eduardokum\LaravelBoleto\Util;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\AbstractRetorno;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Util;
+use Illuminate\Support\Arr;
 
 class Unicred extends AbstractRetorno implements RetornoCnab400
 {
@@ -129,7 +129,7 @@ class Unicred extends AbstractRetorno implements RetornoCnab400
         'E23' => 'Quantidade de pagamentos parciais, deve ser 99',
         'E24' => 'Quantidade de pagamentos parciais não deve ser informado',
         'E25' => 'Modelo de calculo invalido para titulo com pagamentos parciais',
-        'I0'  => 'Título possui baixa operacional ativa na cip',
+        'I0' => 'Título possui baixa operacional ativa na cip',
         /**
          * Array com os códigos de Complemento do Movimento, relacionados a Protesto de título:
          */
@@ -283,7 +283,7 @@ class Unicred extends AbstractRetorno implements RetornoCnab400
          * Portanto, quando não refere-se a quitação de valores esse campo vem preenchido com '000000', e nesse caso
          * será utilizada então a data de geração do arquivo como data de ocorrência
          */
-        $this->dataOcorrencia = ((! empty($this->rem(111, 116, $detalhe)) && ($this->rem(111, 116, $detalhe) != '000000')) ? $this->rem(111, 116, $detalhe) : $this->dataGeracaoArquivo);
+        $this->dataOcorrencia = ((!empty($this->rem(111, 116, $detalhe)) && ($this->rem(111, 116, $detalhe) != '000000')) ? $this->rem(111, 116, $detalhe) : $this->dataGeracaoArquivo);
 
         $d = $this->detalheAtual();
 
@@ -342,13 +342,13 @@ class Unicred extends AbstractRetorno implements RetornoCnab400
     protected function processarTrailer(array $trailer)
     {
         $this->getTrailer()
-            ->setQuantidadeTitulos((int) $this->count())
-            ->setValorTitulos((float) Util::nFloat($this->totais['valor_recebido'], 2, false))
-            ->setQuantidadeErros((int) $this->totais['erros'])
-            ->setQuantidadeEntradas((int) $this->totais['entradas'])
-            ->setQuantidadeLiquidados((int) $this->totais['liquidados'])
-            ->setQuantidadeBaixados((int) $this->totais['baixados'])
-            ->setQuantidadeAlterados((int) $this->totais['alterados']);
+            ->setQuantidadeTitulos((int)$this->count())
+            ->setValorTitulos((float)Util::nFloat($this->totais['valor_recebido'], 2, false))
+            ->setQuantidadeErros((int)$this->totais['erros'])
+            ->setQuantidadeEntradas((int)$this->totais['entradas'])
+            ->setQuantidadeLiquidados((int)$this->totais['liquidados'])
+            ->setQuantidadeBaixados((int)$this->totais['baixados'])
+            ->setQuantidadeAlterados((int)$this->totais['alterados']);
 
         return true;
     }

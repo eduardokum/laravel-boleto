@@ -2,12 +2,12 @@
 
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
-use Eduardokum\LaravelBoleto\Util;
-use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Util;
 
 class Delbank extends AbstractBoleto implements BoletoContract
 {
@@ -60,7 +60,7 @@ class Delbank extends AbstractBoleto implements BoletoContract
         'ND' => '11', //Nota de Débito
         'DS' => '12', //Duplicata de Serv.
         'BP' => '30', //Boleto de Proposta
-        'O'  => '99', //Outros,
+        'O' => '99', //Outros,
     ];
 
     /**
@@ -69,17 +69,17 @@ class Delbank extends AbstractBoleto implements BoletoContract
      * @var string
      */
     protected $especiesCodigo400 = [
-        'DM'  => '01', // Duplicata Mercantil
-        'NP'  => '02', // Nota Promissória
-        'NS'  => '03', // Nota de Seguro
-        'CS'  => '04', // Cobrança Seriada
-        'RC'  => '05', // Recibo
-        'LC'  => '10', // Letra de Câmbio
-        'ND'  => '11', // Nota de Débito
-        'DS'  => '12', // Duplicata de Serviço
-        'CC'  => '31', // Cartão de Crédito
+        'DM' => '01', // Duplicata Mercantil
+        'NP' => '02', // Nota Promissória
+        'NS' => '03', // Nota de Seguro
+        'CS' => '04', // Cobrança Seriada
+        'RC' => '05', // Recibo
+        'LC' => '10', // Letra de Câmbio
+        'ND' => '11', // Nota de Débito
+        'DS' => '12', // Duplicata de Serviço
+        'CC' => '31', // Cartão de Crédito
         'BDP' => '32', // Boleto de Proposta
-        'O'   => '99', // Outros
+        'O' => '99', // Outros
     ];
 
     /**
@@ -97,7 +97,7 @@ class Delbank extends AbstractBoleto implements BoletoContract
     protected function gerarNossoNumero()
     {
         return Util::numberFormatGeral($this->getNumero(), 10)
-            .CalculoDV::delcredNossoNumero($this->getCarteira(), $this->getNumero());
+            . CalculoDV::delcredNossoNumero($this->getCarteira(), $this->getNumero());
     }
 
     /**
@@ -113,7 +113,7 @@ class Delbank extends AbstractBoleto implements BoletoContract
         if ($this->getDiasProtesto() > 0) {
             throw new ValidationException('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
         }
-        $baixaAutomatica = (int) $baixaAutomatica;
+        $baixaAutomatica = (int)$baixaAutomatica;
         $this->diasBaixaAutomatica = $baixaAutomatica > 0 ? $baixaAutomatica : 0;
 
         return $this;
@@ -126,7 +126,7 @@ class Delbank extends AbstractBoleto implements BoletoContract
      */
     public function getNossoNumeroBoleto()
     {
-        return Util::numberFormatGeral($this->getCarteira(), 2).' / '.substr_replace($this->getNossoNumero(), '-', -1, 0);
+        return Util::numberFormatGeral($this->getCarteira(), 2) . ' / ' . substr_replace($this->getNossoNumero(), '-', -1, 0);
     }
 
     /**
@@ -174,7 +174,7 @@ class Delbank extends AbstractBoleto implements BoletoContract
     /**
      * Define o campo CIP do boleto
      *
-     * @param  int $cip
+     * @param int $cip
      * @return Delbank
      */
     public function setCip($cip)

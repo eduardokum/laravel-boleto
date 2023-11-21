@@ -2,15 +2,15 @@
 
 namespace Eduardokum\LaravelBoleto;
 
-use Illuminate\View\Factory;
-use Illuminate\Events\Dispatcher;
 use Illuminate\Container\Container;
-use Illuminate\View\FileViewFinder;
+use Illuminate\Events\Dispatcher;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\View\Engines\PhpEngine;
+use Illuminate\View\Compilers\BladeCompiler;
 use Illuminate\View\Engines\CompilerEngine;
 use Illuminate\View\Engines\EngineResolver;
-use Illuminate\View\Compilers\BladeCompiler;
+use Illuminate\View\Engines\PhpEngine;
+use Illuminate\View\Factory;
+use Illuminate\View\FileViewFinder;
 
 class Blade
 {
@@ -27,24 +27,24 @@ class Blade
     public $cachePath = null;
 
     /**
-     * @var \Illuminate\Container\Container
+     * @var Container
      */
     protected $container;
 
     /**
-     * @var \Illuminate\View\Factory
+     * @var Factory
      */
     protected $instance;
 
     /**
      * Initialize class
-     * @param array  $viewPaths
+     * @param array $viewPaths
      * @param string $cachePath
      */
     public function __construct($viewPaths = [], $cachePath = null)
     {
         $this->container = new Container;
-        $this->viewPaths = (array) $viewPaths;
+        $this->viewPaths = (array)$viewPaths;
         $this->cachePath = $cachePath;
         $this->registerFilesystem();
         $this->registerEngineResolver();
@@ -87,7 +87,7 @@ class Blade
     /**
      * Register the PHP engine implementation.
      *
-     * @param  \Illuminate\View\Engines\EngineResolver  $resolver
+     * @param EngineResolver $resolver
      * @return void
      */
     public function registerPhpEngine($resolver)
@@ -100,7 +100,7 @@ class Blade
     /**
      * Register the Blade engine implementation.
      *
-     * @param  \Illuminate\View\Engines\EngineResolver  $resolver
+     * @param EngineResolver $resolver
      * @return void
      */
     public function registerBladeEngine($resolver)

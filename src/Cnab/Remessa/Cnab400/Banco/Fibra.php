@@ -2,11 +2,11 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Util;
 
 class Fibra extends AbstractRemessa implements RemessaContract
 {
@@ -111,7 +111,7 @@ class Fibra extends AbstractRemessa implements RemessaContract
         $this->add(3, 9, 'REMESSA');
         $this->add(10, 11, '01');
         $this->add(12, 26, Util::formatCnab('X', 'COBRANCA', 15));
-        $this->add(27, 46, Util::formatCnab('X', $this->getAgencia().Util::numberFormatGeral($this->getConta(), 8), 20));
+        $this->add(27, 46, Util::formatCnab('X', $this->getAgencia() . Util::numberFormatGeral($this->getConta(), 8), 20));
         $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(77, 79, $this->getCodigoBanco());
         $this->add(80, 94, Util::formatCnab('X', 'BANCO FIBRA S/A', 15));
@@ -136,7 +136,7 @@ class Fibra extends AbstractRemessa implements RemessaContract
         $this->add(1, 1, '1');
         $this->add(2, 3, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? '02' : '01');
         $this->add(4, 17, Util::formatCnab('9', Util::onlyNumbers($this->getBeneficiario()->getDocumento()), 14));
-        $this->add(18, 37, Util::formatCnab('X', $this->getAgencia().Util::numberFormatGeral($this->getConta(), 8), 20));
+        $this->add(18, 37, Util::formatCnab('X', $this->getAgencia() . Util::numberFormatGeral($this->getConta(), 8), 20));
         $this->add(38, 62, Util::formatCnab('X', $boleto->getNumeroControle(), 25)); // numero de controle
         $this->add(63, 73, Util::formatCnab('9', $boleto->getNossoNumero(), 11));
         $this->add(74, 86, Util::formatCnab('9', 0, 11));

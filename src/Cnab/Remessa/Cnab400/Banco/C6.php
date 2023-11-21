@@ -2,12 +2,12 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Illuminate\Support\Arr;
-use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Util;
+use Illuminate\Support\Arr;
 
 class C6 extends AbstractRemessa implements RemessaContract
 {
@@ -59,7 +59,7 @@ class C6 extends AbstractRemessa implements RemessaContract
      *
      * @var array
      */
-    protected $carteiras = ['10', '20', '30', '40', '60', ];
+    protected $carteiras = ['10', '20', '30', '40', '60',];
 
     /**
      * Caracter de fim de linha
@@ -198,9 +198,9 @@ class C6 extends AbstractRemessa implements RemessaContract
             $this->add(352, 381, Util::formatCnab('X', Util::onlyNumbers($boleto->getSacadorAvalista()->getNome()), 30));
         }
         $this->add(382, 382, $boleto->getMulta() > 0 ? '2' : '0');
-        $this->add(383, 384, Util::formatCnab('9', (int) ($boleto->getMulta() > 0 ? $boleto->getMulta() : 0), 2));
+        $this->add(383, 384, Util::formatCnab('9', (int)($boleto->getMulta() > 0 ? $boleto->getMulta() : 0), 2));
         $this->add(385, 385, '');
-        $this->add(386, 391, $boleto->getDataVencimento()->copy()->addDays((int) $boleto->getJurosApos())->format('dmy'));
+        $this->add(386, 391, $boleto->getDataVencimento()->copy()->addDays((int)$boleto->getJurosApos())->format('dmy'));
         $this->add(392, 393, $boleto->getDiasProtesto('00'));
         $this->add(394, 394, '');
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));

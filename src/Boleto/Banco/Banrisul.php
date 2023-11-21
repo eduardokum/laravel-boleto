@@ -2,11 +2,11 @@
 
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
-use Eduardokum\LaravelBoleto\Util;
-use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Util;
 
 class Banrisul extends AbstractBoleto implements BoletoContract
 {
@@ -55,14 +55,14 @@ class Banrisul extends AbstractBoleto implements BoletoContract
      * @var string
      */
     protected $especiesCodigo = [
-        'DM'  => '02', //Duplicata Mercantil – Banco emite bloqueto franqueado. Se a posição 61 for igual a 2 o Banco transformará “espécie do título” para AA
-        'DS'  => '04', //Duplicata de Serviço
-        'LC'  => '07', //Letra de Câmbio
-        'NP'  => '12', //Nota Promissória
+        'DM' => '02', //Duplicata Mercantil – Banco emite bloqueto franqueado. Se a posição 61 for igual a 2 o Banco transformará “espécie do título” para AA
+        'DS' => '04', //Duplicata de Serviço
+        'LC' => '07', //Letra de Câmbio
+        'NP' => '12', //Nota Promissória
         'CCB' => 'AA', //O Banco não emite o bloqueto
-        'CD'  => 'AB', //Cobrança Direta
-        'CE'  => 'AC', //Cobrança Escritural
-        'TT'  => 'AD', //Título de terceiros
+        'CD' => 'AB', //Cobrança Direta
+        'CE' => 'AC', //Cobrança Escritural
+        'TT' => 'AD', //Título de terceiros
     ];
 
     /**
@@ -85,7 +85,7 @@ class Banrisul extends AbstractBoleto implements BoletoContract
         if ($this->getDiasProtesto() > 0) {
             throw new ValidationException('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
         }
-        $baixaAutomatica = (int) $baixaAutomatica;
+        $baixaAutomatica = (int)$baixaAutomatica;
         $this->diasBaixaAutomatica = $baixaAutomatica > 0 ? $baixaAutomatica : 0;
 
         return $this;
@@ -100,7 +100,7 @@ class Banrisul extends AbstractBoleto implements BoletoContract
     {
         $numero_boleto = $this->getNumero();
         $nossoNumero = Util::numberFormatGeral($numero_boleto, 8)
-            .CalculoDV::banrisulNossoNumero(Util::numberFormatGeral($numero_boleto, 8));
+            . CalculoDV::banrisulNossoNumero(Util::numberFormatGeral($numero_boleto, 8));
 
         return $nossoNumero;
     }

@@ -3,8 +3,8 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400;
 
 use Carbon\Carbon;
-use Eduardokum\LaravelBoleto\MagicTrait;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Detalhe as DetalheContract;
+use Eduardokum\LaravelBoleto\MagicTrait;
 
 class Detalhe implements DetalheContract
 {
@@ -246,7 +246,7 @@ class Detalhe implements DetalheContract
     {
         $ocorrencias = func_get_args();
 
-        if (count($ocorrencias) == 0 && ! empty($this->getOcorrencia())) {
+        if (count($ocorrencias) == 0 && !empty($this->getOcorrencia())) {
             return true;
         }
 

@@ -8,12 +8,12 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco;
 
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Util;
 
 class Bb extends AbstractRemessa implements RemessaContract
 {
@@ -458,11 +458,11 @@ class Bb extends AbstractRemessa implements RemessaContract
      */
     private function nossoNumero(BoletoContract $boleto)
     {
-        $convenio = (int) Util::onlyNumbers($this->getConvenio());
+        $convenio = (int)Util::onlyNumbers($this->getConvenio());
         if ($convenio > 1000000) {
             return $boleto->getNossoNumero();
         }
 
-        return $boleto->getNossoNumero().CalculoDV::bbNossoNumero($boleto->getNossoNumero());
+        return $boleto->getNossoNumero() . CalculoDV::bbNossoNumero($boleto->getNossoNumero());
     }
 }

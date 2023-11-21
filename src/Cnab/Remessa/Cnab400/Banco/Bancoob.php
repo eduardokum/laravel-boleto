@@ -2,12 +2,12 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
-use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Util;
 
 class Bancoob extends AbstractRemessa implements RemessaContract
 {
@@ -50,22 +50,22 @@ class Bancoob extends AbstractRemessa implements RemessaContract
      * @var array
      */
     private $especie400 = [
-        '01'  => '10', //Cheque
-        '02'  => '01', //Duplicata Mercantil
-        '04'  => '12', //Duplicata de Serviço
-        '06'  => '06', //Duplicata Rural
-        '07'  => '08', //Letra de Câmbio
-        '12'  => '02', //Nota Promissória
-        '14'  => '14', //Triplicata Mercantil
-        '15'  => '15', //Triplicata de Serviço
-        '16'  => '03', //Nota de Seguro
-        '17'  => '05', //Recibo
-        '18'  => '18', //Fatura
-        '19'  => '13', //Nota de Débito
-        '20'  => '20', //Apólice de Seguro
-        '21'  => '21', //Mensalidade Escolar
-        '22'  => '22', //Parcela de Consórcio
-        '99'  => '99', //Outros
+        '01' => '10', //Cheque
+        '02' => '01', //Duplicata Mercantil
+        '04' => '12', //Duplicata de Serviço
+        '06' => '06', //Duplicata Rural
+        '07' => '08', //Letra de Câmbio
+        '12' => '02', //Nota Promissória
+        '14' => '14', //Triplicata Mercantil
+        '15' => '15', //Triplicata de Serviço
+        '16' => '03', //Nota de Seguro
+        '17' => '05', //Recibo
+        '18' => '18', //Fatura
+        '19' => '13', //Nota de Débito
+        '20' => '20', //Apólice de Seguro
+        '21' => '21', //Mensalidade Escolar
+        '22' => '22', //Parcela de Consórcio
+        '99' => '99', //Outros
         '100' => '09', //Warrant
     ];
 
@@ -221,7 +221,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
             if (defined($const)) {
                 $this->add(157, 158, constant($const));
             } else {
-                throw new ValidationException('A instrução para protesto em '.$boleto->getDiasProtesto().' dias não existe no banco.');
+                throw new ValidationException('A instrução para protesto em ' . $boleto->getDiasProtesto() . ' dias não existe no banco.');
             }
         }
         $this->add(161, 166, Util::formatCnab('9', $boleto->getJuros(), 6, 4));

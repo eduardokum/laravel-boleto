@@ -2,12 +2,12 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco;
 
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Illuminate\Support\Arr;
-use Eduardokum\LaravelBoleto\Util;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\AbstractRetorno;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Util;
+use Illuminate\Support\Arr;
 
 class Banrisul extends AbstractRetorno implements RetornoCnab400
 {
@@ -245,12 +245,12 @@ class Banrisul extends AbstractRetorno implements RetornoCnab400
     {
         $this->getTrailer()
             ->setValorTitulos(Util::nFloat($this->rem(26, 39, $trailer) / 100, 2, false))
-            ->setQuantidadeTitulos((int) $this->rem(18, 25, $trailer))
-            ->setQuantidadeErros((int) $this->totais['erros'])
-            ->setQuantidadeEntradas((int) $this->rem(49, 55, $trailer))
-            ->setQuantidadeLiquidados((int) $this->rem(71, 77, $trailer))
-            ->setQuantidadeBaixados((int) $this->totais['baixados'])
-            ->setQuantidadeAlterados((int) $this->totais['alterados']);
+            ->setQuantidadeTitulos((int)$this->rem(18, 25, $trailer))
+            ->setQuantidadeErros((int)$this->totais['erros'])
+            ->setQuantidadeEntradas((int)$this->rem(49, 55, $trailer))
+            ->setQuantidadeLiquidados((int)$this->rem(71, 77, $trailer))
+            ->setQuantidadeBaixados((int)$this->totais['baixados'])
+            ->setQuantidadeAlterados((int)$this->totais['alterados']);
 
         return true;
     }

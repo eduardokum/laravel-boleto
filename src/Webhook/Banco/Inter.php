@@ -3,9 +3,9 @@
 namespace Eduardokum\LaravelBoleto\Webhook\Banco;
 
 use Carbon\Carbon;
-use Illuminate\Support\Arr;
-use Eduardokum\LaravelBoleto\Webhook\Boleto;
 use Eduardokum\LaravelBoleto\Webhook\AbstractWebhook;
+use Eduardokum\LaravelBoleto\Webhook\Boleto;
+use Illuminate\Support\Arr;
 
 class Inter extends AbstractWebhook
 {
@@ -27,7 +27,7 @@ class Inter extends AbstractWebhook
             $boleto->setLinhaDigitavel(Arr::get($item, 'linhaDigitavel'));
             $boleto->setMotivo(Arr::get($item, 'motivoCancelamento'));
             $boleto->setOcorrenciaTipo(
-                match(Arr::get($item, 'situacao')) {
+                match (Arr::get($item, 'situacao')) {
                     'A_RECEBER' => Boleto::OCORRENCIA_ENTRADA,
                     'PAGO', 'MARCADO_RECEBIDO', 'RECEBIDO' => Boleto::OCORRENCIA_LIQUIDADA,
                     'CANCELADO', 'EXPIRADO' => Boleto::OCORRENCIA_BAIXADA,

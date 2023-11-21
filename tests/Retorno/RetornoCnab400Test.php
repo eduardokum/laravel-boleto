@@ -1,6 +1,6 @@
 <?php
 
-namespace Eduardokum\LaravelBoleto\Tests\Retorno;
+namespace Retorno;
 
 use Exception;
 use Illuminate\Support\Collection;

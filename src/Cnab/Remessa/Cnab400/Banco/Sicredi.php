@@ -3,11 +3,11 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
 use Carbon\Carbon;
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Util;
 
 class Sicredi extends AbstractRemessa implements RemessaContract
 {
@@ -150,7 +150,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
     public function addBoleto(BoletoContract $boleto)
     {
         $this->boletos[] = $boleto;
-        if (! $boleto->isComRegistro()) {
+        if (!$boleto->isComRegistro()) {
             return $this;
         }
 

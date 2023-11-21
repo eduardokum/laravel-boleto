@@ -2,11 +2,11 @@
 
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
-use Eduardokum\LaravelBoleto\Util;
-use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Util;
 
 class Bb extends AbstractBoleto implements BoletoContract
 {
@@ -58,16 +58,16 @@ class Bb extends AbstractBoleto implements BoletoContract
      * @var string
      */
     protected $especiesCodigo400 = [
-        'DM'  => '01', // Duplicata Mercantil
-        'NP'  => '02', // Nota Promissoria
-        'NS'  => '03', // Nota de Seguro
+        'DM' => '01', // Duplicata Mercantil
+        'NP' => '02', // Nota Promissoria
+        'NS' => '03', // Nota de Seguro
         'REC' => '05', // Recibo
-        'LC'  => '08', // Letra de Cambio
-        'W'   => '09', // Warrant
-        'CH'  => '10', // Cheque
-        'DS'  => '12', // Duplicata de Serviço
-        'ND'  => '13', // Nota de Débito
-        'AS'  => '15', // Apolice de Seguro
+        'LC' => '08', // Letra de Cambio
+        'W' => '09', // Warrant
+        'CH' => '10', // Cheque
+        'DS' => '12', // Duplicata de Serviço
+        'ND' => '13', // Nota de Débito
+        'AS' => '15', // Apolice de Seguro
         'DAE' => '25', // Divida Ativa de Estado
         'DAM' => '26', // Divida Ativa de Municipio
         'DAU' => '27',  // Divida Ativa União
@@ -94,8 +94,8 @@ class Bb extends AbstractBoleto implements BoletoContract
      */
     public function getAgenciaCodigoBeneficiario()
     {
-        $agencia = $this->getAgencia().'-'.CalculoDV::bbAgencia($this->getAgencia());
-        $codigoCliente = $this->getConta().'-'.CalculoDV::bbContaCorrente($this->getConta());
+        $agencia = $this->getAgencia() . '-' . CalculoDV::bbAgencia($this->getAgencia());
+        $codigoCliente = $this->getConta() . '-' . CalculoDV::bbContaCorrente($this->getConta());
 
         return sprintf('%s / %s', $agencia, $codigoCliente);
     }
@@ -103,7 +103,7 @@ class Bb extends AbstractBoleto implements BoletoContract
     /**
      * Define o número do convênio. Sempre use string pois a quantidade de caracteres é validada.
      *
-     * @param  string $convenio
+     * @param string $convenio
      * @return Bb
      */
     public function setConvenio($convenio)
@@ -126,7 +126,7 @@ class Bb extends AbstractBoleto implements BoletoContract
     /**
      * Define o número da variação da carteira, para saber quando utilizar o nosso numero de 17 posições.
      *
-     * @param  string $variacao_carteira
+     * @param string $variacao_carteira
      * @return Bb
      */
     public function setVariacaoCarteira($variacao_carteira)
@@ -149,8 +149,8 @@ class Bb extends AbstractBoleto implements BoletoContract
     /**
      * Gera o Nosso Número.
      *
-     * @throws ValidationException
      * @return string
+     * @throws ValidationException
      */
     protected function gerarNossoNumero()
     {
@@ -158,17 +158,17 @@ class Bb extends AbstractBoleto implements BoletoContract
         $numero_boleto = $this->getNumero();
         switch (strlen($convenio)) {
             case 4:
-                $numero = Util::numberFormatGeral($convenio, 4).Util::numberFormatGeral($numero_boleto, 7);
+                $numero = Util::numberFormatGeral($convenio, 4) . Util::numberFormatGeral($numero_boleto, 7);
                 break;
             case 6:
                 if (in_array($this->getCarteira(), ['16', '18']) && $this->getVariacaoCarteira() == 17) {
                     $numero = Util::numberFormatGeral($numero_boleto, 17);
                 } else {
-                    $numero = Util::numberFormatGeral($convenio, 6).Util::numberFormatGeral($numero_boleto, 5);
+                    $numero = Util::numberFormatGeral($convenio, 6) . Util::numberFormatGeral($numero_boleto, 5);
                 }
                 break;
             case 7:
-                $numero = Util::numberFormatGeral($convenio, 7).Util::numberFormatGeral($numero_boleto, 10);
+                $numero = Util::numberFormatGeral($convenio, 7) . Util::numberFormatGeral($numero_boleto, 10);
                 break;
             default:
                 throw new ValidationException('O código do convênio precisa ter 4, 6 ou 7 dígitos!');
@@ -184,7 +184,7 @@ class Bb extends AbstractBoleto implements BoletoContract
      */
     public function getNossoNumeroBoleto()
     {
-        $nn = $this->getNossoNumero().CalculoDV::bbNossoNumero($this->getNossoNumero());
+        $nn = $this->getNossoNumero() . CalculoDV::bbNossoNumero($this->getNossoNumero());
 
         return strlen($nn) < 17 ? substr_replace($nn, '-', -1, 0) : $nn;
     }
@@ -204,7 +204,7 @@ class Bb extends AbstractBoleto implements BoletoContract
         $nossoNumero = $this->gerarNossoNumero();
         if (strlen($this->getNumero()) > 10) {
             if ($length == 6 && in_array($this->getCarteira(), ['16', '18']) && Util::numberFormatGeral($this->getVariacaoCarteira(), 3) == '017') {
-                return $this->campoLivre = Util::numberFormatGeral($this->getConvenio(), 6).$nossoNumero.'21';
+                return $this->campoLivre = Util::numberFormatGeral($this->getConvenio(), 6) . $nossoNumero . '21';
             } else {
                 throw new ValidationException('Só é possível criar um boleto com mais de 10 dígitos no nosso número quando a carteira é 21 e o convênio possuir 6 dígitos.');
             }
@@ -212,9 +212,9 @@ class Bb extends AbstractBoleto implements BoletoContract
         switch ($length) {
             case 4:
             case 6:
-                return $this->campoLivre = $nossoNumero.Util::numberFormatGeral($this->getAgencia(), 4).Util::numberFormatGeral($this->getConta(), 8).Util::numberFormatGeral($this->getCarteira(), 2);
+                return $this->campoLivre = $nossoNumero . Util::numberFormatGeral($this->getAgencia(), 4) . Util::numberFormatGeral($this->getConta(), 8) . Util::numberFormatGeral($this->getCarteira(), 2);
             case 7:
-                return $this->campoLivre = '000000'.$nossoNumero.Util::numberFormatGeral($this->getCarteira(), 2);
+                return $this->campoLivre = '000000' . $nossoNumero . Util::numberFormatGeral($this->getCarteira(), 2);
         }
         throw new ValidationException('O código do convênio precisa ter 4, 6 ou 7 dígitos!');
     }
@@ -238,7 +238,7 @@ class Bb extends AbstractBoleto implements BoletoContract
             $convenio = substr($campoLivre, 0, 4);
             $nossoNumero = substr($campoLivre, 4, 7);
         }
-        if ($convenio == '0000000' && ! in_array(substr($campoLivre, -2), ['16', '18'])) {
+        if ($convenio == '0000000' && !in_array(substr($campoLivre, -2), ['16', '18'])) {
             $convenio = null;
             $nossoNumero = substr($campoLivre, 0, 17);
         }

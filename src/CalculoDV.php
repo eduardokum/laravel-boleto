@@ -88,13 +88,13 @@ class CalculoDV
     public static function santanderContaCorrente($agencia, $conta)
     {
         $n = Util::numberFormatGeral($agencia, 4)
-            .'00'
-            .Util::numberFormatGeral($conta, 8);
+            . '00'
+            . Util::numberFormatGeral($conta, 8);
         $chars = array_reverse(str_split($n, 1));
         $sums = array_reverse(str_split('97310097131973', 1));
         $sum = 0;
         foreach ($chars as $i => $char) {
-            $sum += (int) substr($char * $sums[$i], -1);
+            $sum += (int)substr($char * $sums[$i], -1);
         }
         $unidade = substr($sum, -1);
 
@@ -114,7 +114,7 @@ class CalculoDV
     public static function banrisulAgencia($agencia)
     {
         $newDv1 = $dv1 = Util::modulo10($agencia);
-        $dv2 = Util::modulo11($agencia.$dv1, 2, 7);
+        $dv2 = Util::modulo11($agencia . $dv1, 2, 7);
 
         if ($dv2 == 1 && $dv1 != 9) {
             $newDv1 = 1;
@@ -125,10 +125,10 @@ class CalculoDV
 
         if ($dv1 != $newDv1) {
             $dv1 = $newDv1;
-            $dv2 = Util::modulo11($agencia.$dv1, 2, 7);
+            $dv2 = Util::modulo11($agencia . $dv1, 2, 7);
         }
 
-        return $dv1.$dv2;
+        return $dv1 . $dv2;
     }
 
     public static function banrisulContaCorrente($conta)
@@ -162,7 +162,7 @@ class CalculoDV
     public static function banrisulDuploDigito($campo)
     {
         $dv1 = Util::modulo10($campo);
-        $dv2 = Util::modulo11($campo.$dv1, 2, 7, 1, 10);
+        $dv2 = Util::modulo11($campo . $dv1, 2, 7, 1, 10);
 
         if ($dv2 == 1) {
             if ($dv1 == 9) {
@@ -171,12 +171,12 @@ class CalculoDV
                 $dv1++;
             }
 
-            $dv2 = Util::modulo11($campo.$dv1, 2, 7, 0, 10);
+            $dv2 = Util::modulo11($campo . $dv1, 2, 7, 0, 10);
         } elseif ($dv2 != 0) {
             $dv2 = (11 - $dv2);
         }
 
-        return $dv1.$dv2;
+        return $dv1 . $dv2;
     }
 
     /*
@@ -192,7 +192,7 @@ class CalculoDV
     public static function cefContaCorrente($agencia, $conta)
     {
         $n = Util::numberFormatGeral($agencia, 5)
-            .Util::numberFormatGeral($conta, 11);
+            . Util::numberFormatGeral($conta, 11);
 
         return Util::modulo11($n);
     }
@@ -243,7 +243,7 @@ class CalculoDV
 
     public static function bradescoNossoNumero($carteira, $nossoNumero)
     {
-        return Util::modulo11($carteira.Util::numberFormatGeral($nossoNumero, 11), 2, 7, 0, 'P');
+        return Util::modulo11($carteira . Util::numberFormatGeral($nossoNumero, 11), 2, 7, 0, 'P');
     }
 
     /*
@@ -264,16 +264,16 @@ class CalculoDV
     public static function fibraNossoNumero($agencia, $nossaCarteira, $numero_boleto)
     {
         $n = Util::numberFormatGeral($agencia, 4)
-            .Util::numberFormatGeral($nossaCarteira, 3)
-            .Util::numberFormatGeral($numero_boleto, 10);
+            . Util::numberFormatGeral($nossaCarteira, 3)
+            . Util::numberFormatGeral($numero_boleto, 10);
 
         $n = strrev($n);
         $factor = 2;
         $sum = 0;
         for ($i = mb_strlen($n); $i > 0; $i--) {
-            $parcial = ((int) mb_substr($n, $i - 1, 1)) * $factor;
+            $parcial = ((int)mb_substr($n, $i - 1, 1)) * $factor;
             if ($parcial > 9) {
-                $parcial = (int) mb_substr($parcial, 0, 1) + (int) mb_substr($parcial, 1, 1);
+                $parcial = (int)mb_substr($parcial, 0, 1) + (int)mb_substr($parcial, 1, 1);
             }
             $sum += $parcial;
             if ($factor == 2) {
@@ -295,7 +295,7 @@ class CalculoDV
     {
         $agencia = '0019';
         $numeroFormatado = Util::numberFormatGeral($nossoNumero, 10);
-        return Util::modulo10($agencia.$carteira.$numeroFormatado);
+        return Util::modulo10($agencia . $carteira . $numeroFormatado);
     }
 
     /*
@@ -306,7 +306,7 @@ class CalculoDV
 
     public static function c6NossoNumero($carteira, $numero_boleto)
     {
-        $n = '0'.Util::numberFormatGeral($carteira, 2).Util::numberFormatGeral($numero_boleto, 10);
+        $n = '0' . Util::numberFormatGeral($carteira, 2) . Util::numberFormatGeral($numero_boleto, 10);
 
         return Util::modulo11($n, 2, 7, 0, 'P');
     }
@@ -319,7 +319,7 @@ class CalculoDV
     public static function itauContaCorrente($agencia, $conta)
     {
         $n = Util::numberFormatGeral($agencia, 4)
-            .Util::numberFormatGeral($conta, 5);
+            . Util::numberFormatGeral($conta, 5);
 
         return Util::modulo10($n);
     }
@@ -327,9 +327,9 @@ class CalculoDV
     public static function itauNossoNumero($agencia, $conta, $carteira, $numero_boleto)
     {
         $n = Util::numberFormatGeral($agencia, 4)
-            .Util::numberFormatGeral($conta, 5)
-            .Util::numberFormatGeral($carteira, 3)
-            .Util::numberFormatGeral($numero_boleto, 8);
+            . Util::numberFormatGeral($conta, 5)
+            . Util::numberFormatGeral($carteira, 3)
+            . Util::numberFormatGeral($numero_boleto, 8);
 
         return Util::modulo10($n);
     }
@@ -352,18 +352,18 @@ class CalculoDV
     public static function rendimentoNossoNumero($agencia, $nossaCarteira, $numero_boleto)
     {
         $n = Util::numberFormatGeral($agencia, 4)
-            .Util::numberFormatGeral($nossaCarteira, 3)
-            .Util::numberFormatGeral($numero_boleto, 10);
+            . Util::numberFormatGeral($nossaCarteira, 3)
+            . Util::numberFormatGeral($numero_boleto, 10);
 
         $n = strrev($n);
         $factor = 2;
         $sum = 0;
 
         for ($i = mb_strlen($n); $i > 0; $i--) {
-            $x = ((int) mb_substr($n, $i - 1, 1));
-            $parcial =  $x * $factor;
+            $x = ((int)mb_substr($n, $i - 1, 1));
+            $parcial = $x * $factor;
             if ($parcial > 9) {
-                $parcial = (int) mb_substr($parcial, 0, 1) + (int) mb_substr($parcial, 1, 1);
+                $parcial = (int)mb_substr($parcial, 0, 1) + (int)mb_substr($parcial, 1, 1);
             }
             $sum += $parcial;
             if ($factor == 2) {
@@ -392,16 +392,16 @@ class CalculoDV
     public static function pineNossoNumero($agencia, $nossaCarteira, $numero_boleto)
     {
         $n = Util::numberFormatGeral($agencia, 4)
-            .Util::numberFormatGeral($nossaCarteira, 3)
-            .Util::numberFormatGeral($numero_boleto, 10);
+            . Util::numberFormatGeral($nossaCarteira, 3)
+            . Util::numberFormatGeral($numero_boleto, 10);
 
         $n = strrev($n);
         $factor = 2;
         $sum = 0;
         for ($i = mb_strlen($n); $i > 0; $i--) {
-            $parcial = ((int) mb_substr($n, $i - 1, 1)) * $factor;
+            $parcial = ((int)mb_substr($n, $i - 1, 1)) * $factor;
             if ($parcial > 9) {
-                $parcial = (int) mb_substr($parcial, 0, 1) + (int) mb_substr($parcial, 1, 1);
+                $parcial = (int)mb_substr($parcial, 0, 1) + (int)mb_substr($parcial, 1, 1);
             }
             $sum += $parcial;
             if ($factor == 2) {
@@ -421,13 +421,13 @@ class CalculoDV
     public static function sicrediNossoNumero($agencia, $posto, $codigoCliente, $ano, $byte, $numero_boleto)
     {
         $n = Util::numberFormatGeral($agencia, 4)
-            .Util::numberFormatGeral($posto, 2)
-            .Util::numberFormatGeral($codigoCliente, 5)
-            .Util::numberFormatGeral($ano, 2)
-            .Util::numberFormatGeral($byte, 1)
-            .Util::numberFormatGeral($numero_boleto, 5);
+            . Util::numberFormatGeral($posto, 2)
+            . Util::numberFormatGeral($codigoCliente, 5)
+            . Util::numberFormatGeral($ano, 2)
+            . Util::numberFormatGeral($byte, 1)
+            . Util::numberFormatGeral($numero_boleto, 5);
 
-        return  Util::modulo11($n);
+        return Util::modulo11($n);
     }
 
     /*
@@ -438,7 +438,7 @@ class CalculoDV
 
     public static function ourinvestNossoNumero($carteira, $nossoNumero)
     {
-        return Util::modulo11(Util::numberFormatGeral($carteira, 2).Util::numberFormatGeral($nossoNumero, 11), 2, 7, 0, 'P');
+        return Util::modulo11(Util::numberFormatGeral($carteira, 2) . Util::numberFormatGeral($nossoNumero, 11), 2, 7, 0, 'P');
     }
 
     public static function ourinvestAgencia($agencia)
@@ -448,7 +448,7 @@ class CalculoDV
 
     public static function ourinvestConta($conta, $agencia = '0001')
     {
-        return Util::modulo10(Util::numberFormatGeral($agencia, 4).Util::numberFormatGeral($conta, 7));
+        return Util::modulo10(Util::numberFormatGeral($agencia, 4) . Util::numberFormatGeral($conta, 7));
     }
 
     /*
@@ -469,8 +469,8 @@ class CalculoDV
     public static function bancoobNossoNumero($agencia, $convenio, $numero_boleto)
     {
         $n = Util::numberFormatGeral($agencia, 4)
-            .Util::numberFormatGeral($convenio, 10)
-            .Util::numberFormatGeral($numero_boleto, 7);
+            . Util::numberFormatGeral($convenio, 10)
+            . Util::numberFormatGeral($numero_boleto, 7);
 
         $chars = str_split($n, 1);
         $sums = str_split('3197319731973197319731973197', 1);
@@ -485,6 +485,6 @@ class CalculoDV
             $dv = 11 - $resto;
         }
 
-        return  $dv;
+        return $dv;
     }
 }

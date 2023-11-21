@@ -3,8 +3,8 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
 use Carbon\Carbon;
-use Eduardokum\LaravelBoleto\MagicTrait;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\HeaderLote as HeaderLoteContract;
+use Eduardokum\LaravelBoleto\MagicTrait;
 
 class HeaderLote implements HeaderLoteContract
 {

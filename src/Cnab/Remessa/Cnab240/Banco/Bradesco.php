@@ -8,12 +8,12 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco;
 
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Util;
 
 class Bradesco extends AbstractRemessa implements RemessaContract
 {
@@ -98,9 +98,9 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     public function getCodigoCliente()
     {
         if (empty($this->codigoCliente)) {
-            $this->codigoCliente = Util::formatCnab('9', $this->getCarteiraNumero(), 4).
-                Util::formatCnab('9', $this->getAgencia(), 5).
-                Util::formatCnab('9', $this->getConta(), 7).
+            $this->codigoCliente = Util::formatCnab('9', $this->getCarteiraNumero(), 4) .
+                Util::formatCnab('9', $this->getAgencia(), 5) .
+                Util::formatCnab('9', $this->getConta(), 7) .
                 Util::formatCnab('9', $this->getContaDv() ?: CalculoDV::bradescoContaCorrente($this->getConta()), 1);
         }
 

@@ -3,11 +3,11 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
 use Carbon\Carbon;
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Eduardokum\LaravelBoleto\Util;
-use Eduardokum\LaravelBoleto\MagicTrait;
-use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Detalhe as DetalheContract;
+use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\MagicTrait;
+use Eduardokum\LaravelBoleto\Util;
 
 class Detalhe implements DetalheContract
 {
@@ -163,7 +163,7 @@ class Detalhe implements DetalheContract
     {
         $ocorrencias = func_get_args();
 
-        if (count($ocorrencias) == 0 && ! empty($this->getOcorrencia())) {
+        if (count($ocorrencias) == 0 && !empty($this->getOcorrencia())) {
             return true;
         }
 

@@ -8,11 +8,11 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco;
 
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Util;
 
 class Sicredi extends AbstractRemessa implements RemessaContract
 {
@@ -140,7 +140,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(110, 117, $boleto->getDataDocumento()->format('dmY'));
         $this->add(118, 118, $boleto->getJuros() ? '1' : '3'); //'1' = Valor por Dia, '3' = Isento
         $this->add(119, 126, $boleto->getJurosApos() == 0 ? '00000000' :
-               $boleto->getDataVencimentoApos()->format('dmY'));
+            $boleto->getDataVencimentoApos()->format('dmY'));
         $this->add(127, 141, Util::formatCnab('9', $boleto->getMoraDia(), 15, 2)); //Valor da mora/dia ou Taxa mensal
         $this->add(142, 142, $boleto->getDesconto() > 0 ? '1' : '0');
         $this->add(143, 150, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmY') : '00000000');
@@ -170,7 +170,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
      */
     protected function segmentoR(BoletoContract $boleto)
     {
-        if (! $boleto->getMulta() > 0 && ! $boleto->getDesconto() > 0) {
+        if (!$boleto->getMulta() > 0 && !$boleto->getDesconto() > 0) {
             return $this;
         }
 

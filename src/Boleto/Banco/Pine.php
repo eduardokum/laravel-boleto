@@ -2,11 +2,11 @@
 
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
-use Eduardokum\LaravelBoleto\Util;
-use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Util;
 
 class Pine extends AbstractBoleto implements BoletoContract
 {
@@ -33,15 +33,15 @@ class Pine extends AbstractBoleto implements BoletoContract
      * @var string
      */
     protected $especiesCodigo = [
-        'DM'  => '01', //Duplicata Mercantil
-        'NP'  => '02', //Nota Promissória
-        'CH'  => '03', //Cheque
-        'LC'  => '04', //Letra de Câmbio
-        'RC'  => '05', //Recibo
-        'AP'  => '08', //Apólice de Seguro
-        'DS'  => '12', //Duplicata de Serviço
+        'DM' => '01', //Duplicata Mercantil
+        'NP' => '02', //Nota Promissória
+        'CH' => '03', //Cheque
+        'LC' => '04', //Letra de Câmbio
+        'RC' => '05', //Recibo
+        'AP' => '08', //Apólice de Seguro
+        'DS' => '12', //Duplicata de Serviço
         'CAR' => '31', //Cartão de crédito
-        'O'   => '99',  //Outros,
+        'O' => '99',  //Outros,
     ];
 
     /**
@@ -85,7 +85,7 @@ class Pine extends AbstractBoleto implements BoletoContract
      */
     public function setRange($range)
     {
-        $this->range = (int) $range;
+        $this->range = (int)$range;
 
         return $this;
     }
@@ -93,7 +93,7 @@ class Pine extends AbstractBoleto implements BoletoContract
     /**
      * Define o número do codigo do Cliente
      *
-     * @param  string $codigoCliente
+     * @param string $codigoCliente
      * @return Pine
      */
     public function setCodigoCliente($codigoCliente)
@@ -134,7 +134,7 @@ class Pine extends AbstractBoleto implements BoletoContract
     public function setModalidadeCarteira($modalidadeCarteira)
     {
         $modalidadeCarteira = Util::upper($modalidadeCarteira);
-        if (! in_array($modalidadeCarteira, ['1', '2', '5', '6', 'D'])) {
+        if (!in_array($modalidadeCarteira, ['1', '2', '5', '6', 'D'])) {
             throw new ValidationException('Modalidade da carteira inválida');
         }
         $this->modalidadeCarteira = $modalidadeCarteira;
@@ -145,14 +145,14 @@ class Pine extends AbstractBoleto implements BoletoContract
     /**
      * Gera o Nosso Número.
      *
-     * @throws ValidationException
      * @return string
+     * @throws ValidationException
      */
     protected function gerarNossoNumero()
     {
         $nn = 0;
         if (Util::upper($this->getModalidadeCarteira()) == 'D') {
-            $nn = ((int) $this->getRange()) + ((int) $this->getNumero());
+            $nn = ((int)$this->getRange()) + ((int)$this->getNumero());
             $nn .= CalculoDV::pineNossoNumero($this->getAgencia(), $this->getCarteira(), $nn);
         }
 
@@ -200,7 +200,7 @@ class Pine extends AbstractBoleto implements BoletoContract
             'nossoNumeroDv' => null,
             'agencia' => substr($campoLivre, 0, 4),
             'nossa_carteira' => substr($campoLivre, 4, 3),
-            'codigoCliente' =>  substr($campoLivre, 7, 7),
+            'codigoCliente' => substr($campoLivre, 7, 7),
             'nossoNumero' => substr($campoLivre, 14, 11),
             'nossoNumeroFull' => substr($campoLivre, 14, 11),
         ];

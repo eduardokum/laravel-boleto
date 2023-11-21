@@ -2,10 +2,10 @@
 
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
-use Eduardokum\LaravelBoleto\Util;
-use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Eduardokum\LaravelBoleto\Util;
 
 class Unicred extends AbstractBoleto implements BoletoContract
 {
@@ -33,15 +33,15 @@ class Unicred extends AbstractBoleto implements BoletoContract
      * @var string
      */
     protected $especiesCodigo = [
-        'DM'    =>  'DM', //'Duplicata Mercantil',
-        'NP'    =>  'NP', //'Nota Promissória',
-        'NS'    =>  'NS', //'Nota de Seguro',
-        'CS'    =>  'CS', //'Cobrança Seriada',
-        'REC'   =>  'REC', //'Recibo',
-        'LC'    =>  'LC', //'Letras de Câmbio',
-        'ND'    =>  'ND', //'Nota de Débito',
-        'DS'    =>  'DS', //'Duplicata de Serviços',
-        'Outros'    =>  'Outros',
+        'DM' => 'DM', //'Duplicata Mercantil',
+        'NP' => 'NP', //'Nota Promissória',
+        'NS' => 'NS', //'Nota de Seguro',
+        'CS' => 'CS', //'Cobrança Seriada',
+        'REC' => 'REC', //'Recibo',
+        'LC' => 'LC', //'Letras de Câmbio',
+        'ND' => 'ND', //'Nota de Débito',
+        'DS' => 'DS', //'Duplicata de Serviços',
+        'Outros' => 'Outros',
     ];
 
     /**
@@ -80,7 +80,7 @@ class Unicred extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        return Util::numberFormatGeral($this->getNumero(), 10).CalculoDV::unicredNossoNumero($this->getNumero());
+        return Util::numberFormatGeral($this->getNumero(), 10) . CalculoDV::unicredNossoNumero($this->getNumero());
     }
 
     /**
@@ -107,7 +107,7 @@ class Unicred extends AbstractBoleto implements BoletoContract
         $nossoNumero = $this->getNossoNumero();
 
         $campoLivre = Util::numberFormatGeral($this->getAgencia(), 4); //Agência BENEFICIÁRIO (Sem o dígito verificador, completar com zeros à esquerda quando necessário)
-        $campoLivre .= Util::numberFormatGeral($this->getConta().$this->getContaDv(), 10); //Conta do BENEFICIÁRIO (Com o dígito verificador - Completar com zeros à esquerda quando necessário)
+        $campoLivre .= Util::numberFormatGeral($this->getConta() . $this->getContaDv(), 10); //Conta do BENEFICIÁRIO (Com o dígito verificador - Completar com zeros à esquerda quando necessário)
         $campoLivre .= Util::numberFormatGeral($nossoNumero, 11); //Nosso Número (Com o dígito verificador)
 
         return $this->campoLivre = $campoLivre;
@@ -142,13 +142,13 @@ class Unicred extends AbstractBoleto implements BoletoContract
      */
     public function getAgenciaCodigoBeneficiario()
     {
-        return $this->getAgencia().' / '.Util::numberFormatGeral($this->getConta(), 9).'-'.$this->getContaDv();
+        return $this->getAgencia() . ' / ' . Util::numberFormatGeral($this->getConta(), 9) . '-' . $this->getContaDv();
     }
 
     /**
      * Define o campo CIP do boleto
      *
-     * @param  int $cip
+     * @param int $cip
      * @return Unicred
      */
     public function setCip($cip)

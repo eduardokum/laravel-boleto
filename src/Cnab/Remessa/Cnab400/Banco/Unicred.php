@@ -2,12 +2,12 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Util;
 
 class Unicred extends AbstractRemessa implements RemessaContract
 {
@@ -86,10 +86,10 @@ class Unicred extends AbstractRemessa implements RemessaContract
     public function getCodigoCliente()
     {
         if (empty($this->codigoCliente)) {
-            $this->codigoCliente = Util::formatCnab('9', $this->getCarteiraNumero(), 4).
-            Util::formatCnab('9', $this->getAgencia(), 5).
-            Util::formatCnab('9', $this->getConta(), 7).
-            Util::formatCnab('9', $this->getContaDv() ?: CalculoDV::unicredContaCorrente($this->getConta()), 1);
+            $this->codigoCliente = Util::formatCnab('9', $this->getCarteiraNumero(), 4) .
+                Util::formatCnab('9', $this->getAgencia(), 5) .
+                Util::formatCnab('9', $this->getConta(), 7) .
+                Util::formatCnab('9', $this->getContaDv() ?: CalculoDV::unicredContaCorrente($this->getConta()), 1);
         }
 
         return $this->codigoCliente;
@@ -171,21 +171,21 @@ class Unicred extends AbstractRemessa implements RemessaContract
         $this->add(94, 94, $boleto->getMulta() > 0 ? '2' : '3'); //Código da multa 2 = TAXA (%)
         $this->add(95, 104, Util::formatCnab('9', $boleto->getMulta() > 0 ? $boleto->getMulta() : '0', 10, 2));
         /** Código adotado pela FEBRABAN para identificação do tipo de pagamento de mora de juros.
-        Domínio:
-        ‘1’ = Valor Diário (R$)
-        ‘2’ = Taxa Mensal (%)
-        ‘3’= Valor Mensal (R$) *
-        ‘4’ = Taxa diária (%)
-        ‘5’ = Isento
+         * Domínio:
+         * ‘1’ = Valor Diário (R$)
+         * ‘2’ = Taxa Mensal (%)
+         * ‘3’= Valor Mensal (R$) *
+         * ‘4’ = Taxa diária (%)
+         * ‘5’ = Isento
          **/
         $this->add(105, 105, (null !== $boleto->getMoraDia() && $boleto->getMoraDia()) > 0 ? '1' : '5');
         /** Indica se o Título pode ou não ser utilizado como garantia de operação de desconto futura.
-        Domínio:
-            ‘S’ = Título selecionado para ser utilizado como garantia em uma operação de desconto
-            futura.
-            ‘N’ = Título NÃO selecionado para ser utilizado como garantia em uma operação de
-            desconto futura.
-        Default: ‘N’
+         * Domínio:
+         * ‘S’ = Título selecionado para ser utilizado como garantia em uma operação de desconto
+         * futura.
+         * ‘N’ = Título NÃO selecionado para ser utilizado como garantia em uma operação de
+         * desconto futura.
+         * Default: ‘N’
          **/
         $this->add(106, 106, 'N'); // Identificação de Título Descontável.
         $this->add(107, 108, '');
@@ -238,13 +238,13 @@ class Unicred extends AbstractRemessa implements RemessaContract
         // 02 - CNPJ
         $this->add(219, 220, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? '02' : '01'); //Identificação do Tipo de Inscrição do Pagador
         /** Quando se tratar de CNPJ, adotar o critério de preenchimento da direita para a esquerda,utilizando:
-            - 2 posições para o controle;
-            - 4 posições para a filial;
-            - 8 posições para o CNPJ.
-            Quando se tratar de CPF, adotar o mesmo critério da direita para a esquerda, utilizando:
-            - 2 posições para o controle;
-            - 9 posições para o CPF;
-            - 3 posições a esquerda zeradas.
+         * - 2 posições para o controle;
+         * - 4 posições para a filial;
+         * - 8 posições para o CNPJ.
+         * Quando se tratar de CPF, adotar o mesmo critério da direita para a esquerda, utilizando:
+         * - 2 posições para o controle;
+         * - 9 posições para o CPF;
+         * - 3 posições a esquerda zeradas.
          **/
         $this->add(221, 234, Util::formatCnab('9', Util::onlyNumbers($boleto->getPagador()->getDocumento()), 14));
         $this->add(235, 274, Util::formatCnab('X', $boleto->getPagador()->getNome(), 40));

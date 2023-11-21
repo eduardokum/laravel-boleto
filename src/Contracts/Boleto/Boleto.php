@@ -2,6 +2,7 @@
 
 namespace Eduardokum\LaravelBoleto\Contracts\Boleto;
 
+use Carbon\Carbon;
 use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
 
 interface Boleto
@@ -109,27 +110,27 @@ interface Boleto
     public function getMoeda();
 
     /**
-     * @return \Carbon\Carbon
+     * @return Carbon
      */
     public function getDataVencimento();
 
     /**
-     * @return \Carbon\Carbon
+     * @return Carbon
      */
     public function getDataVencimentoApos();
 
     /**
-     * @return \Carbon\Carbon
+     * @return Carbon
      */
     public function getDataDesconto();
 
     /**
-     * @return \Carbon\Carbon
+     * @return Carbon
      */
     public function getDataProcessamento();
 
     /**
-     * @return \Carbon\Carbon
+     * @return Carbon
      */
     public function getDataDocumento();
 

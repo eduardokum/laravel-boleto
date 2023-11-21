@@ -15,12 +15,12 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco;
 
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Util;
 
 class Santander extends AbstractRemessa implements RemessaContract
 {
@@ -80,7 +80,7 @@ class Santander extends AbstractRemessa implements RemessaContract
     /**
      * Seta o codigo do cliente.
      *
-     * @param  mixed $codigoCliente
+     * @param mixed $codigoCliente
      * @return Santander
      */
     public function setCodigoCliente($codigoCliente)
@@ -308,8 +308,8 @@ class Santander extends AbstractRemessa implements RemessaContract
     public function getCodigoTransmissao()
     {
         return Util::formatCnab('9', $this->getAgencia(), 4)
-            .Util::formatCnab('9', '0000', 4)
-            .Util::formatCnab('9', $this->getCodigoCliente(), 7);
+            . Util::formatCnab('9', '0000', 4)
+            . Util::formatCnab('9', $this->getCodigoCliente(), 7);
     }
 
     /**

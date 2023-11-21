@@ -37,12 +37,12 @@ interface RetornoCnab240 extends Retorno
     public function getHeaderLote();
 
     /**
-     *  @return Retorno\Cnab240\TrailerLote
+     * @return Retorno\Cnab240\TrailerLote
      */
     public function getTrailerLote();
 
     /**
-     *  @return Retorno\Cnab240\Trailer
+     * @return Retorno\Cnab240\Trailer
      */
     public function getTrailer();
 

@@ -3,12 +3,12 @@
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
 use Carbon\Carbon;
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Illuminate\Support\Arr;
-use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\BoletoAPI as BoletoAPIContract;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Util;
+use Illuminate\Support\Arr;
 
 class Inter extends AbstractBoleto implements BoletoAPIContract
 {
@@ -101,8 +101,8 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
      */
     public function getAgenciaCodigoBeneficiario()
     {
-        return $this->getAgencia().Util::modulo11($this->getAgencia()).' / '.
-            $this->getConta().Util::modulo11($this->getConta());
+        return $this->getAgencia() . Util::modulo11($this->getAgencia()) . ' / ' .
+            $this->getConta() . Util::modulo11($this->getConta());
     }
 
     /**
@@ -134,7 +134,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
      */
     public function setDiasBaixaAutomatica($baixaAutomatica)
     {
-        if (! in_array($baixaAutomatica, [0, 30, 60])) {
+        if (!in_array($baixaAutomatica, [0, 30, 60])) {
             throw new ValidationException('Baixa automática válida somente 0, 30, 60');
         }
         $this->diasBaixaAutomatica = $baixaAutomatica >= 0 ? $baixaAutomatica : 0;
@@ -238,34 +238,34 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
 
         $mensagem = array_filter($this->getDescricaoDemonstrativo());
         foreach ($mensagem as $k => $m) {
-            $mensagem['linha'.($k + 1)] = $m;
+            $mensagem['linha' . ($k + 1)] = $m;
             unset($mensagem[$k]);
         }
 
         return array_filter([
-            'seuNumero'           => $this->getNumero(),
+            'seuNumero' => $this->getNumero(),
             'cnpjCPFBeneficiario' => sprintf('%014s', Util::onlyNumbers($this->getBeneficiario()->getDocumento())),
-            'valorNominal'        => Util::nFloat($this->getValor(), 2, false),
-            'dataEmissao'         => $this->getDataDocumento()->format('Y-m-d'),
-            'dataVencimento'      => $this->getDataVencimento()->format('Y-m-d'),
-            'dataLimite'          => 'SESSENTA',
-            'numDiasAgenda'       => $diasBaixaAutomatica,
-            'mensagem'            => $mensagem,
-            'desconto1'           => $desconto,
-            'desconto2'           => $descontoDefault,
-            'desconto3'           => $descontoDefault,
-            'multa'               => $multa,
-            'mora'                => $mora,
-            'pagador'             => [
+            'valorNominal' => Util::nFloat($this->getValor(), 2, false),
+            'dataEmissao' => $this->getDataDocumento()->format('Y-m-d'),
+            'dataVencimento' => $this->getDataVencimento()->format('Y-m-d'),
+            'dataLimite' => 'SESSENTA',
+            'numDiasAgenda' => $diasBaixaAutomatica,
+            'mensagem' => $mensagem,
+            'desconto1' => $desconto,
+            'desconto2' => $descontoDefault,
+            'desconto3' => $descontoDefault,
+            'multa' => $multa,
+            'mora' => $mora,
+            'pagador' => [
                 'tipoPessoa' => strlen(Util::onlyNumbers($this->getPagador()->getDocumento())) == 14 ? 'JURIDICA' : 'FISICA',
-                'nome'       => $this->getPagador()->getNome(),
-                'endereco'   => $enderecoSplit($this->getPagador()->getEndereco())['endereco'],
-                'numero'     => $enderecoSplit($this->getPagador()->getEndereco())['numero'],
-                'bairro'     => $this->getPagador()->getBairro(),
-                'cep'        => Util::onlyNumbers($this->getPagador()->getCep()),
-                'uf'         => $this->getPagador()->getUf(),
-                'cidade'     => $this->getPagador()->getCidade(),
-                'cnpjCpf'    => Util::onlyNumbers($this->getPagador()->getDocumento()),
+                'nome' => $this->getPagador()->getNome(),
+                'endereco' => $enderecoSplit($this->getPagador()->getEndereco())['endereco'],
+                'numero' => $enderecoSplit($this->getPagador()->getEndereco())['numero'],
+                'bairro' => $this->getPagador()->getBairro(),
+                'cep' => Util::onlyNumbers($this->getPagador()->getCep()),
+                'uf' => $this->getPagador()->getUf(),
+                'cidade' => $this->getPagador()->getCidade(),
+                'cnpjCpf' => Util::onlyNumbers($this->getPagador()->getDocumento()),
             ],
         ]);
     }
@@ -279,10 +279,10 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
      */
     public static function fromAPI($boleto, $appends)
     {
-        if (! array_key_exists('beneficiario', $appends)) {
+        if (!array_key_exists('beneficiario', $appends)) {
             throw new ValidationException('Informe o beneficiario');
         }
-        if (! array_key_exists('conta', $appends)) {
+        if (!array_key_exists('conta', $appends)) {
             throw new ValidationException('Informe a conta');
         }
         $ipte = Util::IPTE2Variveis($boleto->linhaDigitavel);
@@ -297,33 +297,33 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
         $dateUS = preg_match('/[0-9]{4}-[0-9]{2}-[0-9]{2}.*/', $boleto->dataHoraSituacao);
 
         return new self(array_merge(array_filter([
-            'valorRecebido'   => isset($boleto->valorTotalRecebimento) ? $boleto->valorTotalRecebimento : null,
-            'situacao'        => Arr::get($aSituacao, $boleto->situacao, $boleto->situacao),
-            'dataSituacao'    => $boleto->dataHoraSituacao
+            'valorRecebido' => isset($boleto->valorTotalRecebimento) ? $boleto->valorTotalRecebimento : null,
+            'situacao' => Arr::get($aSituacao, $boleto->situacao, $boleto->situacao),
+            'dataSituacao' => $boleto->dataHoraSituacao
                 ? Carbon::createFromFormat($dateUS ? 'Y-m-d H:i' : 'd/m/Y H:i', $boleto->dataHoraSituacao)
                 : Carbon::now(),
-            'nossoNumero'     => $boleto->nossoNumero,
-            'valor'           => $boleto->valorNominal,
-            'numero'          => $boleto->seuNumero,
+            'nossoNumero' => $boleto->nossoNumero,
+            'valor' => $boleto->valorNominal,
+            'numero' => $boleto->seuNumero,
             'numeroDocumento' => $boleto->seuNumero,
-            'aceite'          => 'S',
-            'especieDoc'      => 'DM',
-            'dataVencimento'  => Carbon::createFromFormat($dateUS ? 'Y-m-d' : 'd/m/Y', $boleto->dataVencimento),
-            'pagador'         => array_filter([
-                'nome'      => isset($boleto->pagador) ? $boleto->pagador->nome : $boleto->nomeSacado,
+            'aceite' => 'S',
+            'especieDoc' => 'DM',
+            'dataVencimento' => Carbon::createFromFormat($dateUS ? 'Y-m-d' : 'd/m/Y', $boleto->dataVencimento),
+            'pagador' => array_filter([
+                'nome' => isset($boleto->pagador) ? $boleto->pagador->nome : $boleto->nomeSacado,
                 'documento' => isset($boleto->pagador) ? $boleto->pagador->cpfCnpj : $boleto->cnpjCpfSacado,
-                'endereco' => isset($boleto->pagador) ? trim($boleto->pagador->endereco.', '.$boleto->pagador->endereco.' '.$boleto->pagador->complemento) : null,
+                'endereco' => isset($boleto->pagador) ? trim($boleto->pagador->endereco . ', ' . $boleto->pagador->endereco . ' ' . $boleto->pagador->complemento) : null,
                 'bairro' => isset($boleto->pagador) ? $boleto->pagador->bairro : null,
                 'cep' => isset($boleto->pagador) ? $boleto->pagador->cep : null,
                 'uf' => isset($boleto->pagador) ? $boleto->pagador->uf : null,
                 'cidade' => isset($boleto->pagador) ? $boleto->pagador->cidade : null,
             ]),
-            'multa'           => Arr::get($boleto, 'multa.valor', 0),
-            'juros'           => Arr::get($boleto, 'juros.taxa', 0),
-            'desconto'        => Arr::get($boleto, 'desconto1.taxa', 0),
-            'data_desconto'   => Arr::get($boleto, 'desconto1.data'),
-            'carteira'        => $ipte['campo_livre_parsed']['carteira'],
-            'operacao'        => $ipte['campo_livre_parsed']['convenio'],
+            'multa' => Arr::get($boleto, 'multa.valor', 0),
+            'juros' => Arr::get($boleto, 'juros.taxa', 0),
+            'desconto' => Arr::get($boleto, 'desconto1.taxa', 0),
+            'data_desconto' => Arr::get($boleto, 'desconto1.data'),
+            'carteira' => $ipte['campo_livre_parsed']['carteira'],
+            'operacao' => $ipte['campo_livre_parsed']['convenio'],
         ]), $appends));
     }
 
@@ -365,7 +365,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
      */
     public function imprimeBoleto()
     {
-        return  $this->campoNossoNumero > 0;
+        return $this->campoNossoNumero > 0;
     }
 
     /**

@@ -2,10 +2,10 @@
 
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
-use Eduardokum\LaravelBoleto\Util;
-use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Eduardokum\LaravelBoleto\Util;
 
 class Ourinvest extends AbstractBoleto implements BoletoContract
 {
@@ -26,10 +26,10 @@ class Ourinvest extends AbstractBoleto implements BoletoContract
      * @var string
      */
     protected $especiesCodigo = [
-        'DM'  => '01', //Duplicata Mercantil
-        'NP'  => '02', //Nota Promissória
-        'DS'  => '12', //Duplicata de Serviço
-        'O'   => '99',  //Outros,
+        'DM' => '01', //Duplicata Mercantil
+        'NP' => '02', //Nota Promissória
+        'DS' => '12', //Duplicata de Serviço
+        'O' => '99',  //Outros,
     ];
 
     /**
@@ -73,7 +73,7 @@ class Ourinvest extends AbstractBoleto implements BoletoContract
     protected function gerarNossoNumero()
     {
         return $this->isEmissaoPropria()
-            ? Util::numberFormatGeral($this->getNumero(), 11).CalculoDV::ourinvestNossoNumero($this->getCarteira(), $this->getNumero())
+            ? Util::numberFormatGeral($this->getNumero(), 11) . CalculoDV::ourinvestNossoNumero($this->getCarteira(), $this->getNumero())
             : Util::numberFormatGeral(0, 12);
     }
 
@@ -116,7 +116,7 @@ class Ourinvest extends AbstractBoleto implements BoletoContract
             'nossoNumeroDv' => substr($campoLivre, 15, 1),
             'agencia' => substr($campoLivre, 0, 4),
             'nossa_carteira' => substr($campoLivre, 4, 2),
-            'codigoCliente' =>  null,
+            'codigoCliente' => null,
             'nossoNumero' => substr($campoLivre, 6, 10),
             'nossoNumeroFull' => substr($campoLivre, 6, 11),
         ];

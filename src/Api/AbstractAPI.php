@@ -2,17 +2,17 @@
 
 namespace Eduardokum\LaravelBoleto\Api;
 
-use stdClass;
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Illuminate\Support\Str;
-use Eduardokum\LaravelBoleto\Util;
-use Eduardokum\LaravelBoleto\Pessoa;
 use Eduardokum\LaravelBoleto\Api\Exception\CurlException;
 use Eduardokum\LaravelBoleto\Api\Exception\HttpException;
 use Eduardokum\LaravelBoleto\Api\Exception\MissingDataException;
-use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
 use Eduardokum\LaravelBoleto\Api\Exception\UnauthorizedException;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\BoletoAPI as BoletoAPIContract;
+use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Pessoa;
+use Eduardokum\LaravelBoleto\Util;
+use Illuminate\Support\Str;
+use stdClass;
 
 abstract class AbstractAPI
 {
@@ -79,7 +79,7 @@ abstract class AbstractAPI
         Util::fillClass($this, $params);
         $missing = [];
         foreach ($this->camposObrigatorios as $campo) {
-            $test = call_user_func([$this, 'get'.Str::camel($campo)]);
+            $test = call_user_func([$this, 'get' . Str::camel($campo)]);
             if ($test === '' || is_null($test)) {
                 $missing[] = $campo;
             }
@@ -147,7 +147,7 @@ abstract class AbstractAPI
      */
     public function getBaseUrl()
     {
-        return rtrim($this->baseUrl, '/').'/';
+        return rtrim($this->baseUrl, '/') . '/';
     }
 
     /**
@@ -404,7 +404,7 @@ abstract class AbstractAPI
      */
     public function getLog()
     {
-        return $this->log.
+        return $this->log .
             print_r($this->getRequestInfo(), true);
     }
 
@@ -477,7 +477,7 @@ abstract class AbstractAPI
             return Util::normalizeChars($data);
         }, $post);
 
-        curl_setopt($this->curl, CURLOPT_URL, $this->getBaseUrl().$url);
+        curl_setopt($this->curl, CURLOPT_URL, $this->getBaseUrl() . $url);
         curl_setopt($this->curl, CURLOPT_POST, 1);
         curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt($this->curl, CURLOPT_POSTFIELDS, $raw ? http_build_query($post) : json_encode($post));
@@ -504,7 +504,7 @@ abstract class AbstractAPI
             return Util::normalizeChars($data);
         }, $post);
 
-        curl_setopt($this->curl, CURLOPT_URL, $this->getBaseUrl().$url);
+        curl_setopt($this->curl, CURLOPT_URL, $this->getBaseUrl() . $url);
         curl_setopt($this->curl, CURLOPT_POST, 1);
         curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'PUT');
         curl_setopt($this->curl, CURLOPT_POSTFIELDS, $raw ? http_build_query($post) : json_encode($post));
@@ -528,7 +528,7 @@ abstract class AbstractAPI
                 'Accept' => 'application/json',
             ]);
 
-        curl_setopt($this->curl, CURLOPT_URL, $this->getBaseUrl().$url);
+        curl_setopt($this->curl, CURLOPT_URL, $this->getBaseUrl() . $url);
         curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'GET');
 
         return $this->execute();
@@ -540,13 +540,13 @@ abstract class AbstractAPI
     private function init()
     {
         if ($this->getCertificado()
-            && ! file_exists($this->getCertificado())
+            && !file_exists($this->getCertificado())
             && openssl_x509_read($this->getCertificado())) {
             $this->setCertificado($this->tempFile($this->getCertificado()));
         }
 
         if ($this->getCertificadoChave()
-            && ! file_exists($this->getCertificadoChave())
+            && !file_exists($this->getCertificadoChave())
             && openssl_pkey_get_private($this->getCertificadoChave())) {
             $this->setCertificadoChave($this->tempFile($this->getCertificadoChave()));
         }
@@ -693,7 +693,7 @@ abstract class AbstractAPI
         $error = curl_error($this->curl);
         curl_close($this->curl);
         $this->curl = null;
-        if (! $this->getResponseHttpCode() && $error) {
+        if (!$this->getResponseHttpCode() && $error) {
             throw new CurlException($error);
         }
 

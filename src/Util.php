@@ -2,12 +2,13 @@
 
 namespace Eduardokum\LaravelBoleto;
 
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Carbon\Carbon;
-use Exception;
-use Illuminate\Support\Str;
-use Illuminate\Http\UploadedFile;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Exception;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Str;
+use NumberFormatter;
 
 /**
  * Class Util
@@ -331,9 +332,9 @@ final class Util
     /**
      * Mostra o Valor no float Formatado
      *
-     * @param  string  $number
-     * @param  int $decimals
-     * @param  bool $showThousands
+     * @param string $number
+     * @param int $decimals
+     * @param bool $showThousands
      * @return string
      */
     public static function nFloat($number, $decimals = 2, $showThousands = false)
@@ -343,26 +344,26 @@ final class Util
         }
         $pontuacao = preg_replace('/[0-9]/', '', $number);
         $locale = (mb_substr($pontuacao, -1, 1) == ',') ? 'pt-BR' : 'en-US';
-        $formater = new \NumberFormatter($locale, \NumberFormatter::DECIMAL);
+        $formater = new NumberFormatter($locale, NumberFormatter::DECIMAL);
 
         if ($decimals === false) {
             $decimals = 2;
             preg_match_all('/[0-9][^0-9]([0-9]+)/', $number, $matches);
-            if (! empty($matches[1])) {
+            if (!empty($matches[1])) {
                 $decimals = mb_strlen(rtrim($matches[1][0], 0));
             }
         }
 
-        return number_format($formater->parse($number, \NumberFormatter::TYPE_DOUBLE), $decimals, '.', ($showThousands ? ',' : ''));
+        return number_format($formater->parse($number, NumberFormatter::TYPE_DOUBLE), $decimals, '.', ($showThousands ? ',' : ''));
     }
 
     /**
      * Mostra o Valor no real Formatado
      *
-     * @param  float   $number
-     * @param  bool $fixed
-     * @param  bool $symbol
-     * @param  int $decimals
+     * @param float $number
+     * @param bool $fixed
+     * @param bool $symbol
+     * @param int $decimals
      * @return string
      */
     public static function nReal($number, $decimals = 2, $symbol = true, $fixed = true)
@@ -370,23 +371,23 @@ final class Util
         if (is_null($number) || empty(self::onlyNumbers($number))) {
             return '';
         }
-        $formater = new \NumberFormatter('pt-BR', \NumberFormatter::CURRENCY);
-        $formater->setAttribute(\NumberFormatter::MIN_FRACTION_DIGITS, ($fixed ? $decimals : 1));
+        $formater = new NumberFormatter('pt-BR', NumberFormatter::CURRENCY);
+        $formater->setAttribute(NumberFormatter::MIN_FRACTION_DIGITS, ($fixed ? $decimals : 1));
         if ($decimals === false) {
             $decimals = 2;
             preg_match_all('/[0-9][^0-9]([0-9]+)/', $number, $matches);
-            if (! empty($matches[1])) {
+            if (!empty($matches[1])) {
                 $decimals = mb_strlen(rtrim($matches[1][0], 0));
             }
         }
-        $formater->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, $decimals);
+        $formater->setAttribute(NumberFormatter::MAX_FRACTION_DIGITS, $decimals);
         $pattern = substr($formater->getPattern(), strpos($formater->getPattern(), '#'));
         if ($symbol) {
-            $pattern = '¤ '.$pattern;
+            $pattern = '¤ ' . $pattern;
         }
         $formater->setPattern($pattern);
 
-        return trim($formater->formatCurrency($number, $formater->getTextAttribute(\NumberFormatter::CURRENCY_CODE)));
+        return trim($formater->formatCurrency($number, $formater->getTextAttribute(NumberFormatter::CURRENCY_CODE)));
     }
 
     /**
@@ -394,7 +395,7 @@ final class Util
      *
      * @param $big
      * @param $small
-     * @param int   $defaultOnZero
+     * @param int $defaultOnZero
      *
      * @return string
      */
@@ -438,7 +439,7 @@ final class Util
         $maskared = '';
         $k = 0;
         if (is_numeric($val)) {
-            $val = sprintf('%0'.mb_strlen(preg_replace('/[^#]/', '', $mask)).'s', $val);
+            $val = sprintf('%0' . mb_strlen(preg_replace('/[^#]/', '', $mask)) . 's', $val);
         }
         for ($i = 0; $i <= mb_strlen($mask) - 1; $i++) {
             if ($mask[$i] == '#') {
@@ -473,9 +474,9 @@ final class Util
     /**
      * @param        $tipo
      * @param        $valor
-     * @param        int $tamanho
-     * @param int     $dec
-     * @param string  $sFill
+     * @param int $tamanho
+     * @param int $dec
+     * @param string $sFill
      *
      * @return string
      * @throws ValidationException
@@ -504,8 +505,8 @@ final class Util
     }
 
     /**
-     * @param        Carbon|string $date
-     * @param string               $format
+     * @param Carbon|string $date
+     * @param string $format
      *
      * @return int
      * @throws ValidationException
@@ -533,7 +534,7 @@ final class Util
         $date = ($date instanceof Carbon) ? $date : Carbon::createFromFormat($format, $date);
         $dateDiff = $date->copy()->day(31)->month(12)->subYear()->diffInDays($date);
 
-        return $dateDiff.mb_substr($date->year, -1);
+        return $dateDiff . mb_substr($date->year, -1);
     }
 
     /**
@@ -562,7 +563,7 @@ final class Util
     {
         $sum = 0;
         for ($i = mb_strlen($n); $i > 0; $i--) {
-            $sum += ((int) mb_substr($n, $i - 1, 1)) * $factor;
+            $sum += ((int)mb_substr($n, $i - 1, 1)) * $factor;
             if ($factor == $base) {
                 $factor = 1;
             }
@@ -636,7 +637,7 @@ final class Util
         preg_match_all('/(([A-Za-zÀ-Úà-ú]+)([0-9]*))/', $controle, $matches, PREG_SET_ORDER);
         if ($matches) {
             foreach ($matches as $match) {
-                $matches_founded[$match[2]] = (int) $match[3];
+                $matches_founded[$match[2]] = (int)$match[3];
             }
 
             return $matches_founded;
@@ -649,7 +650,7 @@ final class Util
      * Pela remessa cria um retorno fake para testes.
      *
      * @param $file
-     * @param string       $ocorrencia
+     * @param string $ocorrencia
      *
      * @return string
      * @throws ValidationException
@@ -673,7 +674,7 @@ final class Util
                 break;
             case Contracts\Boleto\Boleto::COD_BANCO_SANTANDER:
                 self::adiciona($retorno[0], 27, 30, self::remove(27, 30, $remessa[0]));
-                self::adiciona($retorno[0], 39, 46, '0'.self::remove(40, 46, $remessa[0]));
+                self::adiciona($retorno[0], 39, 46, '0' . self::remove(40, 46, $remessa[0]));
                 break;
             case Contracts\Boleto\Boleto::COD_BANCO_CEF:
                 self::adiciona($retorno[0], 27, 30, self::remove(27, 30, $remessa[0]));
@@ -713,7 +714,7 @@ final class Util
         array_pop($remessa); // remove o trailer
 
         foreach ($remessa as $detalhe) {
-            if (! in_array(self::remove(1, 2, $detalhe), [0, 1, 9])) {
+            if (!in_array(self::remove(1, 2, $detalhe), [0, 1, 9])) {
                 continue;
             }
             $i = count($retorno);
@@ -756,7 +757,7 @@ final class Util
                     self::adiciona($retorno[$i], 63, 73, self::remove(63, 73, $detalhe));
                     break;
                 case Contracts\Boleto\Boleto::COD_BANCO_SICREDI:
-                    self::adiciona($retorno[$i], 48, 62, '00000'.self::remove(48, 56, $detalhe));
+                    self::adiciona($retorno[$i], 48, 62, '00000' . self::remove(48, 56, $detalhe));
                     break;
                 case Contracts\Boleto\Boleto::COD_BANCO_BANRISUL:
                     self::adiciona($retorno[$i], 38, 62, self::remove(38, 62, $detalhe));
@@ -793,7 +794,7 @@ final class Util
     public static function remove($i, $f, &$array)
     {
         if (is_string($array)) {
-            $array = preg_split('//u', rtrim($array, chr(10).chr(13)."\n"."\r"), -1, PREG_SPLIT_NO_EMPTY);
+            $array = preg_split('//u', rtrim($array, chr(10) . chr(13) . "\n" . "\r"), -1, PREG_SPLIT_NO_EMPTY);
         }
 
         $i--;
@@ -913,7 +914,7 @@ final class Util
      */
     public static function isHeaderRetorno($header)
     {
-        if (! self::isCnab240($header) && ! self::isCnab400($header)) {
+        if (!self::isCnab240($header) && !self::isCnab400($header)) {
             return false;
         }
         if (self::isCnab400($header) && mb_substr($header, 0, 9) != '02RETORNO') {
@@ -928,7 +929,7 @@ final class Util
 
     /**
      * @param object $obj
-     * @param array  $params
+     * @param array $params
      */
     public static function fillClass(&$obj, array $params)
     {
@@ -937,8 +938,8 @@ final class Util
             if (method_exists($obj, 'getProtectedFields') && in_array(lcfirst($param), $obj->getProtectedFields())) {
                 continue;
             }
-            if (method_exists($obj, 'set'.Str::camel($param))) {
-                $obj->{'set'.Str::camel($param)}($value);
+            if (method_exists($obj, 'set' . Str::camel($param))) {
+                $obj->{'set' . Str::camel($param)}($value);
             }
         }
     }
@@ -981,11 +982,11 @@ final class Util
             'dv' => substr($barras, 4, 1),
             'fator_vencimento' => substr($barras, 5, 4),
             'vencimento' => self::fatorVencimentoBack(substr($barras, 5, 4), false),
-            'valor' => ((float) substr($barras, 9, 10)) / 100,
+            'valor' => ((float)substr($barras, 9, 10)) / 100,
             'campo_livre' => substr($barras, -25),
         ];
 
-        $class = __NAMESPACE__.'\\Boleto\\'.self::getBancoClass($variaveis['banco']);
+        $class = __NAMESPACE__ . '\\Boleto\\' . self::getBancoClass($variaveis['banco']);
 
         if (method_exists($class, 'parseCampoLivre')) {
             $variaveis['campo_livre_parsed'] = $class::parseCampoLivre($variaveis['campo_livre']);
@@ -1002,7 +1003,7 @@ final class Util
      */
     public static function codigoBarras2LinhaDigitavel($codigo)
     {
-        $parte1 = substr($codigo, 0, 4).substr($codigo, 19, 5);
+        $parte1 = substr($codigo, 0, 4) . substr($codigo, 19, 5);
         $parte1 .= Util::modulo10($parte1);
 
         $parte2 = substr($codigo, 24, 10);
@@ -1160,11 +1161,11 @@ final class Util
         if (mb_strlen($c) != 11 || preg_match("/^{$c[0]}{11}$/", $c)) {
             return false;
         }
-        for ($s = 10, $n = 0, $i = 0; $s >= 2; $n += $c[$i++] * $s--);
+        for ($s = 10, $n = 0, $i = 0; $s >= 2; $n += $c[$i++] * $s--) ;
         if ($c[9] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
             return false;
         }
-        for ($s = 11, $n = 0, $i = 0; $s >= 2; $n += $c[$i++] * $s--);
+        for ($s = 11, $n = 0, $i = 0; $s >= 2; $n += $c[$i++] * $s--) ;
         if ($c[10] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
             return false;
         }
@@ -1185,11 +1186,11 @@ final class Util
         if (mb_strlen($c) != 14) {
             return false;
         }
-        for ($i = 0, $n = 0; $i < 12; $n += $c[$i] * $b[++$i]);
+        for ($i = 0, $n = 0; $i < 12; $n += $c[$i] * $b[++$i]) ;
         if ($c[12] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
             return false;
         }
-        for ($i = 0, $n = 0; $i <= 12; $n += $c[$i] * $b[$i++]);
+        for ($i = 0, $n = 0; $i <= 12; $n += $c[$i] * $b[$i++]) ;
         if ($c[13] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
             return false;
         }
@@ -1237,7 +1238,7 @@ final class Util
      */
     public static function gerarPixCopiaECola($pix, $valor, $id, Pessoa $beneficiario)
     {
-        $crc16 = function($payload) {
+        $crc16 = function ($payload) {
             $payload .= '6304';
 
             $polinomio = 0x1021;
@@ -1254,13 +1255,13 @@ final class Util
                 }
             }
 
-            return '6304'.strtoupper(dechex($resultado));
+            return '6304' . strtoupper(dechex($resultado));
         };
 
         $line = function ($id, $value) {
             $size = str_pad(mb_strlen($value), 2, '0', STR_PAD_LEFT);
 
-            return $id.$size.$value;
+            return $id . $size . $value;
         };
 
         $gui = $line('00', 'br.gov.bcb.pix');
@@ -1268,7 +1269,7 @@ final class Util
         $txid = $line('05', $id);
         $payload = $line('00', '01');
         $payload .= $line('01', '12');
-        $payload .= $line('26', $gui.$key);
+        $payload .= $line('26', $gui . $key);
         $payload .= $line('52', '0000');
         $payload .= $line('53', '986');
         $payload .= $line('54', $valor);
@@ -1276,7 +1277,7 @@ final class Util
         $payload .= $line('59', $beneficiario->getNome());
         $payload .= $line('60', $beneficiario->getCidade());
         $payload .= $line('62', $txid);
-        return $payload.$crc16($payload);
+        return $payload . $crc16($payload);
     }
 
     /**

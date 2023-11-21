@@ -2,10 +2,10 @@
 
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
-use Eduardokum\LaravelBoleto\Util;
-use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Eduardokum\LaravelBoleto\Util;
 
 class C6 extends AbstractBoleto implements BoletoContract
 {
@@ -75,7 +75,7 @@ class C6 extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        return Util::numberFormatGeral($this->getNumero(), 11).CalculoDV::c6NossoNumero($this->getCarteira(), $this->getNumero());
+        return Util::numberFormatGeral($this->getNumero(), 11) . CalculoDV::c6NossoNumero($this->getCarteira(), $this->getNumero());
     }
 
     /**
@@ -102,7 +102,7 @@ class C6 extends AbstractBoleto implements BoletoContract
         $campoLivre = Util::numberFormatGeral($this->getCodigoCliente(), 12);
         $campoLivre .= Util::numberFormatGeral(substr($this->getNossoNumero(), 1, 10), 10);
         $campoLivre .= Util::numberFormatGeral($this->getCarteira(), 2);
-        $campoLivre .= in_array(((int) $this->getCarteira()), [10, 30, 60]) ? 3 : 4;
+        $campoLivre .= in_array(((int)$this->getCarteira()), [10, 30, 60]) ? 3 : 4;
 
         return $this->campoLivre = $campoLivre;
     }

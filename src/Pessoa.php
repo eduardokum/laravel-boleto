@@ -146,7 +146,7 @@ class Pessoa implements PessoaContract
     public function setDocumento($documento)
     {
         $documento = substr(Util::onlyNumbers($documento), -14);
-        if (! in_array(strlen($documento), [10, 11, 14, 0])) {
+        if (!in_array(strlen($documento), [10, 11, 14, 0])) {
             throw new ValidationException('Documento inválido');
         }
         $this->documento = $documento;
@@ -273,10 +273,10 @@ class Pessoa implements PessoaContract
      */
     public function getNomeDocumento()
     {
-        if (! $this->getDocumento()) {
+        if (!$this->getDocumento()) {
             return $this->getNome();
         } else {
-            return $this->getNome().' / '.$this->getTipoDocumento().': '.$this->getDocumento();
+            return $this->getNome() . ' / ' . $this->getTipoDocumento() . ': ' . $this->getDocumento();
         }
     }
 

@@ -2,9 +2,9 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400;
 
+use Eduardokum\LaravelBoleto\Cnab\Retorno\AbstractRetorno as AbstractRetornoGeneric;
 use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Illuminate\Support\Collection;
-use Eduardokum\LaravelBoleto\Cnab\Retorno\AbstractRetorno as AbstractRetornoGeneric;
 
 /**
  * Class AbstractRetorno

@@ -2,9 +2,9 @@
 
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
-use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Eduardokum\LaravelBoleto\Util;
 
 class Hsbc extends AbstractBoleto implements BoletoContract
 {
@@ -80,7 +80,7 @@ class Hsbc extends AbstractBoleto implements BoletoContract
     /**
      * Define o campo Espécie Doc, HSBC sempre PD
      *
-     * @param  string $especieDoc
+     * @param string $especieDoc
      * @return AbstractBoleto
      */
     public function setEspecieDoc($especieDoc)
@@ -100,9 +100,9 @@ class Hsbc extends AbstractBoleto implements BoletoContract
         $agencia = rtrim(sprintf('%s-%s', $this->getAgencia(), $this->getAgenciaDv()), '-');
 
         if ($this->getContaDv() !== null && strlen($this->getContaDv()) == 1) {
-            $conta = substr($this->getConta(), 0, -1).'-'.substr($this->getConta(), -1).$this->getContaDv();
+            $conta = substr($this->getConta(), 0, -1) . '-' . substr($this->getConta(), -1) . $this->getContaDv();
         } elseif ($this->getContaDv() !== null && strlen($this->getContaDv()) == 2) {
-            $conta = substr($this->getConta(), 0, -1).'-'.substr($this->getConta(), -1).$this->getContaDv();
+            $conta = substr($this->getConta(), 0, -1) . '-' . substr($this->getConta(), -1) . $this->getContaDv();
         } else {
             $conta = $this->getConta();
         }
@@ -119,9 +119,9 @@ class Hsbc extends AbstractBoleto implements BoletoContract
     {
         $range = Util::numberFormatGeral($this->getRange(), 5);
         $numero_boleto = Util::numberFormatGeral($this->getNumero(), 5);
-        $dv = Util::modulo11($range.$numero_boleto, 2, 7);
+        $dv = Util::modulo11($range . $numero_boleto, 2, 7);
 
-        return $range.$numero_boleto.$dv;
+        return $range . $numero_boleto . $dv;
     }
 
     /**
@@ -148,7 +148,7 @@ class Hsbc extends AbstractBoleto implements BoletoContract
         $campoLivre = $this->getNossoNumero();
         $campoLivre .= Util::numberFormatGeral($this->getAgencia(), 4);
         $campoLivre .= Util::numberFormatGeral($this->getConta(), 6);
-        $campoLivre .= $this->getContaDv() ? $this->getContaDv() : Util::modulo11(Util::numberFormatGeral($this->getAgencia(), 4).Util::numberFormatGeral($this->getConta(), 6));
+        $campoLivre .= $this->getContaDv() ? $this->getContaDv() : Util::modulo11(Util::numberFormatGeral($this->getAgencia(), 4) . Util::numberFormatGeral($this->getConta(), 6));
         $campoLivre .= '001';
 
         return $this->campoLivre = $campoLivre;

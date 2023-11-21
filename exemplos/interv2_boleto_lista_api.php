@@ -1,7 +1,5 @@
 <?php
 
-use Eduardokum\LaravelBoleto\Boleto\Banco\Inter;
-
 require 'autoload.php';
 
 $beneficiario = new \Eduardokum\LaravelBoleto\Pessoa([
@@ -18,8 +16,8 @@ $api = new Eduardokum\LaravelBoleto\Api\Banco\Inter([
     'beneficiario' => $beneficiario,
     'client_id' => 'id',
     'client_secret' => '',
-    'certificado'      => realpath(__DIR__.'/certs/').DIRECTORY_SEPARATOR.'cert.crt',
-    'certificadoChave' => realpath(__DIR__.'/certs/').DIRECTORY_SEPARATOR.'key.key',
+    'certificado' => realpath(__DIR__ . '/certs/') . DIRECTORY_SEPARATOR . 'cert.crt',
+    'certificadoChave' => realpath(__DIR__ . '/certs/') . DIRECTORY_SEPARATOR . 'key.key',
 ]);
 $retorno = $api->retrieveList();
 

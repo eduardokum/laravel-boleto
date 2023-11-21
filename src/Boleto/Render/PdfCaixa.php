@@ -2,11 +2,11 @@
 
 namespace Eduardokum\LaravelBoleto\Boleto\Render;
 
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Illuminate\Support\Str;
-use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Render\Pdf as PdfContract;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Util;
+use Illuminate\Support\Str;
 
 class PdfCaixa extends AbstractPdf implements PdfContract
 {
@@ -66,7 +66,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
             $this->SetAutoPageBreak(true);
             $this->SetY(5);
             $this->Cell(30, 10, date('d/m/Y H:i:s'));
-            $this->Cell(0, 10, 'Boleto '.($i + 1).' de '.$this->totalBoletos, 0, 1, 'R');
+            $this->Cell(0, 10, 'Boleto ' . ($i + 1) . ' de ' . $this->totalBoletos, 0, 1, 'R');
         }
 
         $this->SetFont($this->PadraoFont, 'B', 8);
@@ -118,7 +118,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
         $logo = preg_replace('/\&.*/', '', $this->boleto[$i]->getLogo());
         $ext = pathinfo($logo, PATHINFO_EXTENSION);
 
-        if ($this->boleto[$i]->getLogo() && ! empty($this->boleto[$i]->getLogo())) {
+        if ($this->boleto[$i]->getLogo() && !empty($this->boleto[$i]->getLogo())) {
             $this->Image($this->boleto[$i]->getLogo(), 20, ($this->GetY()), 0, 12, $ext);
         }
         $this->Cell(56);
@@ -155,7 +155,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
         $logo = preg_replace('/\&.*/', '', $this->boleto[$i]->getLogo());
         $ext = pathinfo($logo, PATHINFO_EXTENSION);
 
-        if ($this->boleto[$i]->getLogo() && ! empty($this->boleto[$i]->getLogo())) {
+        if ($this->boleto[$i]->getLogo() && !empty($this->boleto[$i]->getLogo())) {
             $this->Image($this->boleto[$i]->getLogo(), 170, ($this->GetY() + 1), 0, 5, $ext);
             $this->Cell(0, 6, '', 'TLR', 1);
         }
@@ -172,14 +172,14 @@ class PdfCaixa extends AbstractPdf implements PdfContract
 
         //algoritmo que calcula digito verificador beneficiario
         $codBenefCaixa = strval($this->boleto[$i]->getConta());
-        if (! empty($codBenefCaixa)) {
+        if (!empty($codBenefCaixa)) {
             $j = 2;
             $aux = -1;
             $soma = 0;
             $comprimento = strlen($codBenefCaixa);
             for ($i = $comprimento; $i > 0; $i--) {
                 $calculo = substr($codBenefCaixa, $aux, 1);
-                $soma = $soma + (int) $calculo * (int) $j;
+                $soma = $soma + (int)$calculo * (int)$j;
                 $j++;
                 $aux--;
             }
@@ -192,7 +192,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
             }
         }
 
-        $this->Cell(35, $this->cell, $this->_($this->boleto[$i]->getAgencia().'/'.$this->boleto[$i]->getConta().'-'.$codVerificador), 'R', 1);
+        $this->Cell(35, $this->cell, $this->_($this->boleto[$i]->getAgencia() . '/' . $this->boleto[$i]->getConta() . '-' . $codVerificador), 'R', 1);
 
         //terceira linha
         $this->SetFont($this->PadraoFont, '', $this->fdes);
@@ -201,7 +201,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
         $this->Cell(35, $this->desc, $this->_('CEP'), 'TLR', 1);
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-        $this->Cell(128, $this->cell, $this->_($this->boleto[$i]->getBeneficiario()->getEndereco().' - '.$this->boleto[$i]->getBeneficiario()->getBairro()), 'LR');
+        $this->Cell(128, $this->cell, $this->_($this->boleto[$i]->getBeneficiario()->getEndereco() . ' - ' . $this->boleto[$i]->getBeneficiario()->getBairro()), 'LR');
         $this->Cell(7, $this->cell, $this->_($this->boleto[$i]->getBeneficiario()->getUf()), 'R');
         $this->Cell(35, $this->cell, $this->_($this->boleto[$i]->getBeneficiario()->getCep()), 'R', 1);
 
@@ -257,7 +257,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
         $this->Cell(30, $this->cell, $this->_($this->boleto[$i]->getPagador()->getCep()), 'R', 1);
 
         $this->SetFont($this->PadraoFont, '', $this->fcel);
-        $this->Cell(170, $this->desc, $this->_(trim($this->boleto[$i]->getPagador()->getEndereco().' - '.$this->boleto[$i]->getPagador()->getBairro()), ' -'), 'BLR', 1);
+        $this->Cell(170, $this->desc, $this->_(trim($this->boleto[$i]->getPagador()->getEndereco() . ' - ' . $this->boleto[$i]->getPagador()->getBairro()), ' -'), 'BLR', 1);
         //setima linha
         $this->SetFont($this->PadraoFont, '', $this->fdes);
         $this->Cell(34, $this->desc, $this->_('Carteira'), 'LR');
@@ -319,18 +319,18 @@ class PdfCaixa extends AbstractPdf implements PdfContract
         $this->Cell(50, $this->desc, $this->_('Agência/Código beneficiário'), 'TR', 1);
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-        $this->Cell(120, $this->cell, $this->_($this->boleto[$i]->getBeneficiario()->getNome().'                '.$this->boleto[$i]->getBeneficiario()->getDocumento()), 'LR');
+        $this->Cell(120, $this->cell, $this->_($this->boleto[$i]->getBeneficiario()->getNome() . '                ' . $this->boleto[$i]->getBeneficiario()->getDocumento()), 'LR');
 
         //algoritmo que calcula digito verificador beneficiario
         $codBenefCaixa = strval($this->boleto[$i]->getConta());
-        if (! empty($codBenefCaixa)) {
+        if (!empty($codBenefCaixa)) {
             $j = 2;
             $aux = -1;
             $soma = 0;
             $comprimento = strlen($codBenefCaixa);
             for ($i = $comprimento; $i > 0; $i--) {
                 $calculo = substr($codBenefCaixa, $aux, 1);
-                $soma = $soma + (int) $calculo * (int) $j;
+                $soma = $soma + (int)$calculo * (int)$j;
                 $j++;
                 $aux--;
             }
@@ -343,9 +343,9 @@ class PdfCaixa extends AbstractPdf implements PdfContract
             }
         }
 
-        $this->Cell(50, $this->cell, $this->_($this->boleto[$i]->getAgencia().'/'.$this->boleto[$i]->getConta().'-'.$codVerificador), 'LR', 1, 'R');
+        $this->Cell(50, $this->cell, $this->_($this->boleto[$i]->getAgencia() . '/' . $this->boleto[$i]->getConta() . '-' . $codVerificador), 'LR', 1, 'R');
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-        $this->Cell(120, $this->desc, $this->_($this->boleto[$i]->getBeneficiario()->getEndereco().' - '.$this->boleto[$i]->getBeneficiario()->getBairro()), 'LR');
+        $this->Cell(120, $this->desc, $this->_($this->boleto[$i]->getBeneficiario()->getEndereco() . ' - ' . $this->boleto[$i]->getBeneficiario()->getBairro()), 'LR');
         $this->Cell(50, $this->desc, $this->_(''), 'LR', 1);
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
@@ -504,7 +504,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
     }
 
     /**
-     * @param      string $texto
+     * @param string $texto
      * @param int $ln
      * @param int $ln2
      */
@@ -622,7 +622,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
             $nameFile = Str::random(32);
         }
 
-        return $this->Output($nameFile.'.pdf', $dest, $this->print);
+        return $this->Output($nameFile . '.pdf', $dest, $this->print);
     }
 
     /**
