@@ -2,11 +2,11 @@
 
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
-use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
-use Eduardokum\LaravelBoleto\CalculoDV;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 class Sicredi extends AbstractBoleto implements BoletoContract
 {
@@ -44,16 +44,16 @@ class Sicredi extends AbstractBoleto implements BoletoContract
      */
     protected $especiesCodigo240 = [
         'DMI' => '03', // Duplicata Mercantil por Indicação
-        'DM' => '05', // Duplicata Mercantil por Indicação
-        'DR' => '06', // Duplicata Rural
-        'NP' => '12', // Nota Promissória
-        'NR' => '13', // Nota Promissória Rural
-        'NS' => '16', // Nota de Seguros
-        'RC' => '17', // Recibo
-        'LC' => '07', // Letra de Câmbio
-        'ND' => '19', // Nota de Débito
+        'DM'  => '05', // Duplicata Mercantil por Indicação
+        'DR'  => '06', // Duplicata Rural
+        'NP'  => '12', // Nota Promissória
+        'NR'  => '13', // Nota Promissória Rural
+        'NS'  => '16', // Nota de Seguros
+        'RC'  => '17', // Recibo
+        'LC'  => '07', // Letra de Câmbio
+        'ND'  => '19', // Nota de Débito
         'DSI' => '99', // Duplicata de Serviço por Indicação
-        'OS' => '99', // Outros
+        'OS'  => '99', // Outros
     ];
 
     /**
@@ -63,16 +63,16 @@ class Sicredi extends AbstractBoleto implements BoletoContract
      */
     protected $especiesCodigo400 = [
         'DMI' => 'A', // Duplicata Mercantil por Indicação
-        'DM' => 'A', // Duplicata Mercantil por Indicação
-        'DR' => 'B', // Duplicata Rural
-        'NP' => 'C', // Nota Promissória
-        'NR' => 'D', // Nota Promissória Rural
-        'NS' => 'E', // Nota de Seguros
-        'RC' => 'G', // Recibo
-        'LC' => 'H', // Letra de Câmbio
-        'ND' => 'I', // Nota de Débito
+        'DM'  => 'A', // Duplicata Mercantil por Indicação
+        'DR'  => 'B', // Duplicata Rural
+        'NP'  => 'C', // Nota Promissória
+        'NR'  => 'D', // Nota Promissória Rural
+        'NS'  => 'E', // Nota de Seguros
+        'RC'  => 'G', // Recibo
+        'LC'  => 'H', // Letra de Câmbio
+        'ND'  => 'I', // Nota de Débito
         'DSI' => 'J', // Duplicata de Serviço por Indicação
-        'OS' => 'K', // Outros
+        'OS'  => 'K', // Outros
     ];
 
     /**
@@ -108,7 +108,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
      * Define se possui ou não registro
      *
      * @param bool $registro
-     * @return $this
+     * @return Sicredi
      */
     public function setComRegistro($registro)
     {
@@ -131,7 +131,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
      * Define o posto do cliente
      *
      * @param int $posto
-     * @return $this
+     * @return Sicredi
      */
     public function setPosto($posto)
     {
@@ -155,7 +155,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
      *
      * @param int $byte
      *
-     * @return $this
+     * @return Sicredi
      * @throws ValidationException
      */
     public function setByte($byte)
@@ -179,11 +179,11 @@ class Sicredi extends AbstractBoleto implements BoletoContract
     }
 
     /**
-     * Seta o codigo do cliente.
+     * Seta o código do cliente.
      *
      * @param mixed $codigoCliente
      *
-     * @return $this
+     * @return Sicredi
      */
     public function setCodigoCliente($codigoCliente)
     {
@@ -223,8 +223,8 @@ class Sicredi extends AbstractBoleto implements BoletoContract
         $byte = $this->getByte();
         $numero_boleto = Util::numberFormatGeral($this->getNumero(), 5);
 
-        return $ano . $byte . $numero_boleto
-            . CalculoDV::sicrediNossoNumero($this->getAgencia(), $this->getPosto(), $this->getCodigoCliente(), $ano, $byte, $numero_boleto);
+        return $ano.$byte.$numero_boleto
+            .CalculoDV::sicrediNossoNumero($this->getAgencia(), $this->getPosto(), $this->getCodigoCliente(), $ano, $byte, $numero_boleto);
     }
 
     /**
@@ -271,15 +271,15 @@ class Sicredi extends AbstractBoleto implements BoletoContract
     public static function parseCampoLivre($campoLivre)
     {
         return [
-            'convenio' => null,
-            'agenciaDv' => null,
+            'convenio'        => null,
+            'agenciaDv'       => null,
             'contaCorrenteDv' => null,
-            'codigoCliente' => substr($campoLivre, 17, 5),
-            'carteira' => substr($campoLivre, 1, 1),
-            'nossoNumero' => substr($campoLivre, 2, 8),
-            'nossoNumeroDv' => substr($campoLivre, 10, 1),
+            'codigoCliente'   => substr($campoLivre, 17, 5),
+            'carteira'        => substr($campoLivre, 1, 1),
+            'nossoNumero'     => substr($campoLivre, 2, 8),
+            'nossoNumeroDv'   => substr($campoLivre, 10, 1),
             'nossoNumeroFull' => substr($campoLivre, 2, 9),
-            'agencia' => substr($campoLivre, 11, 4),
+            'agencia'         => substr($campoLivre, 11, 4),
             //'contaCorrente' => substr($campoLivre, 17, 5),
         ];
     }

@@ -1,19 +1,13 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: simetriatecnologia
- * Date: 15/09/16
- * Time: 14:02
- */
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco;
 
+use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Eduardokum\LaravelBoleto\Util;
 
 class Bb extends AbstractRemessa implements RemessaContract
 {
@@ -142,7 +136,7 @@ class Bb extends AbstractRemessa implements RemessaContract
     /**
      * @param BoletoContract $boleto
      *
-     * @return $this
+     * @return Bb
      * @throws ValidationException
      */
     public function addBoleto(BoletoContract $boleto)
@@ -160,7 +154,7 @@ class Bb extends AbstractRemessa implements RemessaContract
     /**
      * @param BoletoContract $boleto
      *
-     * @return $this
+     * @return Bb
      * @throws ValidationException
      */
     protected function segmentoP(BoletoContract $boleto)
@@ -187,9 +181,9 @@ class Bb extends AbstractRemessa implements RemessaContract
             $this->add(16, 17, sprintf('%2.02s', $boleto->getComando()));
         }
         $this->add(18, 22, Util::formatCnab('9', $this->getAgencia(), 5));
-        $this->add(23, 23, CalculoDV::bbAgencia($this->getAgencia()));
+        $this->add(23, 23, ! is_null($this->getAgenciaDv()) ? $this->getAgenciaDv() : CalculoDV::bbAgencia($this->getAgencia()));
         $this->add(24, 35, Util::formatCnab('9', $this->getConta(), 12));
-        $this->add(36, 36, CalculoDV::bbContaCorrente($this->getConta()));
+        $this->add(36, 36, ! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::bbContaCorrente($this->getConta()));
         $this->add(37, 37, '');
         $this->add(38, 57, Util::formatCnab('X', $this->nossoNumero($boleto), 20));
         $this->add(58, 58, '1'); //'1' = Cobrança Simples
@@ -231,7 +225,7 @@ class Bb extends AbstractRemessa implements RemessaContract
     /**
      * @param BoletoContract $boleto
      *
-     * @return $this
+     * @return Bb
      * @throws ValidationException
      */
     public function segmentoQ(BoletoContract $boleto)
@@ -283,7 +277,7 @@ class Bb extends AbstractRemessa implements RemessaContract
     /**
      * @param BoletoContract $boleto
      *
-     * @return $this
+     * @return Bb
      * @throws ValidationException
      */
     public function segmentoR(BoletoContract $boleto)
@@ -331,7 +325,7 @@ class Bb extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @return $this
+     * @return Bb
      * @throws ValidationException
      */
     protected function header()
@@ -353,9 +347,9 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(48, 50, Util::formatCnab('9', $this->getVariacaoCarteira(), 3));
         $this->add(51, 52, '');
         $this->add(53, 57, Util::formatCnab('9', $this->getAgencia(), 5));
-        $this->add(58, 58, CalculoDV::bbAgencia($this->getAgencia()));
+        $this->add(58, 58, ! is_null($this->getAgenciaDv()) ? $this->getAgenciaDv() : CalculoDV::bbAgencia($this->getAgencia()));
         $this->add(59, 70, Util::formatCnab('9', $this->getConta(), 12));
-        $this->add(71, 71, CalculoDV::bbContaCorrente($this->getConta()));
+        $this->add(71, 71, ! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::bbContaCorrente($this->getConta()));
         $this->add(72, 72, '');
         $this->add(73, 102, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(103, 132, Util::formatCnab('X', 'BANCO DO BRASIL S.A.', 30));
@@ -373,7 +367,7 @@ class Bb extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @return $this
+     * @return Bb
      * @throws ValidationException
      */
     protected function headerLote()
@@ -399,9 +393,9 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(49, 51, Util::formatCnab('9', $this->getVariacaoCarteira(), 3));
         $this->add(52, 53, '');
         $this->add(54, 58, Util::formatCnab('9', $this->getAgencia(), 5));
-        $this->add(59, 59, CalculoDV::bbAgencia($this->getAgencia()));
+        $this->add(59, 59, ! is_null($this->getAgenciaDv()) ? $this->getAgenciaDv() : CalculoDV::bbAgencia($this->getAgencia()));
         $this->add(60, 71, Util::formatCnab('9', $this->getConta(), 12));
-        $this->add(72, 72, CalculoDV::bbContaCorrente($this->getConta()));
+        $this->add(72, 72, ! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::bbContaCorrente($this->getConta()));
         $this->add(73, 73, '');
         $this->add(74, 103, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(104, 183, '');
@@ -414,7 +408,7 @@ class Bb extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @return $this
+     * @return Bb
      * @throws ValidationException
      */
     protected function trailerLote()
@@ -432,7 +426,7 @@ class Bb extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @return $this
+     * @return Bb
      * @throws ValidationException
      */
     protected function trailer()
@@ -458,11 +452,11 @@ class Bb extends AbstractRemessa implements RemessaContract
      */
     private function nossoNumero(BoletoContract $boleto)
     {
-        $convenio = (int)Util::onlyNumbers($this->getConvenio());
+        $convenio = (int) Util::onlyNumbers($this->getConvenio());
         if ($convenio > 1000000) {
             return $boleto->getNossoNumero();
         }
 
-        return $boleto->getNossoNumero() . CalculoDV::bbNossoNumero($boleto->getNossoNumero());
+        return $boleto->getNossoNumero().CalculoDV::bbNossoNumero($boleto->getNossoNumero());
     }
 }

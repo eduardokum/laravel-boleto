@@ -2,11 +2,11 @@
 
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
-use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
-use Eduardokum\LaravelBoleto\CalculoDV;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 class Bnb extends AbstractBoleto implements BoletoContract
 {
@@ -54,11 +54,11 @@ class Bnb extends AbstractBoleto implements BoletoContract
     ];
 
     /**
-     * Seta dias para baixa automática
+     * Seta dia para baixa automática
      *
      * @param int $baixaAutomatica
      *
-     * @return $this
+     * @return Bnb
      * @throws ValidationException
      */
     public function setDiasBaixaAutomatica($baixaAutomatica)
@@ -66,7 +66,7 @@ class Bnb extends AbstractBoleto implements BoletoContract
         if ($this->getDiasProtesto() > 0) {
             throw new ValidationException('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
         }
-        $baixaAutomatica = (int)$baixaAutomatica;
+        $baixaAutomatica = (int) $baixaAutomatica;
         $this->diasBaixaAutomatica = $baixaAutomatica > 0 ? $baixaAutomatica : 0;
 
         return $this;
@@ -80,7 +80,7 @@ class Bnb extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        return Util::numberFormatGeral($this->getNumero(), 7) . CalculoDV::bnbNossoNumero($this->getNumero());
+        return Util::numberFormatGeral($this->getNumero(), 7).CalculoDV::bnbNossoNumero($this->getNumero());
     }
 
     /**
@@ -107,7 +107,7 @@ class Bnb extends AbstractBoleto implements BoletoContract
 
         $campoLivre = Util::numberFormatGeral($this->getAgencia(), 4);
         $campoLivre .= Util::numberFormatGeral($this->getConta(), 7);
-        $campoLivre .= $this->getContaDv() ?: CalculoDV::bnbContaCorrente($this->getAgencia(), $this->getConta());
+        $campoLivre .= ! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::bnbContaCorrente($this->getAgencia(), $this->getConta());
         $campoLivre .= $this->getNossoNumero();
         $campoLivre .= Util::numberFormatGeral($this->getCarteira(), 2);
         $campoLivre .= '000';
@@ -125,16 +125,16 @@ class Bnb extends AbstractBoleto implements BoletoContract
     public static function parseCampoLivre($campoLivre)
     {
         return [
-            'codigoCliente' => null,
-            'convenio' => null,
-            'agenciaDv' => null,
-            'agencia' => substr($campoLivre, 0, 4),
-            'contaCorrente' => substr($campoLivre, 4, 7),
+            'codigoCliente'   => null,
+            'convenio'        => null,
+            'agenciaDv'       => null,
+            'agencia'         => substr($campoLivre, 0, 4),
+            'contaCorrente'   => substr($campoLivre, 4, 7),
             'contaCorrenteDv' => substr($campoLivre, 11, 1),
-            'nossoNumero' => substr($campoLivre, 12, 7),
-            'nossoNumeroDv' => substr($campoLivre, 19, 1),
+            'nossoNumero'     => substr($campoLivre, 12, 7),
+            'nossoNumeroDv'   => substr($campoLivre, 19, 1),
             'nossoNumeroFull' => substr($campoLivre, 12, 8),
-            'carteira' => substr($campoLivre, 20, 2),
+            'carteira'        => substr($campoLivre, 20, 2),
         ];
     }
 }

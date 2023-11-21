@@ -163,7 +163,7 @@ class UtilTest extends TestCase
 
     public function testFuncaoFormatarLinhaDigitavel()
     {
-        $this->assertEquals('75691.1111 01012.31230 00000.16001 1 95360000010000', Util::formatLinhaDigitavel('75691111100101231230000000160010195360000010000'));
+        $this->assertEquals('75691.11110 01012.312300 00000.160010 1 95360000010000', Util::formatLinhaDigitavel('75691111100101231230000000160010195360000010000'));
     }
 
     public function testFuncaoFormatarLinhaDigitavelErro()

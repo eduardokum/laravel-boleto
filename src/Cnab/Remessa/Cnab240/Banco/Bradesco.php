@@ -1,19 +1,13 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: simetriatecnologia
- * Date: 15/09/16
- * Time: 14:02
- */
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco;
 
+use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Eduardokum\LaravelBoleto\Util;
 
 class Bradesco extends AbstractRemessa implements RemessaContract
 {
@@ -98,10 +92,10 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     public function getCodigoCliente()
     {
         if (empty($this->codigoCliente)) {
-            $this->codigoCliente = Util::formatCnab('9', $this->getCarteiraNumero(), 4) .
-                Util::formatCnab('9', $this->getAgencia(), 5) .
-                Util::formatCnab('9', $this->getConta(), 7) .
-                Util::formatCnab('9', $this->getContaDv() ?: CalculoDV::bradescoContaCorrente($this->getConta()), 1);
+            $this->codigoCliente = Util::formatCnab('9', $this->getCarteiraNumero(), 4).
+                Util::formatCnab('9', $this->getAgencia(), 5).
+                Util::formatCnab('9', $this->getConta(), 7).
+                Util::formatCnab('9', ! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::bradescoContaCorrente($this->getConta()), 1);
         }
 
         return $this->codigoCliente;
@@ -124,7 +118,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     /**
      * @param BoletoContract $boleto
      *
-     * @return $this
+     * @return Bradesco
      * @throws ValidationException
      */
     public function addBoleto(BoletoContract $boleto)
@@ -143,7 +137,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     /**
      * @param BoletoContract $boleto
      *
-     * @return $this
+     * @return Bradesco
      * @throws ValidationException
      */
     protected function segmentoP(BoletoContract $boleto)
@@ -163,9 +157,9 @@ class Bradesco extends AbstractRemessa implements RemessaContract
             $this->add(16, 17, self::OCORRENCIA_ALT_OUTROS_DADOS);
         }
         $this->add(18, 22, Util::formatCnab('9', $this->getAgencia(), 5));
-        $this->add(23, 23, CalculoDV::bradescoAgencia($this->getAgencia()));
+        $this->add(23, 23, ! is_null($this->getAgenciaDv()) ? $this->getAgenciaDv() : CalculoDV::bradescoAgencia($this->getAgencia()));
         $this->add(24, 35, Util::formatCnab('9', $this->getConta(), 12));
-        $this->add(36, 36, CalculoDV::bradescoContaCorrente($this->getConta()));
+        $this->add(36, 36, ! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::bradescoContaCorrente($this->getConta()));
         $this->add(37, 37, '');
         $this->add(38, 40, Util::formatCnab('9', $this->getCarteira(), 3));
         $this->add(41, 45, '00000');
@@ -209,7 +203,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     /**
      * @param BoletoContract $boleto
      *
-     * @return $this
+     * @return Bradesco
      * @throws ValidationException
      */
     public function segmentoQ(BoletoContract $boleto)
@@ -261,7 +255,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     /**
      * @param BoletoContract $boleto
      *
-     * @return $this
+     * @return Bradesco
      * @throws ValidationException
      */
     public function segmentoR(BoletoContract $boleto)
@@ -305,7 +299,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     /**
      * @param BoletoContract $boleto
      *
-     * @return $this
+     * @return Bradesco
      * @throws ValidationException
      */
     public function segmentoY01(BoletoContract $boleto)
@@ -339,7 +333,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @return $this
+     * @return Bradesco
      * @throws ValidationException
      */
     protected function header()
@@ -357,9 +351,9 @@ class Bradesco extends AbstractRemessa implements RemessaContract
         $this->add(19, 32, Util::formatCnab('9', Util::onlyNumbers($this->getBeneficiario()->getDocumento()), 14));
         $this->add(33, 52, Util::formatCnab('9', Util::onlyNumbers($this->getCodigoCliente()), 20));
         $this->add(53, 57, Util::formatCnab('9', $this->getAgencia(), 5));
-        $this->add(58, 58, CalculoDV::bradescoAgencia($this->getAgencia()));
+        $this->add(58, 58, ! is_null($this->getAgenciaDv()) ? $this->getAgenciaDv() : CalculoDV::bradescoAgencia($this->getAgencia()));
         $this->add(59, 70, Util::formatCnab('9', $this->getConta(), 12));
-        $this->add(71, 71, CalculoDV::bradescoContaCorrente($this->getConta()));
+        $this->add(71, 71, ! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::bradescoContaCorrente($this->getConta()));
         $this->add(72, 72, '');
         $this->add(73, 102, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(103, 132, Util::formatCnab('X', 'Bradesco', 30));
@@ -377,7 +371,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @return $this
+     * @return Bradesco
      * @throws ValidationException
      */
     protected function headerLote()
@@ -399,9 +393,9 @@ class Bradesco extends AbstractRemessa implements RemessaContract
         $this->add(19, 33, Util::formatCnab('9', Util::onlyNumbers($this->getBeneficiario()->getDocumento()), 15));
         $this->add(34, 53, Util::formatCnab('9', Util::onlyNumbers($this->getCodigoCliente()), 20));
         $this->add(54, 58, Util::formatCnab('9', $this->getAgencia(), 5));
-        $this->add(59, 59, CalculoDV::bradescoAgencia($this->getAgencia()));
+        $this->add(59, 59, ! is_null($this->getAgenciaDv()) ? $this->getAgenciaDv() : CalculoDV::bradescoAgencia($this->getAgencia()));
         $this->add(60, 71, Util::formatCnab('9', $this->getConta(), 12));
-        $this->add(72, 72, CalculoDV::bradescoContaCorrente($this->getConta()));
+        $this->add(72, 72, ! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::bradescoContaCorrente($this->getConta()));
         $this->add(73, 73, '');
         $this->add(74, 103, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(104, 183, '');
@@ -414,7 +408,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @return $this
+     * @return Bradesco
      * @throws ValidationException
      */
     protected function trailerLote()
@@ -445,7 +439,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @return $this
+     * @return Bradesco
      * @throws ValidationException
      */
     protected function trailer()

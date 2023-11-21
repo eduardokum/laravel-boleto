@@ -2,12 +2,12 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
+use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Eduardokum\LaravelBoleto\Util;
 
 class Unicred extends AbstractRemessa implements RemessaContract
 {
@@ -86,10 +86,10 @@ class Unicred extends AbstractRemessa implements RemessaContract
     public function getCodigoCliente()
     {
         if (empty($this->codigoCliente)) {
-            $this->codigoCliente = Util::formatCnab('9', $this->getCarteiraNumero(), 4) .
-                Util::formatCnab('9', $this->getAgencia(), 5) .
-                Util::formatCnab('9', $this->getConta(), 7) .
-                Util::formatCnab('9', $this->getContaDv() ?: CalculoDV::unicredContaCorrente($this->getConta()), 1);
+            $this->codigoCliente = Util::formatCnab('9', $this->getCarteiraNumero(), 4).
+                Util::formatCnab('9', $this->getAgencia(), 5).
+                Util::formatCnab('9', $this->getConta(), 7).
+                ! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::unicredContaCorrente($this->getConta());
         }
 
         return $this->codigoCliente;
@@ -100,7 +100,7 @@ class Unicred extends AbstractRemessa implements RemessaContract
      *
      * @param mixed $codigoCliente
      *
-     * @return Bradesco
+     * @return Unicred
      */
     public function setCodigoCliente($codigoCliente)
     {
@@ -110,7 +110,7 @@ class Unicred extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @return $this
+     * @return Unicred
      * @throws ValidationException
      */
     protected function header()
@@ -139,7 +139,7 @@ class Unicred extends AbstractRemessa implements RemessaContract
     /**
      * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Unicred $boleto
      *
-     * @return $this
+     * @return Unicred
      * @throws ValidationException
      */
     public function addBoleto(BoletoContract $boleto)
@@ -149,7 +149,7 @@ class Unicred extends AbstractRemessa implements RemessaContract
 
         $this->add(1, 1, '1');
         $this->add(2, 6, Util::formatCnab('9', $this->getAgencia(), 5));
-        $this->add(7, 7, CalculoDv::unicredAgencia($this->getAgencia()));
+        $this->add(7, 7, ! is_null($this->getAgenciaDv()) ? $this->getAgenciaDv() : CalculoDv::unicredAgencia($this->getAgencia()));
         $this->add(8, 19, Util::formatCnab('9', $this->getConta(), 12));
         $this->add(20, 20, Util::formatCnab('9', $this->getContaDv(), 1));
         $this->add(21, 21, '0');
@@ -260,7 +260,7 @@ class Unicred extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @return $this
+     * @return Unicred
      * @throws ValidationException
      */
     protected function trailer()

@@ -2,12 +2,12 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
+use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Eduardokum\LaravelBoleto\Util;
 
 class Bnb extends AbstractRemessa implements RemessaContract
 {
@@ -94,7 +94,7 @@ class Bnb extends AbstractRemessa implements RemessaContract
         $this->add(27, 30, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(31, 32, '00');
         $this->add(33, 39, Util::formatCnab('9', $this->getConta(), 7));
-        $this->add(40, 40, $this->getContaDv() ?: CalculoDV::bnbContaCorrente($this->getAgencia(), $this->getConta()));
+        $this->add(40, 40, ! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::bnbContaCorrente($this->getAgencia(), $this->getConta()));
         $this->add(41, 46, '');
         $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(77, 79, $this->getCodigoBanco());
@@ -126,7 +126,7 @@ class Bnb extends AbstractRemessa implements RemessaContract
         $this->add(18, 21, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(22, 23, '00');
         $this->add(24, 30, Util::formatCnab('9', $this->getConta(), 7));
-        $this->add(31, 31, $this->getContaDv() ?: CalculoDV::bnbContaCorrente($this->getAgencia(), $this->getConta()));
+        $this->add(31, 31, ! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::bnbContaCorrente($this->getAgencia(), $this->getConta()));
         $this->add(32, 33, Util::formatCnab('9', round($boleto->getMulta()), 2)); // Só aceita números inteiros
         $this->add(34, 37, '');
         $this->add(38, 62, Util::formatCnab('X', $boleto->getNumeroControle(), 25)); // Numero de controle

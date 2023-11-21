@@ -2,12 +2,12 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
+use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Eduardokum\LaravelBoleto\Util;
 
 class Ourinvest extends AbstractRemessa implements RemessaContract
 {
@@ -108,7 +108,7 @@ class Ourinvest extends AbstractRemessa implements RemessaContract
         $this->add(22, 24, Util::formatCnab('9', $this->getCarteira(), 3));
         $this->add(25, 29, Util::formatCnab('9', $this->getAgencia(), 5));
         $this->add(30, 36, Util::formatCnab('9', $this->getConta(), 7));
-        $this->add(37, 37, Util::formatCnab('9', $this->getContaDv() ?: CalculoDV::ourinvestConta($this->getConta()), 1));
+        $this->add(37, 37, ! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::ourinvestConta($this->getConta()));
         $this->add(38, 62, Util::formatCnab('X', $boleto->getNumeroControle(), 25)); // numero de controle
         $this->add(63, 65, '000');
         $this->add(66, 66, $boleto->getMulta() > 0 ? '2' : '0');
