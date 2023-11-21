@@ -162,6 +162,7 @@ interface Boleto
      * @return mixed
      */
     public function getDiasProtesto($default = 0);
+    public function getTipoProtesto($default = 0);
 
     /**
      * @param int $default

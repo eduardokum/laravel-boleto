@@ -91,6 +91,11 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public $diasProtesto = 0;
     /**
+     * Tipo de prostesto se dias úteis, dias corridos, não protestar
+     * @var int
+     */
+    public $tipoProtesto = 0;
+    /**
      * Dias para baixa automática
      *
      * @var integer
@@ -418,7 +423,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define a agência
      *
-     * @param  string $agencia
+     * @param string $agencia
      *
      * @return AbstractBoleto
      */
@@ -442,7 +447,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o dígito da agência
      *
-     * @param  string $agenciaDv
+     * @param string $agenciaDv
      *
      * @return AbstractBoleto
      */
@@ -466,7 +471,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o código da carteira (Com ou sem registro)
      *
-     * @param  string $carteira
+     * @param string $carteira
      *
      * @return AbstractBoleto
      * @throws \Exception
@@ -538,7 +543,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o número da conta
      *
-     * @param  string $conta
+     * @param string $conta
      *
      * @return AbstractBoleto
      */
@@ -562,7 +567,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o dígito verificador da conta
      *
-     * @param  string $contaDv
+     * @param string $contaDv
      *
      * @return AbstractBoleto
      */
@@ -586,7 +591,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define a data de vencimento
      *
-     * @param  \Carbon\Carbon $dataVencimento
+     * @param \Carbon\Carbon $dataVencimento
      *
      * @return AbstractBoleto
      */
@@ -610,7 +615,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define a data de limite de desconto
      *
-     * @param  \Carbon\Carbon $dataDesconto
+     * @param \Carbon\Carbon $dataDesconto
      *
      * @return AbstractBoleto
      */
@@ -634,7 +639,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define a data do documento
      *
-     * @param  \Carbon\Carbon $dataDocumento
+     * @param \Carbon\Carbon $dataDocumento
      *
      * @return AbstractBoleto
      */
@@ -662,13 +667,13 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getDataVencimentoApos()
     {
-        return $this->getDataVencimento()->copy()->addDays((int) $this->getJurosApos());
+        return $this->getDataVencimento()->copy()->addDays((int)$this->getJurosApos());
     }
 
     /**
      * Define o campo aceite
      *
-     * @param  string $aceite
+     * @param string $aceite
      *
      * @return AbstractBoleto
      */
@@ -692,7 +697,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o campo Espécie Doc, geralmente DM (Duplicata Mercantil)
      *
-     * @param  string $especieDoc
+     * @param string $especieDoc
      *
      * @return AbstractBoleto
      */
@@ -725,7 +730,7 @@ abstract class AbstractBoleto implements BoletoContract
     {
         if (!empty($this->especiesCodigo240) && $tipo == 240) {
             $especie = $this->especiesCodigo240;
-        } elseif(!empty($this->especiesCodigo400) && $tipo == 400) {
+        } elseif (!empty($this->especiesCodigo400) && $tipo == 400) {
             $especie = $this->especiesCodigo400;
         } else {
             $especie = $this->especiesCodigo;
@@ -738,7 +743,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o campo Número do documento
      *
-     * @param  int $numeroDocumento
+     * @param int $numeroDocumento
      *
      * @return AbstractBoleto
      */
@@ -762,7 +767,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o número  definido pelo cliente para compor o nosso número
      *
-     * @param  int $numero
+     * @param int $numero
      *
      * @return AbstractBoleto
      */
@@ -786,7 +791,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o número  definido pelo cliente para controle da remessa
      *
-     * @param  string $numeroControle
+     * @param string $numeroControle
      *
      * @return AbstractBoleto
      */
@@ -810,7 +815,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o campo Uso do banco
      *
-     * @param  string $usoBanco
+     * @param string $usoBanco
      *
      * @return AbstractBoleto
      */
@@ -865,7 +870,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define a data de geração do boleto
      *
-     * @param  \Carbon\Carbon $dataProcessamento
+     * @param \Carbon\Carbon $dataProcessamento
      *
      * @return AbstractBoleto
      */
@@ -1012,7 +1017,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o local de pagamento do boleto
      *
-     * @param  string $localPagamento
+     * @param string $localPagamento
      *
      * @return AbstractBoleto
      */
@@ -1036,7 +1041,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define a moeda utilizada pelo boleto
      *
-     * @param  int $moeda
+     * @param int $moeda
      *
      * @return AbstractBoleto
      */
@@ -1108,7 +1113,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o valor total do boleto (incluindo taxas)
      *
-     * @param  string $valor
+     * @param string $valor
      *
      * @return AbstractBoleto
      */
@@ -1132,7 +1137,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define o desconto total do boleto (incluindo taxas)
      *
-     * @param  string $desconto
+     * @param string $desconto
      *
      * @return AbstractBoleto
      */
@@ -1156,7 +1161,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Seta a % de multa
      *
-     * @param  float $multa
+     * @param float $multa
      *
      * @return AbstractBoleto
      */
@@ -1180,7 +1185,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Seta a % de juros
      *
-     * @param  float $juros
+     * @param float $juros
      *
      * @return AbstractBoleto
      */
@@ -1211,13 +1216,13 @@ abstract class AbstractBoleto implements BoletoContract
         if ($this->getJuros() <= 0) {
             return 0;
         }
-        return Util::percent($this->getValor(), $this->getJuros())/30;
+        return Util::percent($this->getValor(), $this->getJuros()) / 30;
     }
 
     /**
      * Seta a quantidade de dias apos o vencimento que cobra o juros
      *
-     * @param  int $jurosApos
+     * @param int $jurosApos
      *
      * @return AbstractBoleto
      */
@@ -1251,10 +1256,10 @@ abstract class AbstractBoleto implements BoletoContract
     {
         $diasProtesto = (int)$diasProtesto;
         $this->diasProtesto = $diasProtesto > 0 ? $diasProtesto : 0;
-        
+
         if (!empty($diasProtesto) && $this->getDiasBaixaAutomatica() > 0) {
             throw new \Exception('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
-        }       
+        }
 
         return $this;
     }
@@ -1269,6 +1274,38 @@ abstract class AbstractBoleto implements BoletoContract
     public function getDiasProtesto($default = 0)
     {
         return $this->diasProtesto > 0 ? $this->diasProtesto : $default;
+    }
+
+    /**
+     * Seta dias para protesto
+     * 0 = Não protestar, 1 = Dias corridos, 2 = Dias úteis, 3 = Negativar dias corridos, 4 = Não negativar
+     * @param int $tipoProtesto
+     *
+     * @return AbstractBoleto
+     * @throws \Exception
+     */
+    public function setTipoProtesto($tipoProtesto)
+    {
+        $tipoProtesto = (int)$tipoProtesto;
+        $this->tipoProtesto = $tipoProtesto > 0 ? $tipoProtesto : 0;
+
+        if (!empty($tipoProtesto) && $this->getDiasProtesto() <> 0) {
+            throw new \Exception('Você deve informar dias de protesto se informar tipo de protesto');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Retorna os diasProtesto
+     *
+     * @param int $default
+     *
+     * @return int
+     */
+    public function getTipoProtesto($default = 0)
+    {
+        return $this->tipoProtesto > 0 ? $this->tipoProtesto : $default;
     }
 
     /**
@@ -1294,8 +1331,8 @@ abstract class AbstractBoleto implements BoletoContract
     {
         //Caso não tenha valor definido de dias pra protesto setar 60 dias como valor padrão para baixa automatica.
         //O valor padrão só será utilizado caso não haja nenhum valor definido para baixaAutomatica
-        if(empty($this->getDiasProtesto())){
-            $default = (empty($default)?60:$default);
+        if (empty($this->getDiasProtesto())) {
+            $default = (empty($default) ? 60 : $default);
         }
         return $this->diasBaixaAutomatica > 0 ? $this->diasBaixaAutomatica : $default;
     }
@@ -1303,7 +1340,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Define a localização do logotipo
      *
-     * @param  string $logo
+     * @param string $logo
      *
      * @return AbstractBoleto
      */
@@ -1754,9 +1791,9 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function renderPDF($print = false, $instrucoes = true)
     {
-        if($this->codigoBanco == 104){
+        if ($this->codigoBanco == 104) {
             $pdf = new PdfCaixa();
-        }else{
+        } else {
             $pdf = new Pdf();
         }
         $pdf->addBoleto($this);
@@ -1818,7 +1855,8 @@ abstract class AbstractBoleto implements BoletoContract
             $nosso_numero_boleto = $this->getNossoNumeroBoleto();
             $linha_digitavel = $this->getLinhaDigitavel();
             $codigo_barras = $this->getCodigoBarras();
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
 
         return array_merge(
             [
