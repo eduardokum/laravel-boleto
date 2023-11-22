@@ -145,6 +145,10 @@ abstract class AbstractRemessa
      * @var string
      */
     private $mensagem2;
+    /**
+     * @var string
+     */
+    private $mensagem3;
 
     /**
      * Construtor
@@ -529,6 +533,13 @@ abstract class AbstractRemessa
         return $this;
     }
 
+    public  function setMensagem3($mensagem)
+    {
+        $this->mensagem3 = $mensagem;
+        return $this;
+    }
+
+
     /**
      * @return string
      */
@@ -544,6 +555,16 @@ abstract class AbstractRemessa
     {
         return $this->mensagem2? $this->mensagem2 : '';
     }
+
+    /**
+     * @return string
+     */
+    protected function getMensagem3()
+    {
+        return $this->mensagem3 ? $this->mensagem3 : '';
+    }
+
+
     /**
      * Retorna o trailer do arquivo.
      *

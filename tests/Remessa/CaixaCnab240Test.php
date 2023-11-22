@@ -185,4 +185,48 @@ class CaixaCnab240Test extends  TestCase
     }
 
 
+    public function test_mensagem_caixa_segmento_p()
+    {
+        $linhaSegmentoP = 4;
+
+        $boleto = new Caixa();
+        $boleto->setLogo(realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '104.png')
+            ->setDataVencimento(new \Carbon\Carbon())
+            ->setValor('200')
+            ->setNumero(717230357272)
+            ->setNumeroDocumento(717230357272)
+            ->setCarteira('RG')
+            ->setAgencia('3115')
+            ->setConta('1416')
+            ->setCodigoCliente(1416)
+            ->setMulta(1)
+            ->setJuros(1)
+            ->setPagador(self::$pagador)
+            ->setDescricaoDemonstrativo([])
+            ->setInstrucoes([]);
+        $remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco\Caixa([
+            'agencia' => '3115',
+            'carteira' => 'RG',
+            'conta' => '1416',
+            'beneficiario' => self::$beneficiario,
+            'Idremessa' => 1,
+            'codigoCliente' => '1416',
+            'mensagem3' =>'xxxxx'
+        ]);
+        $remessa->addBoleto($boleto);
+
+        $file = implode(DIRECTORY_SEPARATOR, [
+            __DIR__,
+            'files',
+            'cnab240',
+            'caixa.txt'
+        ]);
+
+        $file2 = $remessa->save($file);
+        $arrayArquivo = file($file2, FILE_IGNORE_NEW_LINES);
+        var_dump($arrayArquivo);
+        $this->assertTrue(str_contains($arrayArquivo[$linhaSegmentoP],'xxxxx'));
+    }
+
+
 }
