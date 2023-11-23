@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use NumberFormatter;
 use Illuminate\Support\Str;
 use Illuminate\Http\UploadedFile;
+use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
 use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
@@ -1259,7 +1260,7 @@ final class Util
 
         $gui = $line('00', 'br.gov.bcb.pix');
         $key = $line('01', $pix);
-        $txid = $line('05', $id);
+        $txId = $line('05', $id);
         $payload = $line('00', '01');
         $payload .= $line('01', '12');
         $payload .= $line('26', $gui.$key);
@@ -1269,9 +1270,75 @@ final class Util
         $payload .= $line('58', 'BR');
         $payload .= $line('59', $beneficiario->getNome());
         $payload .= $line('60', $beneficiario->getCidade());
-        $payload .= $line('62', $txid);
+        $payload .= $line('62', $txId);
 
         return $payload.$crc16($payload);
+    }
+
+    /**
+     * Função baseada no projeto
+     * https://github.com/renatomb/decoder_brcode_pix/blob/main/funcoes.php
+     * @param $pixCopiaECola
+     * @return array|null
+     */
+    public static function decodePixCopiaECola($pixCopiaECola)
+    {
+        $aPix = [];
+        $i = 0;
+        while ($i < strlen($pixCopiaECola)) {
+            $code = substr($pixCopiaECola, $i, 2);
+            $i += 2;
+            $size = intval(substr($pixCopiaECola, $i, 2));
+            if (! is_numeric($size)) {
+                return null;
+            }
+            $i += 2;
+            $valor = substr($pixCopiaECola, $i, $size);
+            $i += $size;
+            if (preg_match('/^\d{4}.+$/', $valor) && ($code != 54)) {
+                $aPix[$code] = self::decodePixCopiaECola($valor);
+            } else {
+                $aPix[$code] = $valor;
+            }
+        }
+
+        return $aPix;
+    }
+
+    /**
+     * @param $chave
+     * @return string|null
+     */
+    public static function tipoChavePix($chave)
+    {
+        if (is_null($chave)) {
+            return null;
+        }
+
+        $parametro = trim($chave);
+        if (filter_var($parametro, FILTER_VALIDATE_EMAIL)) {
+            return AbstractBoleto::TIPO_CHAVEPIX_EMAIL;
+        }
+
+        if (Util::validarCnpj($parametro)) {
+            return AbstractBoleto::TIPO_CHAVEPIX_CNPJ;
+        }
+
+        if (Util::validarCpf($parametro)) {
+            return AbstractBoleto::TIPO_CHAVEPIX_CPF;
+        }
+
+        // Verificar se é um telefone
+        if (preg_match('/^(\+\d{2})?\(?\d{2}\)?[-.\s]?(\d\s?)?\d{4}[-.\s]?\d{4}$/', $parametro)) {
+            return AbstractBoleto::TIPO_CHAVEPIX_CELULAR;
+        }
+
+        // Verificar se é um UUID
+        if (preg_match('/^[a-fA-F0-9]{32}$/', $parametro) && (ctype_xdigit($parametro))) {
+            return AbstractBoleto::TIPO_CHAVEPIX_ALEATORIA;
+        }
+
+        return null;
     }
 
     /**
