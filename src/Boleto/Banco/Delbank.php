@@ -97,7 +97,7 @@ class Delbank extends AbstractBoleto implements BoletoContract
     protected function gerarNossoNumero()
     {
         return Util::numberFormatGeral($this->getNumero(), 10)
-            .CalculoDV::delcredNossoNumero($this->getCarteira(), $this->getNumero());
+            . CalculoDV::delcredNossoNumero($this->getCarteira(), $this->getNumero());
     }
 
     /**
@@ -126,7 +126,7 @@ class Delbank extends AbstractBoleto implements BoletoContract
      */
     public function getNossoNumeroBoleto()
     {
-        return Util::numberFormatGeral($this->getCarteira(), 2).' / '.substr_replace($this->getNossoNumero(), '-', -1, 0);
+        return Util::numberFormatGeral($this->getCarteira(), 2) . ' / ' . substr_replace($this->getNossoNumero(), '-', -1, 0);
     }
 
     /**

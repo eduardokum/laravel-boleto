@@ -80,7 +80,7 @@ class Unicred extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        return Util::numberFormatGeral($this->getNumero(), 10).CalculoDV::unicredNossoNumero($this->getNumero());
+        return Util::numberFormatGeral($this->getNumero(), 10) . CalculoDV::unicredNossoNumero($this->getNumero());
     }
 
     /**
@@ -107,7 +107,7 @@ class Unicred extends AbstractBoleto implements BoletoContract
         $nossoNumero = $this->getNossoNumero();
 
         $campoLivre = Util::numberFormatGeral($this->getAgencia(), 4); //Agência BENEFICIÁRIO (Sem o dígito verificador, completar com zeros à esquerda quando necessário)
-        $campoLivre .= Util::numberFormatGeral($this->getConta().$this->getContaDv(), 10); //Conta do BENEFICIÁRIO (Com o dígito verificador - Completar com zeros à esquerda quando necessário)
+        $campoLivre .= Util::numberFormatGeral($this->getConta() . $this->getContaDv(), 10); //Conta do BENEFICIÁRIO (Com o dígito verificador - Completar com zeros à esquerda quando necessário)
         $campoLivre .= Util::numberFormatGeral($nossoNumero, 11); //Nosso Número (Com o dígito verificador)
 
         return $this->campoLivre = $campoLivre;
@@ -142,7 +142,7 @@ class Unicred extends AbstractBoleto implements BoletoContract
      */
     public function getAgenciaCodigoBeneficiario()
     {
-        return $this->getAgencia().' / '.Util::numberFormatGeral($this->getConta(), 9).'-'.$this->getContaDv();
+        return $this->getAgencia() . ' / ' . Util::numberFormatGeral($this->getConta(), 9) . '-' . $this->getContaDv();
     }
 
     /**

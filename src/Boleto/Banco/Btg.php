@@ -75,7 +75,7 @@ class Btg extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        return Util::numberFormatGeral($this->getNumero(), 11).CalculoDV::btgNossoNumero($this->getCarteira(), $this->getNumero());
+        return Util::numberFormatGeral($this->getNumero(), 11) . CalculoDV::btgNossoNumero($this->getCarteira(), $this->getNumero());
     }
 
     /**

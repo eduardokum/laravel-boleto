@@ -2,11 +2,11 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
+use Illuminate\Support\Collection;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\AbstractRetorno as AbstractRetornoGeneric;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\HeaderLote as HeaderLoteContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\TrailerLote as TrailerLoteContract;
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Illuminate\Support\Collection;
 
 /**
  * Class AbstractRetorno
@@ -158,11 +158,11 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
     public function toArray()
     {
         $array = [
-            'header' => $this->header->toArray(),
-            'headerLote' => $this->headerLote->toArray(),
+            'header'      => $this->header->toArray(),
+            'headerLote'  => $this->headerLote->toArray(),
             'trailerLote' => $this->trailerLote->toArray(),
-            'trailer' => $this->trailer->toArray(),
-            'detalhes' => new Collection(),
+            'trailer'     => $this->trailer->toArray(),
+            'detalhes'    => new Collection(),
         ];
 
         foreach ($this->detalhe as $detalhe) {

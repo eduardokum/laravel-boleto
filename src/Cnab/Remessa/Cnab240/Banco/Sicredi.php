@@ -1,4 +1,5 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco;
 
 use Eduardokum\LaravelBoleto\Util;

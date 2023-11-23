@@ -384,7 +384,7 @@ final class Util
         $formater->setAttribute(NumberFormatter::MAX_FRACTION_DIGITS, $decimals);
         $pattern = substr($formater->getPattern(), strpos($formater->getPattern(), '#'));
         if ($symbol) {
-            $pattern = '¤ '.$pattern;
+            $pattern = '¤ ' . $pattern;
         }
         $formater->setPattern($pattern);
 
@@ -440,7 +440,7 @@ final class Util
         $maskared = '';
         $k = 0;
         if (is_numeric($val)) {
-            $val = sprintf('%0'.mb_strlen(preg_replace('/[^#]/', '', $mask)).'s', $val);
+            $val = sprintf('%0' . mb_strlen(preg_replace('/[^#]/', '', $mask)) . 's', $val);
         }
         for ($i = 0; $i <= mb_strlen($mask) - 1; $i++) {
             if ($mask[$i] == '#') {
@@ -535,7 +535,7 @@ final class Util
         $date = ($date instanceof Carbon) ? $date : Carbon::createFromFormat($format, $date);
         $dateDiff = $date->copy()->day(31)->month(12)->subYear()->diffInDays($date);
 
-        return $dateDiff.mb_substr($date->year, -1);
+        return $dateDiff . mb_substr($date->year, -1);
     }
 
     /**
@@ -675,7 +675,7 @@ final class Util
                 break;
             case Contracts\Boleto\Boleto::COD_BANCO_SANTANDER:
                 self::adiciona($retorno[0], 27, 30, self::remove(27, 30, $remessa[0]));
-                self::adiciona($retorno[0], 39, 46, '0'.self::remove(40, 46, $remessa[0]));
+                self::adiciona($retorno[0], 39, 46, '0' . self::remove(40, 46, $remessa[0]));
                 break;
             case Contracts\Boleto\Boleto::COD_BANCO_CEF:
                 self::adiciona($retorno[0], 27, 30, self::remove(27, 30, $remessa[0]));
@@ -758,7 +758,7 @@ final class Util
                     self::adiciona($retorno[$i], 63, 73, self::remove(63, 73, $detalhe));
                     break;
                 case Contracts\Boleto\Boleto::COD_BANCO_SICREDI:
-                    self::adiciona($retorno[$i], 48, 62, '00000'.self::remove(48, 56, $detalhe));
+                    self::adiciona($retorno[$i], 48, 62, '00000' . self::remove(48, 56, $detalhe));
                     break;
                 case Contracts\Boleto\Boleto::COD_BANCO_BANRISUL:
                     self::adiciona($retorno[$i], 38, 62, self::remove(38, 62, $detalhe));
@@ -795,7 +795,7 @@ final class Util
     public static function remove($i, $f, &$array)
     {
         if (is_string($array)) {
-            $array = preg_split('//u', rtrim($array, chr(10).chr(13)."\n"."\r"), -1, PREG_SPLIT_NO_EMPTY);
+            $array = preg_split('//u', rtrim($array, chr(10) . chr(13) . "\n" . "\r"), -1, PREG_SPLIT_NO_EMPTY);
         }
 
         $i--;
@@ -939,8 +939,8 @@ final class Util
             if (method_exists($obj, 'getProtectedFields') && in_array(lcfirst($param), $obj->getProtectedFields())) {
                 continue;
             }
-            if (method_exists($obj, 'set'.Str::camel($param))) {
-                $obj->{'set'.Str::camel($param)}($value);
+            if (method_exists($obj, 'set' . Str::camel($param))) {
+                $obj->{'set' . Str::camel($param)}($value);
             }
         }
     }
@@ -987,7 +987,7 @@ final class Util
             'campo_livre'      => substr($barras, -25),
         ];
 
-        $class = __NAMESPACE__.'\\Boleto\\'.self::getBancoClass($variaveis['banco']);
+        $class = __NAMESPACE__ . '\\Boleto\\' . self::getBancoClass($variaveis['banco']);
 
         if (method_exists($class, 'parseCampoLivre')) {
             $variaveis['campo_livre_parsed'] = $class::parseCampoLivre($variaveis['campo_livre']);
@@ -1004,7 +1004,7 @@ final class Util
      */
     public static function codigoBarras2LinhaDigitavel($codigo)
     {
-        $parte1 = substr($codigo, 0, 4).substr($codigo, 19, 5);
+        $parte1 = substr($codigo, 0, 4) . substr($codigo, 19, 5);
         $parte1 .= Util::modulo10($parte1);
 
         $parte2 = substr($codigo, 24, 10);
@@ -1017,7 +1017,7 @@ final class Util
 
         $parte5 = substr($codigo, 5, 14);
 
-        return $parte1.$parte2.$parte3.$parte4.$parte5;
+        return $parte1 . $parte2 . $parte3 . $parte4 . $parte5;
     }
 
     /**
@@ -1249,13 +1249,13 @@ final class Util
                 }
             }
 
-            return '6304'.strtoupper(dechex($resultado));
+            return '6304' . strtoupper(dechex($resultado));
         };
 
         $line = function ($id, $value) {
             $size = str_pad(mb_strlen($value), 2, '0', STR_PAD_LEFT);
 
-            return $id.$size.$value;
+            return $id . $size . $value;
         };
 
         $gui = $line('00', 'br.gov.bcb.pix');
@@ -1263,7 +1263,7 @@ final class Util
         $txId = $line('05', $id);
         $payload = $line('00', '01');
         $payload .= $line('01', '12');
-        $payload .= $line('26', $gui.$key);
+        $payload .= $line('26', $gui . $key);
         $payload .= $line('52', '0000');
         $payload .= $line('53', '986');
         $payload .= $line('54', $valor);
@@ -1272,7 +1272,7 @@ final class Util
         $payload .= $line('60', $beneficiario->getCidade());
         $payload .= $line('62', $txId);
 
-        return $payload.$crc16($payload);
+        return $payload . $crc16($payload);
     }
 
     /**

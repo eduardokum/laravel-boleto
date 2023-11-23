@@ -2,9 +2,9 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400;
 
-use Eduardokum\LaravelBoleto\Cnab\Retorno\AbstractRetorno as AbstractRetornoGeneric;
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Illuminate\Support\Collection;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Cnab\Retorno\AbstractRetorno as AbstractRetornoGeneric;
 
 /**
  * Class AbstractRetorno
@@ -105,8 +105,8 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
     public function toArray()
     {
         $array = [
-            'header' => $this->header->toArray(),
-            'trailer' => $this->trailer->toArray(),
+            'header'   => $this->header->toArray(),
+            'trailer'  => $this->trailer->toArray(),
             'detalhes' => new Collection(),
         ];
         foreach ($this->detalhe as $detalhe) {

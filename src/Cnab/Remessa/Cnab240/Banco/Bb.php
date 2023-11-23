@@ -457,6 +457,6 @@ class Bb extends AbstractRemessa implements RemessaContract
             return $boleto->getNossoNumero();
         }
 
-        return $boleto->getNossoNumero().CalculoDV::bbNossoNumero($boleto->getNossoNumero());
+        return $boleto->getNossoNumero() . CalculoDV::bbNossoNumero($boleto->getNossoNumero());
     }
 }

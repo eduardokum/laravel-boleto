@@ -42,5 +42,9 @@
     },
     "config": {
         "allow-plugins": true
+    },
+    "scripts": {
+        "php-cs-fixer-check": "vendor/bin/php-cs-fixer fix --diff --verbose --dry-run",
+        "php-cs-fixer": "vendor/bin/php-cs-fixer fix --verbose"
     }
 }

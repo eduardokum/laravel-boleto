@@ -6,7 +6,6 @@ use Eduardokum\LaravelBoleto\Exception\ValidationException;
 
 abstract class AbstractWebhook
 {
-
     /**
      * @var array
      */
@@ -18,7 +17,7 @@ abstract class AbstractWebhook
      */
     public function __construct($post)
     {
-        if (!is_array($post)) {
+        if (! is_array($post)) {
             throw new ValidationException('Parâmetro deve ser um array contendo os valores enviado pelo banco');
         }
 
@@ -40,6 +39,7 @@ abstract class AbstractWebhook
     public function setPost(array $post): AbstractWebhook
     {
         $this->post = $post;
+
         return $this;
     }
 

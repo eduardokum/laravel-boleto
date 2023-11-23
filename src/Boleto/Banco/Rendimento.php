@@ -2,11 +2,11 @@
 
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
-use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
-use Eduardokum\LaravelBoleto\CalculoDV;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 class Rendimento extends AbstractBoleto implements BoletoContract
 {
@@ -40,15 +40,15 @@ class Rendimento extends AbstractBoleto implements BoletoContract
      * @var string
      */
     protected $especiesCodigo = [
-        'DM' => '01', //Duplicata Mercantil
-        'NP' => '02', //Nota Promissória
-        'CH' => '03', //Cheque
-        'LC' => '04', //Letra de Câmbio
-        'RC' => '05', //Recibo
-        'AP' => '08', //Apólice de Seguro
-        'DS' => '12', //Duplicata de Serviço
+        'DM'  => '01', //Duplicata Mercantil
+        'NP'  => '02', //Nota Promissória
+        'CH'  => '03', //Cheque
+        'LC'  => '04', //Letra de Câmbio
+        'RC'  => '05', //Recibo
+        'AP'  => '08', //Apólice de Seguro
+        'DS'  => '12', //Duplicata de Serviço
         'CAR' => '31', //Cartão de crédito
-        'O' => '99',  //Outros,
+        'O'   => '99',  //Outros,
     ];
 
     /**
@@ -92,7 +92,7 @@ class Rendimento extends AbstractBoleto implements BoletoContract
      */
     public function setRange($range)
     {
-        $this->range = (int)$range;
+        $this->range = (int) $range;
 
         return $this;
     }
@@ -141,7 +141,7 @@ class Rendimento extends AbstractBoleto implements BoletoContract
     public function setModalidadeCarteira($modalidadeCarteira)
     {
         $modalidadeCarteira = Util::upper($modalidadeCarteira);
-        if (!in_array($modalidadeCarteira, ['1', '2', '3', '4', '6'])) {
+        if (! in_array($modalidadeCarteira, ['1', '2', '3', '4', '6'])) {
             throw new ValidationException('Modalidade da carteira inválida');
         }
         $this->modalidadeCarteira = $modalidadeCarteira;
@@ -159,7 +159,7 @@ class Rendimento extends AbstractBoleto implements BoletoContract
     {
         $nn = 0;
         if ($this->getModalidadeCarteira() == 6) {
-            $nn = ((int)$this->getRange()) + ((int)$this->getNumero());
+            $nn = ((int) $this->getRange()) + ((int) $this->getNumero());
             $nn .= CalculoDV::rendimentoNossoNumero($this->getAgencia(), $this->getCarteira(), $nn);
         }
 
@@ -198,17 +198,17 @@ class Rendimento extends AbstractBoleto implements BoletoContract
     public static function parseCampoLivre($campoLivre)
     {
         return [
-            'convenio' => null,
-            'parcela' => null,
-            'agenciaDv' => null,
-            'contaCorrente' => null,
-            'modalidade' => null,
+            'convenio'        => null,
+            'parcela'         => null,
+            'agenciaDv'       => null,
+            'contaCorrente'   => null,
+            'modalidade'      => null,
             'contaCorrenteDv' => null,
-            'nossoNumeroDv' => null,
-            'agencia' => substr($campoLivre, 0, 4),
-            'nossa_carteira' => substr($campoLivre, 4, 3),
-            'codigoCliente' => substr($campoLivre, 7, 7),
-            'nossoNumero' => substr($campoLivre, 14, 11),
+            'nossoNumeroDv'   => null,
+            'agencia'         => substr($campoLivre, 0, 4),
+            'nossa_carteira'  => substr($campoLivre, 4, 3),
+            'codigoCliente'   => substr($campoLivre, 7, 7),
+            'nossoNumero'     => substr($campoLivre, 14, 11),
             'nossoNumeroFull' => substr($campoLivre, 14, 11),
         ];
     }

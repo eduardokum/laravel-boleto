@@ -21,7 +21,7 @@ $pagador = new \Eduardokum\LaravelBoleto\Pessoa([
 ]);
 
 $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Btg([
-    'logo'                   => realpath(__DIR__.'/../logos/').DIRECTORY_SEPARATOR.'208.png',
+    'logo'                   => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '208.png',
     'dataVencimento'         => new \Carbon\Carbon('2021-12-11'),
     'valor'                  => 200,
     'multa'                  => 10,
@@ -51,4 +51,4 @@ $remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco\Btg([
 ]);
 $remessa->addBoleto($boleto);
 
-echo $remessa->save(__DIR__.DIRECTORY_SEPARATOR.'arquivos'.DIRECTORY_SEPARATOR.'btg.txt');
+echo $remessa->save(__DIR__ . DIRECTORY_SEPARATOR . 'arquivos' . DIRECTORY_SEPARATOR . 'btg.txt');

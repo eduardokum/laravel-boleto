@@ -2,12 +2,12 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco;
 
-use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\AbstractRetorno;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Illuminate\Support\Arr;
+use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
 use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Eduardokum\LaravelBoleto\Util;
-use Illuminate\Support\Arr;
+use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\AbstractRetorno;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 class Sicredi extends AbstractRetorno implements RetornoCnab400
 {
@@ -212,12 +212,12 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
     {
         $this->totais = [
             'valor_recebido' => 0,
-            'liquidados' => 0,
-            'entradas' => 0,
-            'baixados' => 0,
-            'protestados' => 0,
-            'erros' => 0,
-            'alterados' => 0,
+            'liquidados'     => 0,
+            'entradas'       => 0,
+            'baixados'       => 0,
+            'protestados'    => 0,
+            'erros'          => 0,
+            'alterados'      => 0,
         ];
     }
 
@@ -314,7 +314,6 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
                 if (count($motivo) > 0) {
                     $d->setRejeicao(implode(PHP_EOL, $motivo));
                 }
-
             } elseif ($d->getOcorrenciaTipo() != $d::OCORRENCIA_ERRO) {
                 $ocorrencia = Util::appendStrings($d->getOcorrenciaDescricao(), Arr::get($this->rejeicoes, $msgAdicRetorno[0], ''), Arr::get($this->rejeicoes, $msgAdicRetorno[1], ''), Arr::get($this->rejeicoes, $msgAdicRetorno[2], ''), Arr::get($this->rejeicoes, $msgAdicRetorno[3], ''), Arr::get($this->rejeicoes, $msgAdicRetorno[4], ''));
                 $d->setOcorrenciaDescricao($ocorrencia);
@@ -345,13 +344,13 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
     protected function processarTrailer(array $trailer)
     {
         $this->getTrailer()
-            ->setQuantidadeTitulos((int)$this->count())
-            ->setValorTitulos((float)Util::nFloat($this->totais['valor_recebido'], 2, false))
-            ->setQuantidadeErros((int)$this->totais['erros'])
-            ->setQuantidadeEntradas((int)$this->totais['entradas'])
-            ->setQuantidadeLiquidados((int)$this->totais['liquidados'])
-            ->setQuantidadeBaixados((int)$this->totais['baixados'])
-            ->setQuantidadeAlterados((int)$this->totais['alterados']);
+            ->setQuantidadeTitulos((int) $this->count())
+            ->setValorTitulos((float) Util::nFloat($this->totais['valor_recebido'], 2, false))
+            ->setQuantidadeErros((int) $this->totais['erros'])
+            ->setQuantidadeEntradas((int) $this->totais['entradas'])
+            ->setQuantidadeLiquidados((int) $this->totais['liquidados'])
+            ->setQuantidadeBaixados((int) $this->totais['baixados'])
+            ->setQuantidadeAlterados((int) $this->totais['alterados']);
 
         return true;
     }

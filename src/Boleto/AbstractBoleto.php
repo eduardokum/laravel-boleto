@@ -1452,8 +1452,8 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getLogoBase64()
     {
-        return 'data:image/'.pathinfo($this->getLogo(), PATHINFO_EXTENSION).
-            ';base64,'.base64_encode(file_get_contents($this->getLogo()));
+        return 'data:image/' . pathinfo($this->getLogo(), PATHINFO_EXTENSION) .
+            ';base64,' . base64_encode(file_get_contents($this->getLogo()));
     }
 
     /**
@@ -1463,7 +1463,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getLogoBanco()
     {
-        return realpath(__DIR__.'/../../logos/'.$this->getCodigoBanco().'.png');
+        return realpath(__DIR__ . '/../../logos/' . $this->getCodigoBanco() . '.png');
     }
 
     /**
@@ -1540,7 +1540,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getLogoBancoBase64()
     {
-        return 'data:image/'.pathinfo($this->getLogoBanco(), PATHINFO_EXTENSION).';base64,'.base64_encode(file_get_contents($this->getLogoBanco()));
+        return 'data:image/' . pathinfo($this->getLogoBanco(), PATHINFO_EXTENSION) . ';base64,' . base64_encode(file_get_contents($this->getLogoBanco()));
     }
 
     /**
@@ -1601,7 +1601,7 @@ abstract class AbstractBoleto implements BoletoContract
     public function isValid(&$messages)
     {
         foreach ($this->camposObrigatorios as $campo) {
-            $test = call_user_func([$this, 'get'.Str::camel($campo)]);
+            $test = call_user_func([$this, 'get' . Str::camel($campo)]);
             if ($test === '' || is_null($test)) {
                 $messages .= "Campo $campo está em branco";
 
@@ -1627,7 +1627,7 @@ abstract class AbstractBoleto implements BoletoContract
         $agencia = rtrim(sprintf('%s-%s', $this->getAgencia(), $this->getAgenciaDv()), '-');
         $conta = rtrim(sprintf('%s-%s', $this->getConta(), $this->getContaDv()), '-');
 
-        return $agencia.' / '.$conta;
+        return $agencia . ' / ' . $conta;
     }
 
     /**
@@ -1658,19 +1658,19 @@ abstract class AbstractBoleto implements BoletoContract
         }
 
         if (! $this->isValid($messages)) {
-            throw new ValidationException('Campos requeridos pelo banco, aparentam estar ausentes '.$messages);
+            throw new ValidationException('Campos requeridos pelo banco, aparentam estar ausentes ' . $messages);
         }
 
         $codigo = Util::numberFormatGeral($this->getCodigoBanco(), 3)
-            .$this->getMoeda()
-            .Util::fatorVencimento($this->getDataVencimento())
-            .Util::numberFormatGeral($this->getValor(), 10)
-            .$this->getCampoLivre();
+            . $this->getMoeda()
+            . Util::fatorVencimento($this->getDataVencimento())
+            . Util::numberFormatGeral($this->getValor(), 10)
+            . $this->getCampoLivre();
 
         $resto = Util::modulo11($codigo, 2, 9, 0);
         $dv = (in_array($resto, [0, 10, 11])) ? 1 : $resto;
 
-        return $this->campoCodigoBarras = substr($codigo, 0, 4).$dv.substr($codigo, 4);
+        return $this->campoCodigoBarras = substr($codigo, 0, 4) . $dv . substr($codigo, 4);
     }
 
     /**
@@ -1685,7 +1685,7 @@ abstract class AbstractBoleto implements BoletoContract
         $semX = [BoletoContract::COD_BANCO_CEF];
         $x10 = in_array($codigoBanco, $semX) ? 0 : 'X';
 
-        return $codigoBanco.'-'.Util::modulo11($codigoBanco, 2, 9, 0, $x10);
+        return $codigoBanco . '-' . Util::modulo11($codigoBanco, 2, 9, 0, $x10);
     }
 
     /**
@@ -1841,14 +1841,11 @@ abstract class AbstractBoleto implements BoletoContract
         if ($this->getPixQrCode() == null) {
             return null;
         }
-
         if (Util::isBase64($this->getPixQrCode())) {
-            $img = explode(',', $this->getPixQrCode(), 2)[1];
-
-            return 'data://text/plain;base64,'.$img;
+            return 'data://text/plain;base64,' . $this->getPixQrCode();
         }
 
-        if (Str::startsWith($this->getPixQrCode(), 'data:image')) {
+        if (Str::startsWith($this->getPixQrCode(), 'data:')) {
             return $this->getPixQrCode();
         }
 

@@ -3,8 +3,10 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400;
 
 use Carbon\Carbon;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Detalhe as DetalheContract;
+use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Pessoa;
 use Eduardokum\LaravelBoleto\MagicTrait;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Detalhe as DetalheContract;
 
 class Detalhe implements DetalheContract
 {
@@ -246,7 +248,7 @@ class Detalhe implements DetalheContract
     {
         $ocorrencias = func_get_args();
 
-        if (count($ocorrencias) == 0 && !empty($this->getOcorrencia())) {
+        if (count($ocorrencias) == 0 && ! empty($this->getOcorrencia())) {
             return true;
         }
 
@@ -639,6 +641,7 @@ class Detalhe implements DetalheContract
     public function setId($id)
     {
         $this->id = $id;
+
         return $this;
     }
 
@@ -657,6 +660,7 @@ class Detalhe implements DetalheContract
     public function setPixQrCode($pixQrCode)
     {
         $this->pixQrCode = $pixQrCode;
+
         return $this;
     }
 
@@ -675,6 +679,7 @@ class Detalhe implements DetalheContract
     public function setPixChave($pixChave)
     {
         $this->pixChave = $pixChave;
+
         return $this;
     }
 
@@ -693,6 +698,25 @@ class Detalhe implements DetalheContract
     public function setPixChaveTipo($pixChaveTipo)
     {
         $this->pixChaveTipo = $pixChaveTipo;
+
         return $this;
+    }
+
+    /**
+     * @param $nome
+     * @param $cidade
+     * @param bool $force
+     * @return string|null
+     */
+    public function gerarPixCopiaECola($nome, $cidade, $force = false)
+    {
+        if ($this->getPixQrCode() && ! $force) {
+            return $this->getPixQrCode();
+        }
+        if ($this->getPixChave() && $this->getValor() && $this->getID()) {
+            $this->setPixQrCode(Util::gerarPixCopiaECola($this->getPixChave(), $this->getValor(), $this->getID(), new Pessoa(['nome' => Util::normalizeChars($nome), 'cidade' => Util::normalizeChars($cidade)])));
+        }
+
+        return $this->getPixQrCode();
     }
 }

@@ -2,8 +2,8 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno;
 
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 
 class Factory
 {
@@ -15,11 +15,11 @@ class Factory
      */
     public static function make($file)
     {
-        if (!$file_content = Util::file2array($file)) {
+        if (! $file_content = Util::file2array($file)) {
             throw new ValidationException('Arquivo: não existe');
         }
 
-        if (!Util::isHeaderRetorno($file_content[0])) {
+        if (! Util::isHeaderRetorno($file_content[0])) {
             throw new ValidationException("Arquivo: $file, não é um arquivo de retorno");
         }
 
@@ -48,7 +48,7 @@ class Factory
 
         $bancoClass = $namespace . Util::getBancoClass($banco);
 
-        if (!class_exists($bancoClass)) {
+        if (! class_exists($bancoClass)) {
             throw new ValidationException('Banco não possui essa versão de CNAB');
         }
 

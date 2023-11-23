@@ -2,9 +2,9 @@
 
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
+use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use Eduardokum\LaravelBoleto\Util;
 
 class Hsbc extends AbstractBoleto implements BoletoContract
 {
@@ -34,13 +34,13 @@ class Hsbc extends AbstractBoleto implements BoletoContract
      * @var string
      */
     protected $especiesCodigo = [
-        'DM' => '01',
-        'NP' => '02',
-        'NS' => '03',
+        'DM'  => '01',
+        'NP'  => '02',
+        'NS'  => '03',
         'REC' => '05',
-        'CE' => '09',
-        'DS' => '10',
-        'PD' => '98',
+        'CE'  => '09',
+        'DS'  => '10',
+        'PD'  => '98',
     ];
 
     /**
@@ -164,13 +164,13 @@ class Hsbc extends AbstractBoleto implements BoletoContract
     public static function parseCampoLivre($campoLivre)
     {
         return [
-            'convenio' => null,
-            'agenciaDv' => null,
-            'nossoNumero' => substr($campoLivre, 0, 10),
-            'nossoNumeroDv' => substr($campoLivre, 10, 1),
+            'convenio'        => null,
+            'agenciaDv'       => null,
+            'nossoNumero'     => substr($campoLivre, 0, 10),
+            'nossoNumeroDv'   => substr($campoLivre, 10, 1),
             'nossoNumeroFull' => substr($campoLivre, 0, 11),
-            'agencia' => substr($campoLivre, 11, 4),
-            'contaCorrente' => substr($campoLivre, 15, 6),
+            'agencia'         => substr($campoLivre, 11, 4),
+            'contaCorrente'   => substr($campoLivre, 15, 6),
             'contaCorrenteDv' => substr($campoLivre, 21, 1),
         ];
     }

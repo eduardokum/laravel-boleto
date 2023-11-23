@@ -86,7 +86,7 @@ class Pdf extends AbstractPdf implements PdfContract
             $this->SetAutoPageBreak(true);
             $this->SetY(5);
             $this->Cell(30, 10, date('d/m/Y H:i:s'));
-            $this->Cell(0, 10, 'Boleto '.($i + 1).' de '.$this->totalBoletos, 0, 1, 'R');
+            $this->Cell(0, 10, 'Boleto ' . ($i + 1) . ' de ' . $this->totalBoletos, 0, 1, 'R');
         }
 
         $this->SetFont($this->PadraoFont, 'B', 8);
@@ -346,7 +346,7 @@ class Pdf extends AbstractPdf implements PdfContract
         $this->Cell(50, $this->cell, $this->_(''), 'R', 1);
 
         $this->Cell(120, $this->desc, $this->_(''), 'LR');
-        $this->Cell(50, $this->desc, $this->_('(+) Mora / Multa'.($this->boleto[$i]->getCodigoBanco() == '104' ? ' / Juros' : '')), 'TR', 1);
+        $this->Cell(50, $this->desc, $this->_('(+) Mora / Multa' . ($this->boleto[$i]->getCodigoBanco() == '104' ? ' / Juros' : '')), 'TR', 1);
 
         $this->Cell(120, $this->cell, $this->_(''), 'LR');
         $this->Cell(50, $this->cell, $this->_(''), 'R', 1);
@@ -370,7 +370,7 @@ class Pdf extends AbstractPdf implements PdfContract
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
         $this->Cell(0, $this->cell, $this->_($this->boleto[$i]->getPagador()->getNomeDocumento()), 'LR', 1);
-        $this->Cell(0, $this->cell, $this->_(trim($this->boleto[$i]->getPagador()->getEndereco().' - '.$this->boleto[$i]->getPagador()->getBairro()), ' -'), 'LR', 1);
+        $this->Cell(0, $this->cell, $this->_(trim($this->boleto[$i]->getPagador()->getEndereco() . ' - ' . $this->boleto[$i]->getPagador()->getBairro()), ' -'), 'LR', 1);
         $this->Cell(0, $this->cell, $this->_($this->boleto[$i]->getPagador()->getCepCidadeUf()), 'LR', 1);
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
@@ -567,7 +567,7 @@ class Pdf extends AbstractPdf implements PdfContract
             $nameFile = Str::random(32);
         }
 
-        return $this->Output($nameFile.'.pdf', $dest);
+        return $this->Output($nameFile . '.pdf', $dest);
     }
 
     /**

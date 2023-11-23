@@ -99,10 +99,10 @@ class Caixa extends AbstractBoleto implements BoletoContract
             $composicao = '2';
         }
 
-        $carteira = $composicao.'4';
+        $carteira = $composicao . '4';
         // As 15 próximas posições no nosso número são a critério do beneficiário, utilizando o sequencial
         // Depois, calcula-se o código verificador por módulo 11
-        $numero = $carteira.Util::numberFormatGeral($numero_boleto, 15);
+        $numero = $carteira . Util::numberFormatGeral($numero_boleto, 15);
 
         return $numero;
     }
@@ -114,7 +114,7 @@ class Caixa extends AbstractBoleto implements BoletoContract
      */
     public function getNossoNumeroBoleto()
     {
-        return $this->getNossoNumero().'-'.CalculoDV::cefNossoNumero($this->getNossoNumero());
+        return $this->getNossoNumero() . '-' . CalculoDV::cefNossoNumero($this->getNossoNumero());
     }
 
     /**
@@ -123,8 +123,8 @@ class Caixa extends AbstractBoleto implements BoletoContract
      */
     public function getAgenciaCodigoBeneficiario()
     {
-        return $this->getAgencia().' / '.
-            $this->getCodigoCliente().'-'.
+        return $this->getAgencia() . ' / ' .
+            $this->getCodigoCliente() . '-' .
             Util::modulo11($this->getCodigoCliente());
     }
 
@@ -195,9 +195,9 @@ class Caixa extends AbstractBoleto implements BoletoContract
             'codigoCliente7'  => substr($campoLivre, 0, 7),
             'codigoCliente'   => substr($campoLivre, 0, 6),
             'carteira'        => substr($campoLivre, 10, 1),
-            'nossoNumero'     => substr($campoLivre, 7, 3).substr($campoLivre, 11, 3).substr($campoLivre, 15, 8),
+            'nossoNumero'     => substr($campoLivre, 7, 3) . substr($campoLivre, 11, 3) . substr($campoLivre, 15, 8),
             'nossoNumeroDv'   => substr($campoLivre, 23, 1),
-            'nossoNumeroFull' => substr($campoLivre, 7, 3).substr($campoLivre, 11, 3).substr($campoLivre, 15, 8),
+            'nossoNumeroFull' => substr($campoLivre, 7, 3) . substr($campoLivre, 11, 3) . substr($campoLivre, 15, 8),
         ];
     }
 }

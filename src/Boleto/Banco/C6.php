@@ -2,10 +2,10 @@
 
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
-use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
-use Eduardokum\LaravelBoleto\CalculoDV;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 class C6 extends AbstractBoleto implements BoletoContract
 {
@@ -42,23 +42,23 @@ class C6 extends AbstractBoleto implements BoletoContract
      * @var string
      */
     protected $especiesCodigo = [
-        'DM' => '01',
-        'DS' => '02',
-        'NP' => '03',
-        'NS' => '04',
+        'DM'  => '01',
+        'DS'  => '02',
+        'NP'  => '03',
+        'NS'  => '04',
         'REC' => '05',
-        'LC' => '06',
-        'FC' => '07',
+        'LC'  => '06',
+        'FC'  => '07',
         'CAR' => '08',
-        'CT' => '09',
-        'ME' => '12',
-        'ND' => '13',
+        'CT'  => '09',
+        'ME'  => '12',
+        'ND'  => '13',
         'CDA' => '15',
-        'EC' => '16',
+        'EC'  => '16',
         'CPS' => '17',
-        'FT' => '31',
-        'BA' => '33',
-        'O' => '99',
+        'FT'  => '31',
+        'BA'  => '33',
+        'O'   => '99',
     ];
 
     /**
@@ -102,7 +102,7 @@ class C6 extends AbstractBoleto implements BoletoContract
         $campoLivre = Util::numberFormatGeral($this->getCodigoCliente(), 12);
         $campoLivre .= Util::numberFormatGeral(substr($this->getNossoNumero(), 1, 10), 10);
         $campoLivre .= Util::numberFormatGeral($this->getCarteira(), 2);
-        $campoLivre .= in_array(((int)$this->getCarteira()), [10, 30, 60]) ? 3 : 4;
+        $campoLivre .= in_array(((int) $this->getCarteira()), [10, 30, 60]) ? 3 : 4;
 
         return $this->campoLivre = $campoLivre;
     }
@@ -117,15 +117,15 @@ class C6 extends AbstractBoleto implements BoletoContract
     public static function parseCampoLivre($campoLivre)
     {
         return [
-            'convenio' => null,
-            'agenciaDv' => null,
-            'codigoCliente' => substr($campoLivre, 0, 12),
-            'carteira' => substr($campoLivre, 22, 2),
-            'nossoNumero' => substr($campoLivre, 12, 10),
-            'nossoNumeroDv' => null,
+            'convenio'        => null,
+            'agenciaDv'       => null,
+            'codigoCliente'   => substr($campoLivre, 0, 12),
+            'carteira'        => substr($campoLivre, 22, 2),
+            'nossoNumero'     => substr($campoLivre, 12, 10),
+            'nossoNumeroDv'   => null,
             'nossoNumeroFull' => substr($campoLivre, 12, 10),
-            'agencia' => null,
-            'contaCorrente' => null,
+            'agencia'         => null,
+            'contaCorrente'   => null,
             'contaCorrenteDv' => null,
         ];
     }

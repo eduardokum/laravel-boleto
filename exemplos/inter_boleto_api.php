@@ -3,43 +3,43 @@
 require 'autoload.php';
 
 $beneficiario = new \Eduardokum\LaravelBoleto\Pessoa([
-    'nome' => 'ACME',
-    'endereco' => 'Rua um, 123',
-    'cep' => '99999-999',
-    'uf' => 'UF',
-    'cidade' => 'CIDADE',
+    'nome'      => 'ACME',
+    'endereco'  => 'Rua um, 123',
+    'cep'       => '99999-999',
+    'uf'        => 'UF',
+    'cidade'    => 'CIDADE',
     'documento' => '99.999.999/9999-99',
 ]);
 
 $pagador = new \Eduardokum\LaravelBoleto\Pessoa([
-    'nome' => 'Cliente',
-    'endereco' => 'Rua um, 123',
-    'bairro' => 'Bairro',
-    'cep' => '99999-999',
-    'uf' => 'UF',
-    'cidade' => 'CIDADE',
+    'nome'      => 'Cliente',
+    'endereco'  => 'Rua um, 123',
+    'bairro'    => 'Bairro',
+    'cep'       => '99999-999',
+    'uf'        => 'UF',
+    'cidade'    => 'CIDADE',
     'documento' => '999.999.999-99',
 ]);
 
 $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Inter([
-    'logo' => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '077.png',
-    'dataVencimento' => (new \Carbon\Carbon())->addDays(),
-    'valor' => 10,
-    'multa' => false,
-    'juros' => false,
-    'numero' => 1,
+    'logo'            => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '077.png',
+    'dataVencimento'  => (new \Carbon\Carbon())->addDays(),
+    'valor'           => 10,
+    'multa'           => false,
+    'juros'           => false,
+    'numero'          => 1,
     'numeroDocumento' => 1,
-    'pagador' => $pagador,
-    'beneficiario' => $beneficiario,
-    'conta' => '123456789',
-    'operacao' => '1234567',
-    'aceite' => 'S',
-    'especieDoc' => 'DM',
+    'pagador'         => $pagador,
+    'beneficiario'    => $beneficiario,
+    'conta'           => '123456789',
+    'operacao'        => '1234567',
+    'aceite'          => 'S',
+    'especieDoc'      => 'DM',
 ]);
 
 $api = new Eduardokum\LaravelBoleto\Api\Banco\Inter([
-    'conta' => '123456789',
-    'certificado' => realpath(__DIR__ . '/certs/') . DIRECTORY_SEPARATOR . 'cert.crt',
+    'conta'            => '123456789',
+    'certificado'      => realpath(__DIR__ . '/certs/') . DIRECTORY_SEPARATOR . 'cert.crt',
     'certificadoChave' => realpath(__DIR__ . '/certs/') . DIRECTORY_SEPARATOR . 'key.key',
 ]);
 

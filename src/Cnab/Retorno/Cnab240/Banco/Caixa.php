@@ -2,12 +2,12 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Banco;
 
-use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\AbstractRetorno;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Illuminate\Support\Arr;
+use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab240;
 use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Eduardokum\LaravelBoleto\Util;
-use Illuminate\Support\Arr;
+use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\AbstractRetorno;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 class Caixa extends AbstractRetorno implements RetornoCnab240
 {
@@ -354,12 +354,12 @@ class Caixa extends AbstractRetorno implements RetornoCnab240
     protected function init()
     {
         $this->totais = [
-            'liquidados' => 0,
-            'entradas' => 0,
-            'baixados' => 0,
+            'liquidados'  => 0,
+            'entradas'    => 0,
+            'baixados'    => 0,
             'protestados' => 0,
-            'erros' => 0,
-            'alterados' => 0,
+            'erros'       => 0,
+            'alterados'   => 0,
         ];
     }
 
@@ -438,7 +438,7 @@ class Caixa extends AbstractRetorno implements RetornoCnab240
                 ->setValor(Util::nFloat($this->rem(82, 96, $detalhe) / 100, 2, false))
                 ->setNumeroControle($this->rem(106, 130, $detalhe))
                 ->setPagador([
-                    'nome' => $this->rem(149, 188, $detalhe),
+                    'nome'      => $this->rem(149, 188, $detalhe),
                     'documento' => $this->rem(134, 148, $detalhe),
                 ])
                 ->setValorTarifa(Util::nFloat($this->rem(199, 213, $detalhe) / 100, 2, false));
@@ -503,7 +503,7 @@ class Caixa extends AbstractRetorno implements RetornoCnab240
         $this->getTrailerLote()
             ->setLoteServico($this->rem(4, 7, $trailer))
             ->setTipoRegistro($this->rem(8, 8, $trailer))
-            ->setQtdRegistroLote((int)$this->rem(18, 23, $trailer));
+            ->setQtdRegistroLote((int) $this->rem(18, 23, $trailer));
 
         return true;
     }
@@ -519,8 +519,8 @@ class Caixa extends AbstractRetorno implements RetornoCnab240
         $this->getTrailer()
             ->setNumeroLote($this->rem(4, 7, $trailer))
             ->setTipoRegistro($this->rem(8, 8, $trailer))
-            ->setQtdLotesArquivo((int)$this->rem(18, 23, $trailer))
-            ->setQtdRegistroArquivo((int)$this->rem(24, 29, $trailer));
+            ->setQtdLotesArquivo((int) $this->rem(18, 23, $trailer))
+            ->setQtdRegistroArquivo((int) $this->rem(24, 29, $trailer));
 
         return true;
     }

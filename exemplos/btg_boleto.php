@@ -21,7 +21,7 @@ $pagador = new \Eduardokum\LaravelBoleto\Pessoa([
 ]);
 
 $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Btg([
-    'logo'                   => realpath(__DIR__.'/../logos/').DIRECTORY_SEPARATOR.'208.png',
+    'logo'                   => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '208.png',
     'dataVencimento'         => new \Carbon\Carbon('2021-12-11'),
     'valor'                  => 200,
     'multa'                  => false,
@@ -42,4 +42,4 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Btg([
 
 $pdf = new Eduardokum\LaravelBoleto\Boleto\Render\Pdf();
 $pdf->addBoleto($boleto);
-$pdf->gerarBoleto($pdf::OUTPUT_SAVE, __DIR__.DIRECTORY_SEPARATOR.'arquivos'.DIRECTORY_SEPARATOR.'btg.pdf');
+$pdf->gerarBoleto($pdf::OUTPUT_SAVE, __DIR__ . DIRECTORY_SEPARATOR . 'arquivos' . DIRECTORY_SEPARATOR . 'btg.pdf');

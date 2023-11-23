@@ -2,12 +2,12 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco;
 
-use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\AbstractRetorno;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Illuminate\Support\Arr;
+use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
 use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Eduardokum\LaravelBoleto\Util;
-use Illuminate\Support\Arr;
+use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\AbstractRetorno;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 class Hsbc extends AbstractRetorno implements RetornoCnab400
 {
@@ -160,12 +160,12 @@ class Hsbc extends AbstractRetorno implements RetornoCnab400
     {
         $this->totais = [
             'valor_recebido' => 0,
-            'liquidados' => 0,
-            'entradas' => 0,
-            'baixados' => 0,
-            'protestados' => 0,
-            'erros' => 0,
-            'alterados' => 0,
+            'liquidados'     => 0,
+            'entradas'       => 0,
+            'baixados'       => 0,
+            'protestados'    => 0,
+            'erros'          => 0,
+            'alterados'      => 0,
         ];
     }
 
@@ -249,13 +249,13 @@ class Hsbc extends AbstractRetorno implements RetornoCnab400
     protected function processarTrailer(array $trailer)
     {
         $this->getTrailer()
-            ->setQuantidadeTitulos((int)$this->count())
-            ->setValorTitulos((float)Util::nFloat($this->totais['valor_recebido'], 2, false))
-            ->setQuantidadeErros((int)$this->totais['erros'])
-            ->setQuantidadeEntradas((int)$this->totais['entradas'])
-            ->setQuantidadeLiquidados((int)$this->totais['liquidados'])
-            ->setQuantidadeBaixados((int)$this->totais['baixados'])
-            ->setQuantidadeAlterados((int)$this->totais['alterados']);
+            ->setQuantidadeTitulos((int) $this->count())
+            ->setValorTitulos((float) Util::nFloat($this->totais['valor_recebido'], 2, false))
+            ->setQuantidadeErros((int) $this->totais['erros'])
+            ->setQuantidadeEntradas((int) $this->totais['entradas'])
+            ->setQuantidadeLiquidados((int) $this->totais['liquidados'])
+            ->setQuantidadeBaixados((int) $this->totais['baixados'])
+            ->setQuantidadeAlterados((int) $this->totais['alterados']);
 
         return true;
     }

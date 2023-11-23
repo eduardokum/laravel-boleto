@@ -2,15 +2,15 @@
 
 namespace Eduardokum\LaravelBoleto;
 
-use Illuminate\Container\Container;
+use Illuminate\View\Factory;
 use Illuminate\Events\Dispatcher;
+use Illuminate\Container\Container;
+use Illuminate\View\FileViewFinder;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\View\Compilers\BladeCompiler;
+use Illuminate\View\Engines\PhpEngine;
 use Illuminate\View\Engines\CompilerEngine;
 use Illuminate\View\Engines\EngineResolver;
-use Illuminate\View\Engines\PhpEngine;
-use Illuminate\View\Factory;
-use Illuminate\View\FileViewFinder;
+use Illuminate\View\Compilers\BladeCompiler;
 
 class Blade
 {
@@ -44,7 +44,7 @@ class Blade
     public function __construct($viewPaths = [], $cachePath = null)
     {
         $this->container = new Container;
-        $this->viewPaths = (array)$viewPaths;
+        $this->viewPaths = (array) $viewPaths;
         $this->cachePath = $cachePath;
         $this->registerFilesystem();
         $this->registerEngineResolver();

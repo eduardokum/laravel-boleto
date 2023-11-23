@@ -119,6 +119,14 @@ interface Detalhe
     public function getPixChave();
 
     /**
+     * @param $nome
+     * @param $cidade
+     * @param $force
+     * @return mixed
+     */
+    public function gerarPixCopiaECola($nome, $cidade, $force = false);
+
+    /**
      * @return mixed
      */
     public function getPixChaveTipo();

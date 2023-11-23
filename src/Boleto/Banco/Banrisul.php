@@ -100,7 +100,7 @@ class Banrisul extends AbstractBoleto implements BoletoContract
     {
         $numero_boleto = $this->getNumero();
         $nossoNumero = Util::numberFormatGeral($numero_boleto, 8)
-            .CalculoDV::banrisulNossoNumero(Util::numberFormatGeral($numero_boleto, 8));
+            . CalculoDV::banrisulNossoNumero(Util::numberFormatGeral($numero_boleto, 8));
 
         return $nossoNumero;
     }
