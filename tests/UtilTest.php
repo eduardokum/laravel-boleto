@@ -2,8 +2,11 @@
 
 namespace Eduardokum\LaravelBoleto\Tests;
 
+use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\Pessoa;
 use Exception;
 use Eduardokum\LaravelBoleto\Util;
+use Illuminate\Support\Arr;
 
 class UtilTest extends TestCase
 {
@@ -170,5 +173,79 @@ class UtilTest extends TestCase
     {
         $this->expectException(Exception::class);
         Util::formatLinhaDigitavel('7569111110010123123000000016001019536000001000010');
+    }
+
+    public function testFuncaoGerarPixCopiaECola()
+    {
+        $pixCopiaECola = Util::gerarPixCopiaECola('teste@teste.com', 100.00, 'id-transacao', new Pessoa(['nome' => 'NOME_DA_PESSOA', 'cidade' => 'CIDADE']));
+        $this->assertEquals('00020101021226370014br.gov.bcb.pix0115teste@teste.com52040000530398654031005802BR5914NOME_DA_PESSOA6006CIDADE62160512id-transacao6304DA67', $pixCopiaECola);
+    }
+
+    public function testFuncaoDecodePixCopiaECola()
+    {
+        $pixDecoded = Util::decodePixCopiaECola('00020101021226370014br.gov.bcb.pix0115teste@teste.com52040000530398654031005802BR5914NOME_DA_PESSOA6006CIDADE62160512id-transacao6304DA67');
+
+        $this->assertEquals('teste@teste.com', Arr::get($pixDecoded, '26.01'));
+        $this->assertEquals('id-transacao', Arr::get($pixDecoded, '62.05'));
+        $this->assertEquals(100, Arr::get($pixDecoded, '54'));
+        $this->assertEquals('NOME_DA_PESSOA', Arr::get($pixDecoded, '59'));
+        $this->assertEquals('CIDADE', Arr::get($pixDecoded, '60'));
+    }
+
+    public function testFuncaoTipoChavePix()
+    {
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_EMAIL, Util::tipoChavePix('teste@teste.com'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_EMAIL, Util::tipoChavePix('teste@teste.com.br'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_EMAIL, Util::tipoChavePix('teste@teste.com.br'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CNPJ, Util::tipoChavePix('00.000.000/0001-91'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CPF, Util::tipoChavePix('000.000.001-91'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('(99)9999-9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('(99) 9999-9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('(99) 9999.9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('(99) 9999 9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('(99)99999-9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('(99) 99999-9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('(99) 99999.9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('(99) 99999 9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('9999999-9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('99 99999-9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('99 99999.9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('99 99999 9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('9999999-9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('9999999.9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('9999999 9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('99999999999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('+5599999999999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('+559999999999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('+55-99-99999-9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('+55.99.99999.9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('+55 99 99999-9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('+55 9999999-9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('+55 99 99999.9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('+55 9999999.9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('+55 99 99999 9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('+55 9999999 9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('+55-99-9999-9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('+55.99.9999.9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('+55 99 9999-9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('+55 999999-9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('+55 99 9999.9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('+55 999999.9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('+55 99 99999 9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('+55 9999999 9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('+55 (99) 99999-9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('+55 (99) 99999.9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('+55 (99) 99999 9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('+55 (99) 999999999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('+55 (99) 9999-9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('+55 (99) 9999.9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('+55 (99) 9999 9999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_CELULAR, Util::tipoChavePix('+55 (99) 99999999'));
+        $this->assertEquals(AbstractBoleto::TIPO_CHAVEPIX_ALEATORIA, Util::tipoChavePix('b527c9ac-9cb9-4fe1-a526-2f700fcf8ed7'));
+
+        $this->assertNull(Util::tipoChavePix('b527c9ac-9cb9-4fe1-a526-2f700fcf8ed7-1234'));
+        $this->assertNull(Util::tipoChavePix('00.000.000/0001-00'));
+        $this->assertNull(Util::tipoChavePix('000.000.001-00'));
+        $this->assertNull(Util::tipoChavePix('texto-qualquer'));
     }
 }

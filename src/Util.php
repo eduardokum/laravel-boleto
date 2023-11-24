@@ -1147,16 +1147,18 @@ final class Util
      */
     public static function validarCpf($cpf)
     {
-        $c = sprintf('%011s', self::onlyNumbers($cpf));
+        $c = self::onlyNumbers($cpf);
         if (mb_strlen($c) != 11 || preg_match("/^{$c[0]}{11}$/", $c)) {
             return false;
         }
         for ($s = 10, $n = 0, $i = 0; $s >= 2; $n += $c[$i++] * $s--);
         if ($c[9] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
+
             return false;
         }
         for ($s = 11, $n = 0, $i = 0; $s >= 2; $n += $c[$i++] * $s--);
         if ($c[10] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
+
             return false;
         }
 
@@ -1169,20 +1171,19 @@ final class Util
      */
     public static function validarCnpj($cnpj)
     {
-        $c = sprintf('%014s', self::onlyNumbers($cnpj));
+        $c = self::onlyNumbers($cnpj);
         $b = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
-        if ($c < 1) {
-            return false;
-        }
-        if (mb_strlen($c) != 14) {
+        if (mb_strlen($c) != 14 || preg_match("/^{$c[0]}{14}$/", $c)) {
             return false;
         }
         for ($i = 0, $n = 0; $i < 12; $n += $c[$i] * $b[++$i]);
         if ($c[12] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
+
             return false;
         }
         for ($i = 0, $n = 0; $i <= 12; $n += $c[$i] * $b[$i++]);
         if ($c[13] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
+
             return false;
         }
 
@@ -1317,22 +1318,27 @@ final class Util
 
         $parametro = trim($chave);
         if (filter_var($parametro, FILTER_VALIDATE_EMAIL)) {
+
             return AbstractBoleto::TIPO_CHAVEPIX_EMAIL;
         }
 
         if (Util::validarCnpj($parametro)) {
+
             return AbstractBoleto::TIPO_CHAVEPIX_CNPJ;
         }
 
         if (Util::validarCpf($parametro)) {
+
             return AbstractBoleto::TIPO_CHAVEPIX_CPF;
         }
 
         // Verificar se é um telefone
-        if (preg_match('/^(\+\d{2})?\(?\d{2}\)?[-.\s]?(\d\s?)?\d{4}[-.\s]?\d{4}$/', $parametro)) {
+        if (preg_match('/^(\+\d{2}\s?)?[-.\s]?\(?\d{2}\)?[-.\s]?(\d\s?)?\d{4}[-.\s]?\d{4}$/', $parametro)) {
+
             return AbstractBoleto::TIPO_CHAVEPIX_CELULAR;
         }
 
+        $parametro = Util::onlyAlphanumber($parametro);
         // Verificar se é um UUID
         if (preg_match('/^[a-fA-F0-9]{32}$/', $parametro) && (ctype_xdigit($parametro))) {
             return AbstractBoleto::TIPO_CHAVEPIX_ALEATORIA;
