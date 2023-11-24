@@ -6,9 +6,9 @@ use Exception;
 use Throwable;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
-use chillerlan\QRCode\QRCode;
-use chillerlan\QRCode\QROptions;
 use Eduardokum\LaravelBoleto\Util;
+use SimpleSoftwareIO\QrCode\Generator;
+use BaconQrCode\Common\ErrorCorrectionLevel;
 use Eduardokum\LaravelBoleto\Boleto\Render\Pdf;
 use Eduardokum\LaravelBoleto\Boleto\Render\Html;
 use Eduardokum\LaravelBoleto\Boleto\Render\PdfCaixa;
@@ -32,6 +32,9 @@ abstract class AbstractBoleto implements BoletoContract
     const TIPO_CHAVEPIX_CELULAR = 'celular';
     const TIPO_CHAVEPIX_EMAIL = 'email';
     const TIPO_CHAVEPIX_ALEATORIA = 'aleatoria';
+    const QRCODE_ESTILO_QUADRADO = 'square';
+    const QRCODE_ESTILO_PONTO = 'dot';
+    const QRCODE_ESTILO_ARREDONDADO = 'round';
 
     /**
      * Campos necessários para o boleto
@@ -392,6 +395,11 @@ abstract class AbstractBoleto implements BoletoContract
      * Valor Recebido
      */
     public $valorRecebido;
+
+    /**
+     * @var string
+     */
+    private $qrCodeStyle = self::QRCODE_ESTILO_QUADRADO;
 
     /**
      * Recebe a imagem em base 64 do QR Code do PIX
@@ -1834,6 +1842,30 @@ abstract class AbstractBoleto implements BoletoContract
     }
 
     /**
+     * @return string
+     */
+    public function getQrCodeStyle()
+    {
+        return $this->qrCodeStyle;
+    }
+
+    /**
+     * @param string $qrCodeStyle
+     * @return AbstractBoleto
+     * @throws ValidationException
+     */
+    public function setQrCodeStyle($qrCodeStyle)
+    {
+        if (! in_array($qrCodeStyle, [self::QRCODE_ESTILO_QUADRADO, self::QRCODE_ESTILO_PONTO, self::QRCODE_ESTILO_ARREDONDADO])) {
+            throw new ValidationException(sprintf('Estilo QRCODE %s não é válido', $qrCodeStyle));
+        }
+
+        $this->qrCodeStyle = $qrCodeStyle;
+
+        return $this;
+    }
+
+    /**
      * @return ?string
      */
     public function getPixQrCodeBase64(): ?string
@@ -1849,13 +1881,14 @@ abstract class AbstractBoleto implements BoletoContract
             return $this->getPixQrCode();
         }
 
-        $options = new QROptions([
-            'eccLevel'      => QRCode::ECC_M,
-            'outputType'    => QRCode::OUTPUT_IMAGE_PNG,
-            'quietzoneSize' => 0,
-        ]);
+        $qrCode = new Generator();
+        $qrCode->format('png');
+        $qrCode->style($this->getQrCodeStyle());
+        $qrCode->eye('circle');
+        $qrCode->errorCorrection(ErrorCorrectionLevel::M());
+        $qrCode->size(400);
 
-        return (new QRCode($options))->render($this->getPixQrCode());
+        return 'data:image/png;base64,' . base64_encode($qrCode->generate($this->getPixQrCode()));
     }
 
     /**
@@ -1977,6 +2010,7 @@ abstract class AbstractBoleto implements BoletoContract
 
     /**
      * @return string|null
+     * @throws ValidationException
      */
     public function gerarPixCopiaECola()
     {

@@ -20,6 +20,9 @@ use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
  */
 final class Util
 {
+    /**
+     * @var string[]
+     */
     public static $bancos = [
         '246' => 'Banco ABC Brasil S.A.',
         '025' => 'Banco Alfa S.A.',
@@ -864,7 +867,7 @@ final class Util
     {
         $content = is_array($content) ? $content[0] : $content;
 
-        return mb_strlen(rtrim($content, "\r\n")) == 240 ? true : false;
+        return mb_strlen(rtrim($content, "\r\n")) == 240;
     }
 
     /**
@@ -877,7 +880,7 @@ final class Util
     {
         $content = is_array($content) ? $content[0] : $content;
 
-        return mb_strlen(rtrim($content, "\r\n")) == 400 ? true : false;
+        return mb_strlen(rtrim($content, "\r\n")) == 400;
     }
 
     /**
@@ -1230,9 +1233,14 @@ final class Util
      * @param $id
      * @param Pessoa $beneficiario
      * @return string
+     * @throws ValidationException
      */
     public static function gerarPixCopiaECola($pix, $valor, $id, Pessoa $beneficiario)
     {
+        if ($id != Util::normalizeChars($id)) {
+            throw new ValidationException('ID inválido, não pode possuir caracteres especiais');
+        }
+
         $crc16 = function ($payload) {
             $payload .= '6304';
 
@@ -1269,8 +1277,8 @@ final class Util
         $payload .= $line('53', '986');
         $payload .= $line('54', $valor);
         $payload .= $line('58', 'BR');
-        $payload .= $line('59', $beneficiario->getNome());
-        $payload .= $line('60', $beneficiario->getCidade());
+        $payload .= $line('59', Util::normalizeChars($beneficiario->getNome()));
+        $payload .= $line('60', Util::normalizeChars($beneficiario->getCidade()));
         $payload .= $line('62', $txId);
 
         return $payload . $crc16($payload);

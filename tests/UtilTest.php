@@ -181,6 +181,12 @@ class UtilTest extends TestCase
         $this->assertEquals('00020101021226370014br.gov.bcb.pix0115teste@teste.com52040000530398654031005802BR5914NOME_DA_PESSOA6006CIDADE62160512id-transacao6304DA67', $pixCopiaECola);
     }
 
+    public function testFuncaoGerarPixCopiaEColaErro()
+    {
+        $this->expectException(Exception::class);
+        Util::gerarPixCopiaECola('teste@teste.com', 100.00, 'id-transação', new Pessoa(['nome' => 'NOME_DA_PESSOA', 'cidade' => 'CIDADE']));
+    }
+
     public function testFuncaoDecodePixCopiaECola()
     {
         $pixDecoded = Util::decodePixCopiaECola('00020101021226370014br.gov.bcb.pix0115teste@teste.com52040000530398654031005802BR5914NOME_DA_PESSOA6006CIDADE62160512id-transacao6304DA67');
@@ -190,6 +196,16 @@ class UtilTest extends TestCase
         $this->assertEquals(100, Arr::get($pixDecoded, '54'));
         $this->assertEquals('NOME_DA_PESSOA', Arr::get($pixDecoded, '59'));
         $this->assertEquals('CIDADE', Arr::get($pixDecoded, '60'));
+    }
+
+    public function testFuncaoGerarPixCopiaEColaEDecodePixCopiaECola()
+    {
+        $pixDecoded = Util::decodePixCopiaECola(Util::gerarPixCopiaECola('teste@teste.com.br', 123.45, 'id-transacao-tx', new Pessoa(['nome' => 'NOME DA PESSOA', 'cidade' => 'SÃO PAULO'])));
+        $this->assertEquals('teste@teste.com.br', Arr::get($pixDecoded, '26.01'));
+        $this->assertEquals('id-transacao-tx', Arr::get($pixDecoded, '62.05'));
+        $this->assertEquals(123.45, Arr::get($pixDecoded, '54'));
+        $this->assertEquals('NOME DA PESSOA', Arr::get($pixDecoded, '59'));
+        $this->assertEquals('SAO PAULO', Arr::get($pixDecoded, '60'));
     }
 
     public function testFuncaoTipoChavePix()
