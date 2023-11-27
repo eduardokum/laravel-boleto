@@ -1,13 +1,15 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
-use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
-use Eduardokum\LaravelBoleto\CalculoDV;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto;
 use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
-class Delbank  extends AbstractBoleto implements BoletoContract
+class Delbank extends AbstractBoleto implements BoletoContract
 {
     /**
      * Código do banco
@@ -15,6 +17,7 @@ class Delbank  extends AbstractBoleto implements BoletoContract
      * @var string
      */
     protected $codigoBanco = Boleto::COD_BANCO_DELCRED;
+
     /**
      * Define as carteiras disponíveis para este banco
      * '112' => Com registro - Emissão na Internet | '121' => Com Registro
@@ -22,6 +25,7 @@ class Delbank  extends AbstractBoleto implements BoletoContract
      * @var array
      */
     protected $carteiras = ['112', '121'];
+
     /**
      * Trata-se de código utilizado para identificar mensagens especificas ao cedente, sendo
      * que o mesmo consta no cadastro do Banco, quando não houver código cadastrado preencher
@@ -30,15 +34,17 @@ class Delbank  extends AbstractBoleto implements BoletoContract
      * @var int
      */
     protected $cip = '000';
+
     /**
      * Variaveis adicionais.
      *
      * @var array
      */
     public $variaveis_adicionais = [
-        'cip' => '000',
+        'cip'        => '000',
         'mostra_cip' => true,
     ];
+
     /**
      * Espécie do documento, coódigo para remessa
      *
@@ -56,6 +62,7 @@ class Delbank  extends AbstractBoleto implements BoletoContract
         'BP' => '30', //Boleto de Proposta
         'O'  => '99', //Outros,
     ];
+
     /**
      * Espécie do documento, coódigo para remessa
      *
@@ -74,12 +81,14 @@ class Delbank  extends AbstractBoleto implements BoletoContract
         'BDP' => '32', // Boleto de Proposta
         'O'   => '99', // Outros
     ];
+
     /**
      * Mostrar o endereço do beneficiário abaixo da razão e CNPJ na ficha de compensação
      *
-     * @var boolean
+     * @var bool
      */
     protected $mostrarEnderecoFichaCompensacao = true;
+
     /**
      * Gera o Nosso Número.
      *
@@ -92,20 +101,21 @@ class Delbank  extends AbstractBoleto implements BoletoContract
     }
 
     /**
-     * Seta dias para baixa automática
+     * Seta dia para baixa automática
      *
      * @param int $baixaAutomatica
      *
-     * @return $this
-     * @throws \Exception
+     * @return Delbank
+     * @throws ValidationException
      */
     public function setDiasBaixaAutomatica($baixaAutomatica)
     {
         if ($this->getDiasProtesto() > 0) {
-            throw new \Exception('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
+            throw new ValidationException('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
         }
         $baixaAutomatica = (int) $baixaAutomatica;
         $this->diasBaixaAutomatica = $baixaAutomatica > 0 ? $baixaAutomatica : 0;
+
         return $this;
     }
 
@@ -116,8 +126,9 @@ class Delbank  extends AbstractBoleto implements BoletoContract
      */
     public function getNossoNumeroBoleto()
     {
-        return Util::numberFormatGeral($this->getCarteira(), 2) . ' / ' .  substr_replace($this->getNossoNumero(), '-', -1, 0);
+        return Util::numberFormatGeral($this->getCarteira(), 2) . ' / ' . substr_replace($this->getNossoNumero(), '-', -1, 0);
     }
+
     /**
      * Método para gerar o código da posição de 20 a 44
      *
@@ -145,30 +156,32 @@ class Delbank  extends AbstractBoleto implements BoletoContract
      *
      * @return array
      */
-    public static function parseCampoLivre($campoLivre) {
+    public static function parseCampoLivre($campoLivre)
+    {
         return [
-            'convenio' => null,
-            'agenciaDv' => null,
+            'convenio'        => null,
+            'agenciaDv'       => null,
             'contaCorrenteDv' => null,
-            'agencia' => substr($campoLivre, 0, 4),
-            'carteira' => substr($campoLivre, 4, 2),
-            'nossoNumero' => substr($campoLivre, 6, 11),
-            'nossoNumeroDv' => null,
+            'agencia'         => substr($campoLivre, 0, 4),
+            'carteira'        => substr($campoLivre, 4, 2),
+            'nossoNumero'     => substr($campoLivre, 6, 11),
+            'nossoNumeroDv'   => null,
             'nossoNumeroFull' => substr($campoLivre, 6, 11),
-            'contaCorrente' => substr($campoLivre, 17, 7),
+            'contaCorrente'   => substr($campoLivre, 17, 7),
         ];
     }
 
     /**
      * Define o campo CIP do boleto
      *
-     * @param  int $cip
+     * @param int $cip
      * @return Delbank
      */
     public function setCip($cip)
     {
         $this->cip = $cip;
         $this->variaveis_adicionais['cip'] = $this->getCip();
+
         return $this;
     }
 

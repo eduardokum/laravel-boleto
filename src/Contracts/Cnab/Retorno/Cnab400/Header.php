@@ -1,5 +1,8 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400;
+
+use Carbon\Carbon;
 
 interface Header
 {
@@ -46,7 +49,7 @@ interface Header
     /**
      * @param string $format
      *
-     * @return \Carbon\Carbon
+     * @return Carbon
      */
     public function getData($format = 'd/m/Y');
 

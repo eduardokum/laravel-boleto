@@ -1,10 +1,11 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
-use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
-use Eduardokum\LaravelBoleto\CalculoDV;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 class Unicred extends AbstractBoleto implements BoletoContract
 {
@@ -13,31 +14,34 @@ class Unicred extends AbstractBoleto implements BoletoContract
      * @var string
      */
     protected $codigoBanco = self::COD_BANCO_UNICRED;
+
     /**
      * Define as carteiras disponíveis para este banco
      * @var array
      */
     protected $carteiras = ['21'];
+
     /**
      * Linha de local de pagamento
      *
      * @var string
      */
     protected $localPagamento = 'PAGÁVEL EM QUALQUER AGÊNCIA BANCÁRIA/CORRESPONDENTE BANCÁRIO';
+
     /**
      * ESPÉCIE DO DOCUMENTO: de acordo com o ramo de atividade
      * @var string
      */
     protected $especiesCodigo = [
-        'DM'    =>  'DM', //'Duplicata Mercantil',
-        'NP'    =>  'NP', //'Nota Promissória',
-        'NS'    =>  'NS',//'Nota de Seguro',
-        'CS'    =>  'CS',//'Cobrança Seriada',
-        'REC'   =>  'REC',//'Recibo',
-        'LC'    =>  'LC',//'Letras de Câmbio',
-        'ND'    =>  'ND',//'Nota de Débito',
-        'DS'    =>  'DS',//'Duplicata de Serviços',
-        'Outros'    =>  'Outros',
+        'DM'     => 'DM', //'Duplicata Mercantil',
+        'NP'     => 'NP', //'Nota Promissória',
+        'NS'     => 'NS', //'Nota de Seguro',
+        'CS'     => 'CS', //'Cobrança Seriada',
+        'REC'    => 'REC', //'Recibo',
+        'LC'     => 'LC', //'Letras de Câmbio',
+        'ND'     => 'ND', //'Nota de Débito',
+        'DS'     => 'DS', //'Duplicata de Serviços',
+        'Outros' => 'Outros',
     ];
 
     /**
@@ -48,13 +52,14 @@ class Unicred extends AbstractBoleto implements BoletoContract
      * @var int
      */
     protected $cip = '000';
+
     /**
      * Variaveis adicionais.
      *
      * @var array
      */
     public $variaveis_adicionais = [
-        'cip' => '000',
+        'cip'        => '000',
         'mostra_cip' => true,
     ];
 
@@ -65,19 +70,17 @@ class Unicred extends AbstractBoleto implements BoletoContract
      */
     protected $codigoCliente;
 
-
     /**
      * Gera o Nosso Número. Formado com 11(onze) caracteres, sendo 10 dígitos
      * para o nosso número é um digito para o digito verificador. Ex.: 9999999999-D.
      * Obs.: O Nosso Número é um identificador do boleto, devendo ser atribuído
      * Nosso Número diferenciado para cada um.
      *
-     * @throws \Exception
      * @return string
      */
     protected function gerarNossoNumero()
     {
-        return Util::numberFormatGeral($this->getNumero(), 10). CalculoDV::unicredNossoNumero($this->getNumero());
+        return Util::numberFormatGeral($this->getNumero(), 10) . CalculoDV::unicredNossoNumero($this->getNumero());
     }
 
     /**
@@ -89,11 +92,11 @@ class Unicred extends AbstractBoleto implements BoletoContract
     {
         return substr_replace($this->getNossoNumero(), '-', -1, 0);
     }
+
     /**
      * Método para gerar o código da posição de 20 a 44
      *
      * @return string
-     * @throws \Exception
      */
     protected function getCampoLivre()
     {
@@ -104,11 +107,10 @@ class Unicred extends AbstractBoleto implements BoletoContract
         $nossoNumero = $this->getNossoNumero();
 
         $campoLivre = Util::numberFormatGeral($this->getAgencia(), 4); //Agência BENEFICIÁRIO (Sem o dígito verificador, completar com zeros à esquerda quando necessário)
-        $campoLivre .= Util::numberFormatGeral($this->getConta().$this->getContaDv(), 10); //Conta do BENEFICIÁRIO (Com o dígito verificador - Completar com zeros à esquerda quando necessário)
+        $campoLivre .= Util::numberFormatGeral($this->getConta() . $this->getContaDv(), 10); //Conta do BENEFICIÁRIO (Com o dígito verificador - Completar com zeros à esquerda quando necessário)
         $campoLivre .= Util::numberFormatGeral($nossoNumero, 11); //Nosso Número (Com o dígito verificador)
 
         return $this->campoLivre = $campoLivre;
-
     }
 
     /**
@@ -118,19 +120,19 @@ class Unicred extends AbstractBoleto implements BoletoContract
      *
      * @return array
      */
-    static public function parseCampoLivre($campoLivre) {
+    public static function parseCampoLivre($campoLivre)
+    {
         return [
             // 'convenio' => null,
-            'agenciaDv' => null,
+            'agenciaDv'       => null,
             'contaCorrenteDv' => null,
-            'agencia' => substr($campoLivre, 0, 4),
-            'nossoNumero' => substr($campoLivre, 14, 10),
-            'nossoNumeroDv' => substr($campoLivre, 24, 1),
+            'agencia'         => substr($campoLivre, 0, 4),
+            'nossoNumero'     => substr($campoLivre, 14, 10),
+            'nossoNumeroDv'   => substr($campoLivre, 24, 1),
             'nossoNumeroFull' => substr($campoLivre, 14, 11),
-            'contaCorrente' => substr($campoLivre, 4, 10),
+            'contaCorrente'   => substr($campoLivre, 4, 10),
         ];
     }
-
 
     /**
      * AGÊNCIA / CÓDIGO DO BENEFICIÁRIO: deverá ser preenchido com o código da agência,
@@ -138,20 +140,22 @@ class Unicred extends AbstractBoleto implements BoletoContract
      * 9999/999999999-9. Obs.: Preencher com zeros à direita quando necessário.
      * @return string
      */
-    public function getAgenciaCodigoBeneficiario(){
-        return $this->getAgencia() . ' / ' . Util::numberFormatGeral($this->getConta(), 9) .'-'. $this->getContaDv();
+    public function getAgenciaCodigoBeneficiario()
+    {
+        return $this->getAgencia() . ' / ' . Util::numberFormatGeral($this->getConta(), 9) . '-' . $this->getContaDv();
     }
 
     /**
      * Define o campo CIP do boleto
      *
-     * @param  int $cip
+     * @param int $cip
      * @return Unicred
      */
     public function setCip($cip)
     {
         $this->cip = $cip;
         $this->variaveis_adicionais['cip'] = $this->getCip();
+
         return $this;
     }
 
@@ -166,11 +170,11 @@ class Unicred extends AbstractBoleto implements BoletoContract
     }
 
     /**
-     * Seta o codigo do cliente.
+     * Seta o código do cliente.
      *
      * @param mixed $codigoCliente
      *
-     * @return $this
+     * @return Unicred
      */
     public function setCodigoCliente($codigoCliente)
     {
@@ -178,6 +182,7 @@ class Unicred extends AbstractBoleto implements BoletoContract
 
         return $this;
     }
+
     /**
      * Retorna o codigo do cliente.
      *
@@ -187,5 +192,4 @@ class Unicred extends AbstractBoleto implements BoletoContract
     {
         return $this->codigoCliente;
     }
-
 }

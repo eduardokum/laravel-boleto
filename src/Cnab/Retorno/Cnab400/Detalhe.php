@@ -3,12 +3,13 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400;
 
 use Carbon\Carbon;
+use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Pessoa;
 use Eduardokum\LaravelBoleto\MagicTrait;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Detalhe as DetalheContract;
 
 class Detalhe implements DetalheContract
 {
-
     use MagicTrait;
 
     /**
@@ -20,78 +21,117 @@ class Detalhe implements DetalheContract
      * @var string
      */
     protected $nossoNumero;
+
     /**
      * @var string
      */
     protected $numeroDocumento;
+
     /**
      * @var string
      */
     protected $numeroControle;
+
     /**
      * @var string
      */
     protected $codigoLiquidacao;
+
     /**
      * @var string
      */
     protected $ocorrencia;
+
     /**
      * @var string
      */
     protected $ocorrenciaTipo;
+
     /**
      * @var string
      */
     protected $ocorrenciaDescricao;
+
     /**
      * @var Carbon
      */
     protected $dataOcorrencia;
+
     /**
      * @var Carbon
      */
     protected $dataVencimento;
+
     /**
      * @var Carbon
      */
     protected $dataCredito;
+
     /**
      * @var string
      */
     protected $valor;
+
     /**
      * @var string
      */
     protected $valorTarifa;
+
     /**
      * @var string
      */
     protected $valorOutrasDespesas;
+
     /**
      * @var string
      */
     protected $valorIOF;
+
     /**
      * @var string
      */
     protected $valorAbatimento;
+
     /**
      * @var string
      */
     protected $valorDesconto;
+
     /**
      * @var string
      */
     protected $valorRecebido;
+
     /**
      * @var string
      */
     protected $valorMora;
+
     /**
      * @var string
      */
     protected $valorMulta;
+
+    /**
+     * @var
+     */
+    protected $id;
+
+    /**
+     * @var
+     */
+    protected $pixQrCode;
+
+    /**
+     * @var
+     */
+    protected $pixChave;
+
+    /**
+     * @var
+     */
+    protected $pixChaveTipo;
+
     /**
      * @var string
      */
@@ -202,7 +242,7 @@ class Detalhe implements DetalheContract
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function hasOcorrencia()
     {
@@ -581,8 +621,102 @@ class Detalhe implements DetalheContract
     public function setError($error)
     {
         $this->ocorrenciaTipo = self::OCORRENCIA_ERRO;
-        $this->error          = $error;
+        $this->error = $error;
 
         return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     * @return Detalhe
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPixQrCode()
+    {
+        return $this->pixQrCode;
+    }
+
+    /**
+     * @param mixed $pixQrCode
+     * @return Detalhe
+     */
+    public function setPixQrCode($pixQrCode)
+    {
+        $this->pixQrCode = $pixQrCode;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPixChave()
+    {
+        return $this->pixChave;
+    }
+
+    /**
+     * @param mixed $pixChave
+     * @return Detalhe
+     */
+    public function setPixChave($pixChave)
+    {
+        $this->pixChave = $pixChave;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPixChaveTipo()
+    {
+        return $this->pixChaveTipo;
+    }
+
+    /**
+     * @param mixed $pixChaveTipo
+     * @return Detalhe
+     */
+    public function setPixChaveTipo($pixChaveTipo)
+    {
+        $this->pixChaveTipo = $pixChaveTipo;
+
+        return $this;
+    }
+
+    /**
+     * @param $nome
+     * @param $cidade
+     * @param bool $force
+     * @return string|null
+     */
+    public function gerarPixCopiaECola($nome, $cidade, $force = false)
+    {
+        if ($this->getPixQrCode() && ! $force) {
+            return $this->getPixQrCode();
+        }
+        if ($this->getPixChave() && $this->getValor() && $this->getID()) {
+            $this->setPixQrCode(Util::gerarPixCopiaECola($this->getPixChave(), $this->getValor(), $this->getID(), new Pessoa(['nome' => Util::normalizeChars($nome), 'cidade' => Util::normalizeChars($cidade)])));
+        }
+
+        return $this->getPixQrCode();
     }
 }

@@ -1,15 +1,16 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco;
 
+use Illuminate\Support\Arr;
+use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\AbstractRetorno;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
-use Eduardokum\LaravelBoleto\Util;
-use Illuminate\Support\Arr;
 
 class Banrisul extends AbstractRetorno implements RetornoCnab400
 {
-
     /**
      * Array com as ocorrencias do banco;
      *
@@ -54,7 +55,6 @@ class Banrisul extends AbstractRetorno implements RetornoCnab400
         '68' => 'Acerto dos dados do rateio de crédito',
         '69' => 'Cancelamento dos dados do rateio',
     ];
-
 
     /**
      * Array com as possiveis descricoes de baixa e liquidacao.
@@ -146,12 +146,12 @@ class Banrisul extends AbstractRetorno implements RetornoCnab400
     protected function init()
     {
         $this->totais = [
-            'liquidados' => 0,
-            'erros' => 0,
-            'entradas' => 0,
-            'baixados' => 0,
+            'liquidados'  => 0,
+            'erros'       => 0,
+            'entradas'    => 0,
+            'baixados'    => 0,
             'protestados' => 0,
-            'alterados' => 0,
+            'alterados'   => 0,
         ];
     }
 
@@ -159,7 +159,7 @@ class Banrisul extends AbstractRetorno implements RetornoCnab400
      * @param array $header
      *
      * @return bool
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function processarHeader(array $header)
     {
@@ -179,7 +179,7 @@ class Banrisul extends AbstractRetorno implements RetornoCnab400
      * @param array $detalhe
      *
      * @return bool
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function processarDetalhe(array $detalhe)
     {
@@ -194,13 +194,13 @@ class Banrisul extends AbstractRetorno implements RetornoCnab400
             ->setDataOcorrencia($this->rem(111, 116, $detalhe))
             ->setDataVencimento($this->rem(147, 152, $detalhe))
             ->setDataCredito($this->rem(296, 301, $detalhe))
-            ->setValor(Util::nFloat($this->rem(153, 165, $detalhe)/100, 2, false))
-            ->setValorTarifa(Util::nFloat($this->rem(176, 188, $detalhe)/100, 2, false))
-            ->setValorOutrasDespesas(Util::nFloat($this->rem(189, 201, $detalhe), 2, false) / 100 )
-            ->setValorDesconto(Util::nFloat($this->rem(241, 253, $detalhe)/100, 2, false))
-            ->setValorRecebido(Util::nFloat($this->rem(254, 266, $detalhe)/100, 2, false))
-            ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe)/100, 2, false))
-            ->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe)/100, 2, false));
+            ->setValor(Util::nFloat($this->rem(153, 165, $detalhe) / 100, 2, false))
+            ->setValorTarifa(Util::nFloat($this->rem(176, 188, $detalhe) / 100, 2, false))
+            ->setValorOutrasDespesas(Util::nFloat($this->rem(189, 201, $detalhe) / 100, 2, false))
+            ->setValorDesconto(Util::nFloat($this->rem(241, 253, $detalhe) / 100, 2, false))
+            ->setValorRecebido(Util::nFloat($this->rem(254, 266, $detalhe) / 100, 2, false))
+            ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe) / 100, 2, false))
+            ->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe) / 100, 2, false));
 
         /**
          * ocorrencias
@@ -208,14 +208,7 @@ class Banrisul extends AbstractRetorno implements RetornoCnab400
         $msgAdicional = str_split(sprintf('%010s', $this->rem(383, 392, $detalhe)), 2) + array_fill(0, 5, '');
         if ($d->hasOcorrencia('06', '25', '08')) {
             $this->totais['liquidados']++;
-            $ocorrencia = Util::appendStrings(
-                $d->getOcorrenciaDescricao(),
-                Arr::get($this->baixa_liquidacao, $msgAdicional[0], ''),
-                Arr::get($this->baixa_liquidacao, $msgAdicional[1], ''),
-                Arr::get($this->baixa_liquidacao, $msgAdicional[2], ''),
-                Arr::get($this->baixa_liquidacao, $msgAdicional[3], ''),
-                Arr::get($this->baixa_liquidacao, $msgAdicional[4], '')
-            );
+            $ocorrencia = Util::appendStrings($d->getOcorrenciaDescricao(), Arr::get($this->baixa_liquidacao, $msgAdicional[0], ''), Arr::get($this->baixa_liquidacao, $msgAdicional[1], ''), Arr::get($this->baixa_liquidacao, $msgAdicional[2], ''), Arr::get($this->baixa_liquidacao, $msgAdicional[3], ''), Arr::get($this->baixa_liquidacao, $msgAdicional[4], ''));
             $d->setOcorrenciaDescricao($ocorrencia);
             $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
         } elseif ($d->hasOcorrencia('02', '47')) {
@@ -223,14 +216,7 @@ class Banrisul extends AbstractRetorno implements RetornoCnab400
             $d->setOcorrenciaTipo($d::OCORRENCIA_ENTRADA);
         } elseif ($d->hasOcorrencia('04', '08', '10')) {
             $this->totais['baixados']++;
-            $ocorrencia = Util::appendStrings(
-                $d->getOcorrenciaDescricao(),
-                Arr::get($this->baixa_liquidacao, $msgAdicional[0], ''),
-                Arr::get($this->baixa_liquidacao, $msgAdicional[1], ''),
-                Arr::get($this->baixa_liquidacao, $msgAdicional[2], ''),
-                Arr::get($this->baixa_liquidacao, $msgAdicional[3], ''),
-                Arr::get($this->baixa_liquidacao, $msgAdicional[4], '')
-            );
+            $ocorrencia = Util::appendStrings($d->getOcorrenciaDescricao(), Arr::get($this->baixa_liquidacao, $msgAdicional[0], ''), Arr::get($this->baixa_liquidacao, $msgAdicional[1], ''), Arr::get($this->baixa_liquidacao, $msgAdicional[2], ''), Arr::get($this->baixa_liquidacao, $msgAdicional[3], ''), Arr::get($this->baixa_liquidacao, $msgAdicional[4], ''));
             $d->setOcorrenciaDescricao($ocorrencia);
             $d->setOcorrenciaTipo($d::OCORRENCIA_BAIXADA);
         } elseif ($d->hasOcorrencia('40')) {
@@ -253,16 +239,16 @@ class Banrisul extends AbstractRetorno implements RetornoCnab400
      * @param array $trailer
      *
      * @return bool
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function processarTrailer(array $trailer)
     {
         $this->getTrailer()
-            ->setValorTitulos(Util::nFloat($this->rem(26, 39, $trailer)/100, 2, false))
+            ->setValorTitulos(Util::nFloat($this->rem(26, 39, $trailer) / 100, 2, false))
             ->setQuantidadeTitulos((int) $this->rem(18, 25, $trailer))
             ->setQuantidadeErros((int) $this->totais['erros'])
-            ->setQuantidadeEntradas((int)  $this->rem(49, 55, $trailer))
-            ->setQuantidadeLiquidados((int)  $this->rem(71, 77, $trailer))
+            ->setQuantidadeEntradas((int) $this->rem(49, 55, $trailer))
+            ->setQuantidadeLiquidados((int) $this->rem(71, 77, $trailer))
             ->setQuantidadeBaixados((int) $this->totais['baixados'])
             ->setQuantidadeAlterados((int) $this->totais['alterados']);
 

@@ -1,15 +1,24 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Boleto\Render;
 
-abstract class AbstractPdf extends \FPDF
+use FPDF;
+use Exception;
+
+abstract class AbstractPdf extends FPDF
 {
     // INCLUDE JS
     protected $javascript;
+
     protected $n_js;
+
     protected $angle = 0;
+
     // PAGE GROUP
     protected $NewPageGroup; // variable indicating whether a new group was requested
+
     protected $PageGroups = []; // variable containing the number of pages of the groups
+
     protected $CurrPageGroup; // variable containing the alias of the current page group
 
     protected function IncludeJS($script)
@@ -21,7 +30,7 @@ abstract class AbstractPdf extends \FPDF
     {
         $this->SetY(-8);
         if (count($this->PageGroups)) {
-            $this->Cell(0, 6, 'Boleto '.$this->GroupPageNo().'/'.$this->PageGroupAlias(), 0, 0, 'C');
+            $this->Cell(0, 6, 'Boleto ' . $this->GroupPageNo() . '/' . $this->PageGroupAlias(), 0, 0, 'C');
         }
     }
 
@@ -29,22 +38,22 @@ abstract class AbstractPdf extends \FPDF
     {
         $this->_newobj();
         $this->n_js = $this->n;
-        $this->_out('<<');
-        $this->_out('/Names [(EmbeddedJS) ' . ($this->n + 1) . ' 0 R]');
-        $this->_out('>>');
-        $this->_out('endobj');
+        $this->_put('<<');
+        $this->_put('/Names [(EmbeddedJS) ' . ($this->n + 1) . ' 0 R]');
+        $this->_put('>>');
+        $this->_put('endobj');
         $this->_newobj();
-        $this->_out('<<');
-        $this->_out('/S /JavaScript');
-        $this->_out('/JS ' . $this->_textstring($this->javascript));
-        $this->_out('>>');
-        $this->_out('endobj');
+        $this->_put('<<');
+        $this->_put('/S /JavaScript');
+        $this->_put('/JS ' . $this->_textstring($this->javascript));
+        $this->_put('>>');
+        $this->_put('endobj');
     }
 
     public function _putresources()
     {
         parent::_putresources();
-        if (!empty($this->javascript)) {
+        if (! empty($this->javascript)) {
             $this->_putjavascript();
         }
     }
@@ -52,8 +61,8 @@ abstract class AbstractPdf extends \FPDF
     public function _putcatalog()
     {
         parent::_putcatalog();
-        if (!empty($this->javascript)) {
-            $this->_out('/Names <</JavaScript ' . ($this->n_js) . ' 0 R>>');
+        if (! empty($this->javascript)) {
+            $this->_put('/Names <</JavaScript ' . ($this->n_js) . ' 0 R>>');
         }
     }
 
@@ -80,10 +89,10 @@ abstract class AbstractPdf extends \FPDF
         parent::_beginpage($orientation, $size, $rotation);
         if ($this->NewPageGroup) {
             // start a new group
-            if (!is_array($this->PageGroups)) {
+            if (! is_array($this->PageGroups)) {
                 $this->PageGroups = [];
             }
-            $n =  sizeof($this->PageGroups) + 1;
+            $n = sizeof($this->PageGroups) + 1;
             $alias = '{' . $n . '}';
             $this->PageGroups[$alias] = 1;
             $this->CurrPageGroup = $alias;
@@ -96,7 +105,7 @@ abstract class AbstractPdf extends \FPDF
     public function _putpages()
     {
         $nb = $this->page;
-        if (!empty($this->PageGroups)) {
+        if (! empty($this->PageGroups)) {
             // do page number replacement
             foreach ($this->PageGroups as $k => $v) {
                 for ($n = 1; $n <= $nb; $n++) {
@@ -110,8 +119,9 @@ abstract class AbstractPdf extends \FPDF
     protected function _()
     {
         $args = func_get_args();
-        $var  = utf8_decode(array_shift($args));
-        $s    = vsprintf($var, $args);
+        $var = utf8_decode(array_shift($args));
+        $s = vsprintf($var, $args);
+
         return $s;
     }
 
@@ -122,7 +132,7 @@ abstract class AbstractPdf extends \FPDF
      * @param $border
      * @param $ln
      * @param $align
-     * @param float  $dec
+     * @param float $dec
      */
     protected function textFitCell($w, $h, $txt, $border, $ln, $align, $dec = 0.1)
     {
@@ -144,15 +154,15 @@ abstract class AbstractPdf extends \FPDF
      * @param int $basewidth
      * @param int $height
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function i25($xpos, $ypos, $code, $basewidth = 1, $height = 10)
     {
-        $code = (strlen($code)%2 != 0 ? '0' : '') . $code;
+        $code = (strlen($code) % 2 != 0 ? '0' : '') . $code;
         $wide = $basewidth;
-        $narrow = $basewidth/3;
+        $narrow = $basewidth / 3;
 
-        $barChar = array();
+        $barChar = [];
         // wide/narrow codes for the digits
         $barChar['0'] = 'nnwwn';
         $barChar['1'] = 'wnnnw';
@@ -178,10 +188,10 @@ abstract class AbstractPdf extends \FPDF
             $charBar = $code[$i];
             $charSpace = $code[$i + 1];
             // check whether it is a valid digit
-            if (!isset($barChar[$charBar])) {
+            if (! isset($barChar[$charBar])) {
                 $this->Error('Invalid character in barcode: ' . $charBar);
             }
-            if (!isset($barChar[$charSpace])) {
+            if (! isset($barChar[$charSpace])) {
                 $this->Error('Invalid character in barcode: ' . $charSpace);
             }
             // create a wide/narrow-sequence (first digit=bars, second digit=spaces)
@@ -197,14 +207,13 @@ abstract class AbstractPdf extends \FPDF
                     $lineWidth = $wide;
                 }
                 // draw every second value, because the second digit of the pair is represented by the spaces
-                if ($bar%2 == 0) {
+                if ($bar % 2 == 0) {
                     $this->Rect($xpos, $ypos, $lineWidth, $height, 'F');
                 }
                 $xpos += $lineWidth;
             }
         }
     }
-
 
     public function __construct($orientation = 'P', $unit = 'mm', $size = 'A4')
     {
@@ -219,14 +228,10 @@ abstract class AbstractPdf extends \FPDF
      * D: send to the browser and force download.<br>
      * F: save to a local<br>
      * S: return as a string. name is ignored.
-     * @param bool   $print 1 imprime 0 nao imprime
      * @return string
      */
-    public function Output($name = '', $dest = 'I', $print = false)
+    public function Output($name = '', $dest = 'I', $isUTF8 = false)
     {
-        if ($print) {
-            $this->IncludeJS("print('true');");
-        }
-        return parent::Output($name, $dest);
+        return parent::Output($name, $dest, $isUTF8);
     }
 }

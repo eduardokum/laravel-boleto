@@ -2,11 +2,12 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Banco;
 
+use Illuminate\Support\Arr;
+use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab240;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\AbstractRetorno;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab240;
-use Eduardokum\LaravelBoleto\Util;
-use Illuminate\Support\Arr;
 
 class Bb extends AbstractRetorno implements RetornoCnab240
 {
@@ -207,12 +208,12 @@ class Bb extends AbstractRetorno implements RetornoCnab240
     protected function init()
     {
         $this->totais = [
-            'liquidados' => 0,
-            'entradas' => 0,
-            'baixados' => 0,
+            'liquidados'  => 0,
+            'entradas'    => 0,
+            'baixados'    => 0,
             'protestados' => 0,
-            'erros' => 0,
-            'alterados' => 0,
+            'erros'       => 0,
+            'alterados'   => 0,
         ];
     }
 
@@ -220,7 +221,7 @@ class Bb extends AbstractRetorno implements RetornoCnab240
      * @param array $header
      *
      * @return bool
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function processarHeader(array $header)
     {
@@ -249,7 +250,7 @@ class Bb extends AbstractRetorno implements RetornoCnab240
      * @param array $headerLote
      *
      * @return bool
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function processarHeaderLote(array $headerLote)
     {
@@ -279,7 +280,7 @@ class Bb extends AbstractRetorno implements RetornoCnab240
      * @param array $detalhe
      *
      * @return bool
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function processarDetalhe(array $detalhe)
     {
@@ -292,46 +293,32 @@ class Bb extends AbstractRetorno implements RetornoCnab240
                 ->setCarteira($this->rem(58, 58, $detalhe))
                 ->setNumeroDocumento($this->rem(59, 73, $detalhe))
                 ->setDataVencimento($this->rem(74, 81, $detalhe))
-                ->setValor(Util::nFloat($this->rem(82, 96, $detalhe)/100, 2, false))
+                ->setValor(Util::nFloat($this->rem(82, 96, $detalhe) / 100, 2, false))
                 ->setNumeroControle($this->rem(106, 130, $detalhe))
                 ->setPagador([
-                    'nome' => $this->rem(149, 188, $detalhe),
+                    'nome'      => $this->rem(149, 188, $detalhe),
                     'documento' => $this->rem(134, 148, $detalhe),
                 ])
-                ->setValorTarifa(Util::nFloat($this->rem(199, 213, $detalhe)/100, 2, false));
+                ->setValorTarifa(Util::nFloat($this->rem(199, 213, $detalhe) / 100, 2, false));
 
             /**
              * ocorrencias
-            */
+             */
             $msgAdicional = str_split(sprintf('%08s', $this->rem(214, 223, $detalhe)), 2) + array_fill(0, 5, '');
             if ($d->hasOcorrencia('06', '17')) {
                 $this->totais['liquidados']++;
-                $ocorrencia = Util::appendStrings(
-                    $d->getOcorrenciaDescricao(),
-                    Arr::get($this->baixa_liquidacao, $msgAdicional[0], ''),
-                    Arr::get($this->baixa_liquidacao, $msgAdicional[1], ''),
-                    Arr::get($this->baixa_liquidacao, $msgAdicional[2], ''),
-                    Arr::get($this->baixa_liquidacao, $msgAdicional[3], ''),
-                    Arr::get($this->baixa_liquidacao, $msgAdicional[4], '')
-                );
+                $ocorrencia = Util::appendStrings($d->getOcorrenciaDescricao(), Arr::get($this->baixa_liquidacao, $msgAdicional[0], ''), Arr::get($this->baixa_liquidacao, $msgAdicional[1], ''), Arr::get($this->baixa_liquidacao, $msgAdicional[2], ''), Arr::get($this->baixa_liquidacao, $msgAdicional[3], ''), Arr::get($this->baixa_liquidacao, $msgAdicional[4], ''));
                 $d->setOcorrenciaDescricao($ocorrencia);
                 $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
             } elseif ($d->hasOcorrencia('02')) {
                 $this->totais['entradas']++;
-                if(array_search('a4', array_map('strtolower', $msgAdicional)) !== false) {
+                if (array_search('a4', array_map('strtolower', $msgAdicional)) !== false) {
                     $d->getPagador()->setDda(true);
                 }
                 $d->setOcorrenciaTipo($d::OCORRENCIA_ENTRADA);
             } elseif ($d->hasOcorrencia('09')) {
                 $this->totais['baixados']++;
-                $ocorrencia = Util::appendStrings(
-                    $d->getOcorrenciaDescricao(),
-                    Arr::get($this->rejeicoes, $msgAdicional[0], ''),
-                    Arr::get($this->rejeicoes, $msgAdicional[1], ''),
-                    Arr::get($this->rejeicoes, $msgAdicional[2], ''),
-                    Arr::get($this->rejeicoes, $msgAdicional[3], ''),
-                    Arr::get($this->rejeicoes, $msgAdicional[4], '')
-                );
+                $ocorrencia = Util::appendStrings($d->getOcorrenciaDescricao(), Arr::get($this->rejeicoes, $msgAdicional[0], ''), Arr::get($this->rejeicoes, $msgAdicional[1], ''), Arr::get($this->rejeicoes, $msgAdicional[2], ''), Arr::get($this->rejeicoes, $msgAdicional[3], ''), Arr::get($this->rejeicoes, $msgAdicional[4], ''));
                 $d->setOcorrenciaDescricao($ocorrencia);
                 $d->setOcorrenciaTipo($d::OCORRENCIA_BAIXADA);
             } elseif ($d->hasOcorrencia('25')) {
@@ -342,13 +329,7 @@ class Bb extends AbstractRetorno implements RetornoCnab240
                 $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
             } elseif ($d->hasOcorrencia('03', '26', '30')) {
                 $this->totais['erros']++;
-                $error = Util::appendStrings(
-                    Arr::get($this->rejeicoes, $msgAdicional[0], ''),
-                    Arr::get($this->rejeicoes, $msgAdicional[1], ''),
-                    Arr::get($this->rejeicoes, $msgAdicional[2], ''),
-                    Arr::get($this->rejeicoes, $msgAdicional[3], ''),
-                    Arr::get($this->rejeicoes, $msgAdicional[4], '')
-                );
+                $error = Util::appendStrings(Arr::get($this->rejeicoes, $msgAdicional[0], ''), Arr::get($this->rejeicoes, $msgAdicional[1], ''), Arr::get($this->rejeicoes, $msgAdicional[2], ''), Arr::get($this->rejeicoes, $msgAdicional[3], ''), Arr::get($this->rejeicoes, $msgAdicional[4], ''));
                 $d->setError($error);
             } else {
                 $d->setOcorrenciaTipo($d::OCORRENCIA_OUTROS);
@@ -356,14 +337,14 @@ class Bb extends AbstractRetorno implements RetornoCnab240
         }
 
         if ($this->getSegmentType($detalhe) == 'U') {
-            $d->setValorMulta(Util::nFloat($this->rem(18, 32, $detalhe)/100, 2, false))
-                ->setValorDesconto(Util::nFloat($this->rem(33, 47, $detalhe)/100, 2, false))
-                ->setValorAbatimento(Util::nFloat($this->rem(48, 62, $detalhe)/100, 2, false))
-                ->setValorIOF(Util::nFloat($this->rem(63, 77, $detalhe)/100, 2, false))
-                ->setValorRecebido(Util::nFloat($this->rem(78, 92, $detalhe)/100, 2, false))
-                ->setValorTarifa($d->getValorRecebido() - Util::nFloat($this->rem(93, 107, $detalhe)/100, 2, false))
-                ->setValorOutrasDespesas(Util::nFloat($this->rem(108, 122, $detalhe)/100, 2, false))
-                ->setValorOutrosCreditos(Util::nFloat($this->rem(123, 137, $detalhe)/100, 2, false))
+            $d->setValorMulta(Util::nFloat($this->rem(18, 32, $detalhe) / 100, 2, false))
+                ->setValorDesconto(Util::nFloat($this->rem(33, 47, $detalhe) / 100, 2, false))
+                ->setValorAbatimento(Util::nFloat($this->rem(48, 62, $detalhe) / 100, 2, false))
+                ->setValorIOF(Util::nFloat($this->rem(63, 77, $detalhe) / 100, 2, false))
+                ->setValorRecebido(Util::nFloat($this->rem(78, 92, $detalhe) / 100, 2, false))
+                ->setValorTarifa($d->getValorRecebido() - Util::nFloat($this->rem(93, 107, $detalhe) / 100, 2, false))
+                ->setValorOutrasDespesas(Util::nFloat($this->rem(108, 122, $detalhe) / 100, 2, false))
+                ->setValorOutrosCreditos(Util::nFloat($this->rem(123, 137, $detalhe) / 100, 2, false))
                 ->setDataOcorrencia($this->rem(138, 145, $detalhe))
                 ->setDataCredito($this->rem(146, 153, $detalhe));
         }
@@ -375,7 +356,7 @@ class Bb extends AbstractRetorno implements RetornoCnab240
      * @param array $trailer
      *
      * @return bool
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function processarTrailerLote(array $trailer)
     {
@@ -391,7 +372,7 @@ class Bb extends AbstractRetorno implements RetornoCnab240
      * @param array $trailer
      *
      * @return bool
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function processarTrailer(array $trailer)
     {

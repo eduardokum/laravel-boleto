@@ -1,10 +1,12 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
+use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
-use Eduardokum\LaravelBoleto\Util;
 
 class Hsbc extends AbstractRemessa implements RemessaContract
 {
@@ -16,7 +18,6 @@ class Hsbc extends AbstractRemessa implements RemessaContract
     const ESPECIE_COMPL_BOLETO_CLIENTE = '08';
     const ESPECIE_EMISSAO_TOTAL_BANCO = '09';
     const ESPECIE_EMISSAO_TOTAL_CLIENTE = '98';
-
     const OCORRENCIA_REMESSA = '01';
     const OCORRENCIA_PEDIDO_BAIXA = '02';
     const OCORRENCIA_CONCESSAO_ABATIMENTO = '04';
@@ -35,7 +36,6 @@ class Hsbc extends AbstractRemessa implements RemessaContract
     const OCORRENCIA_INC_SACADO_ELETRONICO = '50';
     const OCORRENCIA_EXC_SACADO_ELETRONICO = '51';
     const OCORRENCIA_PROTESTO_FALIMENTARES = '57';
-
     const INSTRUCAO_SEM = '00';
     const INSTRUCAO_MULTA_PERC_XX_APOS_XX = '15';
     const INSTRUCAO_MULTA_PERC_XX_APOS_MAXIMO = '16';
@@ -68,7 +68,6 @@ class Hsbc extends AbstractRemessa implements RemessaContract
         parent::__construct($params);
         $this->addCampoObrigatorio('contaDv');
     }
-
 
     /**
      * Código do banco
@@ -108,7 +107,7 @@ class Hsbc extends AbstractRemessa implements RemessaContract
 
     /**
      * @return Hsbc
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function header()
     {
@@ -144,7 +143,7 @@ class Hsbc extends AbstractRemessa implements RemessaContract
      * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Hsbc $boleto
      *
      * @return Hsbc
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function addBoleto(BoletoContract $boleto)
     {
@@ -177,7 +176,7 @@ class Hsbc extends AbstractRemessa implements RemessaContract
             $this->add(109, 110, self::OCORRENCIA_PEDIDO_BAIXA); // BAIXA
         }
         if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
-            throw new \Exception('HSBC não suporta alteração geral, use o comando `comandarInstrucao` no boleto para enviar uma solicitação especifica');
+            throw new ValidationException('HSBC não suporta alteração geral, use o comando `comandarInstrucao` no boleto para enviar uma solicitação especifica');
         }
         if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO_DATA) {
             $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO);
@@ -233,7 +232,7 @@ class Hsbc extends AbstractRemessa implements RemessaContract
 
     /**
      * @return Hsbc
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function trailer()
     {

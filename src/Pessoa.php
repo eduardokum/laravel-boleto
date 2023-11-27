@@ -1,6 +1,8 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto;
 
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
 
 class Pessoa implements PessoaContract
@@ -9,36 +11,44 @@ class Pessoa implements PessoaContract
      * @var string
      */
     protected $nome;
+
     /**
      * @var string
      */
     protected $endereco;
+
     /**
      * @var string
      */
     protected $bairro;
+
     /**
      * @var string
      */
     protected $cep;
+
     /**
      * @var string
      */
     protected $uf;
+
     /**
      * @var string
      */
     protected $cidade;
+
     /**
      * @var string
      */
     protected $documento;
+
     /**
      * @var string
      */
     protected $email;
+
     /**
-     * @var boolean
+     * @var bool
      */
     protected $dda = false;
 
@@ -50,20 +60,20 @@ class Pessoa implements PessoaContract
      * @param null $cep
      * @param null $cidade
      * @param null $uf
-     *
+     * @param null $email
      * @return Pessoa
      */
     public static function create($nome, $documento, $endereco = null, $bairro = null, $cep = null, $cidade = null, $uf = null, $email = null)
     {
         return new static([
-            'nome' => $nome,
-            'endereco' => $endereco,
-            'bairro' => $bairro,
-            'cep' => $cep,
-            'uf' => $uf,
-            'cidade' => $cidade,
+            'nome'      => $nome,
+            'endereco'  => $endereco,
+            'bairro'    => $bairro,
+            'cep'       => $cep,
+            'uf'        => $uf,
+            'cidade'    => $cidade,
             'documento' => $documento,
-            'email' => $email,
+            'email'     => $email,
         ]);
     }
 
@@ -90,6 +100,7 @@ class Pessoa implements PessoaContract
 
         return $this;
     }
+
     /**
      * Retorna o CEP
      *
@@ -111,9 +122,9 @@ class Pessoa implements PessoaContract
     {
         $this->cidade = $cidade;
 
-
         return $this;
     }
+
     /**
      * Retorna a cidade
      *
@@ -130,18 +141,19 @@ class Pessoa implements PessoaContract
      * @param string $documento
      *
      * @return Pessoa
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function setDocumento($documento)
     {
         $documento = substr(Util::onlyNumbers($documento), -14);
-        if (!in_array(strlen($documento), [10, 11, 14, 0])) {
-            throw new \Exception('Documento inválido');
+        if (! in_array(strlen($documento), [10, 11, 14, 0])) {
+            throw new ValidationException('Documento inválido');
         }
         $this->documento = $documento;
 
         return $this;
     }
+
     /**
      * Retorna o documento (CPF ou CNPJ)
      *
@@ -154,6 +166,7 @@ class Pessoa implements PessoaContract
         } elseif ($this->getTipoDocumento() == 'CEI') {
             return Util::maskString(Util::onlyNumbers($this->documento), '##.#####.#-##');
         }
+
         return Util::maskString(Util::onlyNumbers($this->documento), '##.###.###/####-##');
     }
 
@@ -170,6 +183,7 @@ class Pessoa implements PessoaContract
 
         return $this;
     }
+
     /**
      * Retorna o endereço
      *
@@ -193,6 +207,7 @@ class Pessoa implements PessoaContract
 
         return $this;
     }
+
     /**
      * Retorna o bairro
      *
@@ -216,6 +231,7 @@ class Pessoa implements PessoaContract
 
         return $this;
     }
+
     /**
      * Retorna o nome
      *
@@ -239,6 +255,7 @@ class Pessoa implements PessoaContract
 
         return $this;
     }
+
     /**
      * Retorna a UF
      *
@@ -248,6 +265,7 @@ class Pessoa implements PessoaContract
     {
         return $this->uf;
     }
+
     /**
      * Retorna o nome e o documento formatados
      *
@@ -255,12 +273,13 @@ class Pessoa implements PessoaContract
      */
     public function getNomeDocumento()
     {
-        if (!$this->getDocumento()) {
+        if (! $this->getDocumento()) {
             return $this->getNome();
         } else {
             return $this->getNome() . ' / ' . $this->getTipoDocumento() . ': ' . $this->getDocumento();
         }
     }
+
     /**
      * Retorna se o tipo do documento é CPF ou CNPJ ou Documento
      *
@@ -275,9 +294,10 @@ class Pessoa implements PessoaContract
         } elseif (strlen($cpf_cnpj_cei) == 10) {
             return 'CEI';
         }
-        
+
         return 'CNPJ';
     }
+
     /**
      * Retorna o endereço formatado para a linha 2 de endereço
      *
@@ -287,7 +307,8 @@ class Pessoa implements PessoaContract
      */
     public function getCepCidadeUf()
     {
-        $dados = array_filter(array($this->getCep(), $this->getCidade(), $this->getUf()));
+        $dados = array_filter([$this->getCep(), $this->getCidade(), $this->getUf()]);
+
         return implode(' - ', $dados);
     }
 
@@ -300,14 +321,16 @@ class Pessoa implements PessoaContract
      */
     public function getEnderecoCompleto()
     {
-        $dados = array_filter(array($this->getEndereco(), $this->getBairro(), $this->getCidade(), $this->getUf(), $this->getCep()));
+        $dados = array_filter([$this->getEndereco(), $this->getBairro(), $this->getCidade(), $this->getUf(), $this->getCep()]);
+
         return implode(' - ', $dados);
     }
-	
+
     /**
      * @return bool
      */
-    public function isDda() {
+    public function isDda()
+    {
         return $this->dda;
     }
 
@@ -316,7 +339,8 @@ class Pessoa implements PessoaContract
      *
      * @return Pessoa
      */
-    public function setDda($dda) {
+    public function setDda($dda)
+    {
         $this->dda = $dda;
 
         return $this;
@@ -348,18 +372,18 @@ class Pessoa implements PessoaContract
     public function toArray()
     {
         return [
-            'nome' => $this->getNome(),
-            'endereco' => $this->getEndereco(),
-            'bairro' => $this->getBairro(),
-            'cep' => $this->getCep(),
-            'uf' => $this->getUf(),
-            'cidade' => $this->getCidade(),
-            'documento' => $this->getDocumento(),
-            'nome_documento' => $this->getNomeDocumento(),
-            'endereco2' => $this->getCepCidadeUf(),
-			'endereco_completo' => $this->getEnderecoCompleto(),
-			'email' => $this->getEmail(),
-            'dda' => $this->isDda(),
+            'nome'              => $this->getNome(),
+            'endereco'          => $this->getEndereco(),
+            'bairro'            => $this->getBairro(),
+            'cep'               => $this->getCep(),
+            'uf'                => $this->getUf(),
+            'cidade'            => $this->getCidade(),
+            'documento'         => $this->getDocumento(),
+            'nome_documento'    => $this->getNomeDocumento(),
+            'endereco2'         => $this->getCepCidadeUf(),
+            'endereco_completo' => $this->getEnderecoCompleto(),
+            'email'             => $this->getEmail(),
+            'dda'               => $this->isDda(),
         ];
     }
 }

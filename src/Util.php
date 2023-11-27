@@ -1,10 +1,15 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto;
 
+use Exception;
 use Carbon\Carbon;
-use Illuminate\Http\UploadedFile;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use NumberFormatter;
 use Illuminate\Support\Str;
+use Illuminate\Http\UploadedFile;
+use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 /**
  * Class Util
@@ -12,11 +17,12 @@ use Illuminate\Support\Str;
  * @TODO validar tamanho nosso numero
  * @TODO validar processar
  * @TODO validar float nos numeros
- *
- * @package Eduardokum\LaravelBoleto
  */
 final class Util
 {
+    /**
+     * @var string[]
+     */
     public static $bancos = [
         '246' => 'Banco ABC Brasil S.A.',
         '025' => 'Banco Alfa S.A.',
@@ -149,33 +155,33 @@ final class Util
     /**
      * Retorna a String em MAIUSCULO
      *
-     * @param String $string
+     * @param string $string
      *
-     * @return String
+     * @return string
      */
     public static function upper($string)
     {
-        return strtr(mb_strtoupper($string), "àáâãäåæçèéêëìíîïðñòóôõö÷øùüúþÿ", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÜÚÞß");
+        return strtr(mb_strtoupper($string), 'àáâãäåæçèéêëìíîïðñòóôõö÷øùüúþÿ', 'ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÜÚÞß');
     }
 
     /**
      * Retorna a String em minusculo
      *
-     * @param String $string
+     * @param string $string
      *
-     * @return String
+     * @return string
      */
     public static function lower($string)
     {
-        return strtr(mb_strtolower($string), "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÜÚÞß", "àáâãäåæçèéêëìíîïðñòóôõö÷øùüúþÿ");
+        return strtr(mb_strtolower($string), 'ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÜÚÞß', 'àáâãäåæçèéêëìíîïðñòóôõö÷øùüúþÿ');
     }
 
     /**
      * Retorna a String em minusculo
      *
-     * @param String $string
+     * @param string $string
      *
-     * @return String
+     * @return string
      */
     public static function upFirst($string)
     {
@@ -185,9 +191,9 @@ final class Util
     /**
      * Retorna somente as letras da string
      *
-     * @param String $string
+     * @param string $string
      *
-     * @return String
+     * @return string
      */
     public static function lettersOnly($string)
     {
@@ -197,9 +203,9 @@ final class Util
     /**
      * Retorna somente as letras da string
      *
-     * @param String $string
+     * @param string $string
      *
-     * @return String
+     * @return string
      */
     public static function onlyLetters($string)
     {
@@ -209,9 +215,9 @@ final class Util
     /**
      * Retorna somente as letras da string
      *
-     * @param String $string
+     * @param string $string
      *
-     * @return String
+     * @return string
      */
     public static function lettersNot($string)
     {
@@ -221,9 +227,9 @@ final class Util
     /**
      * Retorna somente as letras da string
      *
-     * @param String $string
+     * @param string $string
      *
-     * @return String
+     * @return string
      */
     public static function notLetters($string)
     {
@@ -233,9 +239,9 @@ final class Util
     /**
      * Retorna somente os digitos da string
      *
-     * @param String $string
+     * @param string $string
      *
-     * @return String
+     * @return string
      */
     public static function numbersOnly($string)
     {
@@ -245,9 +251,9 @@ final class Util
     /**
      * Retorna somente os digitos da string
      *
-     * @param String $string
+     * @param string $string
      *
-     * @return String
+     * @return string
      */
     public static function onlyNumbers($string)
     {
@@ -257,9 +263,9 @@ final class Util
     /**
      * Retorna somente os digitos da string
      *
-     * @param String $string
+     * @param string $string
      *
-     * @return String
+     * @return string
      */
     public static function numbersNot($string)
     {
@@ -269,9 +275,9 @@ final class Util
     /**
      * Retorna somente os digitos da string
      *
-     * @param String $string
+     * @param string $string
      *
-     * @return String
+     * @return string
      */
     public static function notNumbers($string)
     {
@@ -281,9 +287,9 @@ final class Util
     /**
      * Retorna somente alfanumericos
      *
-     * @param String $string
+     * @param string $string
      *
-     * @return String
+     * @return string
      */
     public static function alphanumberOnly($string)
     {
@@ -293,9 +299,9 @@ final class Util
     /**
      * Retorna somente alfanumericos
      *
-     * @param String $string
+     * @param string $string
      *
-     * @return String
+     * @return string
      */
     public static function onlyAlphanumber($string)
     {
@@ -311,7 +317,7 @@ final class Util
      */
     public static function normalizeChars($string)
     {
-        $normalizeChars = array(
+        $normalizeChars = [
             'Á' => 'A', 'À' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Å' => 'A', 'Ä' => 'A', 'Æ' => 'AE', 'Ç' => 'C',
             'É' => 'E', 'È' => 'E', 'Ê' => 'E', 'Ë' => 'E', 'Í' => 'I', 'Ì' => 'I', 'Î' => 'I', 'Ï' => 'I', 'Ð' => 'Eth',
             'Ñ' => 'N', 'Ó' => 'O', 'Ò' => 'O', 'Ô' => 'O', 'Õ' => 'O', 'Ö' => 'O', 'Ø' => 'O',
@@ -323,7 +329,7 @@ final class Util
             'ú' => 'u', 'ù' => 'u', 'û' => 'u', 'ü' => 'u', 'ý' => 'y', 'ŕ' => 'r', 'ÿ' => 'y',
 
             'ß' => 'sz', 'þ' => 'thorn', 'º' => '', 'ª' => '', '°' => '',
-        );
+        ];
 
         return preg_replace('/[^0-9a-zA-Z !+=*\-,.;:%@_]/', '', strtr($string, $normalizeChars));
     }
@@ -331,9 +337,9 @@ final class Util
     /**
      * Mostra o Valor no float Formatado
      *
-     * @param  string  $number
-     * @param  integer $decimals
-     * @param  boolean $showThousands
+     * @param string $number
+     * @param int $decimals
+     * @param bool $showThousands
      * @return string
      */
     public static function nFloat($number, $decimals = 2, $showThousands = false)
@@ -342,27 +348,27 @@ final class Util
             return 0;
         }
         $pontuacao = preg_replace('/[0-9]/', '', $number);
-        $locale = (mb_substr($pontuacao, -1, 1) == ',') ? "pt-BR" : "en-US";
-        $formater = new \NumberFormatter($locale, \NumberFormatter::DECIMAL);
+        $locale = (mb_substr($pontuacao, -1, 1) == ',') ? 'pt-BR' : 'en-US';
+        $formater = new NumberFormatter($locale, NumberFormatter::DECIMAL);
 
         if ($decimals === false) {
             $decimals = 2;
             preg_match_all('/[0-9][^0-9]([0-9]+)/', $number, $matches);
-            if (!empty($matches[1])) {
+            if (! empty($matches[1])) {
                 $decimals = mb_strlen(rtrim($matches[1][0], 0));
             }
         }
 
-        return number_format($formater->parse($number, \NumberFormatter::TYPE_DOUBLE), $decimals, '.', ($showThousands ? ',' : ''));
+        return number_format($formater->parse($number, NumberFormatter::TYPE_DOUBLE), $decimals, '.', ($showThousands ? ',' : ''));
     }
 
     /**
      * Mostra o Valor no real Formatado
      *
-     * @param  float   $number
-     * @param  boolean $fixed
-     * @param  boolean $symbol
-     * @param  integer $decimals
+     * @param float $number
+     * @param bool $fixed
+     * @param bool $symbol
+     * @param int $decimals
      * @return string
      */
     public static function nReal($number, $decimals = 2, $symbol = true, $fixed = true)
@@ -370,22 +376,23 @@ final class Util
         if (is_null($number) || empty(self::onlyNumbers($number))) {
             return '';
         }
-        $formater = new \NumberFormatter("pt-BR", \NumberFormatter::CURRENCY);
-        $formater->setAttribute(\NumberFormatter::MIN_FRACTION_DIGITS, ($fixed ? $decimals : 1));
+        $formater = new NumberFormatter('pt-BR', NumberFormatter::CURRENCY);
+        $formater->setAttribute(NumberFormatter::MIN_FRACTION_DIGITS, ($fixed ? $decimals : 1));
         if ($decimals === false) {
             $decimals = 2;
             preg_match_all('/[0-9][^0-9]([0-9]+)/', $number, $matches);
-            if (!empty($matches[1])) {
+            if (! empty($matches[1])) {
                 $decimals = mb_strlen(rtrim($matches[1][0], 0));
             }
         }
-        $formater->setAttribute(\NumberFormatter::MAX_FRACTION_DIGITS, $decimals);
+        $formater->setAttribute(NumberFormatter::MAX_FRACTION_DIGITS, $decimals);
         $pattern = substr($formater->getPattern(), strpos($formater->getPattern(), '#'));
         if ($symbol) {
-            $pattern = "¤ " . $pattern;
+            $pattern = '¤ ' . $pattern;
         }
         $formater->setPattern($pattern);
-        return trim($formater->formatCurrency($number, $formater->getTextAttribute(\NumberFormatter::CURRENCY_CODE)));
+
+        return trim($formater->formatCurrency($number, $formater->getTextAttribute(NumberFormatter::CURRENCY_CODE)));
     }
 
     /**
@@ -393,13 +400,14 @@ final class Util
      *
      * @param $big
      * @param $small
-     * @param int   $defaultOnZero
+     * @param int $defaultOnZero
      *
      * @return string
      */
     public static function percentOf($big, $small, $defaultOnZero = 0)
     {
-        $result = $big > 0.01 ? (($small*100)/$big) : $defaultOnZero;
+        $result = $big > 0.01 ? (($small * 100) / $big) : $defaultOnZero;
+
         return self::nFloat($result);
     }
 
@@ -416,7 +424,8 @@ final class Util
         if ($percent < 0.01) {
             return 0;
         }
-        return self::nFloat($big*($percent/100));
+
+        return self::nFloat($big * ($percent / 100));
     }
 
     /**
@@ -454,7 +463,7 @@ final class Util
 
     /**
      * @param $n
-     * @param integer $loop
+     * @param int $loop
      * @param $insert
      *
      * @return string
@@ -463,24 +472,25 @@ final class Util
     {
         // Removo os caracteras a mais do que o pad solicitado caso a string seja maior
         $n = mb_substr(self::onlyNumbers($n), 0, $loop);
+
         return str_pad($n, $loop, $insert, STR_PAD_LEFT);
     }
 
     /**
      * @param        $tipo
      * @param        $valor
-     * @param        integer $tamanho
-     * @param int     $dec
-     * @param string  $sFill
+     * @param int $tamanho
+     * @param int $dec
+     * @param string $sFill
      *
      * @return string
-     * @throws \Exception
+     * @throws ValidationException
      */
     public static function formatCnab($tipo, $valor, $tamanho, $dec = 0, $sFill = '')
     {
         $tipo = self::upper($tipo);
         $valor = self::upper(self::normalizeChars($valor));
-        if (in_array($tipo, array('9', 9, 'N', '9L', 'NL'))) {
+        if (in_array($tipo, ['9', 9, 'N', '9L', 'NL'])) {
             if ($tipo == '9L' || $tipo == 'NL') {
                 $valor = self::onlyNumbers($valor);
             }
@@ -488,22 +498,23 @@ final class Util
             $sFill = 0;
             $type = 's';
             $valor = ($dec > 0) ? sprintf("%.{$dec}f", $valor) : $valor;
-            $valor = str_replace(array(',', '.'), '', $valor);
-        } elseif (in_array($tipo, array('A', 'X'))) {
+            $valor = str_replace([',', '.'], '', $valor);
+        } elseif (in_array($tipo, ['A', 'X'])) {
             $left = '-';
             $type = 's';
         } else {
-            throw new \Exception('Tipo inválido');
+            throw new ValidationException('Tipo inválido');
         }
+
         return sprintf("%{$left}{$sFill}{$tamanho}{$type}", mb_substr($valor, 0, $tamanho));
     }
 
     /**
-     * @param        Carbon|string $date
-     * @param string               $format
+     * @param Carbon|string $date
+     * @param string $format
      *
-     * @return integer
-     * @throws \Exception
+     * @return int
+     * @throws ValidationException
      */
     public static function fatorVencimento($date, $format = 'Y-m-d')
     {
@@ -513,6 +524,7 @@ final class Util
         if ($limit >= 1000) {
             return $limit;
         }
+
         return $limit + 9000;
     }
 
@@ -526,6 +538,7 @@ final class Util
     {
         $date = ($date instanceof Carbon) ? $date : Carbon::createFromFormat($format, $date);
         $dateDiff = $date->copy()->day(31)->month(12)->subYear()->diffInDays($date);
+
         return $dateDiff . mb_substr($date->year, -1);
     }
 
@@ -538,6 +551,7 @@ final class Util
     public static function fatorVencimentoBack($factor, $format = 'Y-m-d')
     {
         $date = Carbon::create(1997, 10, 7, 0, 0, 0)->addDays($factor);
+
         return $format ? $date->format($format) : $date;
     }
 
@@ -549,13 +563,12 @@ final class Util
      * @param int $resto10
      *
      * @return int
-     *
      */
     public static function modulo11($n, $factor = 2, $base = 9, $x10 = 0, $resto10 = 0)
     {
         $sum = 0;
         for ($i = mb_strlen($n); $i > 0; $i--) {
-            $sum += ((int) mb_substr($n, $i - 1, 1))*$factor;
+            $sum += ((int) mb_substr($n, $i - 1, 1)) * $factor;
             if ($factor == $base) {
                 $factor = 1;
             }
@@ -564,13 +577,15 @@ final class Util
 
         if ($x10 == 0) {
             $sum *= 10;
-            $digito = $sum%11;
+            $digito = $sum % 11;
             if ($digito == 10) {
                 $digito = $resto10;
             }
+
             return $digito;
         }
-        return $sum%11;
+
+        return $sum % 11;
     }
 
     /**
@@ -583,25 +598,24 @@ final class Util
         $chars = array_reverse(str_split($n, 1));
         $odd = array_intersect_key($chars, array_fill_keys(range(1, count($chars), 2), null));
         $even = array_intersect_key($chars, array_fill_keys(range(0, count($chars), 2), null));
-        $even = array_map(
-            function ($n) {
-                return ($n >= 5) ? 2*$n - 9 : 2*$n;
-            }, $even
-        );
+        $even = array_map(function ($n) {
+            return ($n >= 5) ? 2 * $n - 9 : 2 * $n;
+        }, $even);
         $total = array_sum($odd) + array_sum($even);
-        return ((floor($total/10) + 1)*10 - $total)%10;
+
+        return ((floor($total / 10) + 1) * 10 - $total) % 10;
     }
 
     /**
      * @param array $a
      *
      * @return string
-     * @throws \Exception
+     * @throws ValidationException
      */
     public static function array2Controle(array $a)
     {
         if (preg_match('/[0-9]/', implode('', array_keys($a)))) {
-            throw new \Exception('Somente chave alfanumérica no array, para separar o controle pela chave');
+            throw new ValidationException('Somente chave alfanumérica no array, para separar o controle pela chave');
         }
 
         $controle = '';
@@ -610,7 +624,7 @@ final class Util
         }
 
         if (mb_strlen($controle) > 25) {
-            throw new \Exception('Controle muito grande, máximo permitido de 25 caracteres');
+            throw new ValidationException('Controle muito grande, máximo permitido de 25 caracteres');
         }
 
         return $controle;
@@ -630,8 +644,10 @@ final class Util
             foreach ($matches as $match) {
                 $matches_founded[$match[2]] = (int) $match[3];
             }
+
             return $matches_founded;
         }
+
         return [$controle];
     }
 
@@ -639,10 +655,10 @@ final class Util
      * Pela remessa cria um retorno fake para testes.
      *
      * @param $file
-     * @param string       $ocorrencia
+     * @param string $ocorrencia
      *
      * @return string
-     * @throws \Exception
+     * @throws ValidationException
      * @codeCoverageIgnore
      */
     public static function criarRetornoFake($file, $ocorrencia = '02')
@@ -704,7 +720,7 @@ final class Util
         array_pop($remessa); // remove o trailer
 
         foreach ($remessa as $detalhe) {
-            if (!in_array(self::remove(1, 2, $detalhe), [0, 1, 9])) {
+            if (! in_array(self::remove(1, 2, $detalhe), [0, 1, 9])) {
                 continue;
             }
             $i = count($retorno);
@@ -718,6 +734,7 @@ final class Util
             self::adiciona($retorno[$i], 117, 126, self::remove(111, 120, $detalhe));
             self::adiciona($retorno[$i], 395, 400, sprintf('%06s', count($retorno)));
             switch ($banco) {
+
             case Contracts\Boleto\Boleto::COD_BANCO_BB:
                 if (self::remove(1, 1, $detalhe) != 7) {
                     unset($retorno[$i]);
@@ -765,11 +782,9 @@ final class Util
         self::adiciona($retorno[$i], 1, 1, '9');
         self::adiciona($retorno[$i], 395, 400, sprintf('%06s', count($retorno)));
 
-        $retorno = array_map(
-            function ($a) {
-                return implode('', $a);
-            }, $retorno
-        );
+        $retorno = array_map(function ($a) {
+            return implode('', $a);
+        }, $retorno);
 
         return implode("\r\n", $retorno);
     }
@@ -782,7 +797,7 @@ final class Util
      * @param $array
      *
      * @return string
-     * @throws \Exception
+     * @throws ValidationException
      */
     public static function remove($i, $f, &$array)
     {
@@ -793,18 +808,18 @@ final class Util
         $i--;
 
         if ($i > 398 || $f > 400) {
-            throw new \Exception('$ini ou $fim ultrapassam o limite máximo de 400');
+            throw new ValidationException('$ini ou $fim ultrapassam o limite máximo de 400');
         }
 
         if ($f < $i) {
-            throw new \Exception('$ini é maior que o $fim');
+            throw new ValidationException('$ini é maior que o $fim');
         }
 
         $t = $f - $i;
 
         $toSplice = $array;
 
-        if($toSplice != null) {
+        if ($toSplice != null) {
             return trim(implode('', array_splice($toSplice, $i, $t)));
         } else {
             return null;
@@ -815,29 +830,29 @@ final class Util
      * Função para add valor a linha nas posições informadas.
      *
      * @param $line
-     * @param integer $i
-     * @param integer $f
+     * @param int $i
+     * @param int $f
      * @param $value
      *
      * @return array
-     * @throws \Exception
+     * @throws ValidationException
      */
     public static function adiciona(&$line, $i, $f, $value)
     {
         $i--;
 
         if (($i > 398 || $f > 400) && ($i != 401 && $f != 444)) {
-            throw new \Exception('$ini ou $fim ultrapassam o limite máximo de 400');
+            throw new ValidationException('$ini ou $fim ultrapassam o limite máximo de 400');
         }
 
         if ($f < $i) {
-            throw new \Exception('$ini é maior que o $fim');
+            throw new ValidationException('$ini é maior que o $fim');
         }
 
         $t = $f - $i;
 
         if (mb_strlen($value) > $t) {
-            throw new \Exception(sprintf('String $valor maior que o tamanho definido em $ini e $fim: $valor=%s e tamanho é de: %s', mb_strlen($value), $t));
+            throw new ValidationException(sprintf('String $valor maior que o tamanho definido em $ini e $fim: $valor=%s e tamanho é de: %s', mb_strlen($value), $t));
         }
 
         $value = sprintf("%{$t}s", $value);
@@ -855,7 +870,8 @@ final class Util
     public static function isCnab240($content)
     {
         $content = is_array($content) ? $content[0] : $content;
-        return mb_strlen(rtrim($content, "\r\n")) == 240 ? true : false;
+
+        return mb_strlen(rtrim($content, "\r\n")) == 240;
     }
 
     /**
@@ -867,7 +883,8 @@ final class Util
     public static function isCnab400($content)
     {
         $content = is_array($content) ? $content[0] : $content;
-        return mb_strlen(rtrim($content, "\r\n")) == 400 ? true : false;
+
+        return mb_strlen(rtrim($content, "\r\n")) == 400;
     }
 
     /**
@@ -905,7 +922,7 @@ final class Util
      */
     public static function isHeaderRetorno($header)
     {
-        if (!self::isCnab240($header) && !self::isCnab400($header)) {
+        if (! self::isCnab240($header) && ! self::isCnab400($header)) {
             return false;
         }
         if (self::isCnab400($header) && mb_substr($header, 0, 9) != '02RETORNO') {
@@ -914,12 +931,13 @@ final class Util
         if (self::isCnab240($header) && mb_substr($header, 142, 1) != '2') {
             return false;
         }
+
         return true;
     }
 
     /**
      * @param object $obj
-     * @param array  $params
+     * @param array $params
      */
     public static function fillClass(&$obj, array $params)
     {
@@ -944,12 +962,12 @@ final class Util
         $ipte = self::onlyNumbers($ipte);
 
         $barras = substr($ipte, 0, 4);
-        $barras .= substr($ipte, 32, 1) ;
-        $barras .= substr($ipte, 33, 14) ;
-        $barras .= substr($ipte, 4,1) ;
-        $barras .= substr($ipte, 5, 4) ;
-        $barras .= substr($ipte, 10, 10) ;
-        $barras .= substr($ipte, 21, 8) ;
+        $barras .= substr($ipte, 32, 1);
+        $barras .= substr($ipte, 33, 14);
+        $barras .= substr($ipte, 4, 1);
+        $barras .= substr($ipte, 5, 4);
+        $barras .= substr($ipte, 10, 10);
+        $barras .= substr($ipte, 21, 8);
         $barras .= substr($ipte, 29, 2);
 
         return $barras;
@@ -959,21 +977,21 @@ final class Util
      * @param $ipte
      *
      * @return array
-     * @throws \Exception
+     * @throws ValidationException
      */
     public static function IPTE2Variveis($ipte)
     {
         $barras = self::IPTE2CodigoBarras($ipte);
 
         $variaveis = [
-            'barras' => $barras,
-            'banco' => substr($barras, 0, 3),
-            'moeda' => substr($barras, 3, 1),
-            'dv' => substr($barras, 4, 1),
+            'barras'           => $barras,
+            'banco'            => substr($barras, 0, 3),
+            'moeda'            => substr($barras, 3, 1),
+            'dv'               => substr($barras, 4, 1),
             'fator_vencimento' => substr($barras, 5, 4),
-            'vencimento' => self::fatorVencimentoBack(substr($barras, 5, 4), false),
-            'valor' => ((float) substr($barras, 9, 10)) / 100,
-            'campo_livre' => substr($barras, -25),
+            'vencimento'       => self::fatorVencimentoBack(substr($barras, 5, 4), false),
+            'valor'            => ((float) substr($barras, 9, 10)) / 100,
+            'campo_livre'      => substr($barras, -25),
         ];
 
         $class = __NAMESPACE__ . '\\Boleto\\' . self::getBancoClass($variaveis['banco']);
@@ -988,20 +1006,62 @@ final class Util
     }
 
     /**
+     * @param $codigo
+     * @return string
+     */
+    public static function codigoBarras2LinhaDigitavel($codigo)
+    {
+        $parte1 = substr($codigo, 0, 4) . substr($codigo, 19, 5);
+        $parte1 .= Util::modulo10($parte1);
+
+        $parte2 = substr($codigo, 24, 10);
+        $parte2 .= Util::modulo10($parte2);
+
+        $parte3 = substr($codigo, 34, 10);
+        $parte3 .= Util::modulo10($parte3);
+
+        $parte4 = substr($codigo, 4, 1);
+
+        $parte5 = substr($codigo, 5, 14);
+
+        return $parte1 . $parte2 . $parte3 . $parte4 . $parte5;
+    }
+
+    /**
+     * @param $linhaDigitavel
+     * @return string
+     * @throws ValidationException
+     */
+    public static function formatLinhaDigitavel($linhaDigitavel)
+    {
+        // Remover espaços em branco
+        $linhaDigitavel = Util::onlyNumbers($linhaDigitavel);
+
+        // Verificar se a linha digitável possui 47 caracteres
+        if (strlen($linhaDigitavel) != 47) {
+            throw new ValidationException('A linha digitável deve ter 47 caracteres.');
+        }
+
+        return self::maskString($linhaDigitavel, '#####.##### #####.###### #####.###### # ##############');
+    }
+
+    /**
      * @param $banco
      *
      * @return string
-     * @throws \Exception
+     * @throws ValidationException
      */
-    public static function getBancoClass($banco) {
-
+    public static function getBancoClass($banco)
+    {
         $aBancos = [
+
             BoletoContract::COD_BANCO_BB => 'Banco\\Bb',
             BoletoContract::COD_BANCO_BNB => 'Banco\\Bnb',
             BoletoContract::COD_BANCO_SANTANDER => 'Banco\\Santander',
             BoletoContract::COD_BANCO_BANRISUL => 'Banco\\Banrisul',
             BoletoContract::COD_BANCO_INTER => 'Banco\\Inter',
             BoletoContract::COD_BANCO_CEF => 'Banco\\Caixa',
+            BoletoContract::COD_BANCO_BTG        => 'Banco\\Btg',
             BoletoContract::COD_BANCO_UNICRED => 'Banco\\Unicred',
             BoletoContract::COD_BANCO_BRADESCO => 'Banco\\Bradesco',
             BoletoContract::COD_BANCO_FIBRA => 'Banco\\Fibra',
@@ -1019,7 +1079,7 @@ final class Util
             return $aBancos[$banco];
         }
 
-        throw new \Exception("Banco: $banco, inválido");
+        throw new ValidationException("Banco: $banco, inválido");
     }
 
     /**
@@ -1027,19 +1087,21 @@ final class Util
      * @param $obj
      *
      * @return Pessoa
-     * @throws \Exception
+     * @throws ValidationException
      */
     public static function addPessoa(&$property, $obj)
     {
         if (is_subclass_of($obj, 'Eduardokum\\LaravelBoleto\\Contracts\\Pessoa')) {
             $property = $obj;
+
             return $obj;
         } elseif (is_array($obj)) {
             $obj = new Pessoa($obj);
             $property = $obj;
+
             return $obj;
         }
-        throw new \Exception('Objeto inválido, somente Pessoa e Array');
+        throw new ValidationException('Objeto inválido, somente Pessoa e Array');
     }
 
     /**
@@ -1052,6 +1114,7 @@ final class Util
         foreach ($strings as $string) {
             $appended .= " $string";
         }
+
         return trim($appended);
     }
 
@@ -1064,7 +1127,6 @@ final class Util
      * @return int
      * @internal param $key
      * @internal param int $default
-     *
      */
     public static function whichOne($a, ...$parms)
     {
@@ -1084,5 +1146,235 @@ final class Util
         }
 
         return null;
+    }
+
+    /**
+     * @param $cpf
+     * @return bool
+     */
+    public static function validarCpf($cpf)
+    {
+        $c = self::onlyNumbers($cpf);
+        if (mb_strlen($c) != 11 || preg_match("/^{$c[0]}{11}$/", $c)) {
+            return false;
+        }
+        for ($s = 10, $n = 0, $i = 0; $s >= 2; $n += $c[$i++] * $s--);
+        if ($c[9] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
+
+            return false;
+        }
+        for ($s = 11, $n = 0, $i = 0; $s >= 2; $n += $c[$i++] * $s--);
+        if ($c[10] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param $cnpj
+     * @return bool
+     */
+    public static function validarCnpj($cnpj)
+    {
+        $c = self::onlyNumbers($cnpj);
+        $b = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+        if (mb_strlen($c) != 14 || preg_match("/^{$c[0]}{14}$/", $c)) {
+            return false;
+        }
+        for ($i = 0, $n = 0; $i < 12; $n += $c[$i] * $b[++$i]);
+        if ($c[12] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
+
+            return false;
+        }
+        for ($i = 0, $n = 0; $i <= 12; $n += $c[$i] * $b[$i++]);
+        if ($c[13] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param $documento
+     * @return bool
+     */
+    public static function validarCnpjCpf($documento)
+    {
+        $documento = Util::onlyNumbers($documento);
+        if (strlen($documento) == 11) {
+            return self::validarCpf($documento);
+        } elseif (strlen($documento) == 14) {
+            return self::validarCnpj($documento);
+        }
+
+        return false;
+    }
+
+    /**
+     * @param $uuid
+     * @return string
+     */
+    public static function formatarUUID($uuid)
+    {
+        $uuid = self::onlyNumbers($uuid);
+
+        return sprintf(
+            '%s-%s-%s-%s-%s',
+            substr($uuid, 0, 8),
+            substr($uuid, 8, 4),
+            substr($uuid, 12, 4),
+            substr($uuid, 16, 4),
+            substr($uuid, 20, 12)
+        );
+    }
+
+    /**
+     * @param $pix
+     * @param $valor
+     * @param $id
+     * @param Pessoa $beneficiario
+     * @return string
+     * @throws ValidationException
+     */
+    public static function gerarPixCopiaECola($pix, $valor, $id, Pessoa $beneficiario)
+    {
+        if ($id != Util::normalizeChars($id)) {
+            throw new ValidationException('ID inválido, não pode possuir caracteres especiais');
+        }
+
+        $crc16 = function ($payload) {
+            $payload .= '6304';
+
+            $polinomio = 0x1021;
+            $resultado = 0xFFFF;
+            if (($length = strlen($payload)) > 0) {
+                for ($offset = 0; $offset < $length; $offset++) {
+                    $resultado ^= (ord($payload[$offset]) << 8);
+                    for ($bitwise = 0; $bitwise < 8; $bitwise++) {
+                        if (($resultado <<= 1) & 0x10000) {
+                            $resultado ^= $polinomio;
+                        }
+                        $resultado &= 0xFFFF;
+                    }
+                }
+            }
+
+            return '6304' . strtoupper(dechex($resultado));
+        };
+
+        $line = function ($id, $value) {
+            $size = str_pad(mb_strlen($value), 2, '0', STR_PAD_LEFT);
+
+            return $id . $size . $value;
+        };
+
+        $gui = $line('00', 'br.gov.bcb.pix');
+        $key = $line('01', $pix);
+        $txId = $line('05', $id);
+        $payload = $line('00', '01');
+        $payload .= $line('01', '12');
+        $payload .= $line('26', $gui . $key);
+        $payload .= $line('52', '0000');
+        $payload .= $line('53', '986');
+        $payload .= $line('54', $valor);
+        $payload .= $line('58', 'BR');
+        $payload .= $line('59', Util::normalizeChars($beneficiario->getNome()));
+        $payload .= $line('60', Util::normalizeChars($beneficiario->getCidade()));
+        $payload .= $line('62', $txId);
+
+        return $payload . $crc16($payload);
+    }
+
+    /**
+     * Função baseada no projeto
+     * https://github.com/renatomb/decoder_brcode_pix/blob/main/funcoes.php
+     * @param $pixCopiaECola
+     * @return array|null
+     */
+    public static function decodePixCopiaECola($pixCopiaECola)
+    {
+        $aPix = [];
+        $i = 0;
+        while ($i < strlen($pixCopiaECola)) {
+            $code = substr($pixCopiaECola, $i, 2);
+            $i += 2;
+            $size = intval(substr($pixCopiaECola, $i, 2));
+            if (! is_numeric($size)) {
+                return null;
+            }
+            $i += 2;
+            $valor = substr($pixCopiaECola, $i, $size);
+            $i += $size;
+            if (preg_match('/^\d{4}.+$/', $valor) && ($code != 54)) {
+                $aPix[$code] = self::decodePixCopiaECola($valor);
+            } else {
+                $aPix[$code] = $valor;
+            }
+        }
+
+        return $aPix;
+    }
+
+    /**
+     * @param $chave
+     * @return string|null
+     */
+    public static function tipoChavePix($chave)
+    {
+        if (is_null($chave)) {
+            return null;
+        }
+
+        $parametro = trim($chave);
+        if (filter_var($parametro, FILTER_VALIDATE_EMAIL)) {
+
+            return AbstractBoleto::TIPO_CHAVEPIX_EMAIL;
+        }
+
+        if (Util::validarCnpj($parametro)) {
+
+            return AbstractBoleto::TIPO_CHAVEPIX_CNPJ;
+        }
+
+        if (Util::validarCpf($parametro)) {
+
+            return AbstractBoleto::TIPO_CHAVEPIX_CPF;
+        }
+
+        // Verificar se é um telefone
+        if (preg_match('/^(\+\d{2}\s?)?[-.\s]?\(?\d{2}\)?[-.\s]?(\d\s?)?\d{4}[-.\s]?\d{4}$/', $parametro)) {
+
+            return AbstractBoleto::TIPO_CHAVEPIX_CELULAR;
+        }
+
+        $parametro = Util::onlyAlphanumber($parametro);
+        // Verificar se é um UUID
+        if (preg_match('/^[a-fA-F0-9]{32}$/', $parametro) && (ctype_xdigit($parametro))) {
+            return AbstractBoleto::TIPO_CHAVEPIX_ALEATORIA;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param $str
+     * @return bool
+     */
+    public static function isBase64($str)
+    {
+        try {
+            $decoded = base64_decode($str, true);
+
+            if (base64_encode($decoded) === $str) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception $e) {
+            return false;
+        }
     }
 }

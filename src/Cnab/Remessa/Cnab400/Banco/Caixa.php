@@ -1,12 +1,14 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
+use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
-use Eduardokum\LaravelBoleto\Util;
 
-class Caixa  extends AbstractRemessa implements RemessaContract
+class Caixa extends AbstractRemessa implements RemessaContract
 {
     const ESPECIE_DUPLICATA = '01';
     const ESPECIE_NOTA_PROMISSORIA = '02';
@@ -14,7 +16,6 @@ class Caixa  extends AbstractRemessa implements RemessaContract
     const SPECIE_NOTA_SEGURO = '05';
     const ESPECIE_LETRAS_CAMBIO = '06';
     const ESPECIE_OUTROS = '09';
-
     const OCORRENCIA_REMESSA = '01';
     const OCORRENCIA_PEDIDO_BAIXA = '02';
     const OCORRENCIA_CONCESSAO_ABATIMENTO = '03';
@@ -27,7 +28,6 @@ class Caixa  extends AbstractRemessa implements RemessaContract
     const OCORRENCIA_ALT_OUTROS_DADOS_EMISSAO_BOLETO = '10';
     const OCORRENCIA_ALT_PROTESTO_DEVOLUCAO = '11';
     const OCORRENCIA_ALT_DEVOLUCAO_PROTESTO = '12';
-
     const INSTRUCAO_SEM = '00';
     const INSTRUCAO_PROTESTAR_VENC_XX = '01';
     const INSTRUCAO_DEVOLVER_VENC_XX = '02';
@@ -37,7 +37,6 @@ class Caixa  extends AbstractRemessa implements RemessaContract
         parent::__construct($params);
         $this->addCampoObrigatorio('codigoCliente', 'idremessa');
     }
-
 
     /**
      * Código do banco
@@ -94,6 +93,7 @@ class Caixa  extends AbstractRemessa implements RemessaContract
         if ($this->getCarteira() == 'SR') {
             return '02';
         }
+
         return '01';
     }
 
@@ -113,7 +113,7 @@ class Caixa  extends AbstractRemessa implements RemessaContract
 
     /**
      * @return Caixa
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function header()
     {
@@ -148,7 +148,7 @@ class Caixa  extends AbstractRemessa implements RemessaContract
      * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Caixa $boleto
      *
      * @return Caixa
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function addBoleto(BoletoContract $boleto)
     {
@@ -235,7 +235,7 @@ class Caixa  extends AbstractRemessa implements RemessaContract
 
     /**
      * @return Caixa
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function trailer()
     {
