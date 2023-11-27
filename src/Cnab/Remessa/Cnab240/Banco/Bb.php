@@ -201,7 +201,7 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(78, 85, $boleto->getDataVencimento()->format('dmY'));
         $this->add(86, 100, Util::formatCnab('9', $boleto->getValor(), 15, 2));
         $this->add(101, 105, '00000');
-        $this->add(106, 106, '0');
+        $this->add(106, 106, '');
         $this->add(107, 108, Util::formatCnab('9', $boleto->getEspecieDocCodigo(), 2));
         $this->add(109, 109, Util::formatCnab('9', $boleto->getAceite(), 1));
         $this->add(110, 117, $boleto->getDataDocumento()->format('dmY'));
