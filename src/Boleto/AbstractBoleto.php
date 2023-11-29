@@ -489,10 +489,11 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * @param $id
      * @return AbstractBoleto
+     * @throws ValidationException
      */
     public function setID($id)
     {
-        $this->id = $id;
+        $this->id = $this->validateId($id);
 
         return $this;
     }
@@ -1955,6 +1956,16 @@ abstract class AbstractBoleto implements BoletoContract
     public function imprimeBoleto()
     {
         return true;
+    }
+
+    /**
+     * @param $id
+     * @return string
+     * @throws ValidationException
+     */
+    protected function validateId($id)
+    {
+        return $id;
     }
 
     /**

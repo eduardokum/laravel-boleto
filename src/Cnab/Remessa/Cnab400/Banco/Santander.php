@@ -254,9 +254,9 @@ class Santander extends AbstractRemessa implements RemessaContract
             $this->add(4, 5, '01'); // Quantidade de pagamentos
             $this->add(6, 6, '2'); // '1' = % (percentual); '2' = valor
             $this->add(7, 19, Util::formatCnab('9', $boleto->getValor(), 13, 2));
-            $this->add(20, 24, Util::formatCnab('9', 0, 5, 2));
+            $this->add(20, 24, Util::formatCnab('9', 200, 5, 2));
             $this->add(25, 37, Util::formatCnab('9', $boleto->getValor(), 13, 2));
-            $this->add(38, 42, Util::formatCnab('9', 0, 5, 2));
+            $this->add(38, 42, Util::formatCnab('9', 100, 5, 2));
             $this->add(43, 43, Util::formatCnab('9', $tipoChave[$boleto->getPixChaveTipo()], 1));
             $this->add(44, 120, Util::formatCnab('X', $boleto->getPixChave(), 77));
             $this->add(121, 155, Util::formatCnab('X', $boleto->getID(), 35));

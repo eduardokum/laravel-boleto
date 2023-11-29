@@ -249,6 +249,20 @@ class Santander extends AbstractBoleto implements BoletoContract
     }
 
     /**
+     * @param $id
+     * @return string
+     * @throws ValidationException
+     */
+    protected function validateId($id)
+    {
+        if (! preg_match('/^[a-zA-Z0-9]{25,36}$/', $id)) {
+            throw new ValidationException('ID/TXID do boleto é inválido, Os caracteres aceitos neste contexto são: A-Z, a-z, 0-9, não pode conter brancos e nulos, com o mínimo de 26 caracteres e no máximo 35 caracteres');
+        }
+
+        return $id;
+    }
+
+    /**
      * Método para gerar o código da posição de 20 a 44
      *
      * @return string
