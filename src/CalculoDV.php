@@ -277,7 +277,18 @@ class CalculoDV
         }
         return 10 - $sum%10;
     }
-	
+	/*
+    |--------------------------------------------------------------------------
+    | 133 - Cresol 
+    |--------------------------------------------------------------------------
+    */
+    public static function cresolNossoNumero($carteira, $numero_boleto)
+    {
+        $n = $carteira.$numero_boleto;
+        Log::info("calculdo dv ".$n." digito:".Util::modulo11($n));
+        return  Util::modulo11($n);
+    }
+    
     /*
     |--------------------------------------------------------------------------
     | 435 - Delcred (Delbank)

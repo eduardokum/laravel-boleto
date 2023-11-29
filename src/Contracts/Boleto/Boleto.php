@@ -21,6 +21,7 @@ interface Boleto
     const COD_BANCO_FIBRA = '224';
     const COD_BANCO_PINE = '643';
     const COD_BANCO_OURINVEST = '712';
+    const COD_BANCO_CRESOL = '133';
 
     const STATUS_REGISTRO = 1;
     const STATUS_ALTERACAO = 2;

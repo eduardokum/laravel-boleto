@@ -5,7 +5,6 @@ use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Illuminate\Support\Str;
-
 /**
  * Class Util
  *
@@ -143,6 +142,7 @@ final class Util
         '230' => 'Unicard Banco Múltiplo S.A.',
         '712' => 'Banco Ourinvest',
         'XXX' => 'Desconhecido',
+        '133' => 'Banco Cresol Confederao',
     ];
 
     /**
@@ -1009,6 +1009,7 @@ final class Util
             BoletoContract::COD_BANCO_OURINVEST => 'Banco\\Ourinvest',
             BoletoContract::COD_BANCO_SICREDI => 'Banco\\Sicredi',
             BoletoContract::COD_BANCO_BANCOOB => 'Banco\\Bancoob',
+            BoletoContract::COD_BANCO_CRESOL => 'Banco\\Cresol',
         ];
 
         if (array_key_exists($banco, $aBancos)) {
