@@ -2,6 +2,7 @@
 
 namespace Eduardokum\LaravelBoleto\Api;
 
+use Eduardokum\LaravelBoleto\Contracts\Api\Api;
 use stdClass;
 use Illuminate\Support\Str;
 use Eduardokum\LaravelBoleto\Util;
@@ -14,7 +15,7 @@ use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
 use Eduardokum\LaravelBoleto\Api\Exception\UnauthorizedException;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\BoletoAPI as BoletoAPIContract;
 
-abstract class AbstractAPI
+abstract class AbstractAPI implements Api
 {
     protected $baseUrl = null;
 
@@ -364,7 +365,7 @@ abstract class AbstractAPI
      * @return AbstractAPI
      * @throws ValidationException
      */
-    public function setBeneficiario($beneficiario): AbstractAPI
+    public function setBeneficiario($beneficiario)
     {
         Util::addPessoa($this->beneficiario, $beneficiario);
 

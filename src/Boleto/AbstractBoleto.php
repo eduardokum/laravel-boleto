@@ -2,6 +2,7 @@
 
 namespace Eduardokum\LaravelBoleto\Boleto;
 
+use Eduardokum\LaravelBoleto\MagicTrait;
 use Exception;
 use Throwable;
 use Carbon\Carbon;
@@ -22,6 +23,8 @@ use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
  */
 abstract class AbstractBoleto implements BoletoContract
 {
+    use MagicTrait;
+
     const SITUACAO_REJEITADO = 'rejeitado';
     const SITUACAO_ABERTO = 'aberto';
     const SITUACAO_BAIXADO = 'baixado';

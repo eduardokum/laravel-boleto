@@ -14,6 +14,8 @@ class Inter extends AbstractWebhook
      */
     public function processar()
     {
+        $this->setConta(Arr::get($this->getHeaders(), 'x-conta-corrente'));
+
         $aRet = [];
         foreach ($this->getPost() as $item) {
             $boleto = new Boleto();
