@@ -49,24 +49,32 @@ $configsCasoNaoTenhaUmMailerConfiguradoNoSeuLaravel = [
     'from'     => ['address' => 'empresa@empresa.com', 'name' => 'Empresa'],
 ];
 
-$mail = new Eduardokum\LaravelBoleto\Boleto\Mail($boleto, 'email@cliente.com', $configsCasoNaoTenhaUmMailerConfiguradoNoSeuLaravel);
+$mail = new Eduardokum\LaravelBoleto\Boleto\Mail($configsCasoNaoTenhaUmMailerConfiguradoNoSeuLaravel);
 
 $data = [
     'empresa' => 'Nome da empresa',
     'logo'    => 'full/path/logo.png',
 ];
 
-$mail->send(['arquivos/template.blade.php', $data], 'assunto');
+$mail->send(
+    ['arquivos/template.blade.php', $data],
+    'assunto',
+    $boleto,
+    'email@cliente.com'
+);
 
 $mail->send(
-    [
-        '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"></head><body><img src="{{ $logo }}"/><h1>{{ $empresa }}</h1></body></html>',
-        $data,
-    ],
-    'assunto'
+    ['<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"></head><body><img src="{{ $logo }}"/><h1>{{ $empresa }}</h1></body></html>', $data],
+    'assunto',
+    $boleto,
+    'email@cliente.com'
 );
 
 $mail->send(
     'Email simples sem template',
-    'assunto'
+    'assunto',
+    $boleto,
+    'email@cliente.com'
 );
+
+$mail->setTo('email@cliente.com')->setBoleto($boleto)->send('Email simples sem template', 'assunto');

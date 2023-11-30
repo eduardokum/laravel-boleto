@@ -7,11 +7,11 @@ use Swift_Mailer;
 use Swift_SmtpTransport;
 use Illuminate\Support\Arr;
 use Illuminate\Mail\Message;
-use Illuminate\View\Factory;
 use Illuminate\Config\Repository;
 use Eduardokum\LaravelBoleto\Blade;
 use Illuminate\Container\Container;
 use Symfony\Component\Mailer\Transport\Dsn;
+use Illuminate\View\Compilers\BladeCompiler;
 use Eduardokum\LaravelBoleto\Boleto\Render\Pdf;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto;
 use Illuminate\Contracts\Mail\Factory as MailFactory;
@@ -23,28 +23,42 @@ use Eduardokum\LaravelMailAutoEmbed\Contracts\Listeners\EmbedImages;
 
 class Mail
 {
+    /**
+     * @var Boleto
+     */
     private $boleto;
 
+    /**
+     * @var array
+     */
     private $from = [];
 
-    private $emails = [];
+    /**
+     * @var array
+     */
+    private $to = [];
 
+    /**
+     * @var ViewFactory
+     */
     private $view;
 
+    /**
+     * @var LaravelBoletoMailer
+     */
     private $mailer;
 
+    /**
+     * @var BladeCompiler
+     */
     private $blade;
 
     /**
-     * @param Boleto $boleto
-     * @param $emails
      * @param array $mailerConfigs
      * @throws ValidationException
      */
-    public function __construct(Boleto $boleto, $emails, $mailerConfigs = [])
+    public function __construct($mailerConfigs = [])
     {
-        $this->setBoleto($boleto);
-        $this->setEmails($emails);
         $this->makeBlade();
         $this->makeMailer($mailerConfigs);
     }
@@ -72,13 +86,13 @@ class Mail
     /**
      * @return array
      */
-    private function getEmails()
+    private function getTo()
     {
-        return $this->emails;
+        return $this->to;
     }
 
     /**
-     * @return Factory
+     * @return BladeCompiler
      */
     private function getBlade()
     {
@@ -175,7 +189,7 @@ class Mail
                     $config['host'],
                     $config['username'] ?? null,
                     $config['password'] ?? null,
-                    $config['port'] ?? null,
+                    ((int) $config['port']) ?? null,
                     $config
                 ));
                 $this->mailer = new LaravelBoletoMailer('default', $this->view, $transport);
@@ -199,19 +213,19 @@ class Mail
     }
 
     /**
-     * @param $texto
+     * @param $template
      * @return string|void|null
      * @throws ValidationException
      */
-    private function build($texto)
+    private function build($template)
     {
-        if (is_string($texto)) {
-            return $texto;
+        if (is_string($template)) {
+            return $template;
         }
 
-        if (is_array($texto)) {
-            $view = Arr::get($texto, 'view', Arr::get($texto, 'template', Arr::get($texto, 0)));
-            $data = Arr::get($texto, 'data', Arr::get($texto, 'vars', Arr::get($texto, 1, [])));
+        if (is_array($template)) {
+            $view = Arr::get($template, 'view', Arr::get($template, 'template', Arr::get($template, 0)));
+            $data = Arr::get($template, 'data', Arr::get($template, 'vars', Arr::get($template, 1, [])));
 
             if (is_null($view)) {
                 throw new ValidationException("View não informada, Utilizar ['view' => 'template.blade.php', 'data'=> []]");
@@ -236,27 +250,16 @@ class Mail
     }
 
     /**
-     * @param mixed $boleto
+     * @param array|string $to
      * @return Mail
      */
-    public function setBoleto($boleto)
+    public function setTo($to)
     {
-        $this->boleto = $boleto;
+        $this->to = is_array($to) ? $to : [$to];
 
-        return $this;
-    }
-
-    /**
-     * @param array $emails
-     * @return Mail
-     */
-    public function setEmails($emails)
-    {
-        $this->emails = is_array($emails) ? $emails : [$emails];
-
-        foreach ($this->emails as $i => $email) {
+        foreach ($this->to as $i => $email) {
             if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                unset($this->emails[$i]);
+                unset($this->to[$i]);
             }
         }
 
@@ -264,20 +267,48 @@ class Mail
     }
 
     /**
-     * @param $texto
-     * @param $subject
-     * @return bool
+     * @param Boleto $boleto
+     * @return Mail
      */
-    public function send($texto, $subject)
+    public function setBoleto(Boleto $boleto)
     {
+        $this->boleto = $boleto;
+
+        return $this;
+    }
+
+    /**
+     * @param $template
+     * @param $subject
+     * @param Boleto|null $boleto
+     * @param null $to
+     * @return bool
+     * @throws ValidationException
+     */
+    public function send($template, $subject, Boleto $boleto = null, $to = null)
+    {
+        if ($to) {
+            $this->setTo($to);
+        }
+        if ($boleto) {
+            $this->setBoleto($boleto);
+        }
+
+        if (! $this->getBoleto()) {
+            throw new ValidationException('Informe o boleto a ser enviado utilizando o método ->setBoleto ou passando #3 parâmetro no método ->send');
+        }
+        if (! $this->getTo()) {
+            throw new ValidationException('Informe o destinatário utilizando o método ->setTo ou passando #4 parâmetro no método ->send');
+        }
+
         try {
-            $texto = $this->build($texto);
+            $html = $this->build($template);
 
             if (! LaravelBoletoMailer::isLaravel9Plus() && ! app()->bound(EmbedImages::class)) {
                 $this->getMailer()->getSwiftMailer()->registerPlugin(new SwiftEmbedImages(config()->get('mail-auto-embed')));
             }
 
-            $this->getMailer()->html($texto, function (Message $message) use ($subject) {
+            $this->getMailer()->html($html, function (Message $message) use ($subject) {
                 if (LaravelBoletoMailer::isLaravel9Plus()) {
                     $message
                         ->attachData($this->getPdf(), 'boleto.pdf', [
@@ -285,7 +316,7 @@ class Mail
                         ])
                         ->from($this->from['address'], $this->from['name'])
                         ->subject($subject)
-                        ->to($this->getEmails());
+                        ->to($this->getTo());
                 } else {
                     $message
                         ->attachData($this->getPdf(), 'boleto.pdf', [
@@ -293,7 +324,7 @@ class Mail
                         ])
                         ->setFrom($this->from['address'], $this->from['name'])
                         ->setSubject($subject)
-                        ->setTo($this->getEmails());
+                        ->setTo($this->getTo());
                 }
             });
 
