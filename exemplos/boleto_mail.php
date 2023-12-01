@@ -56,6 +56,7 @@ $data = [
     'logo'    => 'full/path/logo.png',
 ];
 
+// Array do boleto será automaticamente passado para view no formato de array, com a variável chamada $boleto
 $mail->send(
     ['arquivos/template.blade.php', $data],
     'assunto',
@@ -64,7 +65,7 @@ $mail->send(
 );
 
 $mail->send(
-    ['<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"></head><body><img src="{{ $logo }}"/><h1>{{ $empresa }}</h1></body></html>', $data],
+    ["<!DOCTYPE html><html lang='en'><head><meta charset=''utf-8'></head><body><img src='{{ \$logo }}'/><h1>{{ \$empresa }}</h1><p>Olá cliente {{ \$boleto['pagador']['nome'] }}</p></body></html>", $data],
     'assunto',
     $boleto,
     'email@cliente.com'
@@ -78,3 +79,15 @@ $mail->send(
 );
 
 $mail->setTo('email@cliente.com')->setBoleto($boleto)->send('Email simples sem template', 'assunto');
+
+$aLoteBoletos = [
+    'cliente@cliente1.com.br' => $boleto,
+    'cliente@cliente2.com.br' => $boleto,
+    'cliente@cliente3.com.br' => $boleto,
+];
+
+$mail->sendLote(
+    'Email simples sem template',
+    'assunto',
+    $aLoteBoletos
+);

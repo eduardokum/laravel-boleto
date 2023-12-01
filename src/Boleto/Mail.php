@@ -8,6 +8,7 @@ use Swift_SmtpTransport;
 use Illuminate\Support\Arr;
 use Illuminate\Mail\Message;
 use Illuminate\Config\Repository;
+use JetBrains\PhpStorm\ArrayShape;
 use Eduardokum\LaravelBoleto\Blade;
 use Illuminate\Container\Container;
 use Symfony\Component\Mailer\Transport\Dsn;
@@ -86,9 +87,25 @@ class Mail
     /**
      * @return array
      */
+    #[ArrayShape([
+        'address' => 'string',
+        'name'    => 'string',
+    ])]
     private function getTo()
     {
         return $this->to;
+    }
+
+    /**
+     * @return array
+     */
+    #[ArrayShape([
+        'address' => 'string',
+        'name'    => 'string',
+    ])]
+    private function getFrom()
+    {
+        return $this->from;
     }
 
     /**
@@ -164,24 +181,7 @@ class Mail
                     : '';
             }
 
-            if (is_string($config['from'])) {
-                $this->from = ['address' => $config['from'], 'name' => $config['from']];
-            } elseif (is_array($config['from']) && isset($config['from']['address'])) {
-                $this->from = ['address' => $config['from']['address'], 'name' => Arr::get($config['from'], 'name', $config['from']['address'])];
-            } elseif (is_array($config['from']) && isset($config['from'][0])) {
-                if (filter_var($config['from'][0], FILTER_VALIDATE_EMAIL)) {
-                    $this->from['address'] = $config['from'][0];
-                    $this->from['name'] = Arr::get($config['from'], 1, $config['from'][0]);
-                } elseif (filter_var($config['from'][1], FILTER_VALIDATE_EMAIL)) {
-                    $this->from['address'] = $config['from'][1];
-                    $this->from['name'] = Arr::get($config['from'], 0, $config['from'][1]);
-                }
-                if (! isset($this->from['address'])) {
-                    throw new ValidationException('Email do Sender informado não é válido');
-                }
-            } else {
-                throw new ValidationException('Email do Sender informado não é válido');
-            }
+            $this->setFrom($config['from']);
             if (LaravelBoletoMailer::isLaravel9Plus()) {
                 $factory = new EsmtpTransportFactory();
                 $transport = $factory->create(new Dsn(
@@ -213,8 +213,38 @@ class Mail
     }
 
     /**
+     * @param array|string $from
+     * @return Mail
+     * @throws ValidationException
+     */
+    private function setFrom($from)
+    {
+        if (is_string($from)) {
+            $this->from = ['address' => $from, 'name' => $from];
+        } elseif (is_array($from) && isset($from['address'])) {
+            $this->from = ['address' => $from['address'], 'name' => Arr::get($from, 'name', $from['address'])];
+        } elseif (is_array($from) && isset($from[0])) {
+            if (filter_var($from[0], FILTER_VALIDATE_EMAIL)) {
+                $this->from['address'] = $from[0];
+                $this->from['name'] = Arr::get($from, 1, $from[0]);
+            } elseif (filter_var($from[1], FILTER_VALIDATE_EMAIL)) {
+                $this->from['address'] = $from[1];
+                $this->from['name'] = Arr::get($from, 0, $from[1]);
+            }
+        } else {
+            throw new ValidationException('Email do Sender informado não é válido');
+        }
+
+        if (! $this->from['address'] || ! filter_var($this->from['address'], FILTER_VALIDATE_EMAIL)) {
+            throw new ValidationException('Email do Sender informado não é válido');
+        }
+
+        return $this;
+    }
+
+    /**
      * @param $template
-     * @return string|void|null
+     * @return string
      * @throws ValidationException
      */
     private function build($template)
@@ -235,6 +265,8 @@ class Mail
                 throw new ValidationException("Data não informada, Utilizar ['view' => 'template.blade.php', 'data'=> []]");
             }
 
+            $data['boleto'] = $this->getBoleto()->toArray();
+
             if (file_exists($view)) {
                 return $this->getBlade()->render(file_get_contents($view), $data);
             }
@@ -252,26 +284,43 @@ class Mail
     /**
      * @param array|string $to
      * @return Mail
+     * @throws ValidationException
      */
     public function setTo($to)
     {
-        $this->to = is_array($to) ? $to : [$to];
-
-        foreach ($this->to as $i => $email) {
-            if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                unset($this->to[$i]);
+        if (is_string($to)) {
+            $this->to = ['address' => $to, 'name' => $to];
+        } elseif (is_array($to) && isset($to['address'])) {
+            $this->to = ['address' => $to['address'], 'name' => Arr::get($to, 'name', $to['address'])];
+        } elseif (is_array($to) && isset($to[0])) {
+            if (filter_var($to[0], FILTER_VALIDATE_EMAIL)) {
+                $this->to['address'] = $to[0];
+                $this->to['name'] = Arr::get($to, 1, $to[0]);
+            } elseif (filter_var($to[1], FILTER_VALIDATE_EMAIL)) {
+                $this->to['address'] = $to[1];
+                $this->to['name'] = Arr::get($to, 0, $to[1]);
             }
+        } else {
+            throw new ValidationException('Email do destinatário informado não é válido');
+        }
+
+        if (! $this->to['address'] || ! filter_var($this->to['address'], FILTER_VALIDATE_EMAIL)) {
+            throw new ValidationException('Email do destinatário informado não é válido');
         }
 
         return $this;
     }
 
     /**
-     * @param Boleto $boleto
+     * @param $boleto
      * @return Mail
+     * @throws ValidationException
      */
-    public function setBoleto(Boleto $boleto)
+    public function setBoleto($boleto)
     {
+        if (! $boleto instanceof Boleto) {
+            throw new ValidationException('Boleto não é uma instancia válida de Boleto');
+        }
         $this->boleto = $boleto;
 
         return $this;
@@ -314,17 +363,17 @@ class Mail
                         ->attachData($this->getPdf(), 'boleto.pdf', [
                             'mime' => 'application/pdf',
                         ])
-                        ->from($this->from['address'], $this->from['name'])
+                        ->from($this->getFrom()['address'], $this->getFrom()['name'])
                         ->subject($subject)
-                        ->to($this->getTo());
+                        ->to($this->getTo()['address'], $this->getTo()['name']);
                 } else {
                     $message
                         ->attachData($this->getPdf(), 'boleto.pdf', [
                             'mime' => 'application/pdf',
                         ])
-                        ->setFrom($this->from['address'], $this->from['name'])
+                        ->setFrom($this->getFrom()['address'], $this->getFrom()['name'])
                         ->setSubject($subject)
-                        ->setTo($this->getTo());
+                        ->setTo($this->getTo()['address'], $this->getTo()['name']);
                 }
             });
 
@@ -332,5 +381,22 @@ class Mail
         } catch (Throwable $e) {
             return false;
         }
+    }
+
+    /**
+     * @param $template
+     * @param $subject
+     * @param $boletos
+     * @return array
+     * @throws ValidationException
+     */
+    public function sendLote($template, $subject, $boletos)
+    {
+        $aRet = [];
+        foreach ($boletos as $email => $boleto) {
+            $aRet[$email] = $this->send($template, $subject, $boleto, $email);
+        }
+
+        return $aRet;
     }
 }
