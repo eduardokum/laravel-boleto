@@ -48,7 +48,7 @@ class Ourinvest extends AbstractBoleto implements BoletoContract
     /**
      * @return bool
      */
-    public function isEmissaoPropria(): bool
+    public function isEmissaoPropria()
     {
         return $this->emissaoPropria;
     }

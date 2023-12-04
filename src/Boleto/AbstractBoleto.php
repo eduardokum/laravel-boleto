@@ -2,13 +2,13 @@
 
 namespace Eduardokum\LaravelBoleto\Boleto;
 
-use Eduardokum\LaravelBoleto\MagicTrait;
 use Exception;
 use Throwable;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Eduardokum\LaravelBoleto\Util;
 use SimpleSoftwareIO\QrCode\Generator;
+use Eduardokum\LaravelBoleto\MagicTrait;
 use BaconQrCode\Common\ErrorCorrectionLevel;
 use Eduardokum\LaravelBoleto\Boleto\Render\Pdf;
 use Eduardokum\LaravelBoleto\Boleto\Render\Html;
@@ -1798,7 +1798,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * @return ?string
      */
-    public function getPixQrCode(): ?string
+    public function getPixQrCode()
     {
         return $this->pixQrCode;
     }
@@ -1872,7 +1872,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * @return ?string
      */
-    public function getPixQrCodeBase64(): ?string
+    public function getPixQrCodeBase64()
     {
         if ($this->getPixQrCode() == null) {
             return null;
@@ -1898,7 +1898,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * @param string $pixQrCode
      */
-    public function setPixQrCode(string $pixQrCode): void
+    public function setPixQrCode($pixQrCode)
     {
         $this->pixQrCode = $pixQrCode;
     }
