@@ -2,11 +2,11 @@
 
 namespace Eduardokum\LaravelBoleto\Api;
 
-use Eduardokum\LaravelBoleto\Contracts\Api\Api;
 use stdClass;
 use Illuminate\Support\Str;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Pessoa;
+use Eduardokum\LaravelBoleto\Contracts\Api\Api;
 use Eduardokum\LaravelBoleto\Api\Exception\CurlException;
 use Eduardokum\LaravelBoleto\Api\Exception\HttpException;
 use Eduardokum\LaravelBoleto\Exception\ValidationException;
