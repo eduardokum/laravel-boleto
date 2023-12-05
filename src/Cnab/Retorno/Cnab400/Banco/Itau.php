@@ -316,7 +316,7 @@ class Itau extends AbstractRetorno implements RetornoCnab400
             $d->setPixChaveTipo(Util::tipoChavePix($d->getPixChave()));
             $d->setId(Arr::get($decoded, '62.05'));
         }
-        $d->setError(Util::appendStrings($d->getError(), $aErrorPix[sprintf('%03s', $this->rem(392, 394, $detalhe))]));
+        $d->appendError($aErrorPix[sprintf('%03s', $this->rem(392, 394, $detalhe))]);
 
         return false;
     }

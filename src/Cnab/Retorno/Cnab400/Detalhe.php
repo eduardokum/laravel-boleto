@@ -627,6 +627,18 @@ class Detalhe implements DetalheContract
     }
 
     /**
+     * @param string $error
+     *
+     * @return Detalhe
+     */
+    public function appendError($error)
+    {
+        $this->error .= $error;
+
+        return $this;
+    }
+
+    /**
      * @return mixed
      */
     public function getId()
