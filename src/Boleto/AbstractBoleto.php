@@ -2005,7 +2005,7 @@ abstract class AbstractBoleto implements BoletoContract
                     }
                     break;
                 case self::TIPO_CHAVEPIX_CELULAR:
-                    if (strlen(Util::onlyNumbers($this->getPixChave())) != 11) {
+                    if (! preg_match('/^(\+\d{2}\s?)?[-.\s]?\(?\d{2}\)?[-.\s]?(\d\s?)?\d{4}[-.\s]?\d{4}$/', $this->getPixChave())) {
                         throw new ValidationException(sprintf('Chave do tipo CELULAR é invalida: %s', $this->getPixChave()));
                     }
                     break;
