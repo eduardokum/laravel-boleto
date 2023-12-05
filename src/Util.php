@@ -5,6 +5,7 @@ namespace Eduardokum\LaravelBoleto;
 use Exception;
 use Carbon\Carbon;
 use NumberFormatter;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Http\UploadedFile;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
@@ -1288,30 +1289,102 @@ final class Util
     }
 
     /**
-     * Função baseada no projeto
-     * https://github.com/renatomb/decoder_brcode_pix/blob/main/funcoes.php
      * @param $pixCopiaECola
+     * @param null $parent
      * @return array|null
      */
-    public static function decodePixCopiaECola($pixCopiaECola)
+    public static function decodePixCopiaECola($pixCopiaECola, $parent = null)
     {
+        $structures = [
+            '00' => [
+                'type' => 'single',
+                'name' => 'Payload Format Indicator',
+            ],
+            '01' => [
+                'type' => 'single',
+                'name' => 'Point of Initiation Method',
+            ],
+            '26' => [
+                'type'      => 'multiple',
+                'name'      => 'Merchant Account Information',
+                'multiples' => [
+                    '00' => [
+                        'type' => 'single',
+                        'name' => 'Globally Unique Identifier',
+                    ],
+                    '01' => [
+                        'type' => 'single',
+                        'name' => 'Pix Key',
+                    ],
+                    '02' => [
+                        'type' => 'single',
+                        'name' => 'Payment Description',
+                    ],
+                    '25' => [
+                        'type' => 'single',
+                        'name' => 'Payment URL',
+                    ],
+                ],
+            ],
+            '52' => [
+                'type' => 'single',
+                'name' => 'Merchant Category Code',
+            ],
+            '53' => [
+                'type' => 'single',
+                'name' => 'Transaction Currency',
+            ],
+            '54' => [
+                'type' => 'single',
+                'name' => 'Transaction Amount',
+            ],
+            '58' => [
+                'type' => 'single',
+                'name' => 'Country Code',
+            ],
+            '59' => [
+                'type' => 'single',
+                'name' => 'Merchant Name',
+            ],
+            '60' => [
+                'type' => 'single',
+                'name' => 'Merchant City',
+            ],
+            '61' => [
+                'type' => 'single',
+                'name' => 'Postal Code',
+            ],
+            '62' => [
+                'type'      => 'multiple',
+                'name'      => 'Additional Data Field Template',
+                'multiples' => [
+                    '05' => [
+                        'type' => 'single',
+                        'name' => 'Reference Label',
+                    ],
+                ],
+            ],
+        ];
+
+        if ($parent && ! ($structures = Arr::get($structures, "$parent.multiples"))) {
+            return null;
+        }
+
         $aPix = [];
         $i = 0;
         while ($i < strlen($pixCopiaECola)) {
             $code = substr($pixCopiaECola, $i, 2);
             $i += 2;
             $size = intval(substr($pixCopiaECola, $i, 2));
-            if (! is_numeric($size)) {
-                return null;
-            }
             $i += 2;
-            $valor = substr($pixCopiaECola, $i, $size);
-            $i += $size;
-            if (preg_match('/^\d{4}.+$/', $valor) && ($code != 54)) {
-                $aPix[$code] = self::decodePixCopiaECola($valor);
-            } else {
-                $aPix[$code] = $valor;
+            if ($structure = Arr::get($structures, $code)) {
+                if ($structure['type'] == 'multiple') {
+                    $aPix["$code"] = self::decodePixCopiaECola(substr($pixCopiaECola, $i, $size), $code);
+                } else {
+                    $aPix["$code"] = substr($pixCopiaECola, $i, $size);
+                }
             }
+            $i += $size;
         }
 
         return $aPix;
