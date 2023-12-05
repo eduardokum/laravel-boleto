@@ -1219,16 +1219,12 @@ final class Util
      */
     public static function formatarUUID($uuid)
     {
-        $uuid = self::onlyNumbers($uuid);
+        $uuidNew = self::onlyNumbers($uuid);
+        if (preg_match('/[a-zA-Z0-9]{32}/', $uuidNew)) {
+            return Util::maskString($uuidNew, '########-####-####-####-############');
+        }
 
-        return sprintf(
-            '%s-%s-%s-%s-%s',
-            substr($uuid, 0, 8),
-            substr($uuid, 8, 4),
-            substr($uuid, 12, 4),
-            substr($uuid, 16, 4),
-            substr($uuid, 20, 12)
-        );
+        return $uuid;
     }
 
     /**
