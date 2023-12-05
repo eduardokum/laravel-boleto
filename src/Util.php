@@ -1300,6 +1300,10 @@ final class Util
                 'type' => 'single',
                 'name' => 'Point of Initiation Method',
             ],
+            '04' => [
+                'type' => 'single',
+                'name' => 'Merchant Account Information – Cartões',
+            ],
             '26' => [
                 'type'      => 'multiple',
                 'name'      => 'Merchant Account Information',
@@ -1360,6 +1364,24 @@ final class Util
                     ],
                 ],
             ],
+            '80' => [
+                'type'      => 'multiple',
+                'name'      => 'Unreserved Templates',
+                'multiples' => [
+                    '00' => [
+                        'type' => 'single',
+                        'name' => 'Globally Unique Identifier',
+                    ],
+                    '01' => [
+                        'type' => 'single',
+                        'name' => 'informação arbitrária do arranjo',
+                    ],
+                ],
+            ],
+            '63' => [
+                'type' => 'single',
+                'name' => 'CRC',
+            ],
         ];
 
         if ($parent && ! ($structures = Arr::get($structures, "$parent.multiples"))) {
@@ -1369,13 +1391,19 @@ final class Util
         $aPix = [];
         $i = 0;
         while ($i < strlen($pixCopiaECola)) {
-            $code = substr($pixCopiaECola, $i, 2);
+            $code = $codeSearch = substr($pixCopiaECola, $i, 2);
+            if ($code >= 26 && $code <= 51) {
+                $codeSearch = 26;
+            }
+            if ($code >= 80 && $code <= 99) {
+                $codeSearch = 80;
+            }
             $i += 2;
             $size = intval(substr($pixCopiaECola, $i, 2));
             $i += 2;
-            if ($structure = Arr::get($structures, $code)) {
+            if ($structure = Arr::get($structures, $codeSearch)) {
                 if ($structure['type'] == 'multiple') {
-                    $aPix["$code"] = self::decodePixCopiaECola(substr($pixCopiaECola, $i, $size), $code);
+                    $aPix["$code"] = self::decodePixCopiaECola(substr($pixCopiaECola, $i, $size), $codeSearch);
                 } else {
                     $aPix["$code"] = substr($pixCopiaECola, $i, $size);
                 }
