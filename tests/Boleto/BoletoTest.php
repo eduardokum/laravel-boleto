@@ -775,4 +775,33 @@ class BoletoTest extends TestCase
         $this->assertNotNull($boletoHtml);
         $this->assertNotNull($boleto->renderPDF());
     }
+
+
+    public function testBoletoAilos()
+    {
+        $boleto = new Boleto\Ailos([
+            'logo' => realpath(__DIR__ . '/../../logos/') . DIRECTORY_SEPARATOR . '085.png',
+            'dataVencimento' => new \Carbon\Carbon(),
+            'valor' => 100,
+            'multa' => false,
+            'juros' => false,
+            'numero' => 1,
+            'numeroDocumento' => 1,
+            'pagador' => self::$pagador,
+            'beneficiario' => self::$beneficiario,
+            'carteira' => '1',
+            'convenio' => '000000',
+            'agencia' => 1111,
+            'agenciaDv' => 1,
+            'conta' => 11111,
+            'contaDv' => 1,
+            'descricaoDemonstrativo' => ['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'],
+            'instrucoes' => ['instrucao 1', 'instrucao 2', 'instrucao 3'],
+            'aceite' => 'S',
+            'especieDoc' => 'DM',
+        ]);
+        $this->assertThat($boleto->toArray(), (new IsType(IsType::TYPE_ARRAY)));
+        $this->assertNotNull($boleto->renderHTML());
+        $this->assertNotNull($boleto->renderPDF());
+    }
 }
