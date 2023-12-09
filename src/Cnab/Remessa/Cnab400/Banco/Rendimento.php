@@ -2,12 +2,12 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
+use Illuminate\Support\Str;
+use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Eduardokum\LaravelBoleto\Util;
-use Illuminate\Support\Str;
 
 class Rendimento extends AbstractRemessa implements RemessaContract
 {
@@ -103,7 +103,7 @@ class Rendimento extends AbstractRemessa implements RemessaContract
      */
     protected function header()
     {
-        if (!Str::startsWith($this->getCodigoCliente(), $this->getAgencia())) {
+        if (! Str::startsWith($this->getCodigoCliente(), $this->getAgencia())) {
             $this->setCodigoCliente(Util::numberFormatGeral($this->getAgencia(), 4) . Util::numberFormatGeral($this->getCodigoCliente(), 10));
         }
 
@@ -133,7 +133,7 @@ class Rendimento extends AbstractRemessa implements RemessaContract
      */
     public function addBoleto(BoletoContract $boleto)
     {
-        if (!Str::startsWith($this->getCodigoCliente(), $this->getAgencia())) {
+        if (! Str::startsWith($this->getCodigoCliente(), $this->getAgencia())) {
             $this->setCodigoCliente(Util::numberFormatGeral($this->getAgencia(), 4) . Util::numberFormatGeral($this->getCodigoCliente(), 10));
         }
 

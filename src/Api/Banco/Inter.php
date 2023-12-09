@@ -2,17 +2,17 @@
 
 namespace Eduardokum\LaravelBoleto\Api\Banco;
 
+use Exception;
 use Carbon\Carbon;
+use Illuminate\Support\Arr;
+use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Api\AbstractAPI;
 use Eduardokum\LaravelBoleto\Api\Exception\CurlException;
 use Eduardokum\LaravelBoleto\Api\Exception\HttpException;
-use Eduardokum\LaravelBoleto\Api\Exception\UnauthorizedException;
-use Eduardokum\LaravelBoleto\Boleto\Banco\Inter as BoletoInter;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\BoletoAPI as BoletoAPIContract;
 use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Eduardokum\LaravelBoleto\Util;
-use Exception;
-use Illuminate\Support\Arr;
+use Eduardokum\LaravelBoleto\Boleto\Banco\Inter as BoletoInter;
+use Eduardokum\LaravelBoleto\Api\Exception\UnauthorizedException;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\BoletoAPI as BoletoAPIContract;
 
 class Inter extends AbstractAPI
 {
@@ -52,10 +52,10 @@ class Inter extends AbstractAPI
             return $this;
         }
         $grant = $this->post($this->url('auth'), [
-            'client_id' => $this->getClientId(),
+            'client_id'     => $this->getClientId(),
             'client_secret' => $this->getClientSecret(),
-            'scope' => 'boleto-cobranca.read boleto-cobranca.write',
-            'grant_type' => 'client_credentials',
+            'scope'         => 'boleto-cobranca.read boleto-cobranca.write',
+            'grant_type'    => 'client_credentials',
         ], true)->body;
 
         return $this->setAccessToken('Bearer ' . $grant->access_token);
@@ -90,6 +90,7 @@ class Inter extends AbstractAPI
         }
         try {
             $this->oAuth2()->put($this->url('webhook'), ['webhookUrl' => $url]);
+
             return true;
         } catch (Exception $e) {
             return false;
@@ -111,7 +112,7 @@ class Inter extends AbstractAPI
         if ($this->version != 1) {
             unset($data['dataEmissao']);
             unset($data['dataLimite']);
-            $data['numDiasAgenda'] = (int)$boleto->getDiasBaixaAutomatica();
+            $data['numDiasAgenda'] = (int) $boleto->getDiasBaixaAutomatica();
             $data['pagador']['cpfCnpj'] = $data['pagador']['cnpjCpf'];
             unset($data['pagador']['cnpjCpf']);
         }
@@ -151,19 +152,19 @@ class Inter extends AbstractAPI
     public function retrieveList($inputedParams = [])
     {
         $params = array_filter([
-            'situacao' => $this->version == 1 ? null : Arr::get($inputedParams, 'situacao', 'EXPIRADO,PAGO,EMABERTO,VENCIDO,CANCELADO'),
-            'filtrarPor' => $this->version == 2 ? null : Arr::get($inputedParams, 'filtrarPor', 'TODOS'),
+            'situacao'       => $this->version == 1 ? null : Arr::get($inputedParams, 'situacao', 'EXPIRADO,PAGO,EMABERTO,VENCIDO,CANCELADO'),
+            'filtrarPor'     => $this->version == 2 ? null : Arr::get($inputedParams, 'filtrarPor', 'TODOS'),
             'filtrarDataPor' => Arr::get($inputedParams, 'filtrarDataPor', 'VENCIMENTO'),
-            'dataInicial' => Arr::get($inputedParams, 'dataInicial', Carbon::now()->startOfMonth()->format('Y-m-d')),
-            'dataFinal' => Arr::get($inputedParams, 'dataFinal', Carbon::now()->endOfMonth()->format('Y-m-d')),
-            'ordenarPor' => Arr::get($inputedParams, 'ordenarPor', 'NOSSONUMERO'),
-            'page' => $this->version == 1 ? 0 : null,
-            'size' => $this->version == 1 ? 100 : null,
-            'paginaAtual' => $this->version == 2 ? 0 : null,
+            'dataInicial'    => Arr::get($inputedParams, 'dataInicial', Carbon::now()->startOfMonth()->format('Y-m-d')),
+            'dataFinal'      => Arr::get($inputedParams, 'dataFinal', Carbon::now()->endOfMonth()->format('Y-m-d')),
+            'ordenarPor'     => Arr::get($inputedParams, 'ordenarPor', 'NOSSONUMERO'),
+            'page'           => $this->version == 1 ? 0 : null,
+            'size'           => $this->version == 1 ? 100 : null,
+            'paginaAtual'    => $this->version == 2 ? 0 : null,
             'itensPorPagina' => $this->version == 2 ? 1000 : null,
-            'paginacao' => $this->version == 3 ? ['paginaAtual' => 0, 'itensPorPagina' => 1000] : null,
+            'paginacao'      => $this->version == 3 ? ['paginaAtual' => 0, 'itensPorPagina' => 1000] : null,
         ], function ($v) {
-            return !is_null($v);
+            return ! is_null($v);
         });
 
         $aRetorno = [];
@@ -176,13 +177,13 @@ class Inter extends AbstractAPI
                 } else {
                     $params['paginaAtual'] += 1;
                 }
-            } while (!$retorno->body->last);
+            } while (! $retorno->body->last);
         } else {
             do {
                 $retorno = $this->oAuth2()->get($this->url('search') . http_build_query($params));
                 array_push($aRetorno, ...$retorno->body->cobrancas);
                 $params['paginacao']['paginaAtual'] += 1;
-            } while (!$retorno->body->ultimaPagina);
+            } while (! $retorno->body->ultimaPagina);
         }
 
         return array_map([$this, 'arrayToBoleto'], $aRetorno);
@@ -203,6 +204,7 @@ class Inter extends AbstractAPI
             throw new ValidationException('Versão 3 da API somente recupera boleto pelo ID da cobrança');
         }
         $response = $this->oAuth2()->get($this->url('show', $nossoNumero));
+
         return $this->version == 1
             ? $response
             : $response->body;
@@ -222,6 +224,7 @@ class Inter extends AbstractAPI
         if ($this->version != 3) {
             throw new ValidationException('Versão 1 e 2 da API somente recupera boleto pelo nosso número');
         }
+
         return $this->oAuth2()->get($this->url('show', $id))->body;
     }
 
@@ -257,7 +260,7 @@ class Inter extends AbstractAPI
             ];
         }
 
-        if (!in_array(Util::upper($motivo), $motivosValidos)) {
+        if (! in_array(Util::upper($motivo), $motivosValidos)) {
             $motivo = 'ACERTOS';
         }
 
@@ -284,6 +287,7 @@ class Inter extends AbstractAPI
         if ($this->version != 3) {
             throw new ValidationException('Versão 1 e 2 da API somente cancela boleto pelo nosso número');
         }
+
         return $this->oAuth2()->post($this->url('cancel', $id), ['motivoCancelamento' => $motivo])->body;
     }
 
@@ -301,6 +305,7 @@ class Inter extends AbstractAPI
         if ($this->version == 3) {
             throw new ValidationException('Versão 3 da API somente recupera PDF pelo ID da cobrança');
         }
+
         return $this->oAuth2()->get($this->url('pdf', $nossoNumero))->body;
     }
 
@@ -318,6 +323,7 @@ class Inter extends AbstractAPI
         if ($this->version == 3) {
             throw new ValidationException('Versão 1, 2 da API somente recupera PDF pelo nosso número');
         }
+
         return $this->oAuth2()->get($this->url('pdf', $id))->body;
     }
 
@@ -330,7 +336,7 @@ class Inter extends AbstractAPI
     private function arrayToBoleto($boleto)
     {
         return BoletoInter::fromAPI($boleto, [
-            'conta' => $this->getConta(),
+            'conta'        => $this->getConta(),
             'beneficiario' => $this->getBeneficiario(),
         ]);
     }
@@ -345,27 +351,27 @@ class Inter extends AbstractAPI
         $aUrls = [
             1 => [
                 'create' => 'openbanking/v1/certificado/boletos',
-                'show' => 'openbanking/v1/certificado/boletos/' . $param,
+                'show'   => 'openbanking/v1/certificado/boletos/' . $param,
                 'cancel' => 'openbanking/v1/certificado/boletos/' . $param . '/baixas',
-                'pdf' => 'openbanking/v1/certificado/boletos/' . $param . '/pdf',
+                'pdf'    => 'openbanking/v1/certificado/boletos/' . $param . '/pdf',
                 'search' => 'openbanking/v1/certificado/boletos?',
             ],
             2 => [
-                'create' => 'cobranca/v2/boletos',
-                'show' => 'cobranca/v2/boletos/' . $param,
-                'cancel' => 'cobranca/v2/boletos/' . $param . '/cancelar',
-                'pdf' => 'cobranca/v2/boletos/' . $param . '/pdf',
-                'search' => 'cobranca/v2/boletos?',
-                'auth' => '/oauth/v2/token',
+                'create'  => 'cobranca/v2/boletos',
+                'show'    => 'cobranca/v2/boletos/' . $param,
+                'cancel'  => 'cobranca/v2/boletos/' . $param . '/cancelar',
+                'pdf'     => 'cobranca/v2/boletos/' . $param . '/pdf',
+                'search'  => 'cobranca/v2/boletos?',
+                'auth'    => '/oauth/v2/token',
                 'webhook' => 'cobranca/v2/boletos/webhook',
             ],
             3 => [
-                'create' => 'cobranca/v3/cobrancas',
-                'show' => 'cobranca/v3/cobrancas/' . $param,
-                'cancel' => 'cobranca/v3/cobrancas/' . $param . '/cancelar',
-                'pdf' => 'cobranca/v3/cobrancas/' . $param . '/pdf',
-                'search' => 'cobranca/v3/cobrancas?',
-                'auth' => '/oauth/v2/token',
+                'create'  => 'cobranca/v3/cobrancas',
+                'show'    => 'cobranca/v3/cobrancas/' . $param,
+                'cancel'  => 'cobranca/v3/cobrancas/' . $param . '/cancelar',
+                'pdf'     => 'cobranca/v3/cobrancas/' . $param . '/pdf',
+                'search'  => 'cobranca/v3/cobrancas?',
+                'auth'    => '/oauth/v2/token',
                 'webhook' => 'cobranca/v3/cobrancas/webhook',
             ],
         ];

@@ -2,8 +2,8 @@
 
 namespace Eduardokum\LaravelBoleto\Boleto\Render;
 
-use Exception;
 use FPDF;
+use Exception;
 
 abstract class AbstractPdf extends FPDF
 {
@@ -53,7 +53,7 @@ abstract class AbstractPdf extends FPDF
     public function _putresources()
     {
         parent::_putresources();
-        if (!empty($this->javascript)) {
+        if (! empty($this->javascript)) {
             $this->_putjavascript();
         }
     }
@@ -61,7 +61,7 @@ abstract class AbstractPdf extends FPDF
     public function _putcatalog()
     {
         parent::_putcatalog();
-        if (!empty($this->javascript)) {
+        if (! empty($this->javascript)) {
             $this->_put('/Names <</JavaScript ' . ($this->n_js) . ' 0 R>>');
         }
     }
@@ -89,7 +89,7 @@ abstract class AbstractPdf extends FPDF
         parent::_beginpage($orientation, $size, $rotation);
         if ($this->NewPageGroup) {
             // start a new group
-            if (!is_array($this->PageGroups)) {
+            if (! is_array($this->PageGroups)) {
                 $this->PageGroups = [];
             }
             $n = sizeof($this->PageGroups) + 1;
@@ -105,7 +105,7 @@ abstract class AbstractPdf extends FPDF
     public function _putpages()
     {
         $nb = $this->page;
-        if (!empty($this->PageGroups)) {
+        if (! empty($this->PageGroups)) {
             // do page number replacement
             foreach ($this->PageGroups as $k => $v) {
                 for ($n = 1; $n <= $nb; $n++) {
@@ -188,10 +188,10 @@ abstract class AbstractPdf extends FPDF
             $charBar = $code[$i];
             $charSpace = $code[$i + 1];
             // check whether it is a valid digit
-            if (!isset($barChar[$charBar])) {
+            if (! isset($barChar[$charBar])) {
                 $this->Error('Invalid character in barcode: ' . $charBar);
             }
-            if (!isset($barChar[$charSpace])) {
+            if (! isset($barChar[$charSpace])) {
                 $this->Error('Invalid character in barcode: ' . $charSpace);
             }
             // create a wide/narrow-sequence (first digit=bars, second digit=spaces)

@@ -2,19 +2,20 @@
 
 namespace Eduardokum\LaravelBoleto\Api;
 
+use stdClass;
+use Illuminate\Support\Str;
+use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Pessoa;
+use Eduardokum\LaravelBoleto\Contracts\Api\Api;
 use Eduardokum\LaravelBoleto\Api\Exception\CurlException;
 use Eduardokum\LaravelBoleto\Api\Exception\HttpException;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Api\Exception\MissingDataException;
+use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
 use Eduardokum\LaravelBoleto\Api\Exception\UnauthorizedException;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\BoletoAPI as BoletoAPIContract;
-use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Eduardokum\LaravelBoleto\Pessoa;
-use Eduardokum\LaravelBoleto\Util;
-use Illuminate\Support\Str;
-use stdClass;
 
-abstract class AbstractAPI
+abstract class AbstractAPI implements Api
 {
     protected $baseUrl = null;
 
@@ -364,7 +365,7 @@ abstract class AbstractAPI
      * @return AbstractAPI
      * @throws ValidationException
      */
-    public function setBeneficiario($beneficiario): AbstractAPI
+    public function setBeneficiario($beneficiario)
     {
         Util::addPessoa($this->beneficiario, $beneficiario);
 
@@ -468,7 +469,7 @@ abstract class AbstractAPI
         $url = ltrim($url, '/');
         $this->init()
             ->setHeaders(array_filter([
-                'Accept' => $raw ? null : 'application/json',
+                'Accept'       => $raw ? null : 'application/json',
                 'Content-type' => $raw ? 'application/x-www-form-urlencoded' : 'application/json',
             ]));
 
@@ -495,7 +496,7 @@ abstract class AbstractAPI
         $url = ltrim($url, '/');
         $this->init()
             ->setHeaders(array_filter([
-                'Accept' => $raw ? null : 'application/json',
+                'Accept'       => $raw ? null : 'application/json',
                 'Content-type' => $raw ? 'application/x-www-form-urlencoded' : 'application/json',
             ]));
 
@@ -540,13 +541,13 @@ abstract class AbstractAPI
     private function init()
     {
         if ($this->getCertificado()
-            && !file_exists($this->getCertificado())
+            && ! file_exists($this->getCertificado())
             && openssl_x509_read($this->getCertificado())) {
             $this->setCertificado($this->tempFile($this->getCertificado()));
         }
 
         if ($this->getCertificadoChave()
-            && !file_exists($this->getCertificadoChave())
+            && ! file_exists($this->getCertificadoChave())
             && openssl_pkey_get_private($this->getCertificadoChave())) {
             $this->setCertificadoChave($this->tempFile($this->getCertificadoChave()));
         }
@@ -693,7 +694,7 @@ abstract class AbstractAPI
         $error = curl_error($this->curl);
         curl_close($this->curl);
         $this->curl = null;
-        if (!$this->getResponseHttpCode() && $error) {
+        if (! $this->getResponseHttpCode() && $error) {
             throw new CurlException($error);
         }
 

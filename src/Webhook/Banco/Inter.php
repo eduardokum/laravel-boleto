@@ -3,9 +3,9 @@
 namespace Eduardokum\LaravelBoleto\Webhook\Banco;
 
 use Carbon\Carbon;
-use Eduardokum\LaravelBoleto\Webhook\AbstractWebhook;
-use Eduardokum\LaravelBoleto\Webhook\Boleto;
 use Illuminate\Support\Arr;
+use Eduardokum\LaravelBoleto\Webhook\Boleto;
+use Eduardokum\LaravelBoleto\Webhook\AbstractWebhook;
 
 class Inter extends AbstractWebhook
 {
@@ -14,6 +14,8 @@ class Inter extends AbstractWebhook
      */
     public function processar()
     {
+        $this->setConta(Arr::get($this->getHeaders(), 'x-conta-corrente'));
+
         $aRet = [];
         foreach ($this->getPost() as $item) {
             $boleto = new Boleto();
@@ -35,7 +37,7 @@ class Inter extends AbstractWebhook
                 }
             );
             $boleto->setOcorrenciaOrigem(
-                Arr::get($item, 'origemRecebimento', 'BOLETO') == 'PIX' || !is_null(Arr::get($item, 'txid'))
+                Arr::get($item, 'origemRecebimento', 'BOLETO') == 'PIX' || ! is_null(Arr::get($item, 'txid'))
                     ? Boleto::OCORRENCIA_ORIGEM_PIX
                     : Boleto::OCORRENCIA_ORIGEM_BOLETO
             );
@@ -43,6 +45,7 @@ class Inter extends AbstractWebhook
             $boleto->setPix(Arr::get($item, 'pixCopiaECola'));
             $aRet[] = $boleto;
         }
+
         return $aRet;
     }
 }

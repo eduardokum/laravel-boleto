@@ -14,7 +14,7 @@ $rules = [
     'blank_line_before_statement' => [
         'statements' => ['return'],
     ],
-    'braces' => true,
+    'single_space_around_construct' => true,
     'cast_spaces' => true,
     'class_attributes_separation' => [
         'elements' => [
@@ -30,7 +30,7 @@ $rules = [
         'single_line' => true,
     ],
     'concat_space' => [
-        'spacing' => 'none',
+        'spacing' => 'one',
     ],
     'constant_case' => ['case' => 'lower'],
     'declare_equal_normalize' => true,
@@ -39,7 +39,7 @@ $rules = [
     'full_opening_tag' => true,
     'fully_qualified_strict_types' => true, // added by Shift
     'function_declaration' => true,
-    'function_typehint_space' => true,
+    'type_declaration_spaces' => true,
     'general_phpdoc_tag_rename' => true,
     'heredoc_to_nowdoc' => true,
     'include' => true,
@@ -84,9 +84,8 @@ $rules = [
     'no_spaces_around_offset' => [
         'positions' => ['inside', 'outside'],
     ],
-    'no_spaces_inside_parenthesis' => true,
-    'no_trailing_comma_in_list_call' => true,
-    'no_trailing_comma_in_singleline_array' => true,
+    'spaces_inside_parentheses' => true,
+    'no_trailing_comma_in_singleline' => true,
     'no_trailing_whitespace' => true,
     'no_trailing_whitespace_in_comment' => true,
     'no_unneeded_control_parentheses' => [
@@ -119,7 +118,7 @@ $rules = [
     'short_scalar_cast' => true,
     'simplified_null_return' => false, // disabled as "risky"
     'single_blank_line_at_eof' => true,
-    'single_blank_line_before_namespace' => true,
+    'blank_lines_before_namespace' => true,
     'single_class_element_per_statement' => [
         'elements' => ['const', 'property'],
     ],

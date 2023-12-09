@@ -80,7 +80,7 @@ class Bnb extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        return Util::numberFormatGeral($this->getNumero(), 7).CalculoDV::bnbNossoNumero($this->getNumero());
+        return Util::numberFormatGeral($this->getNumero(), 7) . CalculoDV::bnbNossoNumero($this->getNumero());
     }
 
     /**

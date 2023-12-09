@@ -48,7 +48,7 @@ class Ourinvest extends AbstractBoleto implements BoletoContract
     /**
      * @return bool
      */
-    public function isEmissaoPropria(): bool
+    public function isEmissaoPropria()
     {
         return $this->emissaoPropria;
     }
@@ -73,7 +73,7 @@ class Ourinvest extends AbstractBoleto implements BoletoContract
     protected function gerarNossoNumero()
     {
         return $this->isEmissaoPropria()
-            ? Util::numberFormatGeral($this->getNumero(), 11).CalculoDV::ourinvestNossoNumero($this->getCarteira(), $this->getNumero())
+            ? Util::numberFormatGeral($this->getNumero(), 11) . CalculoDV::ourinvestNossoNumero($this->getCarteira(), $this->getNumero())
             : Util::numberFormatGeral(0, 12);
     }
 

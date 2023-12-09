@@ -235,7 +235,7 @@ class Santander extends AbstractBoleto implements BoletoContract
     protected function gerarNossoNumero()
     {
         return Util::numberFormatGeral($this->getNumero(), 12)
-            .CalculoDV::santanderNossoNumero($this->getNumero());
+            . CalculoDV::santanderNossoNumero($this->getNumero());
     }
 
     /**
@@ -245,7 +245,21 @@ class Santander extends AbstractBoleto implements BoletoContract
      */
     public function getNossoNumeroBoleto()
     {
-        return substr($this->getNossoNumero(), 0, -1).'-'.substr($this->getNossoNumero(), -1);
+        return substr($this->getNossoNumero(), 0, -1) . '-' . substr($this->getNossoNumero(), -1);
+    }
+
+    /**
+     * @param $id
+     * @return string
+     * @throws ValidationException
+     */
+    protected function validateId($id)
+    {
+        if (! preg_match('/^[a-zA-Z0-9]{25,36}$/', $id)) {
+            throw new ValidationException('ID/TXID do boleto é inválido, Os caracteres aceitos neste contexto são: A-Z, a-z, 0-9, não pode conter brancos e nulos, com o mínimo de 26 caracteres e no máximo 35 caracteres');
+        }
+
+        return $id;
     }
 
     /**
@@ -259,10 +273,10 @@ class Santander extends AbstractBoleto implements BoletoContract
             return $this->campoLivre;
         }
 
-        return $this->campoLivre = '9'.Util::numberFormatGeral($this->getCodigoCliente(), 7)
-            .Util::numberFormatGeral($this->getNossoNumero(), 13)
-            .Util::numberFormatGeral($this->getIos(), 1)
-            .Util::numberFormatGeral($this->getCarteira(), 3);
+        return $this->campoLivre = '9' . Util::numberFormatGeral($this->getCodigoCliente(), 7)
+            . Util::numberFormatGeral($this->getNossoNumero(), 13)
+            . Util::numberFormatGeral($this->getIos(), 1)
+            . Util::numberFormatGeral($this->getCarteira(), 3);
     }
 
     /**

@@ -609,7 +609,7 @@ class BoletoTest extends TestCase
             'instrucoes' => ['instrucao 1', 'instrucao 2', 'instrucao 3'],
             'aceite' => $this->aceite(),
             'especieDoc' => 'DM',
-            'pix_qrcode' => '00020126330014br.gov.bcb.pix01111335366962052040000530398654040.805802BR5919NOME6014CIDADE62580520LKH2021102118215467250300017br.gov.bcb.brcode01051.0.063044D24',
+            'pix_qrcode' => '00020104141234567890123426660014BR.GOV.BCB.PIX014466756C616E6F32303139406578616D706C652E636F6D27300012BR.COM.OUTRO011001234567895204000053039865406123.455802BR5915NOMEDORECEBEDOR6008BRASILIA61087007490062530515RP12345678-201950300017BR.GOV.BCB.BRCODE01051.0.080450014BR.GOV.BCB.PIX0123PADRAO.URL.PIX/0123ABCD81390012BR.COM.OUTRO01190123.ABCD.3456.WXYZ6304EB76',
         ]);
 
         $boletoHtml = $boleto->renderHTML();
@@ -639,7 +639,7 @@ class BoletoTest extends TestCase
             'instrucoes' => ['instrucao 1', 'instrucao 2', 'instrucao 3'],
             'aceite' => $this->aceite(),
             'especieDoc' => 'DM',
-            'id' => 'id-da-transcao-pix',
+            'id' => '123456789012345678901234567890',
             'pix_chave' => '39a1178e-db6b-4407-bc7b-b674390acf5f',
             'pix_chave_tipo' => Boleto\Santander::TIPO_CHAVEPIX_ALEATORIA,
         ]);
@@ -671,13 +671,13 @@ class BoletoTest extends TestCase
             'instrucoes' => ['instrucao 1', 'instrucao 2', 'instrucao 3'],
             'aceite' => $this->aceite(),
             'especieDoc' => 'DM',
-            'id' => 'id-da-transcao-pix',
+            'id' => '123456789012345678901234567890',
             'pix_chave' => '39a1178e-db6b-4407-bc7b-b674390acf5f',
             'pix_chave_tipo' => Boleto\Santander::TIPO_CHAVEPIX_ALEATORIA,
         ]);
         $boleto->gerarPixCopiaECola();
 
-        $this->assertEquals('00020101021226580014br.gov.bcb.pix013639a1178e-db6b-4407-bc7b-b674390acf5f5204000053039865406100.005802BR5904ACME6006CIDADE62220518id-da-transcao-pix630491C3', $boleto->toArray()['pix_qrcode']);
+        $this->assertEquals('00020101021226580014br.gov.bcb.pix013639a1178e-db6b-4407-bc7b-b674390acf5f5204000053039865406100.005802BR5904ACME6006CIDADE623405301234567890123456789012345678906304F0C4', $boleto->toArray()['pix_qrcode']);
     }
 
     public function testBoletoSantanderPixSemTipo()
@@ -701,7 +701,7 @@ class BoletoTest extends TestCase
             'instrucoes' => ['instrucao 1', 'instrucao 2', 'instrucao 3'],
             'aceite' => $this->aceite(),
             'especieDoc' => 'DM',
-            'id' => 'id-da-transcao-pix',
+            'id' => '123456789012345678901234567890',
             'pix_chave' => '39a1178e-db6b-4407-bc7b-b674390acf5f',
         ]);
 
@@ -733,7 +733,7 @@ class BoletoTest extends TestCase
             'instrucoes' => ['instrucao 1', 'instrucao 2', 'instrucao 3'],
             'aceite' => $this->aceite(),
             'especieDoc' => 'DM',
-            'id' => 'id-da-transcao-pix',
+            'id' => '123456789012345678901234567890',
             'pix_chave_tipo' => Boleto\Santander::TIPO_CHAVEPIX_ALEATORIA,
         ]);
 
@@ -742,6 +742,32 @@ class BoletoTest extends TestCase
         $this->assertThat($boleto->toArray(), (new IsType(IsType::TYPE_ARRAY)));
         $this->assertNotNull($boletoHtml);
         $this->assertNotNull($boleto->renderPDF());
+    }
+
+    public function testBoletoSantanderInvalidoID()
+    {
+        $this->expectException(Exception::class);
+        $boleto = new Boleto\Santander([
+            'logo' => realpath(__DIR__ . '/../../logos/') . DIRECTORY_SEPARATOR . '033.png',
+            'dataVencimento' => $this->vencimento(),
+            'valor' => $this->valor(),
+            'multa' => $this->multa(),
+            'juros' => $this->juros(),
+            'numero' => 1,
+            'numeroDocumento' => 1,
+            'pagador' => self::$pagador,
+            'beneficiario' => self::$beneficiario,
+            'diasBaixaAutomatica' => 15,
+            'carteira' => 101,
+            'agencia' => 1111,
+            'codigoCliente' => 9999999,
+            'descricaoDemonstrativo' => ['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'],
+            'instrucoes' => ['instrucao 1', 'instrucao 2', 'instrucao 3'],
+            'aceite' => $this->aceite(),
+            'especieDoc' => 'DM',
+            'id' => '12345678901234567890',
+            'pix_chave_tipo' => Boleto\Santander::TIPO_CHAVEPIX_ALEATORIA,
+        ]);
     }
 
     public function testBoletoSantanderPixTipoEPixSemID()

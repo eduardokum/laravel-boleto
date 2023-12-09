@@ -3,17 +3,17 @@
 require 'autoload.php';
 
 $beneficiario = new \Eduardokum\LaravelBoleto\Pessoa([
-    'nome' => 'ACME',
-    'endereco' => 'Rua um, 123',
-    'cep' => '99999-999',
-    'uf' => 'UF',
-    'cidade' => 'CIDADE',
+    'nome'      => 'ACME',
+    'endereco'  => 'Rua um, 123',
+    'cep'       => '99999-999',
+    'uf'        => 'UF',
+    'cidade'    => 'CIDADE',
     'documento' => '99.999.999/9999-99',
 ]);
 
 $api = new Eduardokum\LaravelBoleto\Api\Banco\Inter([
-    'conta' => '123456789',
-    'certificado' => realpath(__DIR__ . '/certs/') . DIRECTORY_SEPARATOR . 'cert.crt',
+    'conta'            => '123456789',
+    'certificado'      => realpath(__DIR__ . '/certs/') . DIRECTORY_SEPARATOR . 'cert.crt',
     'certificadoChave' => realpath(__DIR__ . '/certs/') . DIRECTORY_SEPARATOR . 'key.key',
 ]);
 

@@ -2,9 +2,9 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400;
 
-use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa as AbstractRemessaGeneric;
-use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use ForceUTF8\Encoding;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa as AbstractRemessaGeneric;
 
 abstract class AbstractRemessa extends AbstractRemessaGeneric
 {
@@ -82,7 +82,7 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
      */
     public function gerar()
     {
-        if (!$this->isValid($messages)) {
+        if (! $this->isValid($messages)) {
             throw new ValidationException('Campos requeridos pelo banco, aparentam estar ausentes ' . $messages);
         }
 

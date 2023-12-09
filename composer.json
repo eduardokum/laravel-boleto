@@ -17,17 +17,18 @@
         "php": ">5.5.0",
         "ext-intl": "*",
         "ext-mbstring": "*",
-        "laravel/framework": "^5.0|^6.0|^7.0|^8.0|^9.0|^10.0",
+        "laravel/framework": "^6.0|^7.0|^8.0|^9.0|^10.0",
         "neitanod/forceutf8": "^2.0",
         "setasign/fpdf": "^1.8",
         "ext-curl": "*",
         "ext-json": "*",
         "ext-openssl": "*",
-        "chillerlan/php-qrcode": "*"
+        "simplesoftwareio/simple-qrcode": "^4.2",
+        "eduardokum/laravel-mail-auto-embed": "dev-master"
     },
     "require-dev": {
-        "phpunit/phpunit": "^5.0|^6.0|^7.0|^8.0|^9.0|^10.0",
-        "orchestra/testbench": "^3.0|^4.0|^5.0|^6.0|^7.0|^8.0",
+        "phpunit/phpunit": "^6.0|^7.0|^8.0|^9.0|^10.0",
+        "orchestra/testbench": "^4.0|^5.0|^6.0|^7.0|^8.0",
         "friendsofphp/php-cs-fixer": "*"
     },
     "autoload": {
@@ -42,5 +43,9 @@
     },
     "config": {
         "allow-plugins": true
+    },
+    "scripts": {
+        "php-cs-fixer-check": "vendor/bin/php-cs-fixer fix --diff --verbose --dry-run",
+        "php-cs-fixer": "vendor/bin/php-cs-fixer fix --verbose"
     }
 }

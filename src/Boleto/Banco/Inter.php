@@ -101,8 +101,8 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
      */
     public function getAgenciaCodigoBeneficiario()
     {
-        return $this->getAgencia().Util::modulo11($this->getAgencia()).' / '.
-            $this->getConta().Util::modulo11($this->getConta());
+        return $this->getAgencia() . Util::modulo11($this->getAgencia()) . ' / ' .
+            $this->getConta() . Util::modulo11($this->getConta());
     }
 
     /**
@@ -238,7 +238,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
 
         $mensagem = array_filter($this->getDescricaoDemonstrativo());
         foreach ($mensagem as $k => $m) {
-            $mensagem['linha'.($k + 1)] = $m;
+            $mensagem['linha' . ($k + 1)] = $m;
             unset($mensagem[$k]);
         }
 
@@ -312,7 +312,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
             'pagador'         => array_filter([
                 'nome'      => isset($boleto->pagador) ? $boleto->pagador->nome : $boleto->nomeSacado,
                 'documento' => isset($boleto->pagador) ? $boleto->pagador->cpfCnpj : $boleto->cnpjCpfSacado,
-                'endereco'  => isset($boleto->pagador) ? trim($boleto->pagador->endereco.', '.$boleto->pagador->endereco.' '.$boleto->pagador->complemento) : null,
+                'endereco'  => isset($boleto->pagador) ? trim($boleto->pagador->endereco . ', ' . $boleto->pagador->endereco . ' ' . $boleto->pagador->complemento) : null,
                 'bairro'    => isset($boleto->pagador) ? $boleto->pagador->bairro : null,
                 'cep'       => isset($boleto->pagador) ? $boleto->pagador->cep : null,
                 'uf'        => isset($boleto->pagador) ? $boleto->pagador->uf : null,

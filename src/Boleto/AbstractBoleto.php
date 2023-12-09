@@ -6,9 +6,10 @@ use Exception;
 use Throwable;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
-use chillerlan\QRCode\QRCode;
-use chillerlan\QRCode\QROptions;
 use Eduardokum\LaravelBoleto\Util;
+use SimpleSoftwareIO\QrCode\Generator;
+use Eduardokum\LaravelBoleto\MagicTrait;
+use BaconQrCode\Common\ErrorCorrectionLevel;
 use Eduardokum\LaravelBoleto\Boleto\Render\Pdf;
 use Eduardokum\LaravelBoleto\Boleto\Render\Html;
 use Eduardokum\LaravelBoleto\Boleto\Render\PdfCaixa;
@@ -22,6 +23,8 @@ use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
  */
 abstract class AbstractBoleto implements BoletoContract
 {
+    use MagicTrait;
+
     const SITUACAO_REJEITADO = 'rejeitado';
     const SITUACAO_ABERTO = 'aberto';
     const SITUACAO_BAIXADO = 'baixado';
@@ -32,6 +35,9 @@ abstract class AbstractBoleto implements BoletoContract
     const TIPO_CHAVEPIX_CELULAR = 'celular';
     const TIPO_CHAVEPIX_EMAIL = 'email';
     const TIPO_CHAVEPIX_ALEATORIA = 'aleatoria';
+    const QRCODE_ESTILO_QUADRADO = 'square';
+    const QRCODE_ESTILO_PONTO = 'dot';
+    const QRCODE_ESTILO_ARREDONDADO = 'round';
 
     /**
      * Campos necessários para o boleto
@@ -394,6 +400,11 @@ abstract class AbstractBoleto implements BoletoContract
     public $valorRecebido;
 
     /**
+     * @var string
+     */
+    private $qrCodeStyle = self::QRCODE_ESTILO_QUADRADO;
+
+    /**
      * Recebe a imagem em base 64 do QR Code do PIX
      *
      * @var ?string
@@ -481,10 +492,11 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * @param $id
      * @return AbstractBoleto
+     * @throws ValidationException
      */
     public function setID($id)
     {
-        $this->id = $id;
+        $this->id = $this->validateId($id);
 
         return $this;
     }
@@ -1452,8 +1464,8 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getLogoBase64()
     {
-        return 'data:image/'.pathinfo($this->getLogo(), PATHINFO_EXTENSION).
-            ';base64,'.base64_encode(file_get_contents($this->getLogo()));
+        return 'data:image/' . pathinfo($this->getLogo(), PATHINFO_EXTENSION) .
+            ';base64,' . base64_encode(file_get_contents($this->getLogo()));
     }
 
     /**
@@ -1463,7 +1475,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getLogoBanco()
     {
-        return realpath(__DIR__.'/../../logos/'.$this->getCodigoBanco().'.png');
+        return realpath(__DIR__ . '/../../logos/' . $this->getCodigoBanco() . '.png');
     }
 
     /**
@@ -1540,7 +1552,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getLogoBancoBase64()
     {
-        return 'data:image/'.pathinfo($this->getLogoBanco(), PATHINFO_EXTENSION).';base64,'.base64_encode(file_get_contents($this->getLogoBanco()));
+        return 'data:image/' . pathinfo($this->getLogoBanco(), PATHINFO_EXTENSION) . ';base64,' . base64_encode(file_get_contents($this->getLogoBanco()));
     }
 
     /**
@@ -1601,7 +1613,7 @@ abstract class AbstractBoleto implements BoletoContract
     public function isValid(&$messages)
     {
         foreach ($this->camposObrigatorios as $campo) {
-            $test = call_user_func([$this, 'get'.Str::camel($campo)]);
+            $test = call_user_func([$this, 'get' . Str::camel($campo)]);
             if ($test === '' || is_null($test)) {
                 $messages .= "Campo $campo está em branco";
 
@@ -1627,7 +1639,7 @@ abstract class AbstractBoleto implements BoletoContract
         $agencia = rtrim(sprintf('%s-%s', $this->getAgencia(), $this->getAgenciaDv()), '-');
         $conta = rtrim(sprintf('%s-%s', $this->getConta(), $this->getContaDv()), '-');
 
-        return $agencia.' / '.$conta;
+        return $agencia . ' / ' . $conta;
     }
 
     /**
@@ -1658,19 +1670,19 @@ abstract class AbstractBoleto implements BoletoContract
         }
 
         if (! $this->isValid($messages)) {
-            throw new ValidationException('Campos requeridos pelo banco, aparentam estar ausentes '.$messages);
+            throw new ValidationException('Campos requeridos pelo banco, aparentam estar ausentes ' . $messages);
         }
 
         $codigo = Util::numberFormatGeral($this->getCodigoBanco(), 3)
-            .$this->getMoeda()
-            .Util::fatorVencimento($this->getDataVencimento())
-            .Util::numberFormatGeral($this->getValor(), 10)
-            .$this->getCampoLivre();
+            . $this->getMoeda()
+            . Util::fatorVencimento($this->getDataVencimento())
+            . Util::numberFormatGeral($this->getValor(), 10)
+            . $this->getCampoLivre();
 
         $resto = Util::modulo11($codigo, 2, 9, 0);
         $dv = (in_array($resto, [0, 10, 11])) ? 1 : $resto;
 
-        return $this->campoCodigoBarras = substr($codigo, 0, 4).$dv.substr($codigo, 4);
+        return $this->campoCodigoBarras = substr($codigo, 0, 4) . $dv . substr($codigo, 4);
     }
 
     /**
@@ -1685,7 +1697,7 @@ abstract class AbstractBoleto implements BoletoContract
         $semX = [BoletoContract::COD_BANCO_CEF, BoletoContract::COD_BANCO_AILOS];
         $x10 = in_array($codigoBanco, $semX) ? 0 : 'X';
 
-        return $codigoBanco.'-'.Util::modulo11($codigoBanco, 2, 9, 0, $x10);
+        return $codigoBanco . '-' . Util::modulo11($codigoBanco, 2, 9, 0, $x10);
     }
 
     /**
@@ -1786,7 +1798,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * @return ?string
      */
-    public function getPixQrCode(): ?string
+    public function getPixQrCode()
     {
         return $this->pixQrCode;
     }
@@ -1834,37 +1846,59 @@ abstract class AbstractBoleto implements BoletoContract
     }
 
     /**
+     * @return string
+     */
+    public function getQrCodeStyle()
+    {
+        return $this->qrCodeStyle;
+    }
+
+    /**
+     * @param string $qrCodeStyle
+     * @return AbstractBoleto
+     * @throws ValidationException
+     */
+    public function setQrCodeStyle($qrCodeStyle)
+    {
+        if (! in_array($qrCodeStyle, [self::QRCODE_ESTILO_QUADRADO, self::QRCODE_ESTILO_PONTO, self::QRCODE_ESTILO_ARREDONDADO])) {
+            throw new ValidationException(sprintf('Estilo QRCODE %s não é válido', $qrCodeStyle));
+        }
+
+        $this->qrCodeStyle = $qrCodeStyle;
+
+        return $this;
+    }
+
+    /**
      * @return ?string
      */
-    public function getPixQrCodeBase64(): ?string
+    public function getPixQrCodeBase64()
     {
         if ($this->getPixQrCode() == null) {
             return null;
         }
-
         if (Util::isBase64($this->getPixQrCode())) {
-            $img = explode(',', $this->getPixQrCode(), 2)[1];
-
-            return 'data://text/plain;base64,'.$img;
+            return 'data://text/plain;base64,' . $this->getPixQrCode();
         }
 
-        if (Str::startsWith($this->getPixQrCode(), 'data:image')) {
+        if (Str::startsWith($this->getPixQrCode(), 'data:')) {
             return $this->getPixQrCode();
         }
 
-        $options = new QROptions([
-            'eccLevel'      => QRCode::ECC_M,
-            'outputType'    => QRCode::OUTPUT_IMAGE_PNG,
-            'quietzoneSize' => 0,
-        ]);
+        $qrCode = new Generator();
+        $qrCode->format('png');
+        $qrCode->style($this->getQrCodeStyle());
+        $qrCode->eye('circle');
+        $qrCode->errorCorrection(ErrorCorrectionLevel::M());
+        $qrCode->size(400);
 
-        return (new QRCode($options))->render($this->getPixQrCode());
+        return 'data:image/png;base64,' . base64_encode($qrCode->generate($this->getPixQrCode()));
     }
 
     /**
      * @param string $pixQrCode
      */
-    public function setPixQrCode(string $pixQrCode): void
+    public function setPixQrCode($pixQrCode)
     {
         $this->pixQrCode = $pixQrCode;
     }
@@ -1928,6 +1962,16 @@ abstract class AbstractBoleto implements BoletoContract
     }
 
     /**
+     * @param $id
+     * @return string
+     * @throws ValidationException
+     */
+    protected function validateId($id)
+    {
+        return $id;
+    }
+
+    /**
      * @return bool
      * @throws ValidationException
      */
@@ -1961,7 +2005,7 @@ abstract class AbstractBoleto implements BoletoContract
                     }
                     break;
                 case self::TIPO_CHAVEPIX_CELULAR:
-                    if (strlen(Util::onlyNumbers($this->getPixChave())) != 11) {
+                    if (! preg_match('/^(\+\d{2}\s?)?[-.\s]?\(?\d{2}\)?[-.\s]?(\d\s?)?\d{4}[-.\s]?\d{4}$/', $this->getPixChave())) {
                         throw new ValidationException(sprintf('Chave do tipo CELULAR é invalida: %s', $this->getPixChave()));
                     }
                     break;
@@ -1980,6 +2024,7 @@ abstract class AbstractBoleto implements BoletoContract
 
     /**
      * @return string|null
+     * @throws ValidationException
      */
     public function gerarPixCopiaECola()
     {

@@ -2,10 +2,10 @@
 
 namespace Eduardokum\LaravelBoleto\Webhook;
 
-use Carbon\Carbon;
-use Eduardokum\LaravelBoleto\MagicTrait;
-use Eduardokum\LaravelBoleto\Util;
 use Exception;
+use Carbon\Carbon;
+use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\MagicTrait;
 
 class Boleto
 {
@@ -18,7 +18,6 @@ class Boleto
     const OCORRENCIA_PROTESTADA = 5;
     const OCORRENCIA_OUTROS = 6;
     const OCORRENCIA_ERRO = 9;
-
     const OCORRENCIA_ORIGEM_BOLETO = 'boleto';
     const OCORRENCIA_ORIGEM_PIX = 'pix';
 
@@ -26,34 +25,42 @@ class Boleto
      * @var
      */
     public $numero;
+
     /**
      * @var
      */
     public $numeroDocumento;
+
     /**
      * @var
      */
     public $nossoNumero;
+
     /**
      * @var Carbon
      */
     public $dataOcorrencia;
+
     /**
      * @var
      */
     public $valor;
+
     /**
      * @var
      */
     public $valorRecebido;
+
     /**
      * @var
      */
     public $ocorrenciaTipo;
+
     /**
      * @var
      */
     public $ocorrenciaOrigem;
+
     /**
      * @var
      */
@@ -63,26 +70,32 @@ class Boleto
      * @var
      */
     public $pix;
+
     /**
      * @var
      */
     public $codigoBarras;
+
     /**
      * @var
      */
     public $linhaDigitavel;
+
     /**
      * @var
      */
     public $linhaDigitavelFormatada;
+
     /**
      * @var Carbon
      */
     public $dataVencimento;
+
     /**
      * @var
      */
     public $valorTarifa;
+
     /**
      * @var
      */
@@ -103,6 +116,7 @@ class Boleto
     public function setNumero($numero)
     {
         $this->numero = $numero;
+
         return $this;
     }
 
@@ -121,6 +135,7 @@ class Boleto
     public function setNumeroDocumento($numeroDocumento)
     {
         $this->numeroDocumento = $numeroDocumento;
+
         return $this;
     }
 
@@ -139,6 +154,7 @@ class Boleto
     public function setNossoNumero($nossoNumero)
     {
         $this->nossoNumero = $nossoNumero;
+
         return $this;
     }
 
@@ -165,6 +181,7 @@ class Boleto
     public function setOcorrenciaOrigem($ocorrenciaOrigem)
     {
         $this->ocorrenciaOrigem = $ocorrenciaOrigem;
+
         return $this;
     }
 
@@ -174,8 +191,8 @@ class Boleto
      */
     public function setDataOcorrencia(Carbon $dataOcorrencia)
     {
-
         $this->dataOcorrencia = $dataOcorrencia;
+
         return $this;
     }
 
@@ -194,6 +211,7 @@ class Boleto
     public function setValor($valor)
     {
         $this->valor = $valor;
+
         return $this;
     }
 
@@ -212,6 +230,7 @@ class Boleto
     public function setValorRecebido($valorRecebido)
     {
         $this->valorRecebido = $valorRecebido;
+
         return $this;
     }
 
@@ -230,6 +249,7 @@ class Boleto
     public function setOcorrenciaTipo($ocorrenciaTipo)
     {
         $this->ocorrenciaTipo = $ocorrenciaTipo;
+
         return $this;
     }
 
@@ -248,6 +268,7 @@ class Boleto
     public function setTxid($txid)
     {
         $this->txid = $txid;
+
         return $this;
     }
 
@@ -266,6 +287,7 @@ class Boleto
     public function setPix($pix)
     {
         $this->pix = $pix;
+
         return $this;
     }
 
@@ -284,6 +306,7 @@ class Boleto
     public function setCodigoBarras($codigoBarras)
     {
         $this->codigoBarras = Util::onlyNumbers($codigoBarras);
+
         return $this;
     }
 
@@ -294,7 +317,6 @@ class Boleto
     {
         return $this->linhaDigitavelFormatada;
     }
-
 
     /**
      * @return mixed
@@ -315,6 +337,7 @@ class Boleto
             $this->linhaDigitavelFormatada = Util::formatLinhaDigitavel($this->getLinhaDigitavel());
         } catch (Exception $e) {
         }
+
         return $this;
     }
 
@@ -333,6 +356,7 @@ class Boleto
     public function setDataVencimento(Carbon $dataVencimento)
     {
         $this->dataVencimento = $dataVencimento;
+
         return $this;
     }
 
@@ -351,6 +375,7 @@ class Boleto
     public function setValorTarifa($valorTarifa)
     {
         $this->valorTarifa = $valorTarifa;
+
         return $this;
     }
 
@@ -369,6 +394,7 @@ class Boleto
     public function setMotivo($motivo)
     {
         $this->motivo = $motivo;
+
         return $this;
     }
 }

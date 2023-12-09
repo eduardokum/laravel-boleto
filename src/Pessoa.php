@@ -2,8 +2,8 @@
 
 namespace Eduardokum\LaravelBoleto;
 
-use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
 use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
 
 class Pessoa implements PessoaContract
 {
@@ -66,14 +66,14 @@ class Pessoa implements PessoaContract
     public static function create($nome, $documento, $endereco = null, $bairro = null, $cep = null, $cidade = null, $uf = null, $email = null)
     {
         return new static([
-            'nome' => $nome,
-            'endereco' => $endereco,
-            'bairro' => $bairro,
-            'cep' => $cep,
-            'uf' => $uf,
-            'cidade' => $cidade,
+            'nome'      => $nome,
+            'endereco'  => $endereco,
+            'bairro'    => $bairro,
+            'cep'       => $cep,
+            'uf'        => $uf,
+            'cidade'    => $cidade,
             'documento' => $documento,
-            'email' => $email,
+            'email'     => $email,
         ]);
     }
 
@@ -146,7 +146,7 @@ class Pessoa implements PessoaContract
     public function setDocumento($documento)
     {
         $documento = substr(Util::onlyNumbers($documento), -14);
-        if (!in_array(strlen($documento), [10, 11, 14, 0])) {
+        if (! in_array(strlen($documento), [10, 11, 14, 0])) {
             throw new ValidationException('Documento inválido');
         }
         $this->documento = $documento;
@@ -273,7 +273,7 @@ class Pessoa implements PessoaContract
      */
     public function getNomeDocumento()
     {
-        if (!$this->getDocumento()) {
+        if (! $this->getDocumento()) {
             return $this->getNome();
         } else {
             return $this->getNome() . ' / ' . $this->getTipoDocumento() . ': ' . $this->getDocumento();
@@ -372,18 +372,18 @@ class Pessoa implements PessoaContract
     public function toArray()
     {
         return [
-            'nome' => $this->getNome(),
-            'endereco' => $this->getEndereco(),
-            'bairro' => $this->getBairro(),
-            'cep' => $this->getCep(),
-            'uf' => $this->getUf(),
-            'cidade' => $this->getCidade(),
-            'documento' => $this->getDocumento(),
-            'nome_documento' => $this->getNomeDocumento(),
-            'endereco2' => $this->getCepCidadeUf(),
+            'nome'              => $this->getNome(),
+            'endereco'          => $this->getEndereco(),
+            'bairro'            => $this->getBairro(),
+            'cep'               => $this->getCep(),
+            'uf'                => $this->getUf(),
+            'cidade'            => $this->getCidade(),
+            'documento'         => $this->getDocumento(),
+            'nome_documento'    => $this->getNomeDocumento(),
+            'endereco2'         => $this->getCepCidadeUf(),
             'endereco_completo' => $this->getEnderecoCompleto(),
-            'email' => $this->getEmail(),
-            'dda' => $this->isDda(),
+            'email'             => $this->getEmail(),
+            'dda'               => $this->isDda(),
         ];
     }
 }

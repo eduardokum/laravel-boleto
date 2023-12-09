@@ -15,6 +15,7 @@ trait MagicTrait
         }
 
         $property = lcfirst(str_replace(['get', 'set'], ['', ''], $name));
+
         return $this->{$property};
     }
 

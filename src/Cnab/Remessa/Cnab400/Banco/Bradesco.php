@@ -100,9 +100,9 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     public function getCodigoCliente()
     {
         if (empty($this->codigoCliente)) {
-            $this->codigoCliente = Util::formatCnab('9', $this->getCarteiraNumero(), 4).
-                Util::formatCnab('9', $this->getAgencia(), 5).
-                Util::formatCnab('9', $this->getConta(), 7).
+            $this->codigoCliente = Util::formatCnab('9', $this->getCarteiraNumero(), 4) .
+                Util::formatCnab('9', $this->getAgencia(), 5) .
+                Util::formatCnab('9', $this->getConta(), 7) .
                 Util::formatCnab('9', ! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::bradescoContaCorrente($this->getConta()), 1);
         }
 

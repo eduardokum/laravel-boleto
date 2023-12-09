@@ -221,7 +221,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
             if (defined($const)) {
                 $this->add(157, 158, constant($const));
             } else {
-                throw new ValidationException('A instrução para protesto em '.$boleto->getDiasProtesto().' dias não existe no banco.');
+                throw new ValidationException('A instrução para protesto em ' . $boleto->getDiasProtesto() . ' dias não existe no banco.');
             }
         }
         $this->add(161, 166, Util::formatCnab('9', $boleto->getJuros(), 6, 4));

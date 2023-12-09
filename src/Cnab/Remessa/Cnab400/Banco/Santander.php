@@ -113,8 +113,8 @@ class Santander extends AbstractRemessa implements RemessaContract
         }
 
         return Util::formatCnab('9', $this->getAgencia(), 4)
-            .Util::formatCnab('9', substr($this->getCodigoCliente(), 0, 7), 8)
-            .Util::formatCnab('9', $conta, 8);
+            . Util::formatCnab('9', substr($this->getCodigoCliente(), 0, 7), 8)
+            . Util::formatCnab('9', $conta, 8);
     }
 
     /**
@@ -228,7 +228,7 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(352, 381, Util::formatCnab('X', $boleto->getSacadorAvalista() ? $boleto->getSacadorAvalista()->getNome() : '', 30));
         $this->add(382, 382, '');
         $this->add(383, 383, 'I');
-        $this->add(384, 385, substr($this->getConta(), -1).(! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::santanderContaCorrente($this->getAgencia(), $this->getConta())));
+        $this->add(384, 385, substr($this->getConta(), -1) . (! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::santanderContaCorrente($this->getAgencia(), $this->getConta())));
         if (strlen($this->getConta()) == 9) {
             $this->add(384, 385, substr($this->getConta(), -2));
         }
@@ -254,9 +254,9 @@ class Santander extends AbstractRemessa implements RemessaContract
             $this->add(4, 5, '01'); // Quantidade de pagamentos
             $this->add(6, 6, '2'); // '1' = % (percentual); '2' = valor
             $this->add(7, 19, Util::formatCnab('9', $boleto->getValor(), 13, 2));
-            $this->add(20, 24, Util::formatCnab('9', 0, 5, 2));
+            $this->add(20, 24, Util::formatCnab('9', 200, 5, 2));
             $this->add(25, 37, Util::formatCnab('9', $boleto->getValor(), 13, 2));
-            $this->add(38, 42, Util::formatCnab('9', 0, 5, 2));
+            $this->add(38, 42, Util::formatCnab('9', 100, 5, 2));
             $this->add(43, 43, Util::formatCnab('9', $tipoChave[$boleto->getPixChaveTipo()], 1));
             $this->add(44, 120, Util::formatCnab('X', $boleto->getPixChave(), 77));
             $this->add(121, 155, Util::formatCnab('X', $boleto->getID(), 35));

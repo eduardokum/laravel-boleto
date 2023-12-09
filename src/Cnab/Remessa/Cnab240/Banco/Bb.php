@@ -195,7 +195,7 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(78, 85, $boleto->getDataVencimento()->format('dmY'));
         $this->add(86, 100, Util::formatCnab('9', $boleto->getValor(), 15, 2));
         $this->add(101, 105, '00000');
-        $this->add(106, 106, '0');
+        $this->add(106, 106, '');
         $this->add(107, 108, Util::formatCnab('9', $boleto->getEspecieDocCodigo(), 2));
         $this->add(109, 109, Util::formatCnab('9', $boleto->getAceite(), 1));
         $this->add(110, 117, $boleto->getDataDocumento()->format('dmY'));
@@ -383,7 +383,7 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(9, 9, 'R');
         $this->add(10, 11, '01');
         $this->add(12, 13, '');
-        $this->add(14, 16, '042');
+        $this->add(14, 16, '043');
         $this->add(17, 17, '');
         $this->add(18, 18, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? 2 : 1);
         $this->add(19, 33, Util::formatCnab('9', Util::onlyNumbers($this->getBeneficiario()->getDocumento()), 15));
@@ -457,6 +457,6 @@ class Bb extends AbstractRemessa implements RemessaContract
             return $boleto->getNossoNumero();
         }
 
-        return $boleto->getNossoNumero().CalculoDV::bbNossoNumero($boleto->getNossoNumero());
+        return $boleto->getNossoNumero() . CalculoDV::bbNossoNumero($boleto->getNossoNumero());
     }
 }
