@@ -147,6 +147,10 @@ class Bradesco extends AbstractRetorno implements RetornoCnab400
                 ->setContaDv($this->rem(37, 37, $detalhe));
         }
 
+        if ($this->rem(1, 1, $detalhe) == 4) {
+            return $this->processarPix($detalhe);
+        }
+
         $d = $this->detalheAtual();
         $d->setCarteira($this->rem(108, 108, $detalhe))
             ->setNossoNumero($this->rem(71, 82, $detalhe))
@@ -216,5 +220,20 @@ class Bradesco extends AbstractRetorno implements RetornoCnab400
             ->setQuantidadeAlterados((int) $this->totais['alterados']);
 
         return true;
+    }
+
+    /**
+     * @param array $detalhe
+     * @return bool
+     * @throws ValidationException
+     */
+    private function processarPix(array $detalhe)
+    {
+        $d = $this->getDetalhe($this->increment - 1);
+        $d->setPixChave($this->rem(29, 105, $detalhe));
+        $d->setPixChaveTipo(Util::tipoChavePix($d->getPixChave()));
+        $d->setId($this->rem(106, 140, $detalhe));
+
+        return false;
     }
 }
