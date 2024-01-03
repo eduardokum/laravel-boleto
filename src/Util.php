@@ -1268,7 +1268,11 @@ final class Util
         };
 
         $gui = $line('00', 'br.gov.bcb.pix');
-        $key = $line('01', $pix);
+        if (filter_var($pix, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED) || filter_var('https://' . $pix, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED)) {
+            $key = $line('25', preg_replace('/^https?:\/\//', '', $pix));
+        } else {
+            $key = $line('01', $pix);
+        }
         $txId = $line('05', $id);
         $payload = $line('00', '01');
         $payload .= $line('01', '12');
@@ -1282,6 +1286,30 @@ final class Util
         $payload .= $line('62', $txId);
 
         return $payload . $crc16($payload);
+    }
+
+    /**
+     * @param $location
+     * @return array
+     */
+    public static function fetchPixLocation($location)
+    {
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_URL, $location);
+        $data = curl_exec($curl);
+        curl_close($curl);
+        $datas = explode('.', $data);
+        if (count($datas) !== 3) {
+            return [];
+        }
+
+        return [
+            'fetch'     => $data,
+            'header'    => json_decode(base64_decode($datas[0]), true),
+            'payload'   => json_decode(base64_decode($datas[1]), true),
+            'signature' => $datas[2],
+        ];
     }
 
     /**
