@@ -9,7 +9,6 @@ use Illuminate\Support\Str;
 use Eduardokum\LaravelBoleto\Util;
 use SimpleSoftwareIO\QrCode\Generator;
 use Eduardokum\LaravelBoleto\MagicTrait;
-use BaconQrCode\Common\ErrorCorrectionLevel;
 use Eduardokum\LaravelBoleto\Boleto\Render\Pdf;
 use Eduardokum\LaravelBoleto\Boleto\Render\Html;
 use Eduardokum\LaravelBoleto\Boleto\Render\PdfCaixa;
@@ -1889,7 +1888,6 @@ abstract class AbstractBoleto implements BoletoContract
         $qrCode->format('png');
         $qrCode->style($this->getQrCodeStyle());
         $qrCode->eye('circle');
-        $qrCode->errorCorrection(ErrorCorrectionLevel::M());
         $qrCode->size(400);
 
         return 'data:image/png;base64,' . base64_encode($qrCode->generate($this->getPixQrCode()));
