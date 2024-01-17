@@ -407,8 +407,7 @@ class RetornoCnab400Test extends TestCase
         $this->assertCount(1, $retorno->getDetalhes());
 
         $this->assertNotNull($retorno->current()->getId());
-        $this->assertNotNull($retorno->current()->getPixChave());
-        $this->assertNotNull($retorno->current()->getPixChaveTipo());
+        $this->assertNotNull($retorno->current()->getPixLocation());
     }
 
     public function testRetornoSemPixCnab400()

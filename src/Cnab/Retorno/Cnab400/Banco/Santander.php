@@ -4,7 +4,6 @@ namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco;
 
 use Illuminate\Support\Arr;
 use Eduardokum\LaravelBoleto\Util;
-use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
 use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\AbstractRetorno;
@@ -369,17 +368,8 @@ class Santander extends AbstractRetorno implements RetornoCnab400
      */
     private function processarPix(array $detalhe)
     {
-        $tipoChave = [
-            1 => AbstractBoleto::TIPO_CHAVEPIX_CPF,
-            2 => AbstractBoleto::TIPO_CHAVEPIX_CNPJ,
-            3 => AbstractBoleto::TIPO_CHAVEPIX_CELULAR,
-            4 => AbstractBoleto::TIPO_CHAVEPIX_EMAIL,
-            5 => AbstractBoleto::TIPO_CHAVEPIX_ALEATORIA,
-        ];
-
         $d = $this->getDetalhe($this->increment - 1);
-        $d->setPixChaveTipo(Arr::get($tipoChave, $this->rem(2, 2, $detalhe)));
-        $d->setPixChave($this->rem(3, 79, $detalhe));
+        $d->setPixLocation($this->rem(3, 79, $detalhe));
         $d->setId($this->rem(80, 114, $detalhe));
 
         return false;

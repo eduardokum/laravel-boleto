@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Pessoa;
 use Eduardokum\LaravelBoleto\MagicTrait;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Detalhe as DetalheContract;
 
 class Detalhe implements DetalheContract
@@ -125,12 +126,7 @@ class Detalhe implements DetalheContract
     /**
      * @var
      */
-    protected $pixChave;
-
-    /**
-     * @var
-     */
-    protected $pixChaveTipo;
+    protected $pixLocation;
 
     /**
      * @var string
@@ -679,37 +675,18 @@ class Detalhe implements DetalheContract
     /**
      * @return mixed
      */
-    public function getPixChave()
+    public function getPixLocation()
     {
-        return $this->pixChave;
+        return $this->pixLocation;
     }
 
     /**
-     * @param mixed $pixChave
+     * @param mixed $pixLocation
      * @return Detalhe
      */
-    public function setPixChave($pixChave)
+    public function setPixLocation($pixLocation)
     {
-        $this->pixChave = $pixChave;
-
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getPixChaveTipo()
-    {
-        return $this->pixChaveTipo;
-    }
-
-    /**
-     * @param mixed $pixChaveTipo
-     * @return Detalhe
-     */
-    public function setPixChaveTipo($pixChaveTipo)
-    {
-        $this->pixChaveTipo = $pixChaveTipo;
+        $this->pixLocation = $pixLocation;
 
         return $this;
     }
@@ -719,14 +696,15 @@ class Detalhe implements DetalheContract
      * @param $cidade
      * @param bool $force
      * @return string|null
+     * @throws ValidationException
      */
     public function gerarPixCopiaECola($nome, $cidade, $force = false)
     {
         if ($this->getPixQrCode() && ! $force) {
             return $this->getPixQrCode();
         }
-        if ($this->getPixChave() && $this->getValor() && $this->getID()) {
-            $this->setPixQrCode(Util::gerarPixCopiaECola($this->getPixChave(), $this->getValor(), $this->getID(), new Pessoa(['nome' => Util::normalizeChars($nome), 'cidade' => Util::normalizeChars($cidade)])));
+        if ($this->getPixLocation() && $this->getValor() && $this->getID()) {
+            $this->setPixQrCode(Util::gerarPixCopiaECola($this->getPixLocation(), $this->getValor(), $this->getID(), new Pessoa(['nome' => Util::normalizeChars($nome), 'cidade' => Util::normalizeChars($cidade)])));
         }
 
         return $this->getPixQrCode();

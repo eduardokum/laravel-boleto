@@ -111,12 +111,12 @@ interface Detalhe
     /**
      * @return mixed
      */
-    public function getPixQrCode();
+    public function getPixLocation();
 
     /**
      * @return mixed
      */
-    public function getPixChave();
+    public function getPixQrCode();
 
     /**
      * @param $nome
@@ -125,11 +125,6 @@ interface Detalhe
      * @return mixed
      */
     public function gerarPixCopiaECola($nome, $cidade, $force = false);
-
-    /**
-     * @return mixed
-     */
-    public function getPixChaveTipo();
 
     /**
      * @return bool

@@ -230,8 +230,7 @@ class Bradesco extends AbstractRetorno implements RetornoCnab400
     private function processarPix(array $detalhe)
     {
         $d = $this->getDetalhe($this->increment - 1);
-        $d->setPixChave($this->rem(29, 105, $detalhe));
-        $d->setPixChaveTipo(Util::tipoChavePix($d->getPixChave()));
+        $d->setPixLocation($this->rem(29, 105, $detalhe));
         $d->setId($this->rem(106, 140, $detalhe));
 
         return false;

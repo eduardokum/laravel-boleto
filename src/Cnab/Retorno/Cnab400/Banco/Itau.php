@@ -312,8 +312,7 @@ class Itau extends AbstractRetorno implements RetornoCnab400
 
         $d->setPixQrCode(trim($this->rem(2, 391, $detalhe)));
         if ($decoded = Util::decodePixCopiaECola($d->getPixQrCode())) {
-            $d->setPixChave(Arr::get($decoded, '26.01'));
-            $d->setPixChaveTipo(Util::tipoChavePix($d->getPixChave()));
+            $d->setPixLocation(Arr::get($decoded, '26.25'));
             $d->setId(Arr::get($decoded, '62.05'));
         }
         $d->appendError($aErrorPix[sprintf('%03s', $this->rem(392, 394, $detalhe))]);
