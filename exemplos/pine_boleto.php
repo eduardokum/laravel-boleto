@@ -21,7 +21,7 @@ $pagador = new \Eduardokum\LaravelBoleto\Pessoa([
 ]);
 
 $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Pine([
-    'logo'                   => realpath(__DIR__.'/../logos/').DIRECTORY_SEPARATOR.'643.png',
+    'logo'                   => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '643.png',
     'dataVencimento'         => new \Carbon\Carbon('2023-03-09'),
     'valor'                  => 10,
     'multa'                  => false,
@@ -44,4 +44,4 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Pine([
 
 $pdf = new Eduardokum\LaravelBoleto\Boleto\Render\Pdf();
 $pdf->addBoleto($boleto);
-$pdf->gerarBoleto($pdf::OUTPUT_SAVE, __DIR__.DIRECTORY_SEPARATOR.'arquivos'.DIRECTORY_SEPARATOR.'pine.pdf');
+$pdf->gerarBoleto($pdf::OUTPUT_SAVE, __DIR__ . DIRECTORY_SEPARATOR . 'arquivos' . DIRECTORY_SEPARATOR . 'pine.pdf');

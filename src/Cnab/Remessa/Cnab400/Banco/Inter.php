@@ -3,6 +3,7 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
 use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
@@ -47,7 +48,7 @@ class Inter extends AbstractRemessa implements RemessaContract
 
     /**
      * @return Inter
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function header()
     {
@@ -76,7 +77,7 @@ class Inter extends AbstractRemessa implements RemessaContract
      * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Inter $boleto
      *
      * @return Inter
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function addBoleto(BoletoContract $boleto)
     {
@@ -87,7 +88,7 @@ class Inter extends AbstractRemessa implements RemessaContract
 
         $this->add(1, 1, '1');
         $this->add(2, 20, '');
-        $this->add(21, 37, '1120001'.Util::formatCnab('9', $this->getConta(), 10));
+        $this->add(21, 37, '1120001' . Util::formatCnab('9', $this->getConta(), 10));
         $this->add(38, 62, Util::formatCnab('X', $boleto->getNumeroControle(), 25)); // numero de controle
         $this->add(63, 65, '000');
         $this->add(66, 66, $boleto->getMulta() > 0 ? '2' : '0');
@@ -144,7 +145,7 @@ class Inter extends AbstractRemessa implements RemessaContract
 
     /**
      * @return Inter
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function trailer()
     {

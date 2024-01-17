@@ -27,18 +27,18 @@ class Blade
     public $cachePath = null;
 
     /**
-     * @var \Illuminate\Container\Container
+     * @var Container
      */
     protected $container;
 
     /**
-     * @var \Illuminate\View\Factory
+     * @var Factory
      */
     protected $instance;
 
     /**
      * Initialize class
-     * @param array  $viewPaths
+     * @param array $viewPaths
      * @param string $cachePath
      */
     public function __construct($viewPaths = [], $cachePath = null)
@@ -87,7 +87,7 @@ class Blade
     /**
      * Register the PHP engine implementation.
      *
-     * @param  \Illuminate\View\Engines\EngineResolver  $resolver
+     * @param EngineResolver $resolver
      * @return void
      */
     public function registerPhpEngine($resolver)
@@ -100,7 +100,7 @@ class Blade
     /**
      * Register the Blade engine implementation.
      *
-     * @param  \Illuminate\View\Engines\EngineResolver  $resolver
+     * @param EngineResolver $resolver
      * @return void
      */
     public function registerBladeEngine($resolver)

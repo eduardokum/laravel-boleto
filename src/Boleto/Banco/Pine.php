@@ -5,6 +5,7 @@ namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 class Pine extends AbstractBoleto implements BoletoContract
@@ -92,7 +93,7 @@ class Pine extends AbstractBoleto implements BoletoContract
     /**
      * Define o número do codigo do Cliente
      *
-     * @param  string $codigoCliente
+     * @param string $codigoCliente
      * @return Pine
      */
     public function setCodigoCliente($codigoCliente)
@@ -128,13 +129,13 @@ class Pine extends AbstractBoleto implements BoletoContract
      * @param mixed $modalidadeCarteira
      *
      * @return Pine
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function setModalidadeCarteira($modalidadeCarteira)
     {
         $modalidadeCarteira = Util::upper($modalidadeCarteira);
         if (! in_array($modalidadeCarteira, ['1', '2', '5', '6', 'D'])) {
-            throw new \Exception('Modalidade da carteira inválida');
+            throw new ValidationException('Modalidade da carteira inválida');
         }
         $this->modalidadeCarteira = $modalidadeCarteira;
 
@@ -144,8 +145,8 @@ class Pine extends AbstractBoleto implements BoletoContract
     /**
      * Gera o Nosso Número.
      *
-     * @throws \Exception
      * @return string
+     * @throws ValidationException
      */
     protected function gerarNossoNumero()
     {
@@ -162,7 +163,7 @@ class Pine extends AbstractBoleto implements BoletoContract
      * Método para gerar o código da posição de 20 a 44
      *
      * @return string
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function getCampoLivre()
     {
@@ -190,17 +191,17 @@ class Pine extends AbstractBoleto implements BoletoContract
     public static function parseCampoLivre($campoLivre)
     {
         return [
-            'convenio' => null,
-            'parcela' => null,
-            'agenciaDv' => null,
-            'contaCorrente' => null,
-            'modalidade' => null,
+            'convenio'        => null,
+            'parcela'         => null,
+            'agenciaDv'       => null,
+            'contaCorrente'   => null,
+            'modalidade'      => null,
             'contaCorrenteDv' => null,
-            'nossoNumeroDv' => null,
-            'agencia' => substr($campoLivre, 0, 4),
-            'nossa_carteira' => substr($campoLivre, 4, 3),
-            'codigoCliente' =>  substr($campoLivre, 7, 7),
-            'nossoNumero' => substr($campoLivre, 14, 11),
+            'nossoNumeroDv'   => null,
+            'agencia'         => substr($campoLivre, 0, 4),
+            'nossa_carteira'  => substr($campoLivre, 4, 3),
+            'codigoCliente'   => substr($campoLivre, 7, 7),
+            'nossoNumero'     => substr($campoLivre, 14, 11),
             'nossoNumeroFull' => substr($campoLivre, 14, 11),
         ];
     }
@@ -210,6 +211,20 @@ class Pine extends AbstractBoleto implements BoletoContract
      */
     public function getAgenciaCodigoBeneficiario()
     {
-        return sprintf('%s%s / %s%s', $this->getAgencia(), CalculoDV::pineAgencia($this->getAgencia()), $this->getConta(), CalculoDV::pineConta($this->getConta()));
+        return sprintf(
+            '%s%s / %s%s',
+            $this->getAgencia(),
+            ! is_null($this->getAgenciaDv()) ? $this->getAgenciaDv() : CalculoDV::pineAgencia($this->getAgencia()),
+            $this->getConta(),
+            ! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::pineConta($this->getConta())
+        );
+    }
+
+    /**
+     * @return bool
+     */
+    public function imprimeBoleto()
+    {
+        return Util::upper($this->getModalidadeCarteira()) == 'D';
     }
 }

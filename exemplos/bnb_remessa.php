@@ -21,7 +21,7 @@ $pagador = new \Eduardokum\LaravelBoleto\Pessoa([
 ]);
 
 $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Bnb([
-    'logo'                   => realpath(__DIR__.'/../logos/').DIRECTORY_SEPARATOR.'004.png',
+    'logo'                   => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '004.png',
     'dataVencimento'         => \Carbon\Carbon::createFromDate(2017, 04, 03),
     'valor'                  => 2338.28,
     'multa'                  => 2.0,
@@ -49,4 +49,4 @@ $remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Bnb([
 ]);
 $remessa->addBoleto($boleto);
 
-echo $remessa->save(__DIR__.DIRECTORY_SEPARATOR.'arquivos'.DIRECTORY_SEPARATOR.'bnb.txt');
+echo $remessa->save(__DIR__ . DIRECTORY_SEPARATOR . 'arquivos' . DIRECTORY_SEPARATOR . 'bnb.txt');

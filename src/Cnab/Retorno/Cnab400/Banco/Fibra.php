@@ -5,6 +5,7 @@ namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco;
 use Illuminate\Support\Arr;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\AbstractRetorno;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
@@ -220,11 +221,11 @@ class Fibra extends AbstractRetorno implements RetornoCnab400
     protected function init()
     {
         $this->totais = [
-            'liquidados' => 0,
-            'entradas' => 0,
-            'baixados' => 0,
+            'liquidados'  => 0,
+            'entradas'    => 0,
+            'baixados'    => 0,
             'protestados' => 0,
-            'alterados' => 0,
+            'alterados'   => 0,
         ];
     }
 
@@ -232,7 +233,7 @@ class Fibra extends AbstractRetorno implements RetornoCnab400
      * @param array $header
      *
      * @return bool
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function processarHeader(array $header)
     {
@@ -252,7 +253,7 @@ class Fibra extends AbstractRetorno implements RetornoCnab400
      * @param array $detalhe
      *
      * @return bool
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function processarDetalhe(array $detalhe)
     {
@@ -305,7 +306,6 @@ class Fibra extends AbstractRetorno implements RetornoCnab400
      * @param array $trailer
      *
      * @return bool
-     * @throws \Exception
      */
     protected function processarTrailer(array $trailer)
     {

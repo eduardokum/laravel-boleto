@@ -4,6 +4,7 @@ namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
@@ -42,6 +43,7 @@ class Itau extends AbstractRemessa implements RemessaContract
     const OCORRENCIA_ALT_VENC_SUSTAR_PROTESTO = '37';
     const OCORRENCIA_NAO_CONCORDA_SACADO = '38';
     const OCORRENCIA_DISPENSA_JUROS = '47';
+    const OCORRENCIA_REMESSA_PIX = '71';
     const INSTRUCAO_SEM = '00';
     const INSTRUCAO_DEVOL_VENC_5 = '02';
     const INSTRUCAO_DEVOL_VENC_30 = '03';
@@ -136,7 +138,7 @@ class Itau extends AbstractRemessa implements RemessaContract
 
     /**
      * @return Itau
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function header()
     {
@@ -150,7 +152,7 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(27, 30, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(31, 32, '00');
         $this->add(33, 37, Util::formatCnab('9', $this->getConta(), 5));
-        $this->add(38, 38, $this->getContaDv() ?: CalculoDV::itauContaCorrente($this->getAgencia(), $this->getConta()));
+        $this->add(38, 38, ! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::itauContaCorrente($this->getAgencia(), $this->getConta()));
         $this->add(39, 46, '');
         $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(77, 79, $this->getCodigoBanco());
@@ -166,7 +168,7 @@ class Itau extends AbstractRemessa implements RemessaContract
      * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Itau $boleto
      *
      * @return Itau
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function addBoleto(BoletoContract $boleto)
     {
@@ -177,13 +179,15 @@ class Itau extends AbstractRemessa implements RemessaContract
             $this->iniciaDetalhe();
         }
 
+        $pix = $boleto->validarPix();
+
         $this->add(1, 1, '1');
         $this->add(2, 3, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? '02' : '01');
         $this->add(4, 17, Util::formatCnab('9', Util::onlyNumbers($this->getBeneficiario()->getDocumento()), 14));
         $this->add(18, 21, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(22, 23, '00');
         $this->add(24, 28, Util::formatCnab('9', $this->getConta(), 5));
-        $this->add(29, 29, $this->getContaDv() ?: CalculoDV::itauContaCorrente($this->getAgencia(), $this->getConta()));
+        $this->add(29, 29, ! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::itauContaCorrente($this->getAgencia(), $this->getConta()));
         $this->add(30, 33, '');
         $this->add(34, 37, '0000');
         $this->add(38, 62, Util::formatCnab('X', $boleto->getNumeroControle(), 25)); // numero de controle
@@ -192,7 +196,7 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(84, 86, Util::formatCnab('9', $this->getCarteiraNumero(), 3));
         $this->add(87, 107, '');
         $this->add(108, 108, 'I');
-        $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
+        $this->add(109, 110, $pix ? self::OCORRENCIA_REMESSA_PIX : self::OCORRENCIA_REMESSA); // REGISTRO ou REGISTRO PIX
         if ($boleto->getStatus() == $boleto::STATUS_BAIXA) {
             $this->add(109, 110, self::OCORRENCIA_PEDIDO_BAIXA); // BAIXA
         }
@@ -257,12 +261,21 @@ class Itau extends AbstractRemessa implements RemessaContract
             $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
         }
 
+        if ($pix) {
+            $this->iniciaDetalhe();
+            $this->add(1, 1, '3');
+            $this->add(2, 78, Util::formatCnab('X', $boleto->getPixChave(), 77));
+            $this->add(79, 142, Util::formatCnab('X', $boleto->getID(), 35));
+            $this->add(143, 394, '');
+            $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
+        }
+
         return $this;
     }
 
     /**
      * @return Itau
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function trailer()
     {

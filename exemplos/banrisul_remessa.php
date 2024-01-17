@@ -21,7 +21,7 @@ $pagador = new \Eduardokum\LaravelBoleto\Pessoa([
 ]);
 
 $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Banrisul([
-    'logo'                   => realpath(__DIR__.'/../logos/').DIRECTORY_SEPARATOR.'041.png',
+    'logo'                   => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '041.png',
     'dataVencimento'         => new \Carbon\Carbon(),
     'valor'                  => 100,
     'multa'                  => false,
@@ -49,4 +49,4 @@ $remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Banrisul([
 ]);
 $remessa->addBoleto($boleto);
 
-echo $remessa->save(__DIR__.DIRECTORY_SEPARATOR.'arquivos'.DIRECTORY_SEPARATOR.'banrisul.txt');
+echo $remessa->save(__DIR__ . DIRECTORY_SEPARATOR . 'arquivos' . DIRECTORY_SEPARATOR . 'banrisul.txt');

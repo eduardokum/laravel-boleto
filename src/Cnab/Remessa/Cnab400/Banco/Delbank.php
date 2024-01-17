@@ -3,6 +3,7 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
 use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
@@ -69,7 +70,7 @@ class Delbank extends AbstractRemessa implements RemessaContract
      * Retorna o codigo do cliente.
      *
      * @return mixed
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function getCodigoCliente()
     {
@@ -92,7 +93,7 @@ class Delbank extends AbstractRemessa implements RemessaContract
 
     /**
      * @return Delbank
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function header()
     {
@@ -118,7 +119,7 @@ class Delbank extends AbstractRemessa implements RemessaContract
      * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Delbank $boleto
      *
      * @return Delbank
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function addBoleto(BoletoContract $boleto)
     {
@@ -220,7 +221,7 @@ class Delbank extends AbstractRemessa implements RemessaContract
 
     /**
      * @return Delbank
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function trailer()
     {

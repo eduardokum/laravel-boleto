@@ -5,6 +5,7 @@ namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 class Caixa extends AbstractBoleto implements BoletoContract
@@ -50,11 +51,11 @@ class Caixa extends AbstractBoleto implements BoletoContract
     protected $codigoCliente;
 
     /**
-     * Seta o codigo do cliente.
+     * Seta o código do cliente.
      *
      * @param mixed $codigoCliente
      *
-     * @return $this
+     * @return Caixa
      */
     public function setCodigoCliente($codigoCliente)
     {
@@ -87,8 +88,8 @@ class Caixa extends AbstractBoleto implements BoletoContract
     /**
      * Gera o Nosso Número.
      *
-     * @throws \Exception
      * @return string
+     * @throws ValidationException
      */
     protected function gerarNossoNumero()
     {
@@ -98,10 +99,10 @@ class Caixa extends AbstractBoleto implements BoletoContract
             $composicao = '2';
         }
 
-        $carteira = $composicao.'4';
+        $carteira = $composicao . '4';
         // As 15 próximas posições no nosso número são a critério do beneficiário, utilizando o sequencial
         // Depois, calcula-se o código verificador por módulo 11
-        $numero = $carteira.Util::numberFormatGeral($numero_boleto, 15);
+        $numero = $carteira . Util::numberFormatGeral($numero_boleto, 15);
 
         return $numero;
     }
@@ -113,7 +114,7 @@ class Caixa extends AbstractBoleto implements BoletoContract
      */
     public function getNossoNumeroBoleto()
     {
-        return $this->getNossoNumero().'-'.CalculoDV::cefNossoNumero($this->getNossoNumero());
+        return $this->getNossoNumero() . '-' . CalculoDV::cefNossoNumero($this->getNossoNumero());
     }
 
     /**
@@ -122,23 +123,23 @@ class Caixa extends AbstractBoleto implements BoletoContract
      */
     public function getAgenciaCodigoBeneficiario()
     {
-        return $this->getAgencia().' / '.
-               $this->getCodigoCliente().'-'.
-               Util::modulo11($this->getCodigoCliente());
+        return $this->getAgencia() . ' / ' .
+            $this->getCodigoCliente() . '-' .
+            Util::modulo11($this->getCodigoCliente());
     }
 
     /**
-     * Seta dias para baixa automática
+     * Seta dia para baixa automática
      *
      * @param int $baixaAutomatica
      *
-     * @return $this
-     * @throws \Exception
+     * @return Caixa
+     * @throws ValidationException
      */
     public function setDiasBaixaAutomatica($baixaAutomatica)
     {
         if ($this->getDiasProtesto() > 0) {
-            throw new \Exception('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
+            throw new ValidationException('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
         }
         $baixaAutomatica = (int) $baixaAutomatica;
         $this->diasBaixaAutomatica = $baixaAutomatica > 0 ? $baixaAutomatica : 0;
@@ -150,7 +151,7 @@ class Caixa extends AbstractBoleto implements BoletoContract
      * Método para gerar o código da posição de 20 a 44
      *
      * @return string
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function getCampoLivre()
     {
@@ -186,17 +187,17 @@ class Caixa extends AbstractBoleto implements BoletoContract
     public static function parseCampoLivre($campoLivre)
     {
         return [
-            'convenio' => null,
-            'agencia' => null,
-            'agenciaDv' => null,
-            'contaCorrente' => null,
+            'convenio'        => null,
+            'agencia'         => null,
+            'agenciaDv'       => null,
+            'contaCorrente'   => null,
             'contaCorrenteDv' => null,
-            'codigoCliente7' => substr($campoLivre, 0, 7),
-            'codigoCliente' => substr($campoLivre, 0, 6),
-            'carteira' => substr($campoLivre, 10, 1),
-            'nossoNumero' => substr($campoLivre, 7, 3).substr($campoLivre, 11, 3).substr($campoLivre, 15, 8),
-            'nossoNumeroDv' => substr($campoLivre, 23, 1),
-            'nossoNumeroFull' => substr($campoLivre, 7, 3).substr($campoLivre, 11, 3).substr($campoLivre, 15, 8),
+            'codigoCliente7'  => substr($campoLivre, 0, 7),
+            'codigoCliente'   => substr($campoLivre, 0, 6),
+            'carteira'        => substr($campoLivre, 10, 1),
+            'nossoNumero'     => substr($campoLivre, 7, 3) . substr($campoLivre, 11, 3) . substr($campoLivre, 15, 8),
+            'nossoNumeroDv'   => substr($campoLivre, 23, 1),
+            'nossoNumeroFull' => substr($campoLivre, 7, 3) . substr($campoLivre, 11, 3) . substr($campoLivre, 15, 8),
         ];
     }
 }

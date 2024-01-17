@@ -1,15 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: simetriatecnologia
- * Date: 15/09/16
- * Time: 14:02
- */
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco;
 
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
@@ -57,8 +52,8 @@ class Itau extends AbstractRemessa implements RemessaContract
     /**
      * @param BoletoContract $boleto
      *
-     * @return $this
-     * @throws \Exception
+     * @return Itau
+     * @throws ValidationException
      */
     public function addBoleto(BoletoContract $boleto)
     {
@@ -75,8 +70,8 @@ class Itau extends AbstractRemessa implements RemessaContract
     /**
      * @param BoletoContract $boleto
      *
-     * @return $this
-     * @throws \Exception
+     * @return Itau
+     * @throws ValidationException
      */
     protected function segmentoP(BoletoContract $boleto)
     {
@@ -106,7 +101,7 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(24, 30, '0000000');
         $this->add(31, 35, Util::formatCnab('9', $this->getConta(), 5));
         $this->add(36, 36, '');
-        $this->add(37, 37, CalculoDV::itauContaCorrente($this->getAgencia(), $this->getConta()));
+        $this->add(37, 37, ! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::itauContaCorrente($this->getAgencia(), $this->getConta()));
         $this->add(38, 40, Util::formatCnab('9', $this->getCarteira(), 3));
         $this->add(41, 49, Util::formatCnab('9', $boleto->getNossoNumero(), 9));
         $this->add(50, 57, '');
@@ -145,8 +140,8 @@ class Itau extends AbstractRemessa implements RemessaContract
     /**
      * @param BoletoContract $boleto
      *
-     * @return $this
-     * @throws \Exception
+     * @return Itau
+     * @throws ValidationException
      */
     public function segmentoQ(BoletoContract $boleto)
     {
@@ -199,8 +194,8 @@ class Itau extends AbstractRemessa implements RemessaContract
     /**
      * @param BoletoContract $boleto
      *
-     * @return $this
-     * @throws \Exception
+     * @return Itau
+     * @throws ValidationException
      */
     public function segmentoY(BoletoContract $boleto)
     {
@@ -233,8 +228,8 @@ class Itau extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @return $this
-     * @throws \Exception
+     * @return Itau
+     * @throws ValidationException
      */
     protected function header()
     {
@@ -256,7 +251,7 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(59, 65, '0000000');
         $this->add(66, 70, Util::formatCnab('9', $this->getConta(), 5));
         $this->add(71, 71, '');
-        $this->add(72, 72, CalculoDV::itauContaCorrente($this->getAgencia(), $this->getConta()));
+        $this->add(72, 72, ! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::itauContaCorrente($this->getAgencia(), $this->getConta()));
         $this->add(73, 102, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(103, 132, Util::formatCnab('X', 'BANCO ITAU SA', 30));
         $this->add(133, 142, '');
@@ -274,8 +269,8 @@ class Itau extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @return $this
-     * @throws \Exception
+     * @return Itau
+     * @throws ValidationException
      */
     protected function headerLote()
     {
@@ -301,7 +296,7 @@ class Itau extends AbstractRemessa implements RemessaContract
         $this->add(60, 66, '0000000');
         $this->add(67, 71, Util::formatCnab('9', $this->getConta(), 5));
         $this->add(72, 72, '');
-        $this->add(73, 73, CalculoDV::itauContaCorrente($this->getAgencia(), $this->getConta()));
+        $this->add(73, 73, ! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::itauContaCorrente($this->getAgencia(), $this->getConta()));
         $this->add(74, 103, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(104, 183, '');
         $this->add(184, 191, Util::formatCnab('9', 0, 8));
@@ -313,8 +308,8 @@ class Itau extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @return $this
-     * @throws \Exception
+     * @return Itau
+     * @throws ValidationException
      */
     protected function trailerLote()
     {
@@ -341,8 +336,8 @@ class Itau extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @return $this
-     * @throws \Exception
+     * @return Itau
+     * @throws ValidationException
      */
     protected function trailer()
     {

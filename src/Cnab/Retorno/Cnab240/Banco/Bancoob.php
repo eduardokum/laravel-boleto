@@ -5,6 +5,7 @@ namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Banco;
 use Illuminate\Support\Arr;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab240;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\AbstractRetorno;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
@@ -201,12 +202,12 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
     protected function init()
     {
         $this->totais = [
-            'liquidados' => 0,
-            'entradas' => 0,
-            'baixados' => 0,
+            'liquidados'  => 0,
+            'entradas'    => 0,
+            'baixados'    => 0,
             'protestados' => 0,
-            'erros' => 0,
-            'alterados' => 0,
+            'erros'       => 0,
+            'alterados'   => 0,
         ];
     }
 
@@ -214,7 +215,7 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
      * @param array $header
      *
      * @return bool
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function processarHeader(array $header)
     {
@@ -244,7 +245,7 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
      * @param array $headerLote
      *
      * @return bool
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function processarHeaderLote(array $headerLote)
     {
@@ -274,7 +275,7 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
      * @param array $detalhe
      *
      * @return bool
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function processarDetalhe(array $detalhe)
     {
@@ -295,7 +296,7 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
              * ////->setNossoNumero($this->rem(38, 47, $detalhe))
              */
             if ($this->rem(38, 39, $detalhe) != '00') {
-                throw new \Exception('Verificar arquivo retorno:  O nosso número no arquivo de retorno é maior que 7 dígitos.');
+                throw new ValidationException('Verificar arquivo retorno:  O nosso número no arquivo de retorno é maior que 7 dígitos.');
             }
             $d->setNossoNumero($this->rem(40, 47, $detalhe))
                 ->setNossoNumero($this->rem(38, 47, $detalhe))
@@ -305,7 +306,7 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
                 ->setValor(Util::nFloat($this->rem(82, 96, $detalhe) / 100, 2, false))
                 ->setNumeroControle($this->rem(106, 130, $detalhe))
                 ->setPagador([
-                    'nome' => $this->rem(149, 188, $detalhe),
+                    'nome'      => $this->rem(149, 188, $detalhe),
                     'documento' => $this->rem(134, 148, $detalhe),
                 ])
                 ->setValorTarifa(Util::nFloat($this->rem(199, 213, $detalhe) / 100, 2, false));
@@ -358,7 +359,7 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
      * @param array $trailer
      *
      * @return bool
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function processarTrailerLote(array $trailer)
     {
@@ -382,7 +383,7 @@ class Bancoob extends AbstractRetorno implements RetornoCnab240
      * @param array $trailer
      *
      * @return bool
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function processarTrailer(array $trailer)
     {

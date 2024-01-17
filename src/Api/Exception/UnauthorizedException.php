@@ -2,9 +2,9 @@
 
 namespace Eduardokum\LaravelBoleto\Api\Exception;
 
-use Exception;
+use Eduardokum\LaravelBoleto\Exception\BaseException;
 
-class UnauthorizedException extends Exception
+class UnauthorizedException extends BaseException
 {
     private $baseUrl;
 

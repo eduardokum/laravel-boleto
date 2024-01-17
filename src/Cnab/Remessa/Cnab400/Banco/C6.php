@@ -4,6 +4,7 @@ namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
 use Illuminate\Support\Arr;
 use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
@@ -58,7 +59,7 @@ class C6 extends AbstractRemessa implements RemessaContract
      *
      * @var array
      */
-    protected $carteiras = ['10', '20', '30', '40', '60', ];
+    protected $carteiras = ['10', '20', '30', '40', '60'];
 
     /**
      * Caracter de fim de linha
@@ -107,7 +108,7 @@ class C6 extends AbstractRemessa implements RemessaContract
 
     /**
      * @return C6
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function header()
     {
@@ -138,7 +139,7 @@ class C6 extends AbstractRemessa implements RemessaContract
      * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Bradesco $boleto
      *
      * @return C6
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function addBoleto(BoletoContract $boleto)
     {
@@ -224,7 +225,7 @@ class C6 extends AbstractRemessa implements RemessaContract
 
     /**
      * @return C6
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function trailer()
     {

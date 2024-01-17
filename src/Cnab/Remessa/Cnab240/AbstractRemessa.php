@@ -3,6 +3,7 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240;
 
 use ForceUTF8\Encoding;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa as AbstractRemessaGeneric;
 
 abstract class AbstractRemessa extends AbstractRemessaGeneric
@@ -10,14 +11,14 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
     protected $tamanho_linha = 240;
 
     /**
-     * Caracter de fim de linha
+     * Caractere de fim de linha
      *
      * @var string
      */
     protected $fimLinha = "\r\n";
 
     /**
-     * Caracter de fim de arquivo
+     * Caractere de fim de arquivo
      *
      * @var null
      */
@@ -29,11 +30,11 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
      * @var array
      */
     protected $aRegistros = [
-        self::HEADER => [],
-        self::HEADER_LOTE => [],
-        self::DETALHE => [],
+        self::HEADER       => [],
+        self::HEADER_LOTE  => [],
+        self::DETALHE      => [],
         self::TRAILER_LOTE => [],
-        self::TRAILER => [],
+        self::TRAILER      => [],
     ];
 
     /**
@@ -147,34 +148,34 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
      * Gera o arquivo, retorna a string.
      *
      * @return string
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function gerar()
     {
         if (! $this->isValid($messages)) {
-            throw new \Exception('Campos requeridos pelo banco, aparentam estar ausentes '.$messages);
+            throw new ValidationException('Campos requeridos pelo banco, aparentam estar ausentes ' . $messages);
         }
 
         $stringRemessa = '';
         if ($this->iRegistros < 1) {
-            throw new \Exception('Nenhuma linha detalhe foi adicionada');
+            throw new ValidationException('Nenhuma linha detalhe foi adicionada');
         }
 
         $this->header();
-        $stringRemessa .= $this->valida($this->getHeader()).$this->fimLinha;
+        $stringRemessa .= $this->valida($this->getHeader()) . $this->fimLinha;
 
         $this->headerLote();
-        $stringRemessa .= $this->valida($this->getHeaderLote()).$this->fimLinha;
+        $stringRemessa .= $this->valida($this->getHeaderLote()) . $this->fimLinha;
 
         foreach ($this->getDetalhes() as $i => $detalhe) {
-            $stringRemessa .= $this->valida($detalhe).$this->fimLinha;
+            $stringRemessa .= $this->valida($detalhe) . $this->fimLinha;
         }
 
         $this->trailerLote();
-        $stringRemessa .= $this->valida($this->getTrailerLote()).$this->fimLinha;
+        $stringRemessa .= $this->valida($this->getTrailerLote()) . $this->fimLinha;
 
         $this->trailer();
-        $stringRemessa .= $this->valida($this->getTrailer()).$this->fimArquivo;
+        $stringRemessa .= $this->valida($this->getTrailer()) . $this->fimArquivo;
 
         return Encoding::toUTF8($stringRemessa);
     }

@@ -5,6 +5,7 @@ namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco;
 use Illuminate\Support\Arr;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\AbstractRetorno;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
@@ -103,12 +104,12 @@ class Bradesco extends AbstractRetorno implements RetornoCnab400
     protected function init()
     {
         $this->totais = [
-            'liquidados' => 0,
-            'entradas' => 0,
-            'baixados' => 0,
+            'liquidados'  => 0,
+            'entradas'    => 0,
+            'baixados'    => 0,
             'protestados' => 0,
-            'erros' => 0,
-            'alterados' => 0,
+            'erros'       => 0,
+            'alterados'   => 0,
         ];
     }
 
@@ -116,7 +117,7 @@ class Bradesco extends AbstractRetorno implements RetornoCnab400
      * @param array $header
      *
      * @return bool
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function processarHeader(array $header)
     {
@@ -135,7 +136,7 @@ class Bradesco extends AbstractRetorno implements RetornoCnab400
      * @param array $detalhe
      *
      * @return bool
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function processarDetalhe(array $detalhe)
     {
@@ -144,6 +145,10 @@ class Bradesco extends AbstractRetorno implements RetornoCnab400
                 ->setAgencia($this->rem(25, 29, $detalhe))
                 ->setConta($this->rem(30, 36, $detalhe))
                 ->setContaDv($this->rem(37, 37, $detalhe));
+        }
+
+        if ($this->rem(1, 1, $detalhe) == 4) {
+            return $this->processarPix($detalhe);
         }
 
         $d = $this->detalheAtual();
@@ -201,7 +206,7 @@ class Bradesco extends AbstractRetorno implements RetornoCnab400
      * @param array $trailer
      *
      * @return bool
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function processarTrailer(array $trailer)
     {
@@ -215,5 +220,19 @@ class Bradesco extends AbstractRetorno implements RetornoCnab400
             ->setQuantidadeAlterados((int) $this->totais['alterados']);
 
         return true;
+    }
+
+    /**
+     * @param array $detalhe
+     * @return bool
+     * @throws ValidationException
+     */
+    private function processarPix(array $detalhe)
+    {
+        $d = $this->getDetalhe($this->increment - 1);
+        $d->setPixLocation($this->rem(29, 105, $detalhe));
+        $d->setId($this->rem(106, 140, $detalhe));
+
+        return false;
     }
 }

@@ -6,6 +6,7 @@ use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 class Delbank extends AbstractBoleto implements BoletoContract
@@ -40,7 +41,7 @@ class Delbank extends AbstractBoleto implements BoletoContract
      * @var array
      */
     public $variaveis_adicionais = [
-        'cip' => '000',
+        'cip'        => '000',
         'mostra_cip' => true,
     ];
 
@@ -96,21 +97,21 @@ class Delbank extends AbstractBoleto implements BoletoContract
     protected function gerarNossoNumero()
     {
         return Util::numberFormatGeral($this->getNumero(), 10)
-            .CalculoDV::delcredNossoNumero($this->getCarteira(), $this->getNumero());
+            . CalculoDV::delcredNossoNumero($this->getCarteira(), $this->getNumero());
     }
 
     /**
-     * Seta dias para baixa automática
+     * Seta dia para baixa automática
      *
      * @param int $baixaAutomatica
      *
-     * @return $this
-     * @throws \Exception
+     * @return Delbank
+     * @throws ValidationException
      */
     public function setDiasBaixaAutomatica($baixaAutomatica)
     {
         if ($this->getDiasProtesto() > 0) {
-            throw new \Exception('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
+            throw new ValidationException('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
         }
         $baixaAutomatica = (int) $baixaAutomatica;
         $this->diasBaixaAutomatica = $baixaAutomatica > 0 ? $baixaAutomatica : 0;
@@ -125,7 +126,7 @@ class Delbank extends AbstractBoleto implements BoletoContract
      */
     public function getNossoNumeroBoleto()
     {
-        return Util::numberFormatGeral($this->getCarteira(), 2).' / '.substr_replace($this->getNossoNumero(), '-', -1, 0);
+        return Util::numberFormatGeral($this->getCarteira(), 2) . ' / ' . substr_replace($this->getNossoNumero(), '-', -1, 0);
     }
 
     /**
@@ -158,22 +159,22 @@ class Delbank extends AbstractBoleto implements BoletoContract
     public static function parseCampoLivre($campoLivre)
     {
         return [
-            'convenio' => null,
-            'agenciaDv' => null,
+            'convenio'        => null,
+            'agenciaDv'       => null,
             'contaCorrenteDv' => null,
-            'agencia' => substr($campoLivre, 0, 4),
-            'carteira' => substr($campoLivre, 4, 2),
-            'nossoNumero' => substr($campoLivre, 6, 11),
-            'nossoNumeroDv' => null,
+            'agencia'         => substr($campoLivre, 0, 4),
+            'carteira'        => substr($campoLivre, 4, 2),
+            'nossoNumero'     => substr($campoLivre, 6, 11),
+            'nossoNumeroDv'   => null,
             'nossoNumeroFull' => substr($campoLivre, 6, 11),
-            'contaCorrente' => substr($campoLivre, 17, 7),
+            'contaCorrente'   => substr($campoLivre, 17, 7),
         ];
     }
 
     /**
      * Define o campo CIP do boleto
      *
-     * @param  int $cip
+     * @param int $cip
      * @return Delbank
      */
     public function setCip($cip)

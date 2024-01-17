@@ -1,15 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: simetriatecnologia
- * Date: 15/09/16
- * Time: 14:02
- */
 
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco;
 
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
@@ -102,8 +97,8 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     /**
      * @param BoletoContract $boleto
      *
-     * @return $this
-     * @throws \Exception
+     * @return Banrisul
+     * @throws ValidationException
      */
     public function addBoleto(BoletoContract $boleto)
     {
@@ -120,8 +115,8 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     /**
      * @param BoletoContract $boleto
      *
-     * @return $this
-     * @throws \Exception
+     * @return Banrisul
+     * @throws ValidationException
      */
     protected function segmentoP(BoletoContract $boleto)
     {
@@ -148,7 +143,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(18, 22, Util::formatCnab('9', $this->getAgencia(), 5));
         $this->add(23, 23, '');
         $this->add(24, 35, Util::formatCnab('9', $this->getConta(), 12));
-        $this->add(36, 36, CalculoDV::banrisulContaCorrente($this->getConta()));
+        $this->add(36, 36, ! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::banrisulContaCorrente($this->getConta()));
         $this->add(37, 37, '');
         $this->add(38, 57, Util::formatCnab('9', $boleto->getNossoNumero(), 20));
         $this->add(58, 58, $this->getCarteira());
@@ -190,8 +185,8 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     /**
      * @param BoletoContract $boleto
      *
-     * @return $this
-     * @throws \Exception
+     * @return Banrisul
+     * @throws ValidationException
      */
     public function segmentoQ(BoletoContract $boleto)
     {
@@ -236,8 +231,8 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     /**
      * @param BoletoContract $boleto
      *
-     * @return $this
-     * @throws \Exception
+     * @return Banrisul
+     * @throws ValidationException
      */
     public function segmentoY01(BoletoContract $boleto)
     {
@@ -270,8 +265,8 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @return $this
-     * @throws \Exception
+     * @return Banrisul
+     * @throws ValidationException
      */
     protected function header()
     {
@@ -291,7 +286,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(58, 58, '');
         $this->add(59, 63, '000EE');
         $this->add(64, 70, Util::formatCnab('9', $this->getConta(), 7));
-        $this->add(71, 71, CalculoDV::banrisulContaCorrente($this->getConta()));
+        $this->add(71, 71, ! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::banrisulContaCorrente($this->getConta()));
         $this->add(72, 72, '');
         $this->add(73, 102, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(103, 132, Util::formatCnab('X', 'BANRISUL', 30));
@@ -316,8 +311,8 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @return $this
-     * @throws \Exception
+     * @return Banrisul
+     * @throws ValidationException
      */
     protected function headerLote()
     {
@@ -340,7 +335,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(54, 58, Util::formatCnab('9', $this->getAgencia(), 5));
         $this->add(59, 59, '');
         $this->add(60, 71, Util::formatCnab('9', $this->getConta(), 12));
-        $this->add(72, 72, CalculoDV::banrisulContaCorrente($this->getConta()));
+        $this->add(72, 72, ! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::banrisulContaCorrente($this->getConta()));
         $this->add(73, 73, '');
         $this->add(74, 103, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(104, 183, '');
@@ -353,8 +348,8 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @return $this
-     * @throws \Exception
+     * @return Banrisul
+     * @throws ValidationException
      */
     protected function trailerLote()
     {
@@ -384,8 +379,8 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @return $this
-     * @throws \Exception
+     * @return Banrisul
+     * @throws ValidationException
      */
     protected function trailer()
     {

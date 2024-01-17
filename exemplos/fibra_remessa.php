@@ -21,7 +21,7 @@ $pagador = new \Eduardokum\LaravelBoleto\Pessoa([
 ]);
 
 $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Fibra([
-    'logo'                   => realpath(__DIR__.'/../logos/').DIRECTORY_SEPARATOR.'224.png',
+    'logo'                   => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '224.png',
     'dataVencimento'         => new \Carbon\Carbon('2023-01-04'),
     'valor'                  => 10,
     'multa'                  => false,
@@ -43,13 +43,13 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Fibra([
 ]);
 
 $remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Fibra([
-    'agencia'      => '0001',
-    'conta'        => '1234567',
-    'contaDv'      => 9,
-    'carteira'     => 112,
-    'beneficiario' => $beneficiario,
+    'agencia'       => '0001',
+    'conta'         => '1234567',
+    'contaDv'       => 9,
+    'carteira'      => 112,
+    'beneficiario'  => $beneficiario,
     'codigoCliente' => '12345',
 ]);
 $remessa->addBoleto($boleto);
 
-echo $remessa->save(__DIR__.DIRECTORY_SEPARATOR.'arquivos'.DIRECTORY_SEPARATOR.'fibra.txt');
+echo $remessa->save(__DIR__ . DIRECTORY_SEPARATOR . 'arquivos' . DIRECTORY_SEPARATOR . 'fibra.txt');

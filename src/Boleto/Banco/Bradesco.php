@@ -6,6 +6,7 @@ use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 class Bradesco extends AbstractBoleto implements BoletoContract
@@ -40,7 +41,7 @@ class Bradesco extends AbstractBoleto implements BoletoContract
      * @var array
      */
     public $variaveis_adicionais = [
-        'cip' => '000',
+        'cip'        => '000',
         'mostra_cip' => true,
     ];
 
@@ -96,21 +97,21 @@ class Bradesco extends AbstractBoleto implements BoletoContract
     protected function gerarNossoNumero()
     {
         return Util::numberFormatGeral($this->getNumero(), 11)
-            .CalculoDV::bradescoNossoNumero($this->getCarteira(), $this->getNumero());
+            . CalculoDV::bradescoNossoNumero($this->getCarteira(), $this->getNumero());
     }
 
     /**
-     * Seta dias para baixa automática
+     * Seta dia para baixa automática
      *
      * @param int $baixaAutomatica
      *
-     * @return $this
-     * @throws \Exception
+     * @return Bradesco
+     * @throws ValidationException
      */
     public function setDiasBaixaAutomatica($baixaAutomatica)
     {
         if ($this->getDiasProtesto() > 0) {
-            throw new \Exception('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
+            throw new ValidationException('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
         }
         $baixaAutomatica = (int) $baixaAutomatica;
         $this->diasBaixaAutomatica = $baixaAutomatica > 0 ? $baixaAutomatica : 0;
@@ -119,13 +120,13 @@ class Bradesco extends AbstractBoleto implements BoletoContract
     }
 
     /**
-     * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
+     * Método que retorna o nosso número usado no boleto. Alguns bancos possuem algumas diferenças.
      *
      * @return string
      */
     public function getNossoNumeroBoleto()
     {
-        return Util::numberFormatGeral($this->getCarteira(), 2).' / '.substr_replace($this->getNossoNumero(), '-', -1, 0);
+        return Util::numberFormatGeral($this->getCarteira(), 2) . ' / ' . substr_replace($this->getNossoNumero(), '-', -1, 0);
     }
 
     /**
@@ -158,22 +159,22 @@ class Bradesco extends AbstractBoleto implements BoletoContract
     public static function parseCampoLivre($campoLivre)
     {
         return [
-            'convenio' => null,
-            'agenciaDv' => null,
+            'convenio'        => null,
+            'agenciaDv'       => null,
             'contaCorrenteDv' => null,
-            'agencia' => substr($campoLivre, 0, 4),
-            'carteira' => substr($campoLivre, 4, 2),
-            'nossoNumero' => substr($campoLivre, 6, 11),
-            'nossoNumeroDv' => null,
+            'agencia'         => substr($campoLivre, 0, 4),
+            'carteira'        => substr($campoLivre, 4, 2),
+            'nossoNumero'     => substr($campoLivre, 6, 11),
+            'nossoNumeroDv'   => null,
             'nossoNumeroFull' => substr($campoLivre, 6, 11),
-            'contaCorrente' => substr($campoLivre, 17, 7),
+            'contaCorrente'   => substr($campoLivre, 17, 7),
         ];
     }
 
     /**
      * Define o campo CIP do boleto
      *
-     * @param  int $cip
+     * @param int $cip
      * @return Bradesco
      */
     public function setCip($cip)

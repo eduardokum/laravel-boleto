@@ -42,23 +42,23 @@ class C6 extends AbstractBoleto implements BoletoContract
      * @var string
      */
     protected $especiesCodigo = [
-        'DM' => '01',
-        'DS' => '02',
-        'NP' => '03',
-        'NS' => '04',
+        'DM'  => '01',
+        'DS'  => '02',
+        'NP'  => '03',
+        'NS'  => '04',
         'REC' => '05',
-        'LC' => '06',
-        'FC' => '07',
+        'LC'  => '06',
+        'FC'  => '07',
         'CAR' => '08',
-        'CT' => '09',
-        'ME' => '12',
-        'ND' => '13',
+        'CT'  => '09',
+        'ME'  => '12',
+        'ND'  => '13',
         'CDA' => '15',
-        'EC' => '16',
+        'EC'  => '16',
         'CPS' => '17',
-        'FT' => '31',
-        'BA' => '33',
-        'O' => '99',
+        'FT'  => '31',
+        'BA'  => '33',
+        'O'   => '99',
     ];
 
     /**
@@ -72,11 +72,10 @@ class C6 extends AbstractBoleto implements BoletoContract
      * Gera o Nosso Número.
      *
      * @return string
-     * @throws \Exception
      */
     protected function gerarNossoNumero()
     {
-        return Util::numberFormatGeral($this->getNumero(), 11).CalculoDV::c6NossoNumero($this->getCarteira(), $this->getNumero());
+        return Util::numberFormatGeral($this->getNumero(), 11) . CalculoDV::c6NossoNumero($this->getCarteira(), $this->getNumero());
     }
 
     /**
@@ -93,7 +92,6 @@ class C6 extends AbstractBoleto implements BoletoContract
      * Método para gerar o código da posição de 20 a 44
      *
      * @return string
-     * @throws \Exception
      */
     protected function getCampoLivre()
     {
@@ -119,15 +117,15 @@ class C6 extends AbstractBoleto implements BoletoContract
     public static function parseCampoLivre($campoLivre)
     {
         return [
-            'convenio' => null,
-            'agenciaDv' => null,
-            'codigoCliente' => substr($campoLivre, 0, 12),
-            'carteira' => substr($campoLivre, 22, 2),
-            'nossoNumero' => substr($campoLivre, 12, 10),
-            'nossoNumeroDv' => null,
+            'convenio'        => null,
+            'agenciaDv'       => null,
+            'codigoCliente'   => substr($campoLivre, 0, 12),
+            'carteira'        => substr($campoLivre, 22, 2),
+            'nossoNumero'     => substr($campoLivre, 12, 10),
+            'nossoNumeroDv'   => null,
             'nossoNumeroFull' => substr($campoLivre, 12, 10),
-            'agencia' => null,
-            'contaCorrente' => null,
+            'agencia'         => null,
+            'contaCorrente'   => null,
             'contaCorrenteDv' => null,
         ];
     }

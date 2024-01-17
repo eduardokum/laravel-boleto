@@ -5,6 +5,7 @@ namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 class Fibra extends AbstractBoleto implements BoletoContract
@@ -99,7 +100,7 @@ class Fibra extends AbstractBoleto implements BoletoContract
     /**
      * Define o número do codigo do Cliente
      *
-     * @param  string $codigoCliente
+     * @param string $codigoCliente
      * @return Fibra
      */
     public function setCodigoCliente($codigoCliente)
@@ -135,13 +136,13 @@ class Fibra extends AbstractBoleto implements BoletoContract
      * @param mixed $modalidadeCarteira
      *
      * @return Fibra
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function setModalidadeCarteira($modalidadeCarteira)
     {
         $modalidadeCarteira = Util::upper($modalidadeCarteira);
         if (! in_array($modalidadeCarteira, ['1', '5', 'D'])) {
-            throw new \Exception('Modalidade da carteira inválida');
+            throw new ValidationException('Modalidade da carteira inválida');
         }
         $this->modalidadeCarteira = $modalidadeCarteira;
 
@@ -151,8 +152,8 @@ class Fibra extends AbstractBoleto implements BoletoContract
     /**
      * Gera o Nosso Número.
      *
-     * @throws \Exception
      * @return string
+     * @throws ValidationException
      */
     protected function gerarNossoNumero()
     {
@@ -169,7 +170,7 @@ class Fibra extends AbstractBoleto implements BoletoContract
      * Método para gerar o código da posição de 20 a 44
      *
      * @return string
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function getCampoLivre()
     {
@@ -197,17 +198,17 @@ class Fibra extends AbstractBoleto implements BoletoContract
     public static function parseCampoLivre($campoLivre)
     {
         return [
-            'convenio' => null,
-            'parcela' => null,
-            'agenciaDv' => null,
-            'contaCorrente' => null,
-            'modalidade' => null,
+            'convenio'        => null,
+            'parcela'         => null,
+            'agenciaDv'       => null,
+            'contaCorrente'   => null,
+            'modalidade'      => null,
             'contaCorrenteDv' => null,
-            'nossoNumeroDv' => null,
-            'agencia' => substr($campoLivre, 0, 4),
-            'nossa_carteira' => substr($campoLivre, 4, 3),
-            'codigoCliente' =>  substr($campoLivre, 7, 7),
-            'nossoNumero' => substr($campoLivre, 14, 11),
+            'nossoNumeroDv'   => null,
+            'agencia'         => substr($campoLivre, 0, 4),
+            'nossa_carteira'  => substr($campoLivre, 4, 3),
+            'codigoCliente'   => substr($campoLivre, 7, 7),
+            'nossoNumero'     => substr($campoLivre, 14, 11),
             'nossoNumeroFull' => substr($campoLivre, 14, 11),
         ];
     }
@@ -218,5 +219,13 @@ class Fibra extends AbstractBoleto implements BoletoContract
     public function getAgenciaCodigoBeneficiario()
     {
         return sprintf('%s%s / %s%s', $this->getAgencia(), CalculoDV::fibraAgencia($this->getAgencia()), $this->getConta(), CalculoDV::fibraConta($this->getConta()));
+    }
+
+    /**
+     * @return bool
+     */
+    public function imprimeBoleto()
+    {
+        return Util::upper($this->getModalidadeCarteira()) == 'D';
     }
 }

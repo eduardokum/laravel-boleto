@@ -40,7 +40,7 @@ class Trailer implements TrailerContract
     /**
      * @param mixed $numeroLote
      *
-     * @return $this
+     * @return Trailer
      */
     public function setNumeroLote($numeroLote)
     {
@@ -60,7 +60,7 @@ class Trailer implements TrailerContract
     /**
      * @param mixed $qtdLotesArquivo
      *
-     * @return $this
+     * @return Trailer
      */
     public function setQtdLotesArquivo($qtdLotesArquivo)
     {
@@ -80,7 +80,7 @@ class Trailer implements TrailerContract
     /**
      * @param mixed $qtdRegistroArquivo
      *
-     * @return $this
+     * @return Trailer
      */
     public function setQtdRegistroArquivo($qtdRegistroArquivo)
     {
@@ -100,7 +100,7 @@ class Trailer implements TrailerContract
     /**
      * @param mixed $tipoRegistro
      *
-     * @return $this
+     * @return Trailer
      */
     public function setTipoRegistro($tipoRegistro)
     {

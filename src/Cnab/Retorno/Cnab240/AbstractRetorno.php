@@ -3,6 +3,7 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
 
 use Illuminate\Support\Collection;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\AbstractRetorno as AbstractRetornoGeneric;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\HeaderLote as HeaderLoteContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\TrailerLote as TrailerLoteContract;
@@ -10,10 +11,11 @@ use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\TrailerLote as Trail
 /**
  * Class AbstractRetorno
  *
- * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Detalhe getDetalhe($i)
- * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Header getHeader()
- * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Trailer getTrailer()
- * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Detalhe detalheAtual()
+ * @method  Detalhe[] getDetalhes()
+ * @method  Detalhe getDetalhe($i)
+ * @method  Header getHeader()
+ * @method  Trailer getTrailer()
+ * @method  Detalhe detalheAtual()
  */
 abstract class AbstractRetorno extends AbstractRetornoGeneric
 {
@@ -29,7 +31,7 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
 
     /**
      * @param string $file
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function __construct($file)
     {
@@ -106,7 +108,7 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
      * Processa o arquivo
      *
      * @return $this
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function processar()
     {
@@ -156,11 +158,11 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
     public function toArray()
     {
         $array = [
-            'header' => $this->header->toArray(),
-            'headerLote' => $this->headerLote->toArray(),
+            'header'      => $this->header->toArray(),
+            'headerLote'  => $this->headerLote->toArray(),
             'trailerLote' => $this->trailerLote->toArray(),
-            'trailer' => $this->trailer->toArray(),
-            'detalhes' => new Collection(),
+            'trailer'     => $this->trailer->toArray(),
+            'detalhes'    => new Collection(),
         ];
 
         foreach ($this->detalhe as $detalhe) {

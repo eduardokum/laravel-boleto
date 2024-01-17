@@ -67,7 +67,7 @@ class Bancoob extends AbstractBoleto implements BoletoContract
         'CPR' => '25',  //Cédula de Produto Rural,
         'O'   => '99',  //Outros,
         //Equivalente no CNAB400 que não existe no CNAB240
-        'W'   => '100',  //Warrant CNAB400
+        'W' => '100',  //Warrant CNAB400
     ];
 
     /**
@@ -80,7 +80,7 @@ class Bancoob extends AbstractBoleto implements BoletoContract
     /**
      * Define o número do convênio. Sempre use string pois a quantidade de caracteres é validada.
      *
-     * @param  string $convenio
+     * @param string $convenio
      * @return Bancoob
      */
     public function setConvenio($convenio)
@@ -103,13 +103,12 @@ class Bancoob extends AbstractBoleto implements BoletoContract
     /**
      * Gera o Nosso Número.
      *
-     * @throws \Exception
      * @return string
      */
     protected function gerarNossoNumero()
     {
         return Util::numberFormatGeral($this->getNumero(), 7)
-            .CalculoDV::bancoobNossoNumero($this->getAgencia(), $this->getConvenio(), $this->getNumero());
+            . CalculoDV::bancoobNossoNumero($this->getAgencia(), $this->getConvenio(), $this->getNumero());
     }
 
     /**
@@ -126,7 +125,6 @@ class Bancoob extends AbstractBoleto implements BoletoContract
      * Método para gerar o código da posição de 20 a 44
      *
      * @return string
-     * @throws \Exception
      */
     protected function getCampoLivre()
     {
@@ -156,18 +154,18 @@ class Bancoob extends AbstractBoleto implements BoletoContract
     public static function parseCampoLivre($campoLivre)
     {
         return [
-            'codigoCliente' => null,
-            'agenciaDv' => null,
-            'contaCorrente' => null,
+            'codigoCliente'   => null,
+            'agenciaDv'       => null,
+            'contaCorrente'   => null,
             'contaCorrenteDv' => null,
-            'carteira' => substr($campoLivre, 0, 1),
-            'agencia' => substr($campoLivre, 1, 4),
-            'modalidade' => substr($campoLivre, 5, 2),
-            'convenio' => substr($campoLivre, 7, 7),
-            'nossoNumero' => substr($campoLivre, 14, 7),
-            'nossoNumeroDv' => substr($campoLivre, 21, 1),
+            'carteira'        => substr($campoLivre, 0, 1),
+            'agencia'         => substr($campoLivre, 1, 4),
+            'modalidade'      => substr($campoLivre, 5, 2),
+            'convenio'        => substr($campoLivre, 7, 7),
+            'nossoNumero'     => substr($campoLivre, 14, 7),
+            'nossoNumeroDv'   => substr($campoLivre, 21, 1),
             'nossoNumeroFull' => substr($campoLivre, 14, 8),
-            'parcela' => substr($campoLivre, 22, 3),
+            'parcela'         => substr($campoLivre, 22, 3),
         ];
     }
 

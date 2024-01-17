@@ -4,6 +4,7 @@ namespace Eduardokum\LaravelBoleto\Boleto\Render;
 
 use Illuminate\Support\Str;
 use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Render\Pdf as PdfContract;
 
@@ -13,6 +14,8 @@ class PdfCaixa extends AbstractPdf implements PdfContract
     const OUTPUT_DOWNLOAD = 'D';
     const OUTPUT_SAVE = 'F';
     const OUTPUT_STRING = 'S';
+    const PIX_INSTRUCAO = 'instrucao';
+    const PIX_COD_BARRAS = 'barras';
 
     private $PadraoFont = 'Arial';
 
@@ -43,6 +46,8 @@ class PdfCaixa extends AbstractPdf implements PdfContract
 
     private $totalBoletos = 0;
 
+    protected $localizacao_pix = self::PIX_INSTRUCAO;
+
     public function __construct()
     {
         parent::__construct('P', 'mm', 'A4');
@@ -54,9 +59,25 @@ class PdfCaixa extends AbstractPdf implements PdfContract
     }
 
     /**
+     * @param $localizacao
+     * @return PdfCaixa
+     * @throws ValidationException
+     */
+    public function setLocalizacaoPix($localizacao)
+    {
+        if (! in_array($localizacao, [self::PIX_COD_BARRAS, self::PIX_INSTRUCAO])) {
+            throw new ValidationException('Pix deve ser Pdf::PIX_COD_BARRAS ou Pdf::PIX_INSTRUCAO');
+        }
+
+        $this->localizacao_pix = $localizacao;
+
+        return $this;
+    }
+
+    /**
      * @param int $i
      *
-     * @return $this
+     * @return PdfCaixa
      */
     protected function instrucoes($i)
     {
@@ -65,7 +86,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
             $this->SetAutoPageBreak(true);
             $this->SetY(5);
             $this->Cell(30, 10, date('d/m/Y H:i:s'));
-            $this->Cell(0, 10, 'Boleto '.($i + 1).' de '.$this->totalBoletos, 0, 1, 'R');
+            $this->Cell(0, 10, 'Boleto ' . ($i + 1) . ' de ' . $this->totalBoletos, 0, 1, 'R');
         }
 
         $this->SetFont($this->PadraoFont, 'B', 8);
@@ -107,7 +128,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
     /**
      * @param int $i
      *
-     * @return $this
+     * @return PdfCaixa
      */
     protected function logoEmpresa($i)
     {
@@ -136,7 +157,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
     /**
      * @param int $i
      *
-     * @return $this
+     * @return PdfCaixa
      */
     protected function Topo($i)
     {
@@ -191,7 +212,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
             }
         }
 
-        $this->Cell(35, $this->cell, $this->_($this->boleto[$i]->getAgencia().'/'.$this->boleto[$i]->getConta().'-'.$codVerificador), 'R', 1);
+        $this->Cell(35, $this->cell, $this->_($this->boleto[$i]->getAgencia() . '/' . $this->boleto[$i]->getConta() . '-' . $codVerificador), 'R', 1);
 
         //terceira linha
         $this->SetFont($this->PadraoFont, '', $this->fdes);
@@ -200,7 +221,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
         $this->Cell(35, $this->desc, $this->_('CEP'), 'TLR', 1);
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-        $this->Cell(128, $this->cell, $this->_($this->boleto[$i]->getBeneficiario()->getEndereco().' - '.$this->boleto[$i]->getBeneficiario()->getBairro()), 'LR');
+        $this->Cell(128, $this->cell, $this->_($this->boleto[$i]->getBeneficiario()->getEndereco() . ' - ' . $this->boleto[$i]->getBeneficiario()->getBairro()), 'LR');
         $this->Cell(7, $this->cell, $this->_($this->boleto[$i]->getBeneficiario()->getUf()), 'R');
         $this->Cell(35, $this->cell, $this->_($this->boleto[$i]->getBeneficiario()->getCep()), 'R', 1);
 
@@ -256,7 +277,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
         $this->Cell(30, $this->cell, $this->_($this->boleto[$i]->getPagador()->getCep()), 'R', 1);
 
         $this->SetFont($this->PadraoFont, '', $this->fcel);
-        $this->Cell(170, $this->desc, $this->_(trim($this->boleto[$i]->getPagador()->getEndereco().' - '.$this->boleto[$i]->getPagador()->getBairro()), ' -'), 'BLR', 1);
+        $this->Cell(170, $this->desc, $this->_(trim($this->boleto[$i]->getPagador()->getEndereco() . ' - ' . $this->boleto[$i]->getPagador()->getBairro()), ' -'), 'BLR', 1);
         //setima linha
         $this->SetFont($this->PadraoFont, '', $this->fdes);
         $this->Cell(34, $this->desc, $this->_('Carteira'), 'LR');
@@ -294,7 +315,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
     /**
      * @param int $i
      *
-     * @return $this
+     * @return PdfCaixa
      */
     protected function Bottom($i)
     {
@@ -318,7 +339,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
         $this->Cell(50, $this->desc, $this->_('Agência/Código beneficiário'), 'TR', 1);
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-        $this->Cell(120, $this->cell, $this->_($this->boleto[$i]->getBeneficiario()->getNome().'                '.$this->boleto[$i]->getBeneficiario()->getDocumento()), 'LR');
+        $this->Cell(120, $this->cell, $this->_($this->boleto[$i]->getBeneficiario()->getNome() . '                ' . $this->boleto[$i]->getBeneficiario()->getDocumento()), 'LR');
 
         //algoritmo que calcula digito verificador beneficiario
         $codBenefCaixa = strval($this->boleto[$i]->getConta());
@@ -342,9 +363,9 @@ class PdfCaixa extends AbstractPdf implements PdfContract
             }
         }
 
-        $this->Cell(50, $this->cell, $this->_($this->boleto[$i]->getAgencia().'/'.$this->boleto[$i]->getConta().'-'.$codVerificador), 'LR', 1, 'R');
+        $this->Cell(50, $this->cell, $this->_($this->boleto[$i]->getAgencia() . '/' . $this->boleto[$i]->getConta() . '-' . $codVerificador), 'LR', 1, 'R');
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
-        $this->Cell(120, $this->desc, $this->_($this->boleto[$i]->getBeneficiario()->getEndereco().' - '.$this->boleto[$i]->getBeneficiario()->getBairro()), 'LR');
+        $this->Cell(120, $this->desc, $this->_($this->boleto[$i]->getBeneficiario()->getEndereco() . ' - ' . $this->boleto[$i]->getBeneficiario()->getBairro()), 'LR');
         $this->Cell(50, $this->desc, $this->_(''), 'LR', 1);
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
@@ -400,9 +421,16 @@ class PdfCaixa extends AbstractPdf implements PdfContract
         $this->Cell(25, $this->cell, $this->_(''), 'R');
         $this->Cell(50, $this->cell, $this->_(Util::nReal($this->boleto[$i]->getValor())), 'R', 1, 'R');
 
+        $yStartPix = $this->GetY();
         $this->SetFont($this->PadraoFont, '', $this->fdes);
-        $this->Cell(120, $this->desc, $this->_('Instruções de responsabilidade do beneficiário. Qualquer dúvida sobre este boleto, contate o beneficiário'), 'TLR');
-        $this->Cell(50, $this->desc, $this->_('(-) Desconto'), 'TR', 1);
+        $this->Cell(95, $this->desc, $this->_('Instruções de responsabilidade do beneficiário. '), 'TL');
+        $xStartPix = $this->GetX();
+        $this->Cell(25, $this->desc, '', 'TR');
+        $this->Cell(50, $this->desc, $this->_('(-) Desconto)'), 'TR', 1);
+
+        $this->SetFont($this->PadraoFont, '', $this->fdes);
+        $this->Cell(120, $this->cell, $this->_('Qualquer dúvida sobre este boleto, contate o beneficiário'), 'LR');
+        $this->Cell(50, $this->cell, $this->_(''), 'R', 1);
 
         $xInstrucoes = $this->GetX();
         $yInstrucoes = $this->GetY();
@@ -469,6 +497,17 @@ class PdfCaixa extends AbstractPdf implements PdfContract
 
             $this->SetXY($xOriginal, $yOriginal);
         }
+
+        if ($this->boleto[$i]->getPixQrCode() !== null) {
+            $this->SetXY($xStartPix, $yStartPix);
+            $this->SetFont($this->PadraoFont, '', $this->fdes);
+            $this->Cell(25, $this->cell, 'Pague via PIX', '', '', 'C');
+            $this->Image($this->boleto[$i]->getPixQrCodeBase64(), $xStartPix + 1, $yStartPix + 5, 23, 23, 'png');
+            $this->Line($xStartPix, $yStartPix, $xStartPix, $yEndPix);
+
+            $this->SetXY($xOriginal, $yOriginal);
+        }
+
         $this->SetFont($this->PadraoFont, '', $this->fdes);
         $this->Cell(120, $this->desc, $this->_(''));
         $this->Cell(50, $this->desc, $this->_('Autenticação Mecânica - Ficha de Compensação'), 'LR', 1);
@@ -485,7 +524,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
     }
 
     /**
-     * @param      string $texto
+     * @param string $texto
      * @param int $ln
      * @param int $ln2
      */
@@ -520,7 +559,8 @@ class PdfCaixa extends AbstractPdf implements PdfContract
      * @param array $boletos
      * @param bool $withGroup
      *
-     * @return $this
+     * @return PdfCaixa
+     * @throws ValidationException
      */
     public function addBoletos(array $boletos, $withGroup = true)
     {
@@ -540,10 +580,13 @@ class PdfCaixa extends AbstractPdf implements PdfContract
      *
      * @param BoletoContract $boleto
      *
-     * @return $this
+     * @return PdfCaixa
      */
     public function addBoleto(BoletoContract $boleto)
     {
+        if (! $boleto->imprimeBoleto()) {
+            throw new ValidationException('Boleto com modalidade/carteira não disponível para impressão');
+        }
         $this->totalBoletos += 1;
         $this->boleto[] = $boleto;
 
@@ -551,7 +594,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
     }
 
     /**
-     * @return $this
+     * @return PdfCaixa
      */
     public function hideInstrucoes()
     {
@@ -561,7 +604,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
     }
 
     /**
-     * @return $this
+     * @return PdfCaixa
      */
     public function showPrint()
     {
@@ -577,12 +620,12 @@ class PdfCaixa extends AbstractPdf implements PdfContract
      * @param null $save_path
      *
      * @return string
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function gerarBoleto($dest = self::OUTPUT_STANDARD, $save_path = null, $nameFile = null)
     {
         if ($this->totalBoletos == 0) {
-            throw new \Exception('Nenhum Boleto adicionado');
+            throw new ValidationException('Nenhum Boleto adicionado');
         }
 
         for ($i = 0; $i < $this->totalBoletos; $i++) {
@@ -599,7 +642,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
             $nameFile = Str::random(32);
         }
 
-        return $this->Output($nameFile.'.pdf', $dest, $this->print);
+        return $this->Output($nameFile . '.pdf', $dest, $this->print);
     }
 
     /**

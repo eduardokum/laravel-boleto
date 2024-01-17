@@ -21,7 +21,7 @@ $pagador = new \Eduardokum\LaravelBoleto\Pessoa([
 ]);
 
 $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Sicredi([
-    'logo'                   => realpath(__DIR__.'/../logos/').DIRECTORY_SEPARATOR.'748.png',
+    'logo'                   => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '748.png',
     'dataVencimento'         => new \Carbon\Carbon(),
     'valor'                  => 100,
     'multa'                  => false,
@@ -43,12 +43,12 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Sicredi([
 ]);
 
 $remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Sicredi([
-    'agencia'      => 2606,
-    'carteira'     => '1',
-    'conta'        => 12510,
-    'codigoCliente'=> 12345,
-    'idremessa'    => 1,
-    'beneficiario' => $beneficiario,
+    'agencia'       => 2606,
+    'carteira'      => '1',
+    'conta'         => 12510,
+    'codigoCliente' => 12345,
+    'idremessa'     => 1,
+    'beneficiario'  => $beneficiario,
 ]);
 $remessa->addBoleto($boleto);
-echo $remessa->save(__DIR__.DIRECTORY_SEPARATOR.'arquivos'.DIRECTORY_SEPARATOR.'sicredi.txt');
+echo $remessa->save(__DIR__ . DIRECTORY_SEPARATOR . 'arquivos' . DIRECTORY_SEPARATOR . 'sicredi.txt');

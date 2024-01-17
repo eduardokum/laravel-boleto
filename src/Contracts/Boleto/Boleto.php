@@ -2,6 +2,7 @@
 
 namespace Eduardokum\LaravelBoleto\Contracts\Boleto;
 
+use Carbon\Carbon;
 use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
 
 interface Boleto
@@ -10,6 +11,8 @@ interface Boleto
     const COD_BANCO_SANTANDER = '033';
     const COD_BANCO_INTER = '077';
     const COD_BANCO_CEF = '104';
+    const COD_BANCO_CRESOL = '133';
+    const COD_BANCO_BTG = '208';
     const COD_BANCO_BRADESCO = '237';
     const COD_BANCO_C6 = '336';
     const COD_BANCO_ITAU = '341';
@@ -21,6 +24,7 @@ interface Boleto
     const COD_BANCO_BNB = '004';
     const COD_BANCO_UNICRED = '136';
     const COD_BANCO_FIBRA = '224';
+    const COD_BANCO_RENDIMENTO = '633';
     const COD_BANCO_PINE = '643';
     const COD_BANCO_OURINVEST = '712';
     const STATUS_REGISTRO = 1;
@@ -51,6 +55,11 @@ interface Boleto
      * @return array
      */
     public function toArray();
+
+    /**
+     * @return mixed
+     */
+    public function getID();
 
     /**
      * @return mixed
@@ -103,17 +112,17 @@ interface Boleto
     public function getMoeda();
 
     /**
-     * @return \Carbon\Carbon
+     * @return Carbon
      */
     public function getDataVencimento();
 
     /**
-     * @return \Carbon\Carbon
+     * @return Carbon
      */
     public function getDataVencimentoApos();
 
     /**
-     * @return \Carbon\Carbon
+     * @return Carbon
      */
     public function getDataDesconto();
 
@@ -128,7 +137,7 @@ interface Boleto
     public function getDataProcessamento();
 
     /**
-     * @return \Carbon\Carbon
+     * @return Carbon
      */
     public function getDataDocumento();
 
@@ -307,6 +316,21 @@ interface Boleto
     public function getComando();
 
     /**
+     * @return mixed
+     */
+    public function getPixQrCode();
+
+    /**
+     * @return mixed
+     */
+    public function getPixChave();
+
+    /**
+     * @return mixed
+     */
+    public function getPixChaveTipo();
+
+    /**
      * Método onde qualquer boleto deve extender para gerar o código da posição de 20 a 44
      *
      * @param $campoLivre
@@ -319,4 +343,9 @@ interface Boleto
      * @return mixed
      */
     public function getMostrarEnderecoFichaCompensacao();
+
+    /**
+     * @return bool
+     */
+    public function imprimeBoleto();
 }

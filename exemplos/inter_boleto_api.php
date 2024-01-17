@@ -3,26 +3,26 @@
 require 'autoload.php';
 
 $beneficiario = new \Eduardokum\LaravelBoleto\Pessoa([
-    'nome' => 'ACME',
-    'endereco' => 'Rua um, 123',
-    'cep' => '99999-999',
-    'uf' => 'UF',
-    'cidade' => 'CIDADE',
+    'nome'      => 'ACME',
+    'endereco'  => 'Rua um, 123',
+    'cep'       => '99999-999',
+    'uf'        => 'UF',
+    'cidade'    => 'CIDADE',
     'documento' => '99.999.999/9999-99',
 ]);
 
 $pagador = new \Eduardokum\LaravelBoleto\Pessoa([
-    'nome' => 'Cliente',
-    'endereco' => 'Rua um, 123',
-    'bairro' => 'Bairro',
-    'cep' => '99999-999',
-    'uf' => 'UF',
-    'cidade' => 'CIDADE',
+    'nome'      => 'Cliente',
+    'endereco'  => 'Rua um, 123',
+    'bairro'    => 'Bairro',
+    'cep'       => '99999-999',
+    'uf'        => 'UF',
+    'cidade'    => 'CIDADE',
     'documento' => '999.999.999-99',
 ]);
 
 $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Inter([
-    'logo'            => realpath(__DIR__.'/../logos/').DIRECTORY_SEPARATOR.'077.png',
+    'logo'            => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '077.png',
     'dataVencimento'  => (new \Carbon\Carbon())->addDays(),
     'valor'           => 10,
     'multa'           => false,
@@ -39,10 +39,10 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Inter([
 
 $api = new Eduardokum\LaravelBoleto\Api\Banco\Inter([
     'conta'            => '123456789',
-    'certificado'      => realpath(__DIR__.'/certs/').DIRECTORY_SEPARATOR.'cert.crt',
-    'certificadoChave' => realpath(__DIR__.'/certs/').DIRECTORY_SEPARATOR.'key.key',
+    'certificado'      => realpath(__DIR__ . '/certs/') . DIRECTORY_SEPARATOR . 'cert.crt',
+    'certificadoChave' => realpath(__DIR__ . '/certs/') . DIRECTORY_SEPARATOR . 'key.key',
 ]);
 
 $pdf = new Eduardokum\LaravelBoleto\Boleto\Render\Pdf();
 $pdf->addBoleto($boleto);
-$pdf->gerarBoleto($pdf::OUTPUT_SAVE, __DIR__.DIRECTORY_SEPARATOR.'arquivos'.DIRECTORY_SEPARATOR.'inter.pdf');
+$pdf->gerarBoleto($pdf::OUTPUT_SAVE, __DIR__ . DIRECTORY_SEPARATOR . 'arquivos' . DIRECTORY_SEPARATOR . 'inter.pdf');

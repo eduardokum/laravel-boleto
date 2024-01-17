@@ -7,6 +7,7 @@ use Illuminate\Support\Arr;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\BoletoAPI as BoletoAPIContract;
 
 class Inter extends AbstractBoleto implements BoletoAPIContract
@@ -66,7 +67,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
     /**
      * @param $operacao
      *
-     * @return $this
+     * @return Inter
      */
     public function setOperacao($operacao)
     {
@@ -100,8 +101,8 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
      */
     public function getAgenciaCodigoBeneficiario()
     {
-        return $this->getAgencia().Util::modulo11($this->getAgencia()).' / '.
-            $this->getConta().Util::modulo11($this->getConta());
+        return $this->getAgencia() . Util::modulo11($this->getAgencia()) . ' / ' .
+            $this->getConta() . Util::modulo11($this->getConta());
     }
 
     /**
@@ -124,17 +125,17 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
     }
 
     /**
-     * Seta dias para baixa automática
+     * Seta dia para baixa automática
      *
      * @param int $baixaAutomatica
      *
-     * @return $this
-     * @throws \Exception
+     * @return Inter
+     * @throws ValidationException
      */
     public function setDiasBaixaAutomatica($baixaAutomatica)
     {
         if (! in_array($baixaAutomatica, [0, 30, 60])) {
-            throw new \Exception('Baixa automática válida somente 0, 30, 60');
+            throw new ValidationException('Baixa automática válida somente 0, 30, 60');
         }
         $this->diasBaixaAutomatica = $baixaAutomatica >= 0 ? $baixaAutomatica : 0;
 
@@ -151,15 +152,15 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
     public static function parseCampoLivre($campoLivre)
     {
         return [
-            'convenio' => substr($campoLivre, 7, 7),
-            'agenciaDv' => null,
+            'convenio'        => substr($campoLivre, 7, 7),
+            'agenciaDv'       => null,
             'contaCorrenteDv' => null,
-            'agencia' => substr($campoLivre, 0, 4),
-            'carteira' => substr($campoLivre, 4, 3),
-            'nossoNumero' => substr($campoLivre, 14, 10),
-            'nossoNumeroDv' => substr($campoLivre, 24, 1),
+            'agencia'         => substr($campoLivre, 0, 4),
+            'carteira'        => substr($campoLivre, 4, 3),
+            'nossoNumero'     => substr($campoLivre, 14, 10),
+            'nossoNumeroDv'   => substr($campoLivre, 24, 1),
             'nossoNumeroFull' => substr($campoLivre, 14, 11),
-            'contaCorrente' => null,
+            'contaCorrente'   => null,
         ];
     }
 
@@ -184,7 +185,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
 
             return [
                 'endereco' => $endereco[0],
-                'numero' => array_key_exists(1, $endereco)
+                'numero'   => array_key_exists(1, $endereco)
                     ? Util::onlyNumbers(explode(' ', trim($endereco[1]))[0])
                     : 0,
             ];
@@ -192,52 +193,52 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
 
         $desconto = $descontoDefault = [
             'codigoDesconto' => 'NAOTEMDESCONTO',
-            'data' => '',
-            'taxa' => 0,
-            'valor' => 0,
+            'data'           => '',
+            'taxa'           => 0,
+            'valor'          => 0,
         ];
         if ($this->getDesconto()) {
             $desconto = [
                 'codigoDesconto' => 'VALORFIXODATAINFORMADA',
-                'data' => $this->getDataDesconto()->format('Y-m-d'),
-                'taxa' => 0,
-                'valor' => Util::nFloat($this->getDesconto()),
+                'data'           => $this->getDataDesconto()->format('Y-m-d'),
+                'taxa'           => 0,
+                'valor'          => Util::nFloat($this->getDesconto()),
             ];
         }
 
         $multa = [
             'codigoMulta' => 'NAOTEMMULTA',
-            'data' => '',
-            'taxa' => 0,
-            'valor' => 0,
+            'data'        => '',
+            'taxa'        => 0,
+            'valor'       => 0,
         ];
         if ($this->getMulta()) {
             $multa = [
                 'codigoMulta' => 'PERCENTUAL',
-                'data' => ($this->getDataVencimento()->copy())->addDay()->format('Y-m-d'),
-                'taxa' => Util::nFloat($this->getMulta()),
-                'valor' => 0,
+                'data'        => ($this->getDataVencimento()->copy())->addDay()->format('Y-m-d'),
+                'taxa'        => Util::nFloat($this->getMulta()),
+                'valor'       => 0,
             ];
         }
 
         $mora = [
             'codigoMora' => 'ISENTO',
-            'data' => '',
-            'taxa' => 0,
-            'valor' => 0,
+            'data'       => '',
+            'taxa'       => 0,
+            'valor'      => 0,
         ];
         if ($this->getJuros()) {
             $mora = [
                 'codigoMora' => 'TAXAMENSAL',
-                'data' => ($this->getDataVencimento()->copy())->addDays($this->getJurosApos() > 0 ? $this->getJurosApos() : 1)->format('Y-m-d'),
-                'taxa' => Util::nFloat($this->getJuros()),
-                'valor' => 0,
+                'data'       => ($this->getDataVencimento()->copy())->addDays($this->getJurosApos() > 0 ? $this->getJurosApos() : 1)->format('Y-m-d'),
+                'taxa'       => Util::nFloat($this->getJuros()),
+                'valor'      => 0,
             ];
         }
 
         $mensagem = array_filter($this->getDescricaoDemonstrativo());
         foreach ($mensagem as $k => $m) {
-            $mensagem['linha'.($k + 1)] = $m;
+            $mensagem['linha' . ($k + 1)] = $m;
             unset($mensagem[$k]);
         }
 
@@ -274,31 +275,31 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
      * @param $appends
      *
      * @return Inter
-     * @throws \Exception
+     * @throws ValidationException
      */
     public static function fromAPI($boleto, $appends)
     {
         if (! array_key_exists('beneficiario', $appends)) {
-            throw new \Exception('Informe o beneficiario');
+            throw new ValidationException('Informe o beneficiario');
         }
         if (! array_key_exists('conta', $appends)) {
-            throw new \Exception('Informe a conta');
+            throw new ValidationException('Informe a conta');
         }
         $ipte = Util::IPTE2Variveis($boleto->linhaDigitavel);
 
         $aSituacao = [
-            'PAGO' => AbstractBoleto::SITUACAO_PAGO,
-            'BAIXADO' => AbstractBoleto::SITUACAO_BAIXADO,
-            'VENCIDO' => AbstractBoleto::SITUACAO_ABERTO,
+            'PAGO'     => AbstractBoleto::SITUACAO_PAGO,
+            'BAIXADO'  => AbstractBoleto::SITUACAO_BAIXADO,
+            'VENCIDO'  => AbstractBoleto::SITUACAO_ABERTO,
             'EXPIRADO' => AbstractBoleto::SITUACAO_BAIXADO,
         ];
 
         $dateUS = preg_match('/[0-9]{4}-[0-9]{2}-[0-9]{2}.*/', $boleto->dataHoraSituacao);
 
         return new self(array_merge(array_filter([
-            'valorRecebido'   => isset($boleto->valorTotalRecebimento) ? $boleto->valorTotalRecebimento : null,
-            'situacao'        => Arr::get($aSituacao, $boleto->situacao, $boleto->situacao),
-            'dataSituacao'    => $boleto->dataHoraSituacao
+            'valorRecebido' => isset($boleto->valorTotalRecebimento) ? $boleto->valorTotalRecebimento : null,
+            'situacao'      => Arr::get($aSituacao, $boleto->situacao, $boleto->situacao),
+            'dataSituacao'  => $boleto->dataHoraSituacao
                 ? Carbon::createFromFormat($dateUS ? 'Y-m-d H:i' : 'd/m/Y H:i', $boleto->dataHoraSituacao)
                 : Carbon::now(),
             'nossoNumero'     => $boleto->nossoNumero,
@@ -311,18 +312,18 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
             'pagador'         => array_filter([
                 'nome'      => isset($boleto->pagador) ? $boleto->pagador->nome : $boleto->nomeSacado,
                 'documento' => isset($boleto->pagador) ? $boleto->pagador->cpfCnpj : $boleto->cnpjCpfSacado,
-                'endereco' => isset($boleto->pagador) ? trim($boleto->pagador->endereco.', '.$boleto->pagador->endereco.' '.$boleto->pagador->complemento) : null,
-                'bairro' => isset($boleto->pagador) ? $boleto->pagador->bairro : null,
-                'cep' => isset($boleto->pagador) ? $boleto->pagador->cep : null,
-                'uf' => isset($boleto->pagador) ? $boleto->pagador->uf : null,
-                'cidade' => isset($boleto->pagador) ? $boleto->pagador->cidade : null,
+                'endereco'  => isset($boleto->pagador) ? trim($boleto->pagador->endereco . ', ' . $boleto->pagador->endereco . ' ' . $boleto->pagador->complemento) : null,
+                'bairro'    => isset($boleto->pagador) ? $boleto->pagador->bairro : null,
+                'cep'       => isset($boleto->pagador) ? $boleto->pagador->cep : null,
+                'uf'        => isset($boleto->pagador) ? $boleto->pagador->uf : null,
+                'cidade'    => isset($boleto->pagador) ? $boleto->pagador->cidade : null,
             ]),
-            'multa'           => Arr::get($boleto, 'multa.valor', 0),
-            'juros'           => Arr::get($boleto, 'juros.taxa', 0),
-            'desconto'        => Arr::get($boleto, 'desconto1.taxa', 0),
-            'data_desconto'   => Arr::get($boleto, 'desconto1.data'),
-            'carteira'        => $ipte['campo_livre_parsed']['carteira'],
-            'operacao'        => $ipte['campo_livre_parsed']['convenio'],
+            'multa'         => Arr::get($boleto, 'multa.valor', 0),
+            'juros'         => Arr::get($boleto, 'juros.taxa', 0),
+            'desconto'      => Arr::get($boleto, 'desconto1.taxa', 0),
+            'data_desconto' => Arr::get($boleto, 'desconto1.data'),
+            'carteira'      => $ipte['campo_livre_parsed']['carteira'],
+            'operacao'      => $ipte['campo_livre_parsed']['convenio'],
         ]), $appends));
     }
 
@@ -357,5 +358,50 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
             $nnClean = str_replace('00019112', '', $nnClean);
         }
         $this->campoNossoNumero = $nnClean;
+    }
+
+    /**
+     * @return bool
+     */
+    public function imprimeBoleto()
+    {
+        return $this->campoNossoNumero > 0;
+    }
+
+    /**
+     * @return mixed
+     * @throws ValidationException
+     */
+    public function alterarBoleto()
+    {
+        throw new ValidationException('Banco Inter só possui comando de registro.');
+    }
+
+    /**
+     * @return mixed
+     * @throws ValidationException
+     */
+    public function alterarDataDeVencimento()
+    {
+        throw new ValidationException('Banco Inter só possui comando de registro.');
+    }
+
+    /**
+     * @param $instrucao
+     * @return mixed
+     * @throws ValidationException
+     */
+    public function comandarInstrucao($instrucao)
+    {
+        throw new ValidationException('Banco Inter só possui comando de registro.');
+    }
+
+    /**
+     * @return mixed
+     * @throws ValidationException
+     */
+    public function baixarBoleto()
+    {
+        throw new ValidationException('Banco Inter só possui comando de registro.');
     }
 }

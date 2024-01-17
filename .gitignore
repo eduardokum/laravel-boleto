@@ -7,4 +7,5 @@
 /composer.lock
 .phpunit.result.cache
 .vs/
-arquivos/*.txt
+exemplos/arquivos/*.txt
+exemplos/teste.php

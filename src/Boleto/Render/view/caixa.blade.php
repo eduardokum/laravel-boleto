@@ -6,11 +6,19 @@
             <div class="noprint info">
                 <h2>Instruções de Impressão</h2>
                 <ul>
-                    <li>Imprima em impressora jato de tinta (ink jet) ou laser em qualidade normal ou alta (Não use modo econômico).</li>
-                    <li>Utilize folha A4 (210 x 297 mm) ou Carta (216 x 279 mm) e margens mínimas à esquerda e à direita do formulário.</li>
-                    <li>Corte na linha indicada. Não rasure, risque, fure ou dobre a região onde se encontra o código de barras.</li>
+                    <li>Imprima em impressora jato de tinta (ink jet) ou laser em qualidade normal ou alta (Não use modo
+                        econômico).
+                    </li>
+                    <li>Utilize folha A4 (210 x 297 mm) ou Carta (216 x 279 mm) e margens mínimas à esquerda e à direita
+                        do formulário.
+                    </li>
+                    <li>Corte na linha indicada. Não rasure, risque, fure ou dobre a região onde se encontra o código de
+                        barras.
+                    </li>
                     <li>Caso não apareça o código de barras no final, pressione F5 para atualizar esta tela.</li>
-                    <li>Caso tenha problemas ao imprimir, copie a sequencia numérica abaixo e pague no caixa eletrônico ou no internet banking:</li>
+                    <li>Caso tenha problemas ao imprimir, copie a sequencia numérica abaixo e pague no caixa eletrônico
+                        ou no internet banking:
+                    </li>
                 </ul>
                 <span class="header">Linha Digitável: {{ $linha_digitavel }}</span>
                 <span class="header">Número: {{ $numero }}</span>
@@ -23,7 +31,7 @@
         <div class="info-empresa">
             @if ($logo)
                 <div style="display: inline-block;">
-                    <img alt="logo" src="{{ $logo_base64 }}" />
+                    <img alt="logo" src="{{ $logo_base64 }}"/>
                 </div>
             @endif
             <div style="display: inline-block; vertical-align: super;">
@@ -41,7 +49,8 @@
                 <td valign="bottom" colspan="8" class="noborder nopadding">
                     <div class="logocontainer">
                         <div class="logobanco">
-                            <img src="{{ isset($logo_banco_base64) && !empty($logo_banco_base64) ? $logo_banco_base64 : 'https://dummyimage.com/150x75/fff/000000.jpg&text=+' }}" alt="logo do banco">
+                            <img src="{{ isset($logo_banco_base64) && !empty($logo_banco_base64) ? $logo_banco_base64 : 'https://dummyimage.com/150x75/fff/000000.jpg&text=+' }}"
+                                 alt="logo do banco">
                         </div>
                         <div class="codbanco">{{ $codigo_banco_com_dv }}</div>
                     </div>
@@ -134,7 +143,9 @@
                     <b>caixa.gov.br</b>
                 </td>
                 <td width="400" colspan="2" style="vertical-align: top;" class="bottomborder">
-                    <div class="titulo"><center>Autenticação Mecânica - <b>Recibo do Pagador</b></center></div>
+                    <div class="titulo">
+                        <center>Autenticação Mecânica - <b>Recibo do Pagador</b></center>
+                    </div>
                     <div class="conteudo"></div>
                 </td>
             </tr>

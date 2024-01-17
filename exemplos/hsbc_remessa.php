@@ -21,7 +21,7 @@ $pagador = new \Eduardokum\LaravelBoleto\Pessoa([
 ]);
 
 $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Hsbc([
-    'logo'                   => realpath(__DIR__.'/../logos/').DIRECTORY_SEPARATOR.'399.png',
+    'logo'                   => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '399.png',
     'dataVencimento'         => new \Carbon\Carbon(),
     'valor'                  => 100,
     'multa'                  => false,
@@ -50,4 +50,4 @@ $remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Hsbc([
 ]);
 $remessa->addBoleto($boleto);
 
-echo $remessa->save(__DIR__.DIRECTORY_SEPARATOR.'arquivos'.DIRECTORY_SEPARATOR.'hsbc.txt');
+echo $remessa->save(__DIR__ . DIRECTORY_SEPARATOR . 'arquivos' . DIRECTORY_SEPARATOR . 'hsbc.txt');

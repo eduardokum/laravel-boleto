@@ -21,23 +21,23 @@ $pagador = new \Eduardokum\LaravelBoleto\Pessoa([
 ]);
 
 $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\C6([
-    'logo' => realpath(__DIR__.'/../logos/').DIRECTORY_SEPARATOR.'336.png',
-    'dataVencimento' => new \Carbon\Carbon('2020-03-27'),
-    'valor' => 100,
-    'multa' => false,
-    'juros' => false,
-    'numero' => 66,
-    'numeroDocumento' => 1,
-    'pagador' => $pagador,
-    'beneficiario' => $beneficiario,
-    'carteira' => '10',
-    'agencia' => 1,
-    'conta' => 123,
-    'codigoCliente' => 1893,
+    'logo'                   => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '336.png',
+    'dataVencimento'         => new \Carbon\Carbon('2020-03-27'),
+    'valor'                  => 100,
+    'multa'                  => false,
+    'juros'                  => false,
+    'numero'                 => 66,
+    'numeroDocumento'        => 1,
+    'pagador'                => $pagador,
+    'beneficiario'           => $beneficiario,
+    'carteira'               => '10',
+    'agencia'                => 1,
+    'conta'                  => 123,
+    'codigoCliente'          => 1893,
     'descricaoDemonstrativo' => ['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'],
-    'instrucoes' =>  ['instrucao 1', 'instrucao 2', 'instrucao 3'],
-    'aceite' => 'S',
-    'especieDoc' => 'DM',
+    'instrucoes'             => ['instrucao 1', 'instrucao 2', 'instrucao 3'],
+    'aceite'                 => 'S',
+    'especieDoc'             => 'DM',
 ]);
 
 $remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\C6([
@@ -51,4 +51,4 @@ $remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\C6([
 ]);
 $remessa->addBoleto($boleto);
 
-echo $remessa->save(__DIR__.DIRECTORY_SEPARATOR.'arquivos'.DIRECTORY_SEPARATOR.'c6.txt');
+echo $remessa->save(__DIR__ . DIRECTORY_SEPARATOR . 'arquivos' . DIRECTORY_SEPARATOR . 'c6.txt');

@@ -3,21 +3,23 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400;
 
 use Illuminate\Support\Collection;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\AbstractRetorno as AbstractRetornoGeneric;
 
 /**
  * Class AbstractRetorno
  *
- * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Detalhe getDetalhe($i)
- * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Header getHeader()
- * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Trailer getTrailer()
- * @method  \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Detalhe detalheAtual()
+ * @method  Detalhe[] getDetalhes()
+ * @method  Detalhe getDetalhe($i)
+ * @method  Header getHeader()
+ * @method  Trailer getTrailer()
+ * @method  Detalhe detalheAtual()
  */
 abstract class AbstractRetorno extends AbstractRetornoGeneric
 {
     /**
      * @param string $file
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function __construct($file)
     {
@@ -61,7 +63,7 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
      * Processa o arquivo
      *
      * @return $this
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function processar()
     {
@@ -103,8 +105,8 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
     public function toArray()
     {
         $array = [
-            'header' => $this->header->toArray(),
-            'trailer' => $this->trailer->toArray(),
+            'header'   => $this->header->toArray(),
+            'trailer'  => $this->trailer->toArray(),
             'detalhes' => new Collection(),
         ];
         foreach ($this->detalhe as $detalhe) {

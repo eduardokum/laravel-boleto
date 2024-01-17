@@ -34,13 +34,13 @@ class Hsbc extends AbstractBoleto implements BoletoContract
      * @var string
      */
     protected $especiesCodigo = [
-        'DM' => '01',
-        'NP' => '02',
-        'NS' => '03',
+        'DM'  => '01',
+        'NP'  => '02',
+        'NS'  => '03',
         'REC' => '05',
-        'CE' => '09',
-        'DS' => '10',
-        'PD' => '98',
+        'CE'  => '09',
+        'DS'  => '10',
+        'PD'  => '98',
     ];
 
     /**
@@ -80,7 +80,7 @@ class Hsbc extends AbstractBoleto implements BoletoContract
     /**
      * Define o campo Espécie Doc, HSBC sempre PD
      *
-     * @param  string $especieDoc
+     * @param string $especieDoc
      * @return AbstractBoleto
      */
     public function setEspecieDoc($especieDoc)
@@ -100,9 +100,9 @@ class Hsbc extends AbstractBoleto implements BoletoContract
         $agencia = rtrim(sprintf('%s-%s', $this->getAgencia(), $this->getAgenciaDv()), '-');
 
         if ($this->getContaDv() !== null && strlen($this->getContaDv()) == 1) {
-            $conta = substr($this->getConta(), 0, -1).'-'.substr($this->getConta(), -1).$this->getContaDv();
+            $conta = substr($this->getConta(), 0, -1) . '-' . substr($this->getConta(), -1) . $this->getContaDv();
         } elseif ($this->getContaDv() !== null && strlen($this->getContaDv()) == 2) {
-            $conta = substr($this->getConta(), 0, -1).'-'.substr($this->getConta(), -1).$this->getContaDv();
+            $conta = substr($this->getConta(), 0, -1) . '-' . substr($this->getConta(), -1) . $this->getContaDv();
         } else {
             $conta = $this->getConta();
         }
@@ -119,9 +119,9 @@ class Hsbc extends AbstractBoleto implements BoletoContract
     {
         $range = Util::numberFormatGeral($this->getRange(), 5);
         $numero_boleto = Util::numberFormatGeral($this->getNumero(), 5);
-        $dv = Util::modulo11($range.$numero_boleto, 2, 7);
+        $dv = Util::modulo11($range . $numero_boleto, 2, 7);
 
-        return $range.$numero_boleto.$dv;
+        return $range . $numero_boleto . $dv;
     }
 
     /**
@@ -148,7 +148,7 @@ class Hsbc extends AbstractBoleto implements BoletoContract
         $campoLivre = $this->getNossoNumero();
         $campoLivre .= Util::numberFormatGeral($this->getAgencia(), 4);
         $campoLivre .= Util::numberFormatGeral($this->getConta(), 6);
-        $campoLivre .= $this->getContaDv() ? $this->getContaDv() : Util::modulo11(Util::numberFormatGeral($this->getAgencia(), 4).Util::numberFormatGeral($this->getConta(), 6));
+        $campoLivre .= $this->getContaDv() ? $this->getContaDv() : Util::modulo11(Util::numberFormatGeral($this->getAgencia(), 4) . Util::numberFormatGeral($this->getConta(), 6));
         $campoLivre .= '001';
 
         return $this->campoLivre = $campoLivre;
@@ -164,13 +164,13 @@ class Hsbc extends AbstractBoleto implements BoletoContract
     public static function parseCampoLivre($campoLivre)
     {
         return [
-            'convenio' => null,
-            'agenciaDv' => null,
-            'nossoNumero' => substr($campoLivre, 0, 10),
-            'nossoNumeroDv' => substr($campoLivre, 10, 1),
+            'convenio'        => null,
+            'agenciaDv'       => null,
+            'nossoNumero'     => substr($campoLivre, 0, 10),
+            'nossoNumeroDv'   => substr($campoLivre, 10, 1),
             'nossoNumeroFull' => substr($campoLivre, 0, 11),
-            'agencia' => substr($campoLivre, 11, 4),
-            'contaCorrente' => substr($campoLivre, 15, 6),
+            'agencia'         => substr($campoLivre, 11, 4),
+            'contaCorrente'   => substr($campoLivre, 15, 6),
             'contaCorrenteDv' => substr($campoLivre, 21, 1),
         ];
     }

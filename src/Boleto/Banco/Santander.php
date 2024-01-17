@@ -5,6 +5,7 @@ namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 class Santander extends AbstractBoleto implements BoletoContract
@@ -167,7 +168,7 @@ class Santander extends AbstractBoleto implements BoletoContract
      *
      * @param string $carteira
      * @return AbstractBoleto
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function setCarteira($carteira)
     {
@@ -205,20 +206,20 @@ class Santander extends AbstractBoleto implements BoletoContract
     }
 
     /**
-     * Seta dias para baixa automática
+     * Seta dia para baixa automática
      *
      * @param int $baixaAutomatica
      *
-     * @return $this
-     * @throws \Exception
+     * @return Santander
+     * @throws ValidationException
      */
     public function setDiasBaixaAutomatica($baixaAutomatica)
     {
         if ($this->getDiasProtesto() > 0) {
-            throw new \Exception('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
+            throw new ValidationException('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
         }
         if (! in_array($baixaAutomatica, [15, 30])) {
-            throw new \Exception('O Banco Santander so aceita 15 ou 30 dias após o vencimento para baixa automática');
+            throw new ValidationException('O Banco Santander so aceita 15 ou 30 dias após o vencimento para baixa automática');
         }
         $baixaAutomatica = (int) $baixaAutomatica;
         $this->diasBaixaAutomatica = $baixaAutomatica > 0 ? $baixaAutomatica : 0;
@@ -233,10 +234,32 @@ class Santander extends AbstractBoleto implements BoletoContract
      */
     protected function gerarNossoNumero()
     {
-        $numero_boleto = $this->getNumero();
+        return Util::numberFormatGeral($this->getNumero(), 12)
+            . CalculoDV::santanderNossoNumero($this->getNumero());
+    }
 
-        return Util::numberFormatGeral($numero_boleto, 12)
-            .CalculoDV::santanderNossoNumero($numero_boleto);
+    /**
+     * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
+     *
+     * @return string
+     */
+    public function getNossoNumeroBoleto()
+    {
+        return substr($this->getNossoNumero(), 0, -1) . '-' . substr($this->getNossoNumero(), -1);
+    }
+
+    /**
+     * @param $id
+     * @return string
+     * @throws ValidationException
+     */
+    protected function validateId($id)
+    {
+        if (! preg_match('/^[a-zA-Z0-9]{25,36}$/', $id)) {
+            throw new ValidationException('ID/TXID do boleto é inválido, Os caracteres aceitos neste contexto são: A-Z, a-z, 0-9, não pode conter brancos e nulos, com o mínimo de 26 caracteres e no máximo 35 caracteres');
+        }
+
+        return $id;
     }
 
     /**
@@ -250,10 +273,10 @@ class Santander extends AbstractBoleto implements BoletoContract
             return $this->campoLivre;
         }
 
-        return $this->campoLivre = '9'.Util::numberFormatGeral($this->getCodigoCliente(), 7)
-            .Util::numberFormatGeral($this->getNossoNumero(), 13)
-            .Util::numberFormatGeral($this->getIos(), 1)
-            .Util::numberFormatGeral($this->getCarteira(), 3);
+        return $this->campoLivre = '9' . Util::numberFormatGeral($this->getCodigoCliente(), 7)
+            . Util::numberFormatGeral($this->getNossoNumero(), 13)
+            . Util::numberFormatGeral($this->getIos(), 1)
+            . Util::numberFormatGeral($this->getCarteira(), 3);
     }
 
     /**

@@ -5,6 +5,7 @@ namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco;
 use Illuminate\Support\Arr;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\AbstractRetorno;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
@@ -211,12 +212,12 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
     {
         $this->totais = [
             'valor_recebido' => 0,
-            'liquidados' => 0,
-            'entradas' => 0,
-            'baixados' => 0,
-            'protestados' => 0,
-            'erros' => 0,
-            'alterados' => 0,
+            'liquidados'     => 0,
+            'entradas'       => 0,
+            'baixados'       => 0,
+            'protestados'    => 0,
+            'erros'          => 0,
+            'alterados'      => 0,
         ];
     }
 
@@ -224,7 +225,7 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
      * @param array $header
      *
      * @return bool
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function processarHeader(array $header)
     {
@@ -244,7 +245,7 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
      * @param array $detalhe
      *
      * @return bool
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function processarDetalhe(array $detalhe)
     {
@@ -257,14 +258,14 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
             ->setOcorrenciaDescricao(Arr::get($this->ocorrencias, $d->getOcorrencia(), 'Desconhecida'))
             ->setDataOcorrencia($this->rem(111, 116, $detalhe))
             ->setDataVencimento($this->rem(147, 152, $detalhe))
-            ->setValor(Util::nFloat($this->rem(153, 165, $detalhe), 2, false) / 100)
-            ->setValorTarifa(Util::nFloat($this->rem(176, 188, $detalhe), 2, false) / 100)
-            ->setValorOutrasDespesas(Util::nFloat($this->rem(189, 201, $detalhe), 2, false) / 100)
-            ->setValorAbatimento(Util::nFloat($this->rem(228, 240, $detalhe), 2, false) / 100)
-            ->setValorDesconto(Util::nFloat($this->rem(241, 253, $detalhe), 2, false) / 100)
-            ->setValorRecebido(Util::nFloat($this->rem(254, 266, $detalhe), 2, false) / 100)
-            ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe), 2, false) / 100)
-            ->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe), 2, false) / 100)
+            ->setValor(Util::nFloat($this->rem(153, 165, $detalhe) / 100, 2, false))
+            ->setValorTarifa(Util::nFloat($this->rem(176, 188, $detalhe) / 100, 2, false))
+            ->setValorOutrasDespesas(Util::nFloat($this->rem(189, 201, $detalhe) / 100, 2, false))
+            ->setValorAbatimento(Util::nFloat($this->rem(228, 240, $detalhe) / 100, 2, false))
+            ->setValorDesconto(Util::nFloat($this->rem(241, 253, $detalhe) / 100, 2, false))
+            ->setValorRecebido(Util::nFloat($this->rem(254, 266, $detalhe) / 100, 2, false))
+            ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe) / 100, 2, false))
+            ->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe) / 100, 2, false))
             ->setDataCredito($this->rem(329, 336, $detalhe), 'Ymd');
 
         if ($d->hasOcorrencia('06', '15', '16')) {
@@ -313,9 +314,6 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
                 if (count($motivo) > 0) {
                     $d->setRejeicao(implode(PHP_EOL, $motivo));
                 }
-
-                //Caso haja outra mensagem adicional para tratar e não seja ocorrência de erro então
-                //concatenar a mensagem com o texto da descricao atual
             } elseif ($d->getOcorrenciaTipo() != $d::OCORRENCIA_ERRO) {
                 $ocorrencia = Util::appendStrings($d->getOcorrenciaDescricao(), Arr::get($this->rejeicoes, $msgAdicRetorno[0], ''), Arr::get($this->rejeicoes, $msgAdicRetorno[1], ''), Arr::get($this->rejeicoes, $msgAdicRetorno[2], ''), Arr::get($this->rejeicoes, $msgAdicRetorno[3], ''), Arr::get($this->rejeicoes, $msgAdicRetorno[4], ''));
                 $d->setOcorrenciaDescricao($ocorrencia);

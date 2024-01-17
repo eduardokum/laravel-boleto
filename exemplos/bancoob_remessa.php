@@ -21,7 +21,7 @@ $pagador = new \Eduardokum\LaravelBoleto\Pessoa([
 ]);
 
 $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Bancoob([
-    'logo'                   => realpath(__DIR__.'/../logos/').DIRECTORY_SEPARATOR.'756.png',
+    'logo'                   => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '756.png',
     'dataVencimento'         => new \Carbon\Carbon(),
     'valor'                  => 100,
     'multa'                  => false,
@@ -41,12 +41,12 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Bancoob([
 ]);
 
 $remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Bancoob([
-    'agencia'       => 1111,
-    'conta'         => 22222,
-    'carteira'      => 1,
-    'convenio'      => 123123,
-    'beneficiario'  => $beneficiario,
+    'agencia'      => 1111,
+    'conta'        => 22222,
+    'carteira'     => 1,
+    'convenio'     => 123123,
+    'beneficiario' => $beneficiario,
 ]);
 $remessa->addBoleto($boleto);
 
-echo $remessa->save(__DIR__.DIRECTORY_SEPARATOR.'arquivos'.DIRECTORY_SEPARATOR.'bancoob.txt');
+echo $remessa->save(__DIR__ . DIRECTORY_SEPARATOR . 'arquivos' . DIRECTORY_SEPARATOR . 'bancoob.txt');

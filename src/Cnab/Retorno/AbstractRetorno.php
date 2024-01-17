@@ -8,8 +8,13 @@
 
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno;
 
+use Countable;
+use ReflectionClass;
+use SeekableIterator;
+use OutOfBoundsException;
 use Eduardokum\LaravelBoleto\Util;
 use Illuminate\Support\Collection;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Header as Header240Contract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Header as Header400Contract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Detalhe as Detalhe240Contract;
@@ -17,10 +22,10 @@ use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\Trailer as Trailer24
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Detalhe as Detalhe400Contract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab400\Trailer as Trailer400Contract;
 
-abstract class AbstractRetorno implements \Countable, \SeekableIterator
+abstract class AbstractRetorno implements Countable, SeekableIterator
 {
     /**
-     * Se Cnab ja foi processado
+     * Se cnab ja foi processado
      *
      * @var bool
      */
@@ -34,7 +39,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
     protected $codigoBanco;
 
     /**
-     * Incremeto de detalhes
+     * Incremento de detalhes
      *
      * @var int
      */
@@ -72,21 +77,21 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
     /**
      * @var int
      */
-    private $_position = 1;
+    protected $_position = 1;
 
     /**
      * @param string $file
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function __construct($file)
     {
         $this->_position = 1;
 
         if (! $this->file = Util::file2array($file)) {
-            throw new \Exception('Arquivo: não existe');
+            throw new ValidationException('Arquivo: não existe');
         }
 
-        $r = new \ReflectionClass('\Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto');
+        $r = new ReflectionClass('\Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto');
         $constantNames = $r->getConstants();
         $bancosDisponiveis = [];
         foreach ($constantNames as $constantName => $codigoBanco) {
@@ -96,12 +101,12 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
         }
 
         if (! Util::isHeaderRetorno($this->file[0])) {
-            throw new \Exception(sprintf('Arquivo de retorno inválido'));
+            throw new ValidationException('Arquivo de retorno inválido');
         }
 
         $banco = Util::isCnab400($this->file[0]) ? mb_substr($this->file[0], 76, 3) : mb_substr($this->file[0], 0, 3);
         if (! in_array($banco, $bancosDisponiveis)) {
-            throw new \Exception(sprintf('Banco: %s, inválido', $banco));
+            throw new ValidationException(sprintf('Banco: %s, inválido', $banco));
         }
     }
 
@@ -116,7 +121,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getBancoNome()
     {
@@ -124,7 +129,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
     }
 
     /**
-     * @return mixed
+     * @return int
      */
     public function getTipo()
     {
@@ -192,7 +197,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
     }
 
     /**
-     * Se esta processado
+     * Se está processado
      *
      * @return bool
      */
@@ -240,7 +245,7 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
      * @param $array
      *
      * @return string
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function rem($i, $f, &$array)
     {
@@ -277,11 +282,11 @@ abstract class AbstractRetorno implements \Countable, \SeekableIterator
         return count($this->detalhe);
     }
 
-    public function seek($position)
+    public function seek($offset)
     {
-        $this->_position = $position;
+        $this->_position = $offset;
         if (! $this->valid()) {
-            throw new \OutOfBoundsException('"Posição inválida "$position"');
+            throw new OutOfBoundsException('"Posição inválida "$position"');
         }
     }
 }

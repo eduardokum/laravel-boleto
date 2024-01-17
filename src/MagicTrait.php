@@ -8,6 +8,17 @@ trait MagicTrait
 {
     protected $trash = [];
 
+    public function __call($name, $arguments)
+    {
+        if (method_exists($this, $name)) {
+            return $this->{$name}($arguments);
+        }
+
+        $property = lcfirst(str_replace(['get', 'set'], ['', ''], $name));
+
+        return $this->{$property};
+    }
+
     /**
      * Fast set method.
      *
@@ -33,7 +44,7 @@ trait MagicTrait
     public function __get($name)
     {
         if (property_exists($this, $name)) {
-            $method = 'get'.Str::camel($name);
+            $method = 'get' . Str::camel($name);
 
             return $this->{$method}();
         } elseif (isset($this->trash[$name])) {
@@ -46,7 +57,7 @@ trait MagicTrait
     /**
      * Determine if an attribute exists
      *
-     * @param  string $key
+     * @param string $key
      * @return bool
      */
     public function __isset($key)
@@ -62,7 +73,7 @@ trait MagicTrait
         $vars = array_keys(get_class_vars(self::class));
         $aRet = [];
         foreach ($vars as $var) {
-            $methodName = 'get'.ucfirst($var);
+            $methodName = 'get' . ucfirst($var);
             $aRet[$var] = method_exists($this, $methodName)
                 ? $this->$methodName()
                 : $this->$var;

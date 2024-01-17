@@ -5,6 +5,7 @@ namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco;
 use Illuminate\Support\Arr;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\AbstractRetorno;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
@@ -262,12 +263,12 @@ class C6 extends AbstractRetorno implements RetornoCnab400
     protected function init()
     {
         $this->totais = [
-            'liquidados' => 0,
-            'entradas' => 0,
-            'baixados' => 0,
+            'liquidados'  => 0,
+            'entradas'    => 0,
+            'baixados'    => 0,
             'protestados' => 0,
-            'erros' => 0,
-            'alterados' => 0,
+            'erros'       => 0,
+            'alterados'   => 0,
         ];
     }
 
@@ -275,7 +276,7 @@ class C6 extends AbstractRetorno implements RetornoCnab400
      * @param array $header
      *
      * @return bool
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function processarHeader(array $header)
     {
@@ -295,7 +296,7 @@ class C6 extends AbstractRetorno implements RetornoCnab400
      * @param array $detalhe
      *
      * @return bool
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function processarDetalhe(array $detalhe)
     {
@@ -342,10 +343,10 @@ class C6 extends AbstractRetorno implements RetornoCnab400
                 Arr::get($this->rejeicoes, $codErro[2], ''),
                 Arr::get($this->rejeicoes, $codErro[3], '')
             );
-            if (in_array($codErro[0], ['9005', '9006', '9007','9008'])
-                || in_array($codErro[1], ['9005', '9006', '9007','9008'])
-                || in_array($codErro[2], ['9005', '9006', '9007','9008'])
-                || in_array($codErro[3], ['9005', '9006', '9007','9008'])) {
+            if (in_array($codErro[0], ['9005', '9006', '9007', '9008'])
+                || in_array($codErro[1], ['9005', '9006', '9007', '9008'])
+                || in_array($codErro[2], ['9005', '9006', '9007', '9008'])
+                || in_array($codErro[3], ['9005', '9006', '9007', '9008'])) {
                 $posicaoInvalida = str_split(sprintf('%012s', $this->rem(366, 377, $detalhe)), 3) + array_fill(0, 4, '');
                 $error .= Util::appendStrings(
                     Arr::get($this->campoInvalido, $posicaoInvalida[0], ''),
@@ -366,7 +367,7 @@ class C6 extends AbstractRetorno implements RetornoCnab400
      * @param array $trailer
      *
      * @return bool
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function processarTrailer(array $trailer)
     {

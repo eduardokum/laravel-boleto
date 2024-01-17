@@ -5,6 +5,7 @@ namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 class Itau extends AbstractBoleto implements BoletoContract
@@ -45,33 +46,33 @@ class Itau extends AbstractBoleto implements BoletoContract
      * @var string
      */
     protected $especiesCodigo = [
-        'DM' => '01',
-        'NP' => '02',
-        'NS' => '03',
-        'ME' => '04',
+        'DM'  => '01',
+        'NP'  => '02',
+        'NS'  => '03',
+        'ME'  => '04',
         'REC' => '05',
-        'CT' => '06',
-        'CS' => '07',
-        'DS' => '08',
-        'LC' => '09',
-        'ND' => '13',
+        'CT'  => '06',
+        'CS'  => '07',
+        'DS'  => '08',
+        'LC'  => '09',
+        'ND'  => '13',
         'CDA' => '15',
-        'EC' => '16',
+        'EC'  => '16',
         'CPS' => '17',
     ];
 
     /**
-     * Seta dias para baixa automática
+     * Seta dia para baixa automática
      *
      * @param int $baixaAutomatica
      *
-     * @return $this
-     * @throws \Exception
+     * @return Itau
+     * @throws ValidationException
      */
     public function setDiasBaixaAutomatica($baixaAutomatica)
     {
         if ($this->getDiasProtesto() > 0) {
-            throw new \Exception('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
+            throw new ValidationException('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
         }
         $baixaAutomatica = (int) $baixaAutomatica;
         $this->diasBaixaAutomatica = $baixaAutomatica > 0 ? $baixaAutomatica : 0;
@@ -83,7 +84,7 @@ class Itau extends AbstractBoleto implements BoletoContract
      * Gera o Nosso Número.
      *
      * @return string
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function gerarNossoNumero()
     {
@@ -93,7 +94,7 @@ class Itau extends AbstractBoleto implements BoletoContract
         $conta = Util::numberFormatGeral($this->getConta(), 5);
         $dv = CalculoDV::itauNossoNumero($agencia, $conta, $carteira, $numero_boleto);
 
-        return $numero_boleto.$dv;
+        return $numero_boleto . $dv;
     }
 
     /**
@@ -103,14 +104,14 @@ class Itau extends AbstractBoleto implements BoletoContract
      */
     public function getNossoNumeroBoleto()
     {
-        return $this->getCarteira().'/'.substr_replace($this->getNossoNumero(), '-', -1, 0);
+        return $this->getCarteira() . '/' . substr_replace($this->getNossoNumero(), '-', -1, 0);
     }
 
     /**
      * Método para gerar o código da posição de 20 a 44
      *
      * @return string
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function getCampoLivre()
     {
@@ -122,7 +123,7 @@ class Itau extends AbstractBoleto implements BoletoContract
         $campoLivre .= Util::numberFormatGeral($this->getNossoNumero(), 9);
         $campoLivre .= Util::numberFormatGeral($this->getAgencia(), 4);
         $campoLivre .= Util::numberFormatGeral($this->getConta(), 5);
-        $campoLivre .= CalculoDV::itauContaCorrente($this->getAgencia(), $this->getConta());
+        $campoLivre .= ! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::itauContaCorrente($this->getAgencia(), $this->getConta());
         $campoLivre .= '000';
 
         return $this->campoLivre = $campoLivre;
@@ -138,30 +139,16 @@ class Itau extends AbstractBoleto implements BoletoContract
     public static function parseCampoLivre($campoLivre)
     {
         return [
-            'convenio' => null,
-            'agenciaDv' => null,
-            'codigoCliente' => null,
-            'carteira' => substr($campoLivre, 0, 3),
-            'nossoNumero' => substr($campoLivre, 3, 8),
-            'nossoNumeroDv' => substr($campoLivre, 11, 1),
+            'convenio'        => null,
+            'agenciaDv'       => null,
+            'codigoCliente'   => null,
+            'carteira'        => substr($campoLivre, 0, 3),
+            'nossoNumero'     => substr($campoLivre, 3, 8),
+            'nossoNumeroDv'   => substr($campoLivre, 11, 1),
             'nossoNumeroFull' => substr($campoLivre, 3, 9),
-            'agencia' => substr($campoLivre, 12, 4),
-            'contaCorrente' => substr($campoLivre, 16, 5),
+            'agencia'         => substr($campoLivre, 12, 4),
+            'contaCorrente'   => substr($campoLivre, 16, 5),
             'contaCorrenteDv' => substr($campoLivre, 21, 1),
         ];
-    }
-
-    /**
-     * Método que retorna o digito da conta do Itau
-     *
-     * @return int
-     */
-    public function getContaDv()
-    {
-        if ($this->contaDv !== null) {
-            return $this->contaDv;
-        }
-
-        return  CalculoDV::itauContaCorrente($this->getAgencia(), $this->getConta());
     }
 }

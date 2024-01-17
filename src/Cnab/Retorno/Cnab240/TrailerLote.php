@@ -80,7 +80,7 @@ class TrailerLote implements TrailerLoteContract
     /**
      * @param mixed $loteServico
      *
-     * @return $this
+     * @return TrailerLote
      */
     public function setLoteServico($loteServico)
     {
@@ -100,7 +100,7 @@ class TrailerLote implements TrailerLoteContract
     /**
      * @param mixed $numeroAvisoLancamento
      *
-     * @return $this
+     * @return TrailerLote
      */
     public function setNumeroAvisoLancamento($numeroAvisoLancamento)
     {
@@ -120,7 +120,7 @@ class TrailerLote implements TrailerLoteContract
     /**
      * @param mixed $qtdRegistroLote
      *
-     * @return $this
+     * @return TrailerLote
      */
     public function setQtdRegistroLote($qtdRegistroLote)
     {
@@ -140,7 +140,7 @@ class TrailerLote implements TrailerLoteContract
     /**
      * @param mixed $qtdTitulosCobrancaCaucionada
      *
-     * @return $this
+     * @return TrailerLote
      */
     public function setQtdTitulosCobrancaCaucionada($qtdTitulosCobrancaCaucionada)
     {
@@ -160,7 +160,7 @@ class TrailerLote implements TrailerLoteContract
     /**
      * @param mixed $qtdTitulosCobrancaDescontada
      *
-     * @return $this
+     * @return TrailerLote
      */
     public function setQtdTitulosCobrancaDescontada($qtdTitulosCobrancaDescontada)
     {
@@ -180,7 +180,7 @@ class TrailerLote implements TrailerLoteContract
     /**
      * @param mixed $qtdTitulosCobrancaSimples
      *
-     * @return $this
+     * @return TrailerLote
      */
     public function setQtdTitulosCobrancaSimples($qtdTitulosCobrancaSimples)
     {
@@ -200,7 +200,7 @@ class TrailerLote implements TrailerLoteContract
     /**
      * @param mixed $qtdTitulosCobrancaVinculada
      *
-     * @return $this
+     * @return TrailerLote
      */
     public function setQtdTitulosCobrancaVinculada($qtdTitulosCobrancaVinculada)
     {
@@ -220,7 +220,7 @@ class TrailerLote implements TrailerLoteContract
     /**
      * @param mixed $TipoRegistro
      *
-     * @return $this
+     * @return TrailerLote
      */
     public function setTipoRegistro($TipoRegistro)
     {
@@ -240,7 +240,7 @@ class TrailerLote implements TrailerLoteContract
     /**
      * @param mixed $valorTotalTitulosCobranca
      *
-     * @return $this
+     * @return TrailerLote
      */
     public function setValorTotalTitulosCobrancaSimples($valorTotalTitulosCobranca)
     {
@@ -260,7 +260,7 @@ class TrailerLote implements TrailerLoteContract
     /**
      * @param mixed $valorTotalTitulosCobrancaCaucionada
      *
-     * @return $this
+     * @return TrailerLote
      */
     public function setValorTotalTitulosCobrancaCaucionada($valorTotalTitulosCobrancaCaucionada)
     {
@@ -280,7 +280,7 @@ class TrailerLote implements TrailerLoteContract
     /**
      * @param mixed $valorTotalTitulosCobrancaDescontada
      *
-     * @return $this
+     * @return TrailerLote
      */
     public function setValorTotalTitulosCobrancaDescontada($valorTotalTitulosCobrancaDescontada)
     {
@@ -300,7 +300,7 @@ class TrailerLote implements TrailerLoteContract
     /**
      * @param mixed $valorTotalTitulosCobrancaVinculada
      *
-     * @return $this
+     * @return TrailerLote
      */
     public function setValorTotalTitulosCobrancaVinculada($valorTotalTitulosCobrancaVinculada)
     {

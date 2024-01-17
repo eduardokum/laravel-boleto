@@ -2,16 +2,16 @@
 
 namespace Eduardokum\LaravelBoleto\Api\Exception;
 
-use Exception;
+use Eduardokum\LaravelBoleto\Exception\BaseException;
 
-class MissingDataException extends Exception
+class MissingDataException extends BaseException
 {
     private $data;
 
     public function __construct(array $data)
     {
         $this->data = $data;
-        parent::__construct('Os seguinte campos são obrigatórios: '.implode(', ', $this->data));
+        parent::__construct('Os seguinte campos são obrigatórios: ' . implode(', ', $this->data));
     }
 
     /**

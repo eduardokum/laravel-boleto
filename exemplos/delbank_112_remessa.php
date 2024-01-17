@@ -22,23 +22,23 @@ $pagador = new \Eduardokum\LaravelBoleto\Pessoa([
 ]);
 
 $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Delbank([
-    'logo'                   => realpath(__DIR__.'/../logos/').DIRECTORY_SEPARATOR.'435.png',
-    'dataVencimento'         => new \Carbon\Carbon(),
-    'dataDocumento'		 	 => new \Carbon\Carbon('2022-05-23'),
-    'valor'                  => 10,
-    'multa'                  => false,
-    'juros'                  => false,
-    'numero'                 => 0,
-    'numero_controle'		 => 'SEUNUMERO',
-    'diasBaixaAutomatica'    => 5,
-    'numeroDocumento'        => 1,
-    'pagador'                => $pagador,
-    'beneficiario'           => $beneficiario,
-    'carteira'               => '112',
-    'agencia'                => 19,
-    'conta'                  => 10138,
-    'instrucoes'             => ['instrucao 1', 'instrucao 2', 'instrucao 3', 'instrucao 4', 'instrucao 5'],
-    'especieDoc'             => 'DM',
+    'logo'                => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '435.png',
+    'dataVencimento'      => new \Carbon\Carbon(),
+    'dataDocumento'       => new \Carbon\Carbon('2022-05-23'),
+    'valor'               => 10,
+    'multa'               => false,
+    'juros'               => false,
+    'numero'              => 0,
+    'numero_controle'     => 'SEUNUMERO',
+    'diasBaixaAutomatica' => 5,
+    'numeroDocumento'     => 1,
+    'pagador'             => $pagador,
+    'beneficiario'        => $beneficiario,
+    'carteira'            => '112',
+    'agencia'             => 19,
+    'conta'               => 10138,
+    'instrucoes'          => ['instrucao 1', 'instrucao 2', 'instrucao 3', 'instrucao 4', 'instrucao 5'],
+    'especieDoc'          => 'DM',
 ]);
 
 $remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Delbank([
@@ -51,4 +51,4 @@ $remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Delbank([
 ]);
 $remessa->addBoleto($boleto);
 
-echo $remessa->save(__DIR__.DIRECTORY_SEPARATOR.'arquivos'.DIRECTORY_SEPARATOR.'delbank.112.txt');
+echo $remessa->save(__DIR__ . DIRECTORY_SEPARATOR . 'arquivos' . DIRECTORY_SEPARATOR . 'delbank.112.txt');

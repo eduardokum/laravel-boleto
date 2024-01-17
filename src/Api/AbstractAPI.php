@@ -2,13 +2,20 @@
 
 namespace Eduardokum\LaravelBoleto\Api;
 
+use stdClass;
 use Illuminate\Support\Str;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Pessoa;
+use Eduardokum\LaravelBoleto\Contracts\Api\Api;
+use Eduardokum\LaravelBoleto\Api\Exception\CurlException;
+use Eduardokum\LaravelBoleto\Api\Exception\HttpException;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Api\Exception\MissingDataException;
 use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
+use Eduardokum\LaravelBoleto\Api\Exception\UnauthorizedException;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\BoletoAPI as BoletoAPIContract;
 
-abstract class AbstractAPI
+abstract class AbstractAPI implements Api
 {
     protected $baseUrl = null;
 
@@ -47,7 +54,7 @@ abstract class AbstractAPI
     private $temps = [];
 
     /**
-     * Campos que são necessários para o boleto
+     * Campos necessários para o boleto
      *
      * @var array
      */
@@ -66,20 +73,20 @@ abstract class AbstractAPI
      *
      * @param array $params
      *
-     * @throws \Exception
+     * @throws MissingDataException
      */
     public function __construct($params = [])
     {
         Util::fillClass($this, $params);
         $missing = [];
         foreach ($this->camposObrigatorios as $campo) {
-            $test = call_user_func([$this, 'get'.Str::camel($campo)]);
+            $test = call_user_func([$this, 'get' . Str::camel($campo)]);
             if ($test === '' || is_null($test)) {
                 $missing[] = $campo;
             }
         }
         if (count($missing) > 0) {
-            throw new Exception\MissingDataException($missing);
+            throw new MissingDataException($missing);
         }
     }
 
@@ -90,27 +97,34 @@ abstract class AbstractAPI
         }
     }
 
-//
-//    public function __construct($baseUrl, $conta, $certificado, $certificadoChave, $certificadoSenha = null)
-//    {
-//        $this->baseUrl = $baseUrl;
-//        $this->conta = $conta;
-//        $this->certificado = $certificado;
-//        $this->certificadoChave = $certificadoChave;
-//        $this->certificadoSenha = $certificadoSenha;
-//    }
-
     abstract protected function headers();
 
     abstract public function createBoleto(BoletoAPIContract $boleto);
 
     abstract public function retrieveNossoNumero($nossoNumero);
 
+    abstract public function retrieveID($id);
+
     abstract public function cancelNossoNumero($nossoNumero, $motivo);
+
+    abstract public function cancelID($id, $motivo);
 
     abstract public function retrieveList($inputedParams = []);
 
     abstract public function getPdfNossoNumero($nossoNumero);
+
+    abstract public function getPdfID($id);
+
+    /**
+     * @param $url
+     * @param $type
+     * @return mixed
+     * @throws ValidationException
+     */
+    public function createWebhook($url, $type = 'all')
+    {
+        throw new ValidationException('Método não disponível no banco');
+    }
 
     public function retrieve(BoletoAPIContract $boleto)
     {
@@ -134,7 +148,7 @@ abstract class AbstractAPI
      */
     public function getBaseUrl()
     {
-        return rtrim($this->baseUrl, '/').'/';
+        return rtrim($this->baseUrl, '/') . '/';
     }
 
     /**
@@ -349,9 +363,9 @@ abstract class AbstractAPI
      * @param array $beneficiario
      *
      * @return AbstractAPI
-     * @throws \Exception
+     * @throws ValidationException
      */
-    public function setBeneficiario($beneficiario): AbstractAPI
+    public function setBeneficiario($beneficiario)
     {
         Util::addPessoa($this->beneficiario, $beneficiario);
 
@@ -391,7 +405,7 @@ abstract class AbstractAPI
      */
     public function getLog()
     {
-        return $this->log.
+        return $this->log .
             print_r($this->getRequestInfo(), true);
     }
 
@@ -446,15 +460,16 @@ abstract class AbstractAPI
     }
 
     /**
-     * @throws Exception\CurlException
-     * @throws Exception\HttpException|Exception\UnauthorizedException
+     * @throws HttpException
+     * @throws UnauthorizedException
+     * @throws CurlException
      */
     protected function post($url, array $post, $raw = false)
     {
         $url = ltrim($url, '/');
         $this->init()
             ->setHeaders(array_filter([
-                'Accept' => $raw ? null : 'application/json',
+                'Accept'       => $raw ? null : 'application/json',
                 'Content-type' => $raw ? 'application/x-www-form-urlencoded' : 'application/json',
             ]));
 
@@ -463,7 +478,7 @@ abstract class AbstractAPI
             return Util::normalizeChars($data);
         }, $post);
 
-        curl_setopt($this->curl, CURLOPT_URL, $this->getBaseUrl().$url);
+        curl_setopt($this->curl, CURLOPT_URL, $this->getBaseUrl() . $url);
         curl_setopt($this->curl, CURLOPT_POST, 1);
         curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt($this->curl, CURLOPT_POSTFIELDS, $raw ? http_build_query($post) : json_encode($post));
@@ -472,11 +487,39 @@ abstract class AbstractAPI
     }
 
     /**
+     * @throws HttpException
+     * @throws UnauthorizedException
+     * @throws CurlException
+     */
+    protected function put($url, array $post, $raw = false)
+    {
+        $url = ltrim($url, '/');
+        $this->init()
+            ->setHeaders(array_filter([
+                'Accept'       => $raw ? null : 'application/json',
+                'Content-type' => $raw ? 'application/x-www-form-urlencoded' : 'application/json',
+            ]));
+
+        // clean string
+        $post = $this->arrayMapRecursive(function ($data) {
+            return Util::normalizeChars($data);
+        }, $post);
+
+        curl_setopt($this->curl, CURLOPT_URL, $this->getBaseUrl() . $url);
+        curl_setopt($this->curl, CURLOPT_POST, 1);
+        curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'PUT');
+        curl_setopt($this->curl, CURLOPT_POSTFIELDS, $raw ? http_build_query($post) : json_encode($post));
+
+        return $this->execute();
+    }
+
+    /**
      * @param $url
      *
-     * @return \stdClass
-     * @throws Exception\HttpException
-     * @throws Exception\CurlException|Exception\UnauthorizedException
+     * @return stdClass
+     * @throws HttpException
+     * @throws UnauthorizedException
+     * @throws CurlException
      */
     protected function get($url)
     {
@@ -486,7 +529,7 @@ abstract class AbstractAPI
                 'Accept' => 'application/json',
             ]);
 
-        curl_setopt($this->curl, CURLOPT_URL, $this->getBaseUrl().$url);
+        curl_setopt($this->curl, CURLOPT_URL, $this->getBaseUrl() . $url);
         curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, 'GET');
 
         return $this->execute();
@@ -563,11 +606,11 @@ abstract class AbstractAPI
     /**
      * @param $response
      *
-     * @return \stdClass
+     * @return stdClass
      */
     private function parseResponse($response)
     {
-        $retorno = new \stdClass();
+        $retorno = new stdClass();
         $retorno->headers_text = substr($response, 0, strpos($response, "\r\n\r\n"));
         $retorno->body_text = substr($response, strpos($response, "\r\n\r\n"));
 
@@ -588,25 +631,25 @@ abstract class AbstractAPI
     /**
      * @param $retorno
      *
-     * @throws Exception\HttpException
-     * @throws Exception\UnauthorizedException
+     * @throws HttpException
+     * @throws UnauthorizedException
      */
     private function handleException($retorno)
     {
         if ($this->getResponseHttpCode() < 200 || $this->getResponseHttpCode() > 299) {
             if (in_array($this->getResponseHttpCode(), [401, 403]) && empty($retorno->body_text)) {
-                throw new Exception\UnauthorizedException($this->getBaseUrl(), $this->getCertificado(), $this->getCertificadoChave(), $this->getCertificadoSenha());
+                throw new UnauthorizedException($this->getBaseUrl(), $this->getCertificado(), $this->getCertificadoChave(), $this->getCertificadoSenha());
             }
 
-            throw new Exception\HttpException($this->getResponseHttpCode(), $this->getRequestInfo(), $retorno->body_text);
+            throw new HttpException($this->getResponseHttpCode(), $this->getRequestInfo(), $retorno->body_text);
         }
     }
 
     /**
-     * @return false|\stdClass
-     * @throws Exception\CurlException
-     * @throws Exception\HttpException
-     * @throws Exception\UnauthorizedException
+     * @return false|stdClass
+     * @throws CurlException
+     * @throws HttpException
+     * @throws UnauthorizedException
      */
     private function execute()
     {
@@ -652,7 +695,7 @@ abstract class AbstractAPI
         curl_close($this->curl);
         $this->curl = null;
         if (! $this->getResponseHttpCode() && $error) {
-            throw new Exception\CurlException($error);
+            throw new CurlException($error);
         }
 
         return false;

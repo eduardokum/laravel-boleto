@@ -4,6 +4,7 @@ namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
@@ -94,15 +95,15 @@ class Bradesco extends AbstractRemessa implements RemessaContract
      * Retorna o codigo do cliente.
      *
      * @return mixed
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function getCodigoCliente()
     {
         if (empty($this->codigoCliente)) {
-            $this->codigoCliente = Util::formatCnab('9', $this->getCarteiraNumero(), 4).
-            Util::formatCnab('9', $this->getAgencia(), 5).
-            Util::formatCnab('9', $this->getConta(), 7).
-            Util::formatCnab('9', $this->getContaDv() ?: CalculoDV::bradescoContaCorrente($this->getConta()), 1);
+            $this->codigoCliente = Util::formatCnab('9', $this->getCarteiraNumero(), 4) .
+                Util::formatCnab('9', $this->getAgencia(), 5) .
+                Util::formatCnab('9', $this->getConta(), 7) .
+                Util::formatCnab('9', ! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::bradescoContaCorrente($this->getConta()), 1);
         }
 
         return $this->codigoCliente;
@@ -124,7 +125,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
 
     /**
      * @return Bradesco
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function header()
     {
@@ -153,7 +154,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
      * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Bradesco $boleto
      *
      * @return Bradesco
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function addBoleto(BoletoContract $boleto)
     {
@@ -239,7 +240,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
 
     /**
      * @return Bradesco
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function trailer()
     {
