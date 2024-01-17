@@ -1241,6 +1241,11 @@ final class Util
             throw new ValidationException('ID inválido, não pode possuir caracteres especiais');
         }
 
+        $dinamico = false;
+        if (filter_var($pix, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED) || filter_var('https://' . $pix, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED)) {
+            $dinamico = true;
+        }
+
         $crc16 = function ($payload) {
             $payload .= '6304';
 
@@ -1268,18 +1273,23 @@ final class Util
         };
 
         $gui = $line('00', 'br.gov.bcb.pix');
-        if (filter_var($pix, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED) || filter_var('https://' . $pix, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED)) {
+        if ($dinamico) {
             $key = $line('25', preg_replace('/^https?:\/\//', '', $pix));
+            $txId = $line('05', '***');
         } else {
             $key = $line('01', $pix);
+            $txId = $line('05', $id);
         }
-        $txId = $line('05', $id);
         $payload = $line('00', '01');
-        $payload .= $line('01', '12');
+        if (! $dinamico) {
+            $payload .= $line('01', '12');
+        }
         $payload .= $line('26', $gui . $key);
         $payload .= $line('52', '0000');
         $payload .= $line('53', '986');
-        $payload .= $line('54', $valor);
+        if (! $dinamico) {
+            $payload .= $line('54', $valor);
+        }
         $payload .= $line('58', 'BR');
         $payload .= $line('59', Util::normalizeChars($beneficiario->getNome()));
         $payload .= $line('60', Util::normalizeChars($beneficiario->getCidade()));

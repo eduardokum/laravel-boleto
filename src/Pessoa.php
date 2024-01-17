@@ -351,7 +351,7 @@ class Pessoa implements PessoaContract
      *
      * @return Pessoa
      */
-    public function setEmail(string $email)
+    public function setEmail($email)
     {
         $this->email = $email;
 
