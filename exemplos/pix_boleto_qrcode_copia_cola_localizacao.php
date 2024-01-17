@@ -1,7 +1,7 @@
 <?php
 
 require 'autoload.php';
-$beneficiario = new \Eduardokum\LaravelBoleto\Pessoa([
+$beneficiario = new Eduardokum\LaravelBoleto\Pessoa([
     'nome'      => 'ACME',
     'endereco'  => 'Rua um, 123',
     'cep'       => '99999-999',
@@ -10,7 +10,7 @@ $beneficiario = new \Eduardokum\LaravelBoleto\Pessoa([
     'documento' => '99.999.999/9999-99',
 ]);
 
-$pagador = new \Eduardokum\LaravelBoleto\Pessoa([
+$pagador = new Eduardokum\LaravelBoleto\Pessoa([
     'nome'      => 'Cliente',
     'endereco'  => 'Rua um, 123',
     'bairro'    => 'Bairro',
@@ -22,7 +22,7 @@ $pagador = new \Eduardokum\LaravelBoleto\Pessoa([
 
 $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Itau([
     'logo'                   => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '341.png',
-    'dataVencimento'         => new \Carbon\Carbon(),
+    'dataVencimento'         => new Carbon\Carbon(),
     'valor'                  => 100,
     'multa'                  => false,
     'juros'                  => false,
@@ -38,10 +38,11 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Itau([
     'aceite'                 => 'S',
     'especieDoc'             => 'DM',
     'pix_qrcode'             => '00020104141234567890123426660014BR.GOV.BCB.PIX014466756C616E6F32303139406578616D706C652E636F6D27300012BR.COM.OUTRO011001234567895204000053039865406123.455802BR5915NOMEDORECEBEDOR6008BRASILIA61087007490062530515RP12345678-201950300017BR.GOV.BCB.BRCODE01051.0.080450014BR.GOV.BCB.PIX0123PADRAO.URL.PIX/0123ABCD81390012BR.COM.OUTRO01190123.ABCD.3456.WXYZ6304EB76',
+    'qr_code_style'          => Eduardokum\LaravelBoleto\Boleto\Banco\Itau::QRCODE_ESTILO_PONTO,
 ]);
 
 $pdf = new Eduardokum\LaravelBoleto\Boleto\Render\Pdf();
 $pdf->addBoleto($boleto);
-//$pdf->setLocalizacaoPix(Eduardokum\LaravelBoleto\Boleto\Render\Pdf::PIX_INSTRUCAO);
-$pdf->setLocalizacaoPix(Eduardokum\LaravelBoleto\Boleto\Render\Pdf::PIX_COD_BARRAS);
+$pdf->setLocalizacaoPix(Eduardokum\LaravelBoleto\Boleto\Render\Pdf::PIX_INSTRUCAO);
+//$pdf->setLocalizacaoPix(Eduardokum\LaravelBoleto\Boleto\Render\Pdf::PIX_COD_BARRAS);
 echo $pdf->gerarBoleto();

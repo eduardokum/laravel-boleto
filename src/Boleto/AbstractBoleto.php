@@ -6,9 +6,12 @@ use Exception;
 use Throwable;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use chillerlan\QRCode\QRCode;
+use chillerlan\QRCode\QROptions;
 use Eduardokum\LaravelBoleto\Util;
-use SimpleSoftwareIO\QrCode\Generator;
+use chillerlan\QRCode\Data\QRMatrix;
 use Eduardokum\LaravelBoleto\MagicTrait;
+use chillerlan\QRCode\Output\QROutputInterface;
 use Eduardokum\LaravelBoleto\Boleto\Render\Pdf;
 use Eduardokum\LaravelBoleto\Boleto\Render\Html;
 use Eduardokum\LaravelBoleto\Boleto\Render\PdfCaixa;
@@ -36,7 +39,6 @@ abstract class AbstractBoleto implements BoletoContract
     const TIPO_CHAVEPIX_ALEATORIA = 'aleatoria';
     const QRCODE_ESTILO_QUADRADO = 'square';
     const QRCODE_ESTILO_PONTO = 'dot';
-    const QRCODE_ESTILO_ARREDONDADO = 'round';
 
     /**
      * Campos necessários para o boleto
@@ -1859,7 +1861,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setQrCodeStyle($qrCodeStyle)
     {
-        if (! in_array($qrCodeStyle, [self::QRCODE_ESTILO_QUADRADO, self::QRCODE_ESTILO_PONTO, self::QRCODE_ESTILO_ARREDONDADO])) {
+        if (! in_array($qrCodeStyle, [self::QRCODE_ESTILO_QUADRADO, self::QRCODE_ESTILO_PONTO])) {
             throw new ValidationException(sprintf('Estilo QRCODE %s não é válido', $qrCodeStyle));
         }
 
@@ -1884,13 +1886,24 @@ abstract class AbstractBoleto implements BoletoContract
             return $this->getPixQrCode();
         }
 
-        $qrCode = new Generator();
-        $qrCode->format('png');
-        $qrCode->style($this->getQrCodeStyle());
-        $qrCode->eye('circle');
-        $qrCode->size(400);
+        $options = new QROptions;
+        $options->outputType = QROutputInterface::GDIMAGE_PNG;
+        $options->addQuietzone = true;
+        $options->scale = 20;
+        $options->quietzoneSize = 1;
+        $options->drawLightModules = false;
 
-        return 'data:image/png;base64,' . base64_encode($qrCode->generate($this->getPixQrCode()));
+        if ($this->getQrCodeStyle() == self::QRCODE_ESTILO_PONTO) {
+            $options->drawCircularModules = true;
+            $options->circleRadius = .5;
+            $options->keepAsSquare = [
+                QRMatrix::M_FINDER_DOT,
+                QRMatrix::M_FINDER_DARK,
+            ];
+        }
+        $qrCode = new QRCode($options);
+
+        return $qrCode->render($this->getPixQrCode());
     }
 
     /**
