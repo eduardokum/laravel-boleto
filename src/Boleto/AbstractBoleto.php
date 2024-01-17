@@ -1887,8 +1887,15 @@ abstract class AbstractBoleto implements BoletoContract
         }
 
         $options = new QROptions;
-        $options->outputType = QROutputInterface::GDIMAGE_PNG;
-        $options->addQuietzone = true;
+
+        if (version_compare(PHP_VERSION, '7.4.0') >= 0) {
+            $options->outputType = QROutputInterface::GDIMAGE_PNG;
+            $options->addQuietzone = true;
+        } else {
+            $options->outputType = QRCode::OUTPUT_IMAGE_PNG;
+            $options->eccLevel = QRCode::ECC_L;
+        }
+
         $options->scale = 20;
         $options->quietzoneSize = 1;
         $options->drawLightModules = false;
