@@ -1,7 +1,7 @@
 <?php
 
 require 'autoload.php';
-$beneficiario = new \Eduardokum\LaravelBoleto\Pessoa([
+$beneficiario = new Eduardokum\LaravelBoleto\Pessoa([
     'nome'      => 'ACME',
     'endereco'  => 'Rua um, 123',
     'cep'       => '99999-999',
@@ -10,7 +10,7 @@ $beneficiario = new \Eduardokum\LaravelBoleto\Pessoa([
     'documento' => '99.999.999/9999-99',
 ]);
 
-$pagador = new \Eduardokum\LaravelBoleto\Pessoa([
+$pagador = new Eduardokum\LaravelBoleto\Pessoa([
     'nome'      => 'Cliente',
     'endereco'  => 'Rua um, 123',
     'bairro'    => 'Bairro',
@@ -22,7 +22,7 @@ $pagador = new \Eduardokum\LaravelBoleto\Pessoa([
 
 $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Rendimento([
     'logo'                   => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '633.png',
-    'dataVencimento'         => new \Carbon\Carbon('2023-01-20'),
+    'dataVencimento'         => new Carbon\Carbon('2023-01-20'),
     'valor'                  => 12750,
     'multa'                  => false,
     'juros'                  => false,

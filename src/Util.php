@@ -670,42 +670,42 @@ final class Util
         // header
         self::adiciona($retorno[0], 1, 9, '02RETORNO');
         switch ($banco) {
-            case Contracts\Boleto\Boleto::COD_BANCO_BB:
+            case BoletoContract::COD_BANCO_BB:
                 self::adiciona($retorno[0], 27, 30, self::remove(27, 30, $remessa[0]));
                 self::adiciona($retorno[0], 31, 31, self::remove(31, 31, $remessa[0]));
                 self::adiciona($retorno[0], 32, 39, self::remove(32, 39, $remessa[0]));
                 self::adiciona($retorno[0], 40, 40, self::remove(40, 40, $remessa[0]));
                 self::adiciona($retorno[0], 150, 156, self::remove(130, 136, $remessa[0]));
                 break;
-            case Contracts\Boleto\Boleto::COD_BANCO_SANTANDER:
+            case BoletoContract::COD_BANCO_SANTANDER:
                 self::adiciona($retorno[0], 27, 30, self::remove(27, 30, $remessa[0]));
                 self::adiciona($retorno[0], 39, 46, '0' . self::remove(40, 46, $remessa[0]));
                 break;
-            case Contracts\Boleto\Boleto::COD_BANCO_CEF:
+            case BoletoContract::COD_BANCO_CEF:
                 self::adiciona($retorno[0], 27, 30, self::remove(27, 30, $remessa[0]));
                 self::adiciona($retorno[0], 31, 36, self::remove(31, 36, $remessa[0]));
                 break;
-            case Contracts\Boleto\Boleto::COD_BANCO_BRADESCO:
-            case Contracts\Boleto\Boleto::COD_BANCO_OURINVEST:
-            case Contracts\Boleto\Boleto::COD_BANCO_CRESOL:
+            case BoletoContract::COD_BANCO_BRADESCO:
+            case BoletoContract::COD_BANCO_OURINVEST:
+            case BoletoContract::COD_BANCO_CRESOL:
                 self::adiciona($retorno[0], 27, 46, self::remove(27, 46, $remessa[0]));
                 break;
-            case Contracts\Boleto\Boleto::COD_BANCO_ITAU:
+            case BoletoContract::COD_BANCO_ITAU:
                 self::adiciona($retorno[0], 27, 30, self::remove(27, 30, $remessa[0]));
                 self::adiciona($retorno[0], 33, 37, self::remove(33, 37, $remessa[0]));
                 self::adiciona($retorno[0], 38, 38, self::remove(38, 38, $remessa[0]));
                 break;
-            case Contracts\Boleto\Boleto::COD_BANCO_HSBC:
+            case BoletoContract::COD_BANCO_HSBC:
                 self::adiciona($retorno[0], 28, 31, self::remove(28, 31, $remessa[0]));
                 self::adiciona($retorno[0], 38, 43, self::remove(38, 43, $remessa[0]));
                 self::adiciona($retorno[0], 44, 44, self::remove(44, 44, $remessa[0]));
                 break;
-            case Contracts\Boleto\Boleto::COD_BANCO_SICREDI:
+            case BoletoContract::COD_BANCO_SICREDI:
                 self::adiciona($retorno[0], 27, 31, self::remove(27, 31, $remessa[0]));
                 self::adiciona($retorno[0], 32, 45, self::remove(32, 45, $remessa[0]));
                 self::adiciona($retorno[0], 111, 117, self::remove(111, 117, $remessa[0]));
                 break;
-            case Contracts\Boleto\Boleto::COD_BANCO_BANRISUL:
+            case BoletoContract::COD_BANCO_BANRISUL:
                 self::adiciona($retorno[0], 27, 39, self::remove(18, 30, $remessa[0]));
                 self::adiciona($retorno[0], 47, 76, self::remove(47, 76, $remessa[0]));
                 break;
@@ -735,7 +735,7 @@ final class Util
             self::adiciona($retorno[$i], 395, 400, sprintf('%06s', count($retorno)));
             switch ($banco) {
 
-                case Contracts\Boleto\Boleto::COD_BANCO_BB:
+                case BoletoContract::COD_BANCO_BB:
                     if (self::remove(1, 1, $detalhe) != 7) {
                         unset($retorno[$i]);
                         continue 2;
@@ -743,31 +743,31 @@ final class Util
                     self::adiciona($retorno[$i], 1, 1, '7');
                     self::adiciona($retorno[$i], 64, 80, self::remove(64, 80, $detalhe));
                     break;
-                case Contracts\Boleto\Boleto::COD_BANCO_SANTANDER:
+                case BoletoContract::COD_BANCO_SANTANDER:
                     self::adiciona($retorno[$i], 63, 71, self::remove(63, 71, $detalhe));
                     self::adiciona($retorno[$i], 384, 385, self::remove(384, 385, $detalhe));
                     break;
-                case Contracts\Boleto\Boleto::COD_BANCO_CEF:
+                case BoletoContract::COD_BANCO_CEF:
                     self::adiciona($retorno[$i], 57, 73, self::remove(57, 73, $detalhe));
                     break;
-                case Contracts\Boleto\Boleto::COD_BANCO_BRADESCO:
-                case Contracts\Boleto\Boleto::COD_BANCO_OURINVEST:
-                case Contracts\Boleto\Boleto::COD_BANCO_CRESOL:
+                case BoletoContract::COD_BANCO_BRADESCO:
+                case BoletoContract::COD_BANCO_OURINVEST:
+                case BoletoContract::COD_BANCO_CRESOL:
                     self::adiciona($retorno[$i], 25, 29, self::remove(25, 29, $detalhe));
                     self::adiciona($retorno[$i], 30, 36, self::remove(30, 36, $detalhe));
                     self::adiciona($retorno[$i], 37, 37, self::remove(37, 37, $detalhe));
                     self::adiciona($retorno[$i], 71, 82, self::remove(71, 82, $detalhe));
                     break;
-                case Contracts\Boleto\Boleto::COD_BANCO_ITAU:
+                case BoletoContract::COD_BANCO_ITAU:
                     self::adiciona($retorno[$i], 86, 94, self::remove(63, 70, $detalhe));
                     break;
-                case Contracts\Boleto\Boleto::COD_BANCO_HSBC:
+                case BoletoContract::COD_BANCO_HSBC:
                     self::adiciona($retorno[$i], 63, 73, self::remove(63, 73, $detalhe));
                     break;
-                case Contracts\Boleto\Boleto::COD_BANCO_SICREDI:
+                case BoletoContract::COD_BANCO_SICREDI:
                     self::adiciona($retorno[$i], 48, 62, '00000' . self::remove(48, 56, $detalhe));
                     break;
-                case Contracts\Boleto\Boleto::COD_BANCO_BANRISUL:
+                case BoletoContract::COD_BANCO_BANRISUL:
                     self::adiciona($retorno[$i], 38, 62, self::remove(38, 62, $detalhe));
                     self::adiciona($retorno[$i], 63, 72, self::remove(111, 120, $detalhe));
                     self::adiciona($retorno[$i], 18, 30, self::remove(18, 30, $detalhe));

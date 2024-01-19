@@ -1,7 +1,7 @@
 <?php
 
 require 'autoload.php';
-$retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make(__DIR__ . DIRECTORY_SEPARATOR . 'arquivos' . DIRECTORY_SEPARATOR . 'ret.TXT');
+$retorno = Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make(__DIR__ . DIRECTORY_SEPARATOR . 'arquivos' . DIRECTORY_SEPARATOR . 'ret.TXT');
 $retorno->processar();
 
 echo $retorno->getBancoNome();

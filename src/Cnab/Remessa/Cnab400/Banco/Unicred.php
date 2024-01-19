@@ -149,7 +149,7 @@ class Unicred extends AbstractRemessa implements RemessaContract
 
         $this->add(1, 1, '1');
         $this->add(2, 6, Util::formatCnab('9', $this->getAgencia(), 5));
-        $this->add(7, 7, ! is_null($this->getAgenciaDv()) ? $this->getAgenciaDv() : CalculoDv::unicredAgencia($this->getAgencia()));
+        $this->add(7, 7, ! is_null($this->getAgenciaDv()) ? $this->getAgenciaDv() : CalculoDV::unicredAgencia($this->getAgencia()));
         $this->add(8, 19, Util::formatCnab('9', $this->getConta(), 12));
         $this->add(20, 20, Util::formatCnab('9', $this->getContaDv(), 1));
         $this->add(21, 21, '0');

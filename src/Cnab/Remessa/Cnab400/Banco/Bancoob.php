@@ -138,7 +138,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(10, 11, '01');
         $this->add(12, 26, Util::formatCnab('X', 'COBRANÇA', 15));
         $this->add(27, 30, Util::formatCnab('9', $this->getAgencia(), 4));
-        $this->add(31, 31, ! is_null($this->getAgenciaDv()) ? $this->getAgenciaDv() : CalculoDv::bancoobAgencia($this->getAgencia()));
+        $this->add(31, 31, ! is_null($this->getAgenciaDv()) ? $this->getAgenciaDv() : CalculoDV::bancoobAgencia($this->getAgencia()));
         $this->add(32, 40, Util::formatCnab('9', $this->getConvenio(), 9));
         $this->add(41, 46, '');
         $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
@@ -171,7 +171,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(2, 3, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? '02' : '01');
         $this->add(4, 17, Util::formatCnab('9L', $this->getBeneficiario()->getDocumento(), 14));
         $this->add(18, 21, Util::formatCnab('9', $this->getAgencia(), 4));
-        $this->add(22, 22, ! is_null($this->getAgenciaDv()) ? $this->getAgenciaDv() : CalculoDv::bancoobAgencia($this->getAgencia()));
+        $this->add(22, 22, ! is_null($this->getAgenciaDv()) ? $this->getAgenciaDv() : CalculoDV::bancoobAgencia($this->getAgencia()));
         $this->add(23, 30, Util::formatCnab('9', $this->getConta(), 8));
         $this->add(31, 31, ! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::bancoobContaCorrente($this->getConta()));
         $this->add(32, 37, '000000');
@@ -207,7 +207,7 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(127, 139, Util::formatCnab('9', $boleto->getValor(), 13, 2));
         $this->add(140, 142, $this->getCodigoBanco());
         $this->add(143, 146, Util::formatCnab('9', $this->getAgencia(), 4));
-        $this->add(147, 147, ! is_null($this->getAgenciaDv()) ? $this->getAgenciaDv() : CalculoDv::bancoobAgencia($this->getAgencia()));
+        $this->add(147, 147, ! is_null($this->getAgenciaDv()) ? $this->getAgenciaDv() : CalculoDV::bancoobAgencia($this->getAgencia()));
         $this->add(148, 149, isset($this->especie400[$boleto->getEspecieDocCodigo()]) ? $this->especie400[$boleto->getEspecieDocCodigo()] : '99');
 
         $this->add(150, 150, ($boleto->getAceite() == 'N' ? '0' : '1'));

@@ -206,7 +206,7 @@ class CalculoDV
     |--------------------------------------------------------------------------
     | 133 - Cresol
     |--------------------------------------------------------------------------
-    */    
+    */
     public static function cresolContaCorrente($conta)
     {
         return Util::modulo11($conta, 2, 9, 0, 'P');
@@ -216,7 +216,7 @@ class CalculoDV
     {
         return Util::modulo11($carteira . Util::numberFormatGeral($nossoNumero, 11), 2, 7, 0, 'P');
     }
-	
+
     /*
     |--------------------------------------------------------------------------
     | 136 - Unicred

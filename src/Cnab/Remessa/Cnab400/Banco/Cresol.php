@@ -1,11 +1,12 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
+use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 
 class Cresol extends AbstractRemessa implements RemessaContract
 {
@@ -18,7 +19,6 @@ class Cresol extends AbstractRemessa implements RemessaContract
     const ESPECIE_NOTA_DEBITO = '11';
     const ESPECIE_DUPLICATA_SERVICO = '12';
     const ESPECIE_OUTROS = '99';
-
     const OCORRENCIA_REMESSA = '01';
     const OCORRENCIA_PEDIDO_BAIXA = '02';
     const OCORRENCIA_CONCESSAO_ABATIMENTO = '04';
@@ -36,8 +36,6 @@ class Cresol extends AbstractRemessa implements RemessaContract
     const OCORRENCIA_DESAGENDAMENTO_DEBITO_AUT = '35';
     const OCORRENCIA_ACERTO_RATEIO_CREDITO = '68';
     const OCORRENCIA_CANC_RATEIO_CREDITO = '69';
-
-
     const INSTRUCAO_SEM = '00';
     const INSTRUCAO_PROTESTAR_FAMILIAR_XX = '05';
     const INSTRUCAO_PROTESTAR_XX = '06';
@@ -57,7 +55,6 @@ class Cresol extends AbstractRemessa implements RemessaContract
         $this->addCampoObrigatorio('idremessa');
     }
 
-
     /**
      * Código do banco
      *
@@ -70,7 +67,6 @@ class Cresol extends AbstractRemessa implements RemessaContract
      *
      * @var array
      */
-
     protected $carteiras = ['09'];
 
     /**
@@ -189,7 +185,7 @@ class Cresol extends AbstractRemessa implements RemessaContract
         $this->add(94, 94, ''); // N= Não registra na cobrança. Diferente de N registra e emite Boleto.
         $this->add(95, 104, '');
         $this->add(105, 105, '');
-        $this->add(106, 106, ''); 
+        $this->add(106, 106, '');
         $this->add(107, 108, '');
         $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
         if ($boleto->getStatus() == $boleto::STATUS_BAIXA) {

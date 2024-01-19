@@ -2,7 +2,7 @@
 
 require 'autoload.php';
 
-$beneficiario = new \Eduardokum\LaravelBoleto\Pessoa([
+$beneficiario = new Eduardokum\LaravelBoleto\Pessoa([
     'nome'      => 'ACME',
     'endereco'  => 'Rua um, 123',
     'cep'       => '99999-999',

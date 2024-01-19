@@ -1,11 +1,12 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
-use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
-use Eduardokum\LaravelBoleto\CalculoDV;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto;
 use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 class Cresol extends AbstractBoleto implements BoletoContract
 {
@@ -15,12 +16,14 @@ class Cresol extends AbstractBoleto implements BoletoContract
      * @var string
      */
     protected $codigoBanco = Boleto::COD_BANCO_CRESOL;
+
     /**
      * Define as carteiras disponíveis para este banco
      *
      * @var array
      */
     protected $carteiras = ['09'];
+
     /**
      * Trata-se de código utilizado para identificar mensagens especificas ao cedente, sendo
      * que o mesmo consta no cadastro do Banco, quando não houver código cadastrado preencher
@@ -29,15 +32,17 @@ class Cresol extends AbstractBoleto implements BoletoContract
      * @var int
      */
     protected $cip = '000';
+
     /**
      * Variaveis adicionais.
      *
      * @var array
      */
     public $variaveis_adicionais = [
-        'cip' => '000',
+        'cip'        => '000',
         'mostra_cip' => true,
     ];
+
     /**
      * Espécie do documento, código para remessa
      *
@@ -56,12 +61,14 @@ class Cresol extends AbstractBoleto implements BoletoContract
         'BDP' => '32', // Boleto de Proposta
         'O'   => '99', // Outros
     ];
+
     /**
      * Mostrar o endereço do beneficiário abaixo da razão e CNPJ na ficha de compensação
      *
-     * @var boolean
+     * @var bool
      */
     protected $mostrarEnderecoFichaCompensacao = true;
+
     /**
      * Gera o Nosso Número.
      *
@@ -88,6 +95,7 @@ class Cresol extends AbstractBoleto implements BoletoContract
         }
         $baixaAutomatica = (int) $baixaAutomatica;
         $this->diasBaixaAutomatica = $baixaAutomatica > 0 ? $baixaAutomatica : 0;
+
         return $this;
     }
 
@@ -98,8 +106,9 @@ class Cresol extends AbstractBoleto implements BoletoContract
      */
     public function getNossoNumeroBoleto()
     {
-        return Util::numberFormatGeral($this->getCarteira(), 2) . ' / ' .  substr_replace($this->getNossoNumero(), '-', -1, 0);
+        return Util::numberFormatGeral($this->getCarteira(), 2) . ' / ' . substr_replace($this->getNossoNumero(), '-', -1, 0);
     }
+
     /**
      * Método para gerar o código da posição de 20 a 44
      *
@@ -129,15 +138,15 @@ class Cresol extends AbstractBoleto implements BoletoContract
      */
     public static function parseCampoLivre($campoLivre) {
         return [
-            'convenio' => null,
-            'agenciaDv' => null,
+            'convenio'        => null,
+            'agenciaDv'       => null,
             'contaCorrenteDv' => null,
-            'agencia' => substr($campoLivre, 0, 4),
-            'carteira' => substr($campoLivre, 4, 2),
-            'nossoNumero' => substr($campoLivre, 6, 11),
-            'nossoNumeroDv' => null,
+            'agencia'         => substr($campoLivre, 0, 4),
+            'carteira'        => substr($campoLivre, 4, 2),
+            'nossoNumero'     => substr($campoLivre, 6, 11),
+            'nossoNumeroDv'   => null,
             'nossoNumeroFull' => substr($campoLivre, 6, 11),
-            'contaCorrente' => substr($campoLivre, 17, 7),
+            'contaCorrente'   => substr($campoLivre, 17, 7),
         ];
     }
 
@@ -151,6 +160,7 @@ class Cresol extends AbstractBoleto implements BoletoContract
     {
         $this->cip = $cip;
         $this->variaveis_adicionais['cip'] = $this->getCip();
+
         return $this;
     }
 

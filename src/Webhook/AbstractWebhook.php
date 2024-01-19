@@ -2,9 +2,9 @@
 
 namespace Eduardokum\LaravelBoleto\Webhook;
 
+use Eduardokum\LaravelBoleto\MagicTrait;
 use Eduardokum\LaravelBoleto\Contracts\Webhook\Webhook;
 use Eduardokum\LaravelBoleto\Exception\ValidationException;
-use Eduardokum\LaravelBoleto\MagicTrait;
 
 abstract class AbstractWebhook implements Webhook
 {
@@ -14,24 +14,29 @@ abstract class AbstractWebhook implements Webhook
      * @var array
      */
     private $post;
+
     /**
      * @var array
      */
     private $headers;
+
     /**
-    * @var string|null
+     * @var string|null
      */
     public $agencia;
+
     /**
-    * @var string|null
+     * @var string|null
      */
     public $agenciaDv;
+
     /**
-    * @var string|null
+     * @var string|null
      */
     public $conta;
+
     /**
-    * @var string|null
+     * @var string|null
      */
     public $contaDv;
 
@@ -84,6 +89,7 @@ abstract class AbstractWebhook implements Webhook
     public function setHeaders(array $headers)
     {
         $this->headers = $headers;
+
         return $this;
     }
 
@@ -94,6 +100,7 @@ abstract class AbstractWebhook implements Webhook
     public function setAgencia($agencia)
     {
         $this->agencia = $agencia;
+
         return $this;
     }
 
@@ -112,6 +119,7 @@ abstract class AbstractWebhook implements Webhook
     public function setAgenciaDv($agenciaDv)
     {
         $this->agenciaDv = $agenciaDv;
+
         return $this;
     }
 
@@ -130,6 +138,7 @@ abstract class AbstractWebhook implements Webhook
     public function setConta($conta)
     {
         $this->conta = $conta;
+
         return $this;
     }
 
@@ -148,6 +157,7 @@ abstract class AbstractWebhook implements Webhook
     public function setContaDv($contaDv)
     {
         $this->contaDv = $contaDv;
+
         return $this;
     }
 

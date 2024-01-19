@@ -1,7 +1,7 @@
 <?php
 
 require 'autoload.php';
-$beneficiario = new \Eduardokum\LaravelBoleto\Pessoa([
+$beneficiario = new Eduardokum\LaravelBoleto\Pessoa([
     'nome'      => 'ACME',
     'endereco'  => 'Rua um, 123',
     'cep'       => '99999-999',
@@ -10,7 +10,7 @@ $beneficiario = new \Eduardokum\LaravelBoleto\Pessoa([
     'documento' => '99.999.999/9999-99',
 ]);
 
-$pagador = new \Eduardokum\LaravelBoleto\Pessoa([
+$pagador = new Eduardokum\LaravelBoleto\Pessoa([
     'nome'      => 'Cliente',
     'endereco'  => 'Rua um, 123',
     'bairro'    => 'Bairro',
@@ -22,7 +22,7 @@ $pagador = new \Eduardokum\LaravelBoleto\Pessoa([
 
 $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Banrisul([
     'logo'                   => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '041.png',
-    'dataVencimento'         => new \Carbon\Carbon(),
+    'dataVencimento'         => new Carbon\Carbon(),
     'valor'                  => 100,
     'multa'                  => false,
     'juros'                  => false,
@@ -40,7 +40,7 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Banrisul([
     'especieDoc'             => 'DM',
 ]);
 
-$remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Banrisul([
+$remessa = new Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Banrisul([
     'agencia'       => 1111,
     'conta'         => 22222,
     'carteira'      => 1,
