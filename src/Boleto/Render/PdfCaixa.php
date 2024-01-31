@@ -400,7 +400,7 @@ class PdfCaixa extends AbstractPdf implements PdfContract
 
         $this->Cell(20, $this->desc, $this->_('Espécie Moeda'), 'TR');
         $this->Cell(20, $this->desc, $this->_('Qtde Moeda'), 'TR');
-        $this->Cell(25, $this->desc, $this->_(($this->boleto[$i]->getCodigoBanco() == '104') ? 'xValor' : 'Valor Documento'), 'TR');
+        $this->Cell(25, $this->desc, $this->_(($this->boleto[$i]->getCodigoBanco() == '104') ? 'Valor' : 'Valor Documento'), 'TR');
         $this->Cell(50, $this->desc, $this->_('(=) Valor Documento'), 'TR', 1);
 
         $this->SetFont($this->PadraoFont, 'B', $this->fcel);
