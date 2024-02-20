@@ -150,6 +150,7 @@ final class Util
         '409' => 'UNIBANCO - União de Bancos Brasileiros S.A.',
         '230' => 'Unicard Banco Múltiplo S.A.',
         '712' => 'Banco Ourinvest',
+        '085' => 'AILOS - Sistema de Cooperativa de Crédito',
         'XXX' => 'Desconhecido',
     ];
 
@@ -1073,6 +1074,7 @@ final class Util
             BoletoContract::COD_BANCO_SICREDI   => 'Banco\\Sicredi',
             BoletoContract::COD_BANCO_BANCOOB   => 'Banco\\Bancoob',
             BoletoContract::COD_BANCO_CRESOL    => 'Banco\\Cresol',
+            BoletoContract::COD_BANCO_AILOS     => 'Banco\\Ailos',
         ];
 
         if (array_key_exists($banco, $aBancos)) {

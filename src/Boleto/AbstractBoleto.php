@@ -1695,7 +1695,7 @@ abstract class AbstractBoleto implements BoletoContract
     {
         $codigoBanco = $this->getCodigoBanco();
 
-        $semX = [BoletoContract::COD_BANCO_CEF];
+        $semX = [BoletoContract::COD_BANCO_CEF, BoletoContract::COD_BANCO_AILOS];
         $x10 = in_array($codigoBanco, $semX) ? 0 : 'X';
 
         return $codigoBanco . '-' . Util::modulo11($codigoBanco, 2, 9, 0, $x10);
