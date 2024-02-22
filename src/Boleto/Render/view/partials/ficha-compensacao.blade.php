@@ -169,7 +169,7 @@
 
     <tr>
         <td colspan="6" class="noleftborder">
-            <div class="titulo">Sacador/Avalista
+            <div class="titulo">Beneficiário Final
                 <div class="conteudo sacador">{{ $sacador_avalista ? $sacador_avalista['nome_documento'] : '' }}</div>
             </div>
         </td>

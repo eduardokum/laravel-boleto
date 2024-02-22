@@ -380,7 +380,7 @@ class Pdf extends AbstractPdf implements PdfContract
         $this->Cell(38, $this->cell, $this->_(''), 'BR', 1);
 
         $this->SetFont($this->PadraoFont, '', $this->fdes);
-        $this->Cell(20, $this->desc, $this->_('Sacador/Avalista'), 0);
+        $this->Cell(20, $this->desc, $this->_('Beneficiário Final'), 0);
         $this->Cell(98, $this->desc, $this->_($this->boleto[$i]->getSacadorAvalista() ? $this->boleto[$i]->getSacadorAvalista()->getNomeDocumento() : ''), 0);
         $this->Cell(52, $this->desc, $this->_('Autenticação mecânica - Ficha de Compensação'), 0, 1);
 
