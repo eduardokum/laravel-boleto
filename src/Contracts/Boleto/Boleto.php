@@ -166,6 +166,11 @@ interface Boleto
      * @return mixed
      */
     public function getJurosApos();
+    
+    /**
+     * @return mixed
+     */
+    public function getMultaApos();
 
     /**
      * @param int $default
