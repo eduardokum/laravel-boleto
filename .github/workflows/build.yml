@@ -31,6 +31,14 @@ jobs:
                         testbench: 5.*
                     -   laravel: 6.*
                         testbench: 4.*
+                    -   php: 8.2
+                        unitconfig: phpunit_gt_81.xml
+                    -   php: 8.1
+                        unitconfig: phpunit_gt_81.xml
+                    -   php: 8.0
+                        unitconfig: phpunit.xml
+                    -   php: 7.4
+                        unitconfig: phpunit.xml
                 exclude:
                     -   laravel: 6.*
                         php: 8
@@ -96,4 +104,5 @@ jobs:
                     composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest
 
             -   name: Run tests
-                run: "vendor/bin/phpunit -c phpunit.xml --coverage-clover=coverage.clover"
+                run: |
+                    vendor/bin/phpunit -c ${{ matrix.unitconfig }} --coverage-clover=coverage.clover
