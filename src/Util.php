@@ -551,7 +551,7 @@ final class Util
      */
     public static function fatorVencimentoBack($factor, $format = 'Y-m-d')
     {
-        $date = Carbon::create(1997, 10, 7, 0, 0, 0)->addDays($factor);
+        $date = Carbon::create(1997, 10, 7, 0, 0, 0)->addDays((int) $factor);
 
         return $format ? $date->format($format) : $date;
     }
