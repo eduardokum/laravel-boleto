@@ -39,7 +39,7 @@ abstract class AbstractBoleto implements BoletoContract
     ];
 
     protected $protectedFields = [
-        'nossoNumero',
+        // 'nossoNumero',
     ];
 
     /**
@@ -1430,7 +1430,11 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setNossoNumero($nossoNumero)
     {
-        throw new \Exception('Não é possível definir o nosso número diretamente. Utilize o método setNumero.');
+        // Removido pois há casos onde o banco irá gerar
+        // throw new \Exception('Não é possível definir o nosso número diretamente. Utilize o método setNumero.');
+        $this->campoNossoNumero = $nossoNumero;
+
+        return $this;
     }
 
     /**
