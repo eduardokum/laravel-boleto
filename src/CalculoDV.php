@@ -1,5 +1,5 @@
 <?php
-namespace Eduardokum\LaravelBoleto;
+namespace Xpendi\CnabBoleto;
 
 use const PHP_EOL;
 

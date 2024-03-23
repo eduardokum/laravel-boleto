@@ -20,7 +20,7 @@ This bank has the following mandatory fields:
 
 .. code-block:: php
 
-    $sicredi = new Eduardokum\LaravelBoleto\Boleto\Banco\Sicredi;
+    $sicredi = new Xpendi\CnabBoleto\Boleto\Banco\Sicredi;
     $sicredi->setLogo('/path/to/logo.png')
         ->setDataVencimento('1997-10-07')
         ->setValor('100')
@@ -46,7 +46,7 @@ Or, Simply:
 
 .. code-block:: php
 
-    $sicredi = new Eduardokum\LaravelBoleto\Boleto\Banco\Sicredi([
+    $sicredi = new Xpendi\CnabBoleto\Boleto\Banco\Sicredi([
         'logo' => '/path/to/logo.png',
         'dataVencimento' => '1997-10-07',
         'valor' => 100,

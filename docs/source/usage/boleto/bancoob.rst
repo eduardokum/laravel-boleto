@@ -17,7 +17,7 @@ This bank has the following mandatory fields:
 
 .. code-block:: php
 
-    $bancoob = new Eduardokum\LaravelBoleto\Boleto\Banco\Bancoob;
+    $bancoob = new Xpendi\CnabBoleto\Boleto\Banco\Bancoob;
     $bancoob->setLogo('/path/to/logo.png')
         ->setDataVencimento('1997-10-07')
         ->setValor('100')
@@ -41,7 +41,7 @@ Or, Simply:
 
 .. code-block:: php
 
-    $bancoob = new Eduardokum\LaravelBoleto\Boleto\Banco\Bancoob([
+    $bancoob = new Xpendi\CnabBoleto\Boleto\Banco\Bancoob([
         'logo' => '/path/to/logo.png',
         'dataVencimento' => '1997-10-07',
         'valor' => 100,

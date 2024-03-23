@@ -1,11 +1,11 @@
 <?php
 
-namespace Eduardokum\LaravelBoleto\Tests\Boleto;
+namespace Xpendi\CnabBoleto\Tests\Boleto;
 
-use Eduardokum\LaravelBoleto\Boleto\Banco as Boleto;
-use Eduardokum\LaravelBoleto\Boleto\Render\Pdf;
-use Eduardokum\LaravelBoleto\Pessoa;
-use Eduardokum\LaravelBoleto\Tests\TestCase;
+use Xpendi\CnabBoleto\Boleto\Banco as Boleto;
+use Xpendi\CnabBoleto\Boleto\Render\Pdf;
+use Xpendi\CnabBoleto\Pessoa;
+use Xpendi\CnabBoleto\Tests\TestCase;
 use Exception;
 use PHPUnit\Framework\Constraint\IsType;
 

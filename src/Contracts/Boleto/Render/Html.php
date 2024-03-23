@@ -1,5 +1,5 @@
 <?php
-namespace Eduardokum\LaravelBoleto\Contracts\Boleto\Render;
+namespace Xpendi\CnabBoleto\Contracts\Boleto\Render;
 
 interface Html
 {

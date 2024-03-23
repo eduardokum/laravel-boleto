@@ -1,8 +1,8 @@
-[![Packagist](https://img.shields.io/packagist/v/eduardokum/laravel-boleto.svg?style=flat-square)](https://github.com/eduardokum/laravel-boleto)
-[![Packagist](https://img.shields.io/packagist/dt/eduardokum/laravel-boleto.svg?style=flat-square)](https://github.com/eduardokum/laravel-boleto)
-[![Packagist](https://img.shields.io/packagist/l/eduardokum/laravel-boleto.svg?style=flat-square)](https://github.com/eduardokum/laravel-boleto)
-[![build](https://github.com/eduardokum/laravel-boleto/actions/workflows/build.yml/badge.svg)](https://github.com/eduardokum/laravel-boleto/actions/workflows/build.yml)
-[![GitHub forks](https://img.shields.io/github/forks/eduardokum/laravel-boleto.svg?style=social&label=Fork)](https://github.com/eduardokum/laravel-boleto)
+[![Packagist](https://img.shields.io/packagist/v/Xpendi/laravel-boleto.svg?style=flat-square)](https://github.com/Xpendi/laravel-boleto)
+[![Packagist](https://img.shields.io/packagist/dt/Xpendi/laravel-boleto.svg?style=flat-square)](https://github.com/Xpendi/laravel-boleto)
+[![Packagist](https://img.shields.io/packagist/l/Xpendi/laravel-boleto.svg?style=flat-square)](https://github.com/Xpendi/laravel-boleto)
+[![build](https://github.com/Xpendi/laravel-boleto/actions/workflows/build.yml/badge.svg)](https://github.com/Xpendi/laravel-boleto/actions/workflows/build.yml)
+[![GitHub forks](https://img.shields.io/github/forks/Xpendi/laravel-boleto.svg?style=social&label=Fork)](https://github.com/Xpendi/laravel-boleto)
 
 # Laravel Boleto
 Pacote para gerar boletos, remessas e leitura de retorno.
@@ -27,7 +27,7 @@ Mas também, caso você ache que qualquer informação obtida aqui, lhe foi úti
 *Agradecemos a contribuição.*
 
 ## Apoiadores
-<a target="_blank" href=" https://www.jetbrains.com/?from=LaravelBoleto">
+<a target="_blank" href=" https://www.jetbrains.com/?from=CnabBoleto">
          <img alt="Jetbrains" width="100" src="https://account.jetbrains.com/static/images/jetbrains-logo-inv.svg"/></a>
 
 ## Apoiadores (Doações)

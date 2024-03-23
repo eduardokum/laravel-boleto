@@ -2,7 +2,7 @@
 
 require 'autoload.php';
 
-$beneficiario = new \Eduardokum\LaravelBoleto\Pessoa(
+$beneficiario = new \Xpendi\CnabBoleto\Pessoa(
 	[
 		'nome'      => 'FUNDO DELCRED MULTISSETORIAL',
 		'endereco'  => 'AV. RIO BRANCO, 186',
@@ -13,7 +13,7 @@ $beneficiario = new \Eduardokum\LaravelBoleto\Pessoa(
 	]
 );
 
-$pagador = new \Eduardokum\LaravelBoleto\Pessoa(
+$pagador = new \Xpendi\CnabBoleto\Pessoa(
 	[
 		'nome'      => 'PABLO KAWAN SANTOS TRINDADE',
 		'endereco'  => 'AV. RIO BRANCO, 186',
@@ -25,7 +25,7 @@ $pagador = new \Eduardokum\LaravelBoleto\Pessoa(
 	]
 );
 
-$boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Delbank(
+$boleto = new Xpendi\CnabBoleto\Boleto\Banco\Delbank(
 	[
 		'logo'                   => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '435.png',
 		'dataVencimento'         => new \Carbon\Carbon(),
@@ -46,7 +46,7 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Delbank(
 	]
 );
 
-$remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Delbank(
+$remessa = new \Xpendi\CnabBoleto\Cnab\Remessa\Cnab400\Banco\Delbank(
 	[
 		'idRemessa'     => 1,
 		'agencia'       => 19,

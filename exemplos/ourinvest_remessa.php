@@ -1,9 +1,9 @@
 <?php
 
-use Eduardokum\LaravelBoleto\Util;
+use Xpendi\CnabBoleto\Util;
 
 require 'autoload.php';
-$beneficiario = new \Eduardokum\LaravelBoleto\Pessoa(
+$beneficiario = new \Xpendi\CnabBoleto\Pessoa(
     [
         'nome'      => 'ACME',
         'endereco'  => 'Rua um, 123',
@@ -14,7 +14,7 @@ $beneficiario = new \Eduardokum\LaravelBoleto\Pessoa(
     ]
 );
 
-$pagador = new \Eduardokum\LaravelBoleto\Pessoa(
+$pagador = new \Xpendi\CnabBoleto\Pessoa(
     [
         'nome'      => 'Cliente',
         'endereco'  => 'Rua um, 123',
@@ -27,7 +27,7 @@ $pagador = new \Eduardokum\LaravelBoleto\Pessoa(
     ]
 );
 
-$boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Ourinvest(
+$boleto = new Xpendi\CnabBoleto\Boleto\Banco\Ourinvest(
     [
         'logo' => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '712.png',
         'dataVencimento' => new \Carbon\Carbon(),
@@ -49,7 +49,7 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Ourinvest(
     ]
 );
 
-$remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Ourinvest(
+$remessa = new \Xpendi\CnabBoleto\Cnab\Remessa\Cnab400\Banco\Ourinvest(
     [
         'idRemessa'     => 1,
         'agencia'       => 1111,

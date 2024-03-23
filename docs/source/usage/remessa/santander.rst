@@ -10,10 +10,10 @@ This bank has the following mandatory fields:
 .. code-block:: php
 
     // for 400 positions
-    $send = new Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Santander;
+    $send = new Xpendi\CnabBoleto\Cnab\Remessa\Cnab400\Banco\Santander;
 
     // Or, for 240 positions
-    $send = new Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco\Santander;
+    $send = new Xpendi\CnabBoleto\Cnab\Remessa\Cnab240\Banco\Santander;
 
     $send->setBeneficiario($beneficiario)
         ->setCarteira(101)
@@ -34,10 +34,10 @@ Or, Simply:
     ];
 
     // for 400 positions
-    $send = new Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Santander($sendArray);
+    $send = new Xpendi\CnabBoleto\Cnab\Remessa\Cnab400\Banco\Santander($sendArray);
 
     // Or, for 240 positions
-    $send = new Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco\Santander($sendArray);
+    $send = new Xpendi\CnabBoleto\Cnab\Remessa\Cnab240\Banco\Santander($sendArray);
 
 .. ATTENTION::
     To generate the file see the :ref:`send` session.

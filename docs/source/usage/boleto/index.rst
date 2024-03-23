@@ -46,8 +46,8 @@ All banks have information that is shared such as:
 
 .. seealso::
 
-   `API bill docs <https://eduardokum.github.io/laravel-boleto/namespace-Eduardokum.LaravelBoleto.Boleto.html>`_
+   `API bill docs <https://Xpendi.github.io/laravel-boleto/namespace-Xpendi.CnabBoleto.Boleto.html>`_
       Documentation for return objects.
 
-   `Examples <https://github.com/eduardokum/laravel-boleto/tree/master/exemplos>`_
+   `Examples <https://github.com/Xpendi/laravel-boleto/tree/master/exemplos>`_
       Examples of use

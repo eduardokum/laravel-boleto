@@ -1,10 +1,10 @@
 <?php
-namespace Eduardokum\LaravelBoleto\Boleto\Banco;
+namespace Xpendi\CnabBoleto\Boleto\Banco;
 
-use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
-use Eduardokum\LaravelBoleto\CalculoDV;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use Eduardokum\LaravelBoleto\Util;
+use Xpendi\CnabBoleto\Boleto\AbstractBoleto;
+use Xpendi\CnabBoleto\CalculoDV;
+use Xpendi\CnabBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Xpendi\CnabBoleto\Util;
 
 class Bancoob extends AbstractBoleto implements BoletoContract
 {

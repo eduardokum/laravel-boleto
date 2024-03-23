@@ -1,5 +1,5 @@
 <?php
-namespace Eduardokum\LaravelBoleto\Api\Exception;
+namespace Xpendi\CnabBoleto\Api\Exception;
 
 use Exception;
 

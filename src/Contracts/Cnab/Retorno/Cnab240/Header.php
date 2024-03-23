@@ -1,5 +1,5 @@
 <?php
-namespace Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240;
+namespace Xpendi\CnabBoleto\Contracts\Cnab\Retorno\Cnab240;
 
 interface Header
 {

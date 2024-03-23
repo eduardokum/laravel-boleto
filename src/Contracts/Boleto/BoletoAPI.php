@@ -1,7 +1,7 @@
 <?php
-namespace Eduardokum\LaravelBoleto\Contracts\Boleto;
+namespace Xpendi\CnabBoleto\Contracts\Boleto;
 
-use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Xpendi\CnabBoleto\Boleto\AbstractBoleto;
 
 interface BoletoAPI extends Boleto
 {

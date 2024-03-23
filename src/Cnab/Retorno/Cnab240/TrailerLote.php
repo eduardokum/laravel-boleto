@@ -1,9 +1,9 @@
 <?php
 
-namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240;
+namespace Xpendi\CnabBoleto\Cnab\Retorno\Cnab240;
 
-use \Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno\Cnab240\TrailerLote as TrailerLoteContract;
-use Eduardokum\LaravelBoleto\MagicTrait;
+use \Xpendi\CnabBoleto\Contracts\Cnab\Retorno\Cnab240\TrailerLote as TrailerLoteContract;
+use Xpendi\CnabBoleto\MagicTrait;
 
 class TrailerLote implements TrailerLoteContract
 {

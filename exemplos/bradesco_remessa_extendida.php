@@ -1,6 +1,6 @@
 <?php
 require 'autoload.php';
-$beneficiario = new \Eduardokum\LaravelBoleto\Pessoa(
+$beneficiario = new \Xpendi\CnabBoleto\Pessoa(
     [
         'nome'      => 'ACME',
         'endereco'  => 'Rua um, 123',
@@ -11,7 +11,7 @@ $beneficiario = new \Eduardokum\LaravelBoleto\Pessoa(
     ]
 );
 
-$pagador = new \Eduardokum\LaravelBoleto\Pessoa(
+$pagador = new \Xpendi\CnabBoleto\Pessoa(
     [
         'nome'      => 'Cliente',
         'endereco'  => 'Rua um, 123',
@@ -23,7 +23,7 @@ $pagador = new \Eduardokum\LaravelBoleto\Pessoa(
     ]
 );
 
-$boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Bradesco(
+$boleto = new Xpendi\CnabBoleto\Boleto\Banco\Bradesco(
     [
         'logo'                   => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '237.png',
         'dataVencimento'         => new \Carbon\Carbon(),
@@ -46,7 +46,7 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Bradesco(
     ]
 );
 
-$remessa = new \Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Bradesco(
+$remessa = new \Xpendi\CnabBoleto\Cnab\Remessa\Cnab400\Banco\Bradesco(
     [
         'idRemessa'     => 1,
         'agencia'       => 1111,

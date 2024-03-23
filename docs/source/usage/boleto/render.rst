@@ -39,7 +39,7 @@ Render multiple
 
 .. code-block:: php
 
-    $pdf = new Eduardokum\LaravelBoleto\Boleto\Render\Pdf();
+    $pdf = new Xpendi\CnabBoleto\Boleto\Render\Pdf();
 
     // Add as many bills as you want.
     $pdf->addBoleto($boleto);
@@ -98,7 +98,7 @@ Render multiple
 
 .. code-block:: php
 
-    $html = new Eduardokum\LaravelBoleto\Boleto\Render\Html();
+    $html = new Xpendi\CnabBoleto\Boleto\Render\Html();
 
     // Add as many bills as you want
     $html->addBoleto($boleto);

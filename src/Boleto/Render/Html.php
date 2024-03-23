@@ -1,9 +1,9 @@
 <?php
-namespace Eduardokum\LaravelBoleto\Boleto\Render;
+namespace Xpendi\CnabBoleto\Boleto\Render;
 
-use Eduardokum\LaravelBoleto\Blade;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use \Eduardokum\LaravelBoleto\Contracts\Boleto\Render\Html as HtmlContract;
+use Xpendi\CnabBoleto\Blade;
+use Xpendi\CnabBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use \Xpendi\CnabBoleto\Contracts\Boleto\Render\Html as HtmlContract;
 
 class Html implements HtmlContract
 {

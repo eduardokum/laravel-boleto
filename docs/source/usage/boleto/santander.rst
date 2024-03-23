@@ -15,7 +15,7 @@ This bank has the following mandatory fields:
 
 .. code-block:: php
 
-    $santander = new Eduardokum\LaravelBoleto\Boleto\Banco\Santander;
+    $santander = new Xpendi\CnabBoleto\Boleto\Banco\Santander;
     $santander->setLogo('/path/to/logo.png')
         ->setDataVencimento('1997-10-07')
         ->setValor('100')
@@ -37,7 +37,7 @@ Or, Simply:
 
 .. code-block:: php
 
-    $santander = new Eduardokum\LaravelBoleto\Boleto\Banco\Santander([
+    $santander = new Xpendi\CnabBoleto\Boleto\Banco\Santander([
         'logo' => '/path/to/logo.png',
         'dataVencimento' => '1997-10-07',
         'valor' => 100,

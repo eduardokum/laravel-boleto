@@ -1,11 +1,11 @@
 <?php
-namespace Eduardokum\LaravelBoleto\Boleto\Banco;
+namespace Xpendi\CnabBoleto\Boleto\Banco;
 
 use Carbon\Carbon;
-use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\BoletoAPI as BoletoAPIContract;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto;
-use Eduardokum\LaravelBoleto\Util;
+use Xpendi\CnabBoleto\Boleto\AbstractBoleto;
+use Xpendi\CnabBoleto\Contracts\Boleto\BoletoAPI as BoletoAPIContract;
+use Xpendi\CnabBoleto\Contracts\Boleto\Boleto;
+use Xpendi\CnabBoleto\Util;
 use Illuminate\Support\Arr;
 
 class Inter extends AbstractBoleto implements BoletoAPIContract

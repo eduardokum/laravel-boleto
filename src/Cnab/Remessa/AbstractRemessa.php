@@ -1,11 +1,11 @@
 <?php
 
-namespace Eduardokum\LaravelBoleto\Cnab\Remessa;
+namespace Xpendi\CnabBoleto\Cnab\Remessa;
 
 use Carbon\Carbon;
-use Eduardokum\LaravelBoleto\Util;
-use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Xpendi\CnabBoleto\Util;
+use Xpendi\CnabBoleto\Contracts\Pessoa as PessoaContract;
+use Xpendi\CnabBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Illuminate\Support\Str;
 
 abstract class AbstractRemessa

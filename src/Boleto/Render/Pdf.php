@@ -1,10 +1,10 @@
 <?php
 
-namespace Eduardokum\LaravelBoleto\Boleto\Render;
+namespace Xpendi\CnabBoleto\Boleto\Render;
 
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Render\Pdf as PdfContract;
-use Eduardokum\LaravelBoleto\Util;
+use Xpendi\CnabBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Xpendi\CnabBoleto\Contracts\Boleto\Render\Pdf as PdfContract;
+use Xpendi\CnabBoleto\Util;
 use Illuminate\Support\Str;
 
 class Pdf extends AbstractPdf implements PdfContract

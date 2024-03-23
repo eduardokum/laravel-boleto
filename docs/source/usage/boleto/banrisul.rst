@@ -33,7 +33,7 @@ X  Vendor BDL – Valor Inicial (Valor da NF)
 
 .. code-block:: php
 
-    $banrisul = new Eduardokum\LaravelBoleto\Boleto\Banco\Banrisul;
+    $banrisul = new Xpendi\CnabBoleto\Boleto\Banco\Banrisul;
     $banrisul->setLogo('/path/to/logo.png')
         ->setDataVencimento('1997-10-07')
         ->setValor('100')
@@ -56,7 +56,7 @@ Or, Simply:
 
 .. code-block:: php
 
-    $banrisul = new Eduardokum\LaravelBoleto\Boleto\Banco\Banrisul([
+    $banrisul = new Xpendi\CnabBoleto\Boleto\Banco\Banrisul([
         'logo' => '/path/to/logo.png',
         'dataVencimento' => '1997-10-07',
         'valor' => 100,

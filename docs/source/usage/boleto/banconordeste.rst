@@ -17,7 +17,7 @@ This bank has the following mandatory fields:
 
 .. code-block:: php
 
-    $bnb = new Eduardokum\LaravelBoleto\Boleto\Banco\Bnb;
+    $bnb = new Xpendi\CnabBoleto\Boleto\Banco\Bnb;
     $bnb->setLogo('/path/to/logo.png')
         ->setDataVencimento('1997-10-07')
         ->setValor('100')
@@ -40,7 +40,7 @@ Or, Simply:
 
 .. code-block:: php
 
-    $bnb = new Eduardokum\LaravelBoleto\Boleto\Banco\Bnb([
+    $bnb = new Xpendi\CnabBoleto\Boleto\Banco\Bnb([
         'logo' => '/path/to/logo.png',
         'dataVencimento' => '1997-10-07',
         'valor' => 100,

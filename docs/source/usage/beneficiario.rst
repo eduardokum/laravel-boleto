@@ -10,7 +10,7 @@ To create a ``Beneficiário`` you need to create an instance of the ``Pessoa`` o
 
 .. code-block:: php
 
-    $beneficiario = new \Eduardokum\LaravelBoleto\Pessoa;
+    $beneficiario = new \Xpendi\CnabBoleto\Pessoa;
     $beneficiario->setDocumento('00.000.000/0000-00')
         ->setNome('Company co.')
         ->setCep('00000-000')
@@ -23,7 +23,7 @@ Or, Simply:
 
 .. code-block:: php
 
-    $beneficiario = new \Eduardokum\LaravelBoleto\Pessoa([
+    $beneficiario = new \Xpendi\CnabBoleto\Pessoa([
         'documento' => '00.000.000/0000-00',
         'nome'      => 'Company co.',
         'cep'       => '00000-000',

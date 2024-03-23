@@ -6,13 +6,13 @@
  * Time: 14:02
  */
 
-namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\Banco;
+namespace Xpendi\CnabBoleto\Cnab\Remessa\Cnab240\Banco;
 
-use Eduardokum\LaravelBoleto\CalculoDV;
-use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240\AbstractRemessa;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
-use Eduardokum\LaravelBoleto\Util;
+use Xpendi\CnabBoleto\CalculoDV;
+use Xpendi\CnabBoleto\Cnab\Remessa\Cnab240\AbstractRemessa;
+use Xpendi\CnabBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Xpendi\CnabBoleto\Contracts\Cnab\Remessa as RemessaContract;
+use Xpendi\CnabBoleto\Util;
 
 class Bradesco extends AbstractRemessa implements RemessaContract
 {

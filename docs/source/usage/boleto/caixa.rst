@@ -15,7 +15,7 @@ RG  Com Registro
 
 .. code-block:: php
 
-    $caixa = new Eduardokum\LaravelBoleto\Boleto\Banco\Caixa;
+    $caixa = new Xpendi\CnabBoleto\Boleto\Banco\Caixa;
     $caixa->setLogo('/path/to/logo.png')
         ->setDataVencimento('1997-10-07')
         ->setValor('100')
@@ -38,7 +38,7 @@ Or, Simply:
 
 .. code-block:: php
 
-    $caixa = new Eduardokum\LaravelBoleto\Boleto\Banco\Caixa([
+    $caixa = new Xpendi\CnabBoleto\Boleto\Banco\Caixa([
         'logo' => '/path/to/logo.png',
         'dataVencimento' => '1997-10-07',
         'valor' => 100,

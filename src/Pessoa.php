@@ -1,7 +1,7 @@
 <?php
-namespace Eduardokum\LaravelBoleto;
+namespace Xpendi\CnabBoleto;
 
-use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
+use Xpendi\CnabBoleto\Contracts\Pessoa as PessoaContract;
 
 class Pessoa implements PessoaContract
 {

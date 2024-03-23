@@ -1,9 +1,9 @@
 <?php
 
-use Eduardokum\LaravelBoleto\CalculoDV;
+use Xpendi\CnabBoleto\CalculoDV;
 
 require 'autoload.php';
-$beneficiario = new \Eduardokum\LaravelBoleto\Pessoa(
+$beneficiario = new \Xpendi\CnabBoleto\Pessoa(
     [
     'nome' => 'ACME',
     'endereco' => 'Rua um, 123',
@@ -14,7 +14,7 @@ $beneficiario = new \Eduardokum\LaravelBoleto\Pessoa(
     ]
 );
 
-$pagador = new \Eduardokum\LaravelBoleto\Pessoa(
+$pagador = new \Xpendi\CnabBoleto\Pessoa(
     [
     'nome' => 'Cliente',
     'endereco' => 'Rua um, 123',
@@ -26,7 +26,7 @@ $pagador = new \Eduardokum\LaravelBoleto\Pessoa(
     ]
 );
 
-$boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Ourinvest(
+$boleto = new Xpendi\CnabBoleto\Boleto\Banco\Ourinvest(
     [
         'logo' => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '712.png',
         'dataVencimento' => new \Carbon\Carbon(),
@@ -47,6 +47,6 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Ourinvest(
     ]
 );
 
-$pdf = new Eduardokum\LaravelBoleto\Boleto\Render\Pdf();
+$pdf = new Xpendi\CnabBoleto\Boleto\Render\Pdf();
 $pdf->addBoleto($boleto);
 $pdf->gerarBoleto($pdf::OUTPUT_SAVE, __DIR__ . DIRECTORY_SEPARATOR . 'arquivos' . DIRECTORY_SEPARATOR . 'ourinvest.pdf');

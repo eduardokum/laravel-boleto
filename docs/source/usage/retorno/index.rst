@@ -49,7 +49,7 @@ Factory
 .. code-block:: php
 
     // The Factory will guess what the return if it is 240 or 400 and which bank and already return the instantiated object
-    $return = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make($argument);
+    $return = \Xpendi\CnabBoleto\Cnab\Retorno\Factory::make($argument);
 
     // To process the file
     $return->processar();
@@ -65,10 +65,10 @@ Bancoob
 .. code-block:: php
 
     // 400 positions
-    $return = new \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco\Bancoob($argument)
+    $return = new \Xpendi\CnabBoleto\Cnab\Retorno\Cnab400\Banco\Bancoob($argument)
 
     // 240 positions
-    $return = new \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Banco\Bancoob($argument)
+    $return = new \Xpendi\CnabBoleto\Cnab\Retorno\Cnab240\Banco\Bancoob($argument)
 
     // To process the file
     $return->processar();
@@ -79,10 +79,10 @@ Banrisul
 .. code-block:: php
 
     // 400 positions
-    $return = new \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco\Banrisul($argument)
+    $return = new \Xpendi\CnabBoleto\Cnab\Retorno\Cnab400\Banco\Banrisul($argument)
 
     // 240 positions
-    $return = new \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Banco\Banrisul($argument)
+    $return = new \Xpendi\CnabBoleto\Cnab\Retorno\Cnab240\Banco\Banrisul($argument)
 
      // To process the file
     $return->processar();
@@ -93,10 +93,10 @@ Banco do Brasil
 .. code-block:: php
 
     // 400 positions
-    $return = new \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco\Bb($argument)
+    $return = new \Xpendi\CnabBoleto\Cnab\Retorno\Cnab400\Banco\Bb($argument)
 
     // 240 positions
-    $return = new \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Banco\Bb($argument)
+    $return = new \Xpendi\CnabBoleto\Cnab\Retorno\Cnab240\Banco\Bb($argument)
 
      // To process the file
     $return->processar();
@@ -107,10 +107,10 @@ Banco do Nordeste
 .. code-block:: php
 
     // 400 positions
-    $return = new \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco\Bnb($argument)
+    $return = new \Xpendi\CnabBoleto\Cnab\Retorno\Cnab400\Banco\Bnb($argument)
 
     // 240 positions
-    $return = new \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Banco\Bnb($argument)
+    $return = new \Xpendi\CnabBoleto\Cnab\Retorno\Cnab240\Banco\Bnb($argument)
 
      // To process the file
     $return->processar();
@@ -121,10 +121,10 @@ Bradesco
 .. code-block:: php
 
     // 400 positions
-    $return = new \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco\Bradesco($argument)
+    $return = new \Xpendi\CnabBoleto\Cnab\Retorno\Cnab400\Banco\Bradesco($argument)
 
     // 240 positions
-    $return = new \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Banco\Bradesco($argument)
+    $return = new \Xpendi\CnabBoleto\Cnab\Retorno\Cnab240\Banco\Bradesco($argument)
 
      // To process the file
     $return->processar();
@@ -135,10 +135,10 @@ Caixa Econônica Federal
 .. code-block:: php
 
     // 400 positions
-    $return = new \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco\Caixa($argument)
+    $return = new \Xpendi\CnabBoleto\Cnab\Retorno\Cnab400\Banco\Caixa($argument)
 
     // 240 positions
-    $return = new \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Banco\Caixa($argument)
+    $return = new \Xpendi\CnabBoleto\Cnab\Retorno\Cnab240\Banco\Caixa($argument)
 
      // To process the file
     $return->processar();
@@ -149,10 +149,10 @@ HSBC
 .. code-block:: php
 
     // 400 positions
-    $return = new \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco\Hsbc($argument)
+    $return = new \Xpendi\CnabBoleto\Cnab\Retorno\Cnab400\Banco\Hsbc($argument)
 
     // 240 positions
-    $return = new \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Banco\Hsbc($argument)
+    $return = new \Xpendi\CnabBoleto\Cnab\Retorno\Cnab240\Banco\Hsbc($argument)
 
      // To process the file
     $return->processar();
@@ -163,10 +163,10 @@ Itaú
 .. code-block:: php
 
     // 400 positions
-    $return = new \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco\Itau($argument)
+    $return = new \Xpendi\CnabBoleto\Cnab\Retorno\Cnab400\Banco\Itau($argument)
 
     // 240 positions
-    $return = new \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Banco\Itau($argument)
+    $return = new \Xpendi\CnabBoleto\Cnab\Retorno\Cnab240\Banco\Itau($argument)
 
      // To process the file
     $return->processar();
@@ -177,10 +177,10 @@ Santander
 .. code-block:: php
 
     // 400 positions
-    $return = new \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco\Santander($argument)
+    $return = new \Xpendi\CnabBoleto\Cnab\Retorno\Cnab400\Banco\Santander($argument)
 
     // 240 positions
-    $return = new \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Banco\Santander($argument)
+    $return = new \Xpendi\CnabBoleto\Cnab\Retorno\Cnab240\Banco\Santander($argument)
 
      // To process the file
     $return->processar();
@@ -191,10 +191,10 @@ Sicredi
 .. code-block:: php
 
     // 400 positions
-    $return = new \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco\Sicredi($argument)
+    $return = new \Xpendi\CnabBoleto\Cnab\Retorno\Cnab400\Banco\Sicredi($argument)
 
     // 240 positions
-    $return = new \Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Banco\Sicredi($argument)
+    $return = new \Xpendi\CnabBoleto\Cnab\Retorno\Cnab240\Banco\Sicredi($argument)
 
      // To process the file
     $return->processar();
@@ -250,8 +250,8 @@ The return object implements ``SeekableIterator``, so you can do a foreach on th
 
 .. seealso::
 
-   `API return docs <https://eduardokum.github.io/laravel-boleto/namespace-Eduardokum.LaravelBoleto.Cnab.Retorno.html>`_
+   `API return docs <https://Xpendi.github.io/laravel-boleto/namespace-Xpendi.CnabBoleto.Cnab.Retorno.html>`_
       Documentation for return objects.
 
-   `Examples <https://github.com/eduardokum/laravel-boleto/tree/master/exemplos>`_
+   `Examples <https://github.com/Xpendi/laravel-boleto/tree/master/exemplos>`_
       Examples of use

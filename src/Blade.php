@@ -1,5 +1,5 @@
 <?php
-namespace Eduardokum\LaravelBoleto;
+namespace Xpendi\CnabBoleto;
 
 use Illuminate\Container\Container;
 use Illuminate\Events\Dispatcher;

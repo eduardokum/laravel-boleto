@@ -1,12 +1,12 @@
 <?php
 
-namespace Eduardokum\LaravelBoleto\Tests\Remessa;
+namespace Xpendi\CnabBoleto\Tests\Remessa;
 
-use Eduardokum\LaravelBoleto\Boleto\Banco as Boleto;
-use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco as Remessa;
-use Eduardokum\LaravelBoleto\Pessoa;
-use Eduardokum\LaravelBoleto\Tests\TestCase;
-use Eduardokum\LaravelBoleto\Util;
+use Xpendi\CnabBoleto\Boleto\Banco as Boleto;
+use Xpendi\CnabBoleto\Cnab\Remessa\Cnab400\Banco as Remessa;
+use Xpendi\CnabBoleto\Pessoa;
+use Xpendi\CnabBoleto\Tests\TestCase;
+use Xpendi\CnabBoleto\Util;
 use Exception;
 
 class RemessaCnab400Test extends TestCase
