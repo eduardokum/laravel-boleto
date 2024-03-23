@@ -1,18 +1,8 @@
 {
-    "name": "eduardokum/laravel-boleto",
+    "name": "xpendi/cnab-boleto",
     "description": "Biblioteca com boletos para o laravel",
-    "keywords": [
-        "eduardokum",
-        "laravel-boleto"
-    ],
-    "homepage": "https://github.com/eduardokum/laravel-boleto",
+    "homepage": "https://github.com/carlostelles/laravel-boleto",
     "license": "MIT",
-    "authors": [
-        {
-            "name": "Eduardo Gusmão",
-            "email": "eduguscontra3@hotmail.com"
-        }
-    ],
     "require": {
         "php":                ">5.5.0",
         "ext-intl":           "*",
@@ -30,12 +20,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Eduardokum\\LaravelBoleto\\": "src"
+            "Xpendi\\CnabBoleto\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Eduardokum\\LaravelBoleto\\Tests\\": "tests"
+            "Xpendi\\CnabBoleto\\Tests\\": "tests"
         }
     },
     "config": {
