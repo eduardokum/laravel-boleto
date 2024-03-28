@@ -253,7 +253,7 @@ class Unicred extends AbstractBoleto implements BoletoContract
                 ]
             ],
             'mensagensFichaCompensacao' => array_filter(array_map(function($instrucao) {
-                return trim($instrucao) ?: null;
+                return is_null($instrucao) ? null : trim($instrucao);
             }, $this->getInstrucoes()))
         ];
 
