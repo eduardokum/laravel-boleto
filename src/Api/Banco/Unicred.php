@@ -207,7 +207,7 @@ class Unicred extends AbstractAPI
      * @return mixed
      * @throws ValidationException
      */
-    public function retrieveList($inputedParams)
+    public function retrieveList($inputedParams=[])
     {
         throw new ValidationException('Método não disponível no banco');
     }
