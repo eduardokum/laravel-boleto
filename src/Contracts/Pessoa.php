@@ -5,6 +5,7 @@ namespace Eduardokum\LaravelBoleto\Contracts;
 interface Pessoa
 {
     public function getNome();
+    public function getNomeFantasia();
 
     public function getNomeDocumento();
 
