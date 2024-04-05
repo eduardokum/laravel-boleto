@@ -342,6 +342,13 @@ abstract class AbstractBoleto implements BoletoContract
     public $valorRecebido;
 
     /**
+     * Gerar boleto em PDF
+     * 
+     * @var bool
+     */
+    public $usaBoleto = true;
+
+    /**
      *
      * Recebe a imagem em base 64 do QR Code do PIX
      *
@@ -375,6 +382,25 @@ abstract class AbstractBoleto implements BoletoContract
         if (!$this->getDataDesconto()) {
             $this->setDataDesconto($this->getDataVencimento());
         }
+    }
+
+    /**
+     * Define se irá usar boletos
+     *
+     * @return $this
+     */
+    public function setUsaBoleto($usaBoleto)
+    {
+        $this->usaBoleto = $usaBoleto;
+        return $this;
+    }
+
+     /**
+     * @return bool
+     */
+    public function getUsaBoleto()
+    {
+        return $this->usaBoleto;
     }
 
     /**
@@ -1444,7 +1470,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getNossoNumero()
     {
-        if (empty($this->campoNossoNumero)) {
+        if (empty($this->campoNossoNumero) && $this->getUsaBoleto()) {
             return $this->campoNossoNumero = $this->gerarNossoNumero();
         }
         return $this->campoNossoNumero;
