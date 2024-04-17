@@ -501,14 +501,19 @@ final class Util
             $type = 's';
             $valor = ($dec > 0) ? sprintf("%.{$dec}f", $valor) : $valor;
             $valor = str_replace([',', '.'], '', $valor);
-        } elseif (in_array($tipo, ['A', 'X'])) {
+        } elseif (in_array($tipo, ['A', 'X', 'Z'])) { // Adiciona 'x' como uma condição válida
             $left = '-';
             $type = 's';
         } else {
             throw new ValidationException('Tipo inválido');
         }
 
-        return sprintf("%{$left}{$sFill}{$tamanho}{$type}", mb_substr($valor, 0, $tamanho));
+        // Verifica se o tipo é 'x' minúsculo e então retorna a string em minúsculas
+        if ($tipo === 'Z') {
+            return strtolower(sprintf("%{$left}{$sFill}{$tamanho}{$type}", mb_substr($valor, 0, $tamanho)));
+        } else {
+            return sprintf("%{$left}{$sFill}{$tamanho}{$type}", mb_substr($valor, 0, $tamanho));
+        }
     }
 
     /**
