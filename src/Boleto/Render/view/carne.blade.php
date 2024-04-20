@@ -129,7 +129,7 @@
                 @include('BoletoHtmlRender::partials/ficha-compensacao')
             </div>
             <div style="clear: both"></div>
-            <div class="linha-pontilhada" style="margin-top: 10px;">Corte na linha pontilhada</div>
+            <div class="linha-pontilhada" style="margin-top: 25px;">Corte na linha pontilhada</div>
         </div>
 
         @if(count($boletos) > 3 && $i > 0 && ($i+1) % 3 === 0)
