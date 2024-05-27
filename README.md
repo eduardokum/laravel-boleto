@@ -28,6 +28,8 @@ Mas também, caso você ache que qualquer informação obtida aqui, lhe foi úti
         
 *Agradecemos a contribuição.*
 
+[![DigitalOcean Referral Badge](https://web-platforms.sfo2.cdn.digitaloceanspaces.com/WWW/Badge%203.svg)](https://www.digitalocean.com/?refcode=b99ef059ce2e&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge)
+
 ## Apoiadores
 <a target="_blank" href=" https://www.jetbrains.com/?from=LaravelBoleto">
          <img alt="Jetbrains" width="100" src="https://account.jetbrains.com/static/images/jetbrains-logo-inv.svg"/></a>
