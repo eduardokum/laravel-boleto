@@ -1400,7 +1400,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getMultaApos()
     {
-        return $this->multaApos ? $this->multaApos : false;
+        return $this->multaApos;
     }
 
     /**
