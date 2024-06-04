@@ -2000,7 +2000,7 @@ abstract class AbstractBoleto implements BoletoContract
                 throw new ValidationException('Informado tipo de chave de Pix porém não foi informado a chave');
             }
             if (! $this->getPixChaveTipo()) {
-                throw new ValidationException('Informado tipo de chave de Pix porém não foi informado a chave');
+                throw new ValidationException('Informado chave de Pix porém não foi informado o tipo de chave');
             }
             if (! $this->getID()) {
                 throw new ValidationException('ID necessita ser informado para geração da cobrança');
