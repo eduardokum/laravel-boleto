@@ -132,7 +132,7 @@ class Caixa extends AbstractRemessa implements RemessaContract
             $this->add(16, 17, self::OCORRENCIA_ALT_OUTROS_DADOS);
         }
         $this->add(18, 22, Util::formatCnab('9', $this->getAgencia(), 5));
-        $this->add(23, 23, ! is_null($this->getAgenciaDv()) ? $this->getAgenciaDv() : CalculoDV::cefAgencia($this->getAgencia()));
+        $this->add(23, 23, !is_null($this->getAgenciaDv()) ? $this->getAgenciaDv() : CalculoDV::cefAgencia($this->getAgencia()));
         if (strlen($this->getCodigoCliente()) == 7) {
             $this->add(24, 30, Util::formatCnab('9', $this->getCodigoCliente(), 7));
             $this->add(31, 37, '0000000');
@@ -247,6 +247,8 @@ class Caixa extends AbstractRemessa implements RemessaContract
         $this->add(9, 13, Util::formatCnab('9', $this->iRegistrosLote, 5));
         $this->add(14, 14, 'R');
         $this->add(15, 15, '');
+        $this->add(67, 74, $boleto->getMulta() > 0 ?  $boleto->getDataVencimento()->copy()->addDays($boleto->getMultaApos())->format('dmY') : '00000000');
+        
         $this->add(16, 17, self::OCORRENCIA_REMESSA);
         if ($boleto->getStatus() == $boleto::STATUS_BAIXA) {
             $this->add(16, 17, self::OCORRENCIA_PEDIDO_BAIXA);
@@ -261,7 +263,7 @@ class Caixa extends AbstractRemessa implements RemessaContract
         $this->add(43, 50, '00000000');
         $this->add(51, 65, '000000000000000');
         $this->add(66, 66, $boleto->getMulta() > 0 ? '2' : '0'); //0 = ISENTO | 1 = VALOR FIXO | 2 = PERCENTUAL
-        $this->add(67, 74, $boleto->getDataVencimento()->format('dmY'));
+        $this->add(67, 74, $boleto->getMulta() > 0 ?  $boleto->getDataVencimento()->copy()->addDays($boleto->getMultaApos())->format('dmY') : '00000000');
         $this->add(75, 89, Util::formatCnab('9', $boleto->getMulta(), 15, 2));  //2,20 = 0000000000220
         $this->add(90, 240, '');
 
@@ -287,7 +289,7 @@ class Caixa extends AbstractRemessa implements RemessaContract
         $this->add(19, 32, Util::formatCnab('9', Util::onlyNumbers($this->getBeneficiario()->getDocumento()), 14));
         $this->add(33, 52, Util::formatCnab('9', 0, 20));
         $this->add(53, 57, Util::formatCnab('9', $this->getAgencia(), 5));
-        $this->add(58, 58, ! is_null($this->getAgenciaDv()) ? $this->getAgenciaDv() : CalculoDV::cefAgencia($this->getAgencia()));
+        $this->add(58, 58, !is_null($this->getAgenciaDv()) ? $this->getAgenciaDv() : CalculoDV::cefAgencia($this->getAgencia()));
         if (strlen($this->getCodigoCliente()) == 7) {
             $this->add(59, 65, Util::formatCnab('9', $this->getCodigoCliente(), 7));
             $this->add(66, 72, '0000000');
@@ -302,7 +304,7 @@ class Caixa extends AbstractRemessa implements RemessaContract
         $this->add(144, 151, $this->getDataRemessa('dmY'));
         $this->add(152, 157, date('His'));
         $this->add(158, 163, Util::formatCnab('9', $this->getIdremessa(), 6));
-        $this->add(164, 166, '101');
+        $this->add(164, 166, strlen($this->getCodigoCliente()) == 7 ? '107' : '101');
         $this->add(167, 171, '00000');
         $this->add(172, 191, '');
         $this->add(192, 211, Util::formatCnab('X', 'REMESSA-PRODUCAO', 20));
@@ -329,7 +331,7 @@ class Caixa extends AbstractRemessa implements RemessaContract
         $this->add(9, 9, 'R');
         $this->add(10, 11, '01');
         $this->add(12, 13, '00');
-        $this->add(14, 16, '060');
+        $this->add(14, 16, strlen($this->getCodigoCliente()) == 7 ? '067' : '060');
         $this->add(17, 17, '');
         $this->add(18, 18, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? 2 : 1);
         $this->add(19, 33, Util::formatCnab('9', Util::onlyNumbers($this->getBeneficiario()->getDocumento()), 15));
@@ -341,7 +343,7 @@ class Caixa extends AbstractRemessa implements RemessaContract
             $this->add(40, 53, Util::formatCnab('9', 0, 14));
         }
         $this->add(54, 58, Util::formatCnab('9', $this->getAgencia(), 5));
-        $this->add(59, 59, ! is_null($this->getAgenciaDv()) ? $this->getAgenciaDv() : CalculoDV::cefAgencia($this->getAgencia()));
+        $this->add(59, 59, !is_null($this->getAgenciaDv()) ? $this->getAgenciaDv() : CalculoDV::cefAgencia($this->getAgencia()));
         if (strlen($this->getCodigoCliente()) == 7) {
             $this->add(60, 65, '000000');
         } else {

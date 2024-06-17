@@ -97,6 +97,12 @@ abstract class AbstractBoleto implements BoletoContract
     public $multa = 0;
 
     /**
+     * Valor para mora multa
+     *
+     * @var float
+     */
+    public $multaApos = 0;
+    /**
      * Valor para mora juros
      *
      * @var float
@@ -1373,6 +1379,31 @@ abstract class AbstractBoleto implements BoletoContract
     }
 
     /**
+     * Seta a quantidade de dias apos o vencimento que cobra a multa
+     *
+     * @param  int $multaApos
+     *
+     * @return AbstractBoleto
+     */
+    public function setMultaApos($multaApos)
+    {
+        $multaApos = (int)$multaApos;
+        $this->multaApos = $multaApos > 0 ? $multaApos : 0;
+
+        return $this;
+    }
+
+    /**
+     * Retorna a quantidade de dias apos o vencimento que cobra a multa
+     *
+     * @return int
+     */
+    public function getMultaApos()
+    {
+        return $this->multaApos;
+    }
+
+    /**
      * Seta dias para protesto
      *
      * @param int $diasProtesto
@@ -2164,6 +2195,7 @@ abstract class AbstractBoleto implements BoletoContract
             'multa'               => Util::nReal($this->getMulta(), 2, false),
             'juros'               => Util::nReal($this->getJuros(), 2, false),
             'juros_apos'          => $this->getJurosApos(),
+            'multa_apos'          => $this->getMultaApos(),
             'dias_protesto'       => $this->getDiasProtesto(),
             'sacador_avalista'    => $this->getSacadorAvalista()
                 ? [
