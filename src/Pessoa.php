@@ -13,6 +13,11 @@ class Pessoa implements PessoaContract
     protected $nome;
 
     /**
+     * @var string|null
+     */
+    protected $nomeFantasia = null;
+
+    /**
      * @var string
      */
     protected $endereco;
@@ -55,18 +60,20 @@ class Pessoa implements PessoaContract
     /**
      * @param      $nome
      * @param      $documento
-     * @param null $endereco
-     * @param null $bairro
-     * @param null $cep
-     * @param null $cidade
-     * @param null $uf
-     * @param null $email
+     * @param string|null $endereco
+     * @param string|null $bairro
+     * @param string|null $cep
+     * @param string|null $cidade
+     * @param string|null $uf
+     * @param string|null $email
+     * @param string|null $nomeFantasia
      * @return Pessoa
      */
-    public static function create($nome, $documento, $endereco = null, $bairro = null, $cep = null, $cidade = null, $uf = null, $email = null)
+    public static function create($nome, $documento, $endereco = null, $bairro = null, $cep = null, $cidade = null, $uf = null, $email = null, $nomeFantasia = null)
     {
         return new static([
             'nome'      => $nome,
+            'nomeFantasia'  => $nomeFantasia,
             'endereco'  => $endereco,
             'bairro'    => $bairro,
             'cep'       => $cep,
@@ -240,6 +247,30 @@ class Pessoa implements PessoaContract
     public function getNome()
     {
         return $this->nome;
+    }
+    
+    /**
+     * Define o Nome Fantasia
+     *
+     * @param string $nomeFantasia
+     *
+     * @return Pessoa
+     */
+    public function setNomeFantasia($nomeFantasia)
+    {
+        $this->nomeFantasia = $nomeFantasia;
+
+        return $this;
+    }
+
+    /**
+     * Retorna o Nome Fantasia
+     *
+     * @return string
+     */
+    public function getNomeFantasia()
+    {
+        return $this->nomeFantasia;
     }
 
     /**

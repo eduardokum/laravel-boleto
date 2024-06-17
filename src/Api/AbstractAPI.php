@@ -464,7 +464,7 @@ abstract class AbstractAPI implements Api
      * @throws UnauthorizedException
      * @throws CurlException
      */
-    protected function post($url, array $post, $raw = false)
+    protected function post($url, array $post, $raw = false, $clear=true)
     {
         $url = ltrim($url, '/');
         $this->init()
@@ -474,9 +474,11 @@ abstract class AbstractAPI implements Api
             ]));
 
         // clean string
-        $post = $this->arrayMapRecursive(function ($data) {
-            return Util::normalizeChars($data);
-        }, $post);
+        if($clear) {
+            $post = $this->arrayMapRecursive(function ($data) {
+                return Util::normalizeChars($data);
+            }, $post);
+        }
 
         curl_setopt($this->curl, CURLOPT_URL, $this->getBaseUrl() . $url);
         curl_setopt($this->curl, CURLOPT_POST, 1);
