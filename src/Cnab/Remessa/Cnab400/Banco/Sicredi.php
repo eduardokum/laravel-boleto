@@ -154,11 +154,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
             return $this;
         }
 
-        if ($chaveNfe = $boleto->getChaveNfe()) {
-            $this->iniciaDetalheExtendido();
-        } else {
-            $this->iniciaDetalhe();
-        }
+        $this->iniciaDetalhe(($chaveNfe = $boleto->getChaveNfe()) ? 44 : 0);
 
         $this->add(1, 1, '1');
         $this->add(2, 2, 'A');

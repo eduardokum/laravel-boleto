@@ -266,32 +266,10 @@ class CalculoDV
     }
 
     /*
-    |--------------------------------------------------------------------------
-    | 237 - Bradesco
-    |--------------------------------------------------------------------------
-    */
-    public static function bradescoAgencia($agencia)
-    {
-        $dv = Util::modulo11($agencia, 2, 9, 0, 'P');
-
-        return $dv == 11 ? 0 : $dv;
-    }
-
-    public static function bradescoContaCorrente($conta)
-    {
-        return Util::modulo11($conta, 2, 9, 0, 'P');
-    }
-
-    public static function bradescoNossoNumero($carteira, $nossoNumero)
-    {
-        return Util::modulo11($carteira . Util::numberFormatGeral($nossoNumero, 11), 2, 7, 0, 'P');
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | 224 - Fibra
-    |--------------------------------------------------------------------------
-    */
+ |--------------------------------------------------------------------------
+ | 224 - Fibra
+ |--------------------------------------------------------------------------
+ */
     public static function fibraAgencia($agencia)
     {
         return Util::modulo11($agencia);
@@ -324,6 +302,39 @@ class CalculoDV
         }
 
         return 10 - $sum % 10;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | 237 - Bradesco
+    |--------------------------------------------------------------------------
+    */
+    public static function bradescoAgencia($agencia)
+    {
+        $dv = Util::modulo11($agencia, 2, 9, 0, 'P');
+
+        return $dv == 11 ? 0 : $dv;
+    }
+
+    public static function bradescoContaCorrente($conta)
+    {
+        return Util::modulo11($conta, 2, 9, 0, 'P');
+    }
+
+    public static function bradescoNossoNumero($carteira, $nossoNumero)
+    {
+        return Util::modulo11($carteira . Util::numberFormatGeral($nossoNumero, 11), 2, 7, 0, 'P');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | 274 - Grafeno
+    |--------------------------------------------------------------------------
+    */
+
+    public static function grafenoNossoNumero($carteira, $nossoNumero)
+    {
+        return Util::modulo11(Util::numberFormatGeral($carteira, 2) . Util::numberFormatGeral($nossoNumero, 11), 2, 7, 0, 'P');
     }
 
     /*

@@ -82,7 +82,9 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
     protected function iniciaHeader()
     {
         $this->aRegistros[self::HEADER] = array_fill(0, $this->tamanho_linha, ' ');
+        $this->tamanhos_linha[self::HEADER] = $this->tamanho_linha;
         $this->atual = &$this->aRegistros[self::HEADER];
+        $this->tamanho_atual = &$this->tamanhos_linha[self::HEADER];
     }
 
     /**
@@ -92,7 +94,9 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
     {
         $this->iRegistrosLote = 0;
         $this->aRegistros[self::HEADER_LOTE] = array_fill(0, $this->tamanho_linha, ' ');
+        $this->tamanhos_linha[self::HEADER_LOTE] = $this->tamanho_linha;
         $this->atual = &$this->aRegistros[self::HEADER_LOTE];
+        $this->tamanho_atual = &$this->tamanhos_linha[self::HEADER_LOTE];
     }
 
     /**
@@ -101,7 +105,9 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
     protected function iniciaTrailerLote()
     {
         $this->aRegistros[self::TRAILER_LOTE] = array_fill(0, $this->tamanho_linha, ' ');
+        $this->tamanhos_linha[self::TRAILER_LOTE] = $this->tamanho_linha;
         $this->atual = &$this->aRegistros[self::TRAILER_LOTE];
+        $this->tamanho_atual = &$this->tamanhos_linha[self::TRAILER_LOTE];
     }
 
     /**
@@ -110,7 +116,9 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
     protected function iniciaTrailer()
     {
         $this->aRegistros[self::TRAILER] = array_fill(0, $this->tamanho_linha, ' ');
+        $this->tamanhos_linha[self::TRAILER] = $this->tamanho_linha;
         $this->atual = &$this->aRegistros[self::TRAILER];
+        $this->tamanho_atual = &$this->tamanhos_linha[self::TRAILER];
     }
 
     /**
@@ -121,7 +129,9 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
         $this->iRegistros++;
         $this->iRegistrosLote++;
         $this->aRegistros[self::DETALHE][$this->iRegistros] = array_fill(0, $this->tamanho_linha, ' ');
+        $this->tamanhos_linha[self::DETALHE][$this->iRegistros] = $this->tamanho_linha;
         $this->atual = &$this->aRegistros[self::DETALHE][$this->iRegistros];
+        $this->tamanho_atual = &$this->tamanhos_linha[self::DETALHE][$this->iRegistros];
     }
 
     /**

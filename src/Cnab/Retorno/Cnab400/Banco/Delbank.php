@@ -168,7 +168,7 @@ class Delbank extends AbstractRetorno implements RetornoCnab400
             ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe) / 100, 2, false))
             ->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe) / 100, 2, false));
 
-        $msgAdicional = str_split(sprintf('%08s', $this->rem(319, 328, $detalhe)), 2) + array_fill(0, 5, '');
+        $msgAdicional = str_split(sprintf('%010s', $this->rem(319, 328, $detalhe)), 2) + array_fill(0, 5, '');
         if ($d->hasOcorrencia('06', '08')) {
             $this->totais['liquidados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);

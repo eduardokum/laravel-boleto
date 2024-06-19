@@ -148,11 +148,7 @@ class Hsbc extends AbstractRemessa implements RemessaContract
     public function addBoleto(BoletoContract $boleto)
     {
         $this->boletos[] = $boleto;
-        if ($chaveNfe = $boleto->getChaveNfe()) {
-            $this->iniciaDetalheExtendido();
-        } else {
-            $this->iniciaDetalhe();
-        }
+        $this->iniciaDetalhe(($chaveNfe = $boleto->getChaveNfe()) ? 44 : 0);
 
         $this->add(1, 1, '1');
         $this->add(2, 3, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? '02' : '01');

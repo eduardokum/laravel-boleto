@@ -150,17 +150,25 @@ class Fibra extends AbstractBoleto implements BoletoContract
     }
 
     /**
+     * Retorna o número definido pelo cliente para compor o nosso número
+     *
+     * @return int
+     */
+    public function getNumero()
+    {
+        return $this->numero < $this->getRange() ? $this->getRange() + $this->numero : $this->numero;
+    }
+
+    /**
      * Gera o Nosso Número.
      *
      * @return string
-     * @throws ValidationException
      */
     protected function gerarNossoNumero()
     {
         $nn = 0;
         if (Util::upper($this->getModalidadeCarteira()) == 'D') {
-            $nn = ((int) $this->getRange()) + ((int) $this->getNumero());
-            $nn .= CalculoDV::fibraNossoNumero($this->getAgencia(), $this->getCarteira(), $nn);
+            $nn = $this->getNumero() . CalculoDV::fibraNossoNumero($this->getAgencia(), $this->getCarteira(), $nn);
         }
 
         return Util::numberFormatGeral($nn, 11);

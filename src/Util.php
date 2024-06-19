@@ -839,16 +839,16 @@ final class Util
      * @param int $i
      * @param int $f
      * @param $value
-     *
+     * @param int $tamanhoLinha
      * @return array
      * @throws ValidationException
      */
-    public static function adiciona(&$line, $i, $f, $value)
+    public static function adiciona(&$line, $i, $f, $value, $tamanhoLinha = 400)
     {
         $i--;
 
-        if (($i > 398 || $f > 400) && ($i != 401 && $f != 444)) {
-            throw new ValidationException('$ini ou $fim ultrapassam o limite máximo de 400');
+        if ($f > $tamanhoLinha) {
+            throw new ValidationException('$ini ou $fim ultrapassam o limite máximo de ' . $tamanhoLinha);
         }
 
         if ($f < $i) {
@@ -1070,6 +1070,7 @@ final class Util
             BoletoContract::COD_BANCO_BTG       => 'Banco\\Btg',
             BoletoContract::COD_BANCO_UNICRED   => 'Banco\\Unicred',
             BoletoContract::COD_BANCO_BRADESCO  => 'Banco\\Bradesco',
+            BoletoContract::COD_BANCO_GRAFENO   => 'Banco\\Grafeno',
             BoletoContract::COD_BANCO_FIBRA     => 'Banco\\Fibra',
             BoletoContract::COD_BANCO_ITAU      => 'Banco\\Itau',
             BoletoContract::COD_BANCO_HSBC      => 'Banco\\Hsbc',

@@ -83,15 +83,15 @@ class Cresol extends AbstractRetorno implements RetornoCnab400
      * @var array
      */
     private $rejeicoes = [
-        '1'  => 'Código do Banco Inválido',
-        '2'  => 'Código do Registro Detalhe Inválido',
-        '3'  => 'Código do Segmento Inválido',
-        '4'  => 'Código de Movimento Não Permitido para Carteira',
-        '5'  => 'Código de Movimento Inválido',
-        '6'  => 'Tipo/Número de Inscrição do Cedente Inválidos',
-        '7'  => 'Agência/Conta/DV Inválido',
-        '8'  => 'Nosso Número Inválido',
-        '9'  => 'Nosso Número Duplicado',
+        '01' => 'Código do Banco Inválido',
+        '02' => 'Código do Registro Detalhe Inválido',
+        '03' => 'Código do Segmento Inválido',
+        '04' => 'Código de Movimento Não Permitido para Carteira',
+        '05' => 'Código de Movimento Inválido',
+        '06' => 'Tipo/Número de Inscrição do Cedente Inválidos',
+        '07' => 'Agência/Conta/DV Inválido',
+        '08' => 'Nosso Número Inválido',
+        '09' => 'Nosso Número Duplicado',
         '10' => 'Carteira Inválida',
         '11' => 'Forma de Cadastramento do Título Inválido',
         '12' => 'Tipo de Documento Inválido',
@@ -263,7 +263,7 @@ class Cresol extends AbstractRetorno implements RetornoCnab400
             ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe) / 100, 2, false))
             ->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe) / 100, 2, false)); //outros creditos
 
-        $msgAdicional = str_split(sprintf('%08s', $this->rem(319, 328, $detalhe)), 2) + array_fill(0, 5, '');
+        $msgAdicional = str_split(sprintf('%010s', $this->rem(319, 328, $detalhe)), 2) + array_fill(0, 5, '');
         if ($d->hasOcorrencia('06', '15', '17')) {
             $this->totais['liquidados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
@@ -289,9 +289,9 @@ class Cresol extends AbstractRetorno implements RetornoCnab400
                 Arr::get($this->rejeicoes, $msgAdicional[4], '')
             );
             if ($d->hasOcorrencia('03')) {
-               if (isset($this->rejeicoes[$this->rem(319, 320, $detalhe)])){
-                  $d->setRejeicao($this->rejeicoes[$this->rem(319, 320, $detalhe)]);
-               }
+                if (isset($this->rejeicoes[$this->rem(319, 320, $detalhe)])) {
+                    $d->setRejeicao($this->rejeicoes[$this->rem(319, 320, $detalhe)]);
+                }
             }
             $d->setError($error);
         } else {

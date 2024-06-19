@@ -150,17 +150,25 @@ class Rendimento extends AbstractBoleto implements BoletoContract
     }
 
     /**
+     * Retorna o número definido pelo cliente para compor o nosso número
+     *
+     * @return int
+     */
+    public function getNumero()
+    {
+        return $this->numero < $this->getRange() ? $this->getRange() + $this->numero : $this->numero;
+    }
+
+    /**
      * Gera o Nosso Número.
      *
      * @return string
-     * @throws ValidationException
      */
     protected function gerarNossoNumero()
     {
         $nn = 0;
         if ($this->getModalidadeCarteira() == 6) {
-            $nn = ((int) $this->getRange()) + ((int) $this->getNumero());
-            $nn .= CalculoDV::rendimentoNossoNumero($this->getAgencia(), $this->getCarteira(), $nn);
+            $nn = $this->getNumero() . CalculoDV::rendimentoNossoNumero($this->getAgencia(), $this->getCarteira(), $nn);
         }
 
         return Util::numberFormatGeral($nn, 11);

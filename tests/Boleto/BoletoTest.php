@@ -269,6 +269,33 @@ class BoletoTest extends TestCase
         $this->assertNotNull($boleto->renderPDF());
     }
 
+    public function testBoletoGrafeno()
+    {
+        $boleto = new Boleto\Grafeno([
+            'logo' => realpath(__DIR__ . '/../../logos/') . DIRECTORY_SEPARATOR . '274.png',
+            'dataVencimento' => $this->vencimento(),
+            'valor' => $this->valor(),
+            'multa' => $this->multa(),
+            'juros' => $this->juros(),
+            'numero' => 1,
+            'diasBaixaAutomatica' => 2,
+            'numeroDocumento' => 1,
+            'pagador' => self::$pagador,
+            'beneficiario' => self::$beneficiario,
+            'carteira' => '1',
+            'agencia' => '0001',
+            'conta' => '12345678',
+            'range' => '25000000000',
+            'descricaoDemonstrativo' => ['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'],
+            'instrucoes' => ['instrucao 1', 'instrucao 2', 'instrucao 3'],
+            'aceite' => $this->aceite(),
+            'especieDoc' => 'DM',
+        ]);
+        $this->assertThat($boleto->toArray(), (new IsType(IsType::TYPE_ARRAY)));
+        $this->assertNotNull($boleto->renderHTML());
+        $this->assertNotNull($boleto->renderPDF());
+    }
+
     public function testBoletoCaixa()
     {
         $boleto = new Boleto\Caixa([

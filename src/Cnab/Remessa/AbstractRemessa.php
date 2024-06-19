@@ -20,6 +20,8 @@ abstract class AbstractRemessa
 
     protected $tamanho_linha = false;
 
+    protected $tamanhos_linha = [];
+
     /**
      * Campos necessários para a remessa
      *
@@ -68,6 +70,13 @@ abstract class AbstractRemessa
      * @var
      */
     protected $atual;
+
+    /**
+     * Variável com ponteiro para o tamanho da linha que esta sendo editada.
+     *
+     * @var
+     */
+    protected $tamanho_atual;
 
     /**
      * Caractere de fim de linha
@@ -489,7 +498,7 @@ abstract class AbstractRemessa
      */
     protected function add($i, $f, $value)
     {
-        return Util::adiciona($this->atual, $i, $f, $value);
+        return Util::adiciona($this->atual, $i, $f, $value, $this->tamanho_atual);
     }
 
     /**
@@ -538,7 +547,7 @@ abstract class AbstractRemessa
         }
 
         $a = array_filter($a, 'mb_strlen');
-        if (count($a) != $this->tamanho_linha + $extendido) {
+        if (count($a) != ($this->tamanho_linha + $extendido)) {
             throw new ValidationException(sprintf('$a não possui %s posições, possui: %s', $this->tamanho_linha, count($a)));
         }
 
