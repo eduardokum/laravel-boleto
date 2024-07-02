@@ -1,16 +1,12 @@
-version: '3.7'
-
 services:
-
-  laravel-boleto:
+  laravel.boleto:
     build: .
     container_name: laravel-boleto
     tty: true
     volumes:
-      - .:/var/www
+      - '.:/var/www'
     networks:
       - laravel-boleto-network
-
 networks:
   laravel-boleto-network:
     driver: bridge

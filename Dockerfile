@@ -9,15 +9,14 @@ RUN apk add --no-cache \
   libzip-dev \
   zlib-dev \
   libsodium-dev \
-  icu-dev
+  icu-dev \
+  libpng-dev
 
 RUN docker-php-ext-configure intl
-RUN docker-php-ext-install zip sodium intl
+RUN docker-php-ext-install zip sodium intl gd
 RUN docker-php-ext-enable zip sodium
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-
 
 WORKDIR /var/www
 
