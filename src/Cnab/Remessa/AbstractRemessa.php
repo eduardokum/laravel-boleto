@@ -436,7 +436,7 @@ abstract class AbstractRemessa
     public function isValid(&$messages)
     {
         foreach ($this->camposObrigatorios as $campo) {
-            $test = call_user_func([$this, 'get' . Str::camel($campo)]);
+            $test = call_user_func([$this, 'get' . ucfirst(Str::camel($campo))]);
             if ($test === '' || is_null($test)) {
                 $messages .= "Campo $campo está em branco";
 

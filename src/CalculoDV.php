@@ -328,6 +328,28 @@ class CalculoDV
 
     /*
     |--------------------------------------------------------------------------
+    | 246 - Grafeno
+    |--------------------------------------------------------------------------
+    */
+
+    public static function abcNossoNumero($agencia, $carteira, $nossoNumero)
+    {
+        $numero = Util::numberFormatGeral($agencia, 4) . Util::numberFormatGeral($carteira, 3) . Util::numberFormatGeral($nossoNumero, 10);
+        $factors = [2, 1];
+        $sum = 0;
+
+        for ($i = strlen($numero) - 1, $j = 0; $i >= 0; $i--, $j++) {
+            $result = intval($numero[$i]) * $factors[$j % 2];
+            $sum += ($result > 9) ? ($result - 9) : $result;
+        }
+
+        $mod = $sum % 10;
+
+        return ($mod == 0) ? 0 : 10 - $mod;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | 274 - Grafeno
     |--------------------------------------------------------------------------
     */

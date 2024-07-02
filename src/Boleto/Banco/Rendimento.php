@@ -13,7 +13,7 @@ class Rendimento extends AbstractBoleto implements BoletoContract
     public function __construct(array $params = [])
     {
         parent::__construct($params);
-        $this->setCamposObrigatorios('numero', 'agencia', 'carteira', 'modalidadeCarteira', 'codigoCliente');
+        $this->setCamposObrigatorios('numero', 'agencia', 'carteira', 'codigoCliente');
     }
 
     /**
@@ -33,7 +33,7 @@ class Rendimento extends AbstractBoleto implements BoletoContract
      * Define as carteiras disponíveis para este banco
      * @var array
      */
-    protected $carteiras = [121, 112];
+    protected $carteiras = ['1', '2', '3', '4', '6'];
 
     /**
      * Espécie do documento, código para remessa do CNAB240
@@ -69,13 +69,6 @@ class Rendimento extends AbstractBoleto implements BoletoContract
      * @var string
      */
     protected $codigoCliente;
-
-    /**
-     * Modalidade da carteira
-     *
-     * @var string
-     */
-    protected $modalidadeCarteira;
 
     /**
      * @return int
@@ -121,32 +114,13 @@ class Rendimento extends AbstractBoleto implements BoletoContract
     }
 
     /**
-     * Retorna a modalidade da carteira
+     * Retorna o código da carteira (Com ou sem registro)
      *
-     * @return mixed
+     * @return string
      */
-    public function getModalidadeCarteira()
+    public function getCarteira()
     {
-        return $this->modalidadeCarteira;
-    }
-
-    /**
-     * Seta a modalidade da carteira.
-     *
-     * @param mixed $modalidadeCarteira
-     *
-     * @return Rendimento
-     * @throws ValidationException
-     */
-    public function setModalidadeCarteira($modalidadeCarteira)
-    {
-        $modalidadeCarteira = Util::upper($modalidadeCarteira);
-        if (! in_array($modalidadeCarteira, ['1', '2', '3', '4', '6'])) {
-            throw new ValidationException('Modalidade da carteira inválida');
-        }
-        $this->modalidadeCarteira = $modalidadeCarteira;
-
-        return $this;
+        return $this->carteira == '6' ? 121 : 112;
     }
 
     /**
@@ -167,7 +141,7 @@ class Rendimento extends AbstractBoleto implements BoletoContract
     protected function gerarNossoNumero()
     {
         $nn = 0;
-        if ($this->getModalidadeCarteira() == 6) {
+        if ($this->carteira == 6) {
             $nn = $this->getNumero() . CalculoDV::rendimentoNossoNumero($this->getAgencia(), $this->getCarteira(), $nn);
         }
 
@@ -234,6 +208,6 @@ class Rendimento extends AbstractBoleto implements BoletoContract
      */
     public function imprimeBoleto()
     {
-        return $this->getModalidadeCarteira() == 6;
+        return $this->carteira == 6;
     }
 }

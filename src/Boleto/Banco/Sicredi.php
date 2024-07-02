@@ -35,7 +35,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
      *
      * @var array
      */
-    protected $carteiras = ['1', '2', '3'];
+    protected $carteiras = ['A', '1', '2', '3'];
 
     /**
      * Espécie do documento, coódigo para remessa
@@ -210,6 +210,16 @@ class Sicredi extends AbstractBoleto implements BoletoContract
     public function getAgenciaCodigoBeneficiario()
     {
         return sprintf('%04s.%02s.%05s', $this->getAgencia(), $this->getPosto(), $this->getCodigoCliente());
+    }
+
+    /**
+     * Retorna o código da carteira (Com ou sem registro)
+     *
+     * @return string
+     */
+    public function getCarteira()
+    {
+        return $this->carteira == 'A' ? 1 : $this->carteira;
     }
 
     /**
