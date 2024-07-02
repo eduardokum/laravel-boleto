@@ -78,7 +78,113 @@ class Unicred extends AbstractBoleto implements BoletoContract
      * @var string|null
      */
     protected $variacao_carteira = null;
-    
+
+    /**
+     * Tipo de Juros
+     */
+    const TIPO_JURO_VALOR_DIARIO = '1';
+    const TIPO_JURO_TAXA_DIARIA = '2';
+    const TIPO_JURO_TAXA_MENSAL = '3';
+    const TIPO_JURO_ISENTO = '5';
+
+    /**
+     * Tipo de Juro
+     *
+     * @var int
+     */
+    protected $tipoJuro = self::TIPO_JURO_ISENTO;
+
+    /**
+     * Tipo de Juro Válidos
+     *
+     * @var array<int>
+     */
+    protected $tipoJurosValidos = [
+        'VALOR_DIARIO' => self::TIPO_JURO_VALOR_DIARIO,
+        'TAXA_DIARIA' => self::TIPO_JURO_TAXA_DIARIA,
+        'TAXA_MENSAL' => self::TIPO_JURO_TAXA_MENSAL,
+        'ISENTO' => self::TIPO_JURO_ISENTO,
+    ];
+
+    /**
+     * Tipo de Multa
+     */
+    const TIPO_MULTA_VALOR_FIXO = '1';
+    const TIPO_MULTA_TAXA = '2';
+    const TIPO_MULTA_ISENTO = '3';
+
+    /**
+     * Tipo de Multa
+     *
+     * @var string
+     */
+    protected $tipoMulta = self::TIPO_MULTA_ISENTO;
+
+    /**
+     * Tipo de Multas Válidos
+     *
+     * @var array<int>
+     */
+    protected $tipoMultasValidos = [
+        'ISENTO' => self::TIPO_MULTA_ISENTO,
+        'VALOR_FIXO' => self::TIPO_MULTA_VALOR_FIXO,
+        'TAXA' => self::TIPO_MULTA_TAXA
+    ];
+
+    /**
+     * Define a Tipo de Juro
+     *
+     * @param ?string $tipoJuro
+     * @return AbstractBoleto
+     */
+    public function setTipoJuro($tipoJuro)
+    {
+        if(!isset($this->tipoJurosValidos[$tipoJuro])) {
+            throw new \Exception("Tipo de juro não disponível!");
+        }
+
+        $this->tipoJuro = $this->tipoJurosValidos[$tipoJuro];
+
+        return $this;
+    }
+
+    /**
+     * Retorna Tipo de Juro
+     *
+     * @return string
+     */
+    public function getTipoJuro()
+    {
+        return $this->tipoJuro;
+    }
+
+    /**
+     * Define a Tipo de Multa
+     *
+     * @param string $tipoMulta
+     * @return AbstractBoleto
+     */
+    public function setTipoMulta($tipoMulta)
+    {
+        if(!isset($this->tipoMultasValidos[$tipoMulta])) {
+            throw new \Exception("Tipo de multa não disponível!");
+        }
+
+        $this->tipoMulta = $this->tipoMultasValidos[$tipoMulta];
+
+        return $this;
+    }
+
+    /**
+     * Retorna Tipo de Multa
+     *
+     * @return string
+     */
+    public function getTipoMulta()
+    {
+        return $this->tipoMulta;
+    }
+
     /**
      * Define o número da variação da carteira.
      *
@@ -267,16 +373,16 @@ class Unicred extends AbstractBoleto implements BoletoContract
 
         if ($this->getMulta()) {
             $data['multa'] = [
-                'indicador' => '0',
-                'dataLimite' => ($this->getDataVencimento()->copy())->addDay()->format('Y-m-d'),
+                'codigo' => $this->getTipoMulta(),
+                'dataInicio' => ($this->getDataVencimento()->copy())->addDay()->format('Y-m-d'),
                 'valor' => Util::nFloat($this->getMulta()),
             ];
         }
 
         if ($this->getJuros()) {
             $data['juros'] = [
-                'indicador' => '0',
-                'dataLimite' => ($this->getDataVencimento()->copy())->addDays($this->getJurosApos() > 0 ? $this->getJurosApos() : 1)->format('Y-m-d'),
+                'codigo' => $this->getTipoJuro(),
+                'dataInicio' => ($this->getDataVencimento()->copy())->addDays($this->getJurosApos() > 0 ? $this->getJurosApos() : 1)->format('Y-m-d'),
                 'valor' => Util::nFloat($this->getJuros()),
             ];
         }
