@@ -150,9 +150,9 @@ class Rendimento extends AbstractRemessa implements RemessaContract
         $this->add(87, 89, Util::formatCnab('X', '', 3));
         $this->add(90, 90, $boleto->getMulta() > 0 ? '2' : '0');
         $this->add(91, 103, Util::formatCnab('9', $boleto->getMulta(), 13, 4));
-        $this->add(104, 105, $boleto->getMulta() > 0 ? '01' : '00');
+        $this->add(104, 105, $boleto->getMulta() > 0 ? Util::numberFormatGeral($boleto->getMultaApos(), 2) : '00');
         $this->add(106, 107, '');
-        $this->add(108, 108, Util::formatCnab('9', $boleto->getModalidadeCarteira(), 1));
+        $this->add(108, 108, Util::formatCnab('9', $this->getCarteira(), 1));
         $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
         if ($boleto->getStatus() == $boleto::STATUS_BAIXA) {
             $this->add(109, 110, self::OCORRENCIA_PEDIDO_BAIXA); // BAIXA

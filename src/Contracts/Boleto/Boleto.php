@@ -15,6 +15,7 @@ interface Boleto
     const COD_BANCO_CRESOL = '133';
     const COD_BANCO_BTG = '208';
     const COD_BANCO_BRADESCO = '237';
+    const COD_BANCO_ABC = '246';
     const COD_BANCO_GRAFENO = '274';
     const COD_BANCO_C6 = '336';
     const COD_BANCO_ITAU = '341';

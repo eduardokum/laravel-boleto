@@ -102,6 +102,7 @@ abstract class AbstractBoleto implements BoletoContract
      * @var float
      */
     public $multaApos = 0;
+
     /**
      * Valor para mora juros
      *
@@ -1393,7 +1394,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setMultaApos($multaApos)
     {
-        $multaApos = (int)$multaApos;
+        $multaApos = (int) $multaApos;
         $this->multaApos = $multaApos > 0 ? $multaApos : 0;
 
         return $this;
@@ -1481,7 +1482,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setDiasBaixaAutomatica($baixaAutomatica)
     {
-        $exception = sprintf('O banco %s não suporta baixa automática, pode usar também: setDiasProtesto(%s)', basename(get_class($this)), $baixaAutomatica);
+        $exception = sprintf('O banco %s não suporta baixa automática, pode usar também', basename(get_class($this)));
         throw new ValidationException($exception);
     }
 
