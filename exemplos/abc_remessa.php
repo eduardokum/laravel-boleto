@@ -38,6 +38,7 @@ $boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Abc([
     'operacao'               => 1234567,
     'agencia'                => '0001',
     'conta'                  => '7654321',
+    'chaveNfe'               => '35240826589893000146550010000263841557593869',
 ]);
 
 $remessa = new Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Abc([
@@ -49,4 +50,5 @@ $remessa = new Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Abc([
 ]);
 $remessa->addBoleto($boleto);
 
+echo '<pre>';
 echo $remessa->gerar();

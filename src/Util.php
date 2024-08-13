@@ -1114,6 +1114,28 @@ final class Util
     }
 
     /**
+     * @param $property
+     * @param $obj
+     *
+     * @return NotaFiscal
+     * @throws ValidationException
+     */
+    public static function addNotaFiscal(&$property, $obj)
+    {
+        if (is_subclass_of($obj, 'Eduardokum\\LaravelBoleto\\Contracts\\NotaFiscal')) {
+            $property[] = $obj;
+
+            return $obj;
+        } elseif (is_array($obj)) {
+            $obj = new NotaFiscal($obj);
+            $property[] = $obj;
+
+            return $obj;
+        }
+        throw new ValidationException('Objeto inválido, somente Pessoa e Array');
+    }
+
+    /**
      * @return string
      */
     public static function appendStrings()

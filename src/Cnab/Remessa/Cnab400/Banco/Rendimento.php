@@ -197,10 +197,10 @@ class Rendimento extends AbstractRemessa implements RemessaContract
         $this->add(392, 393, Util::formatCnab('9', $boleto->getDiasProtesto('0'), 2));
         $this->add(394, 394, $boleto->getMoeda());
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
-        if ($chaveNfe = $boleto->getChaveNfe()) {
+        if (count($boleto->getNotasFiscais()) > 0) {
             $this->iniciaDetalhe();
             $this->add(1, 1, '4');
-            $this->add(38, 81, Util::formatCnab('9', $chaveNfe, 44));
+            $this->add(38, 81, Util::formatCnab('9', $boleto->getNotaFiscal(0)->getChave(), 44));
             $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
         }
 
