@@ -151,7 +151,7 @@ class Abc extends AbstractRemessa implements RemessaContract
         $this->add(74, 86, Util::formatCnab('X', '', 11));
         $this->add(87, 89, Util::formatCnab('X', '', 3));
         $this->add(90, 90, $boleto->getMulta() > 0 ? '2' : '0');
-        $this->add(91, 103, Util::formatCnab('9', $boleto->getMulta(), 13, 2));
+        $this->add(91, 103, Util::formatCnab('9', $boleto->getMulta(), 13, 4));
         $this->add(104, 105, $boleto->getMulta() > 0 ? Util::numberFormatGeral($boleto->getMultaApos(), 2) : '00');
         $this->add(106, 107, '');
         $this->add(108, 108, Util::formatCnab('9', $this->getCarteira(), 1));
