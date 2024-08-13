@@ -203,7 +203,22 @@ class Abc extends AbstractRemessa implements RemessaContract
         if ($chaveNfe = $boleto->getChaveNfe()) {
             $this->iniciaDetalhe();
             $this->add(1, 1, '4');
-            $this->add(38, 81, Util::formatCnab('9', $chaveNfe, 44));
+
+            $this->add(2, 16, Util::formatCnab('X', ltrim(substr($chaveNfe, 22, 9), 0), 15)); // Numero da nota 1
+            $this->add(17, 29, Util::formatCnab('9', 0, 11, 2)); // valor da nota 1
+            $this->add(30, 37, Util::formatCnab('9', 0, 8)); // data nota 1
+            $this->add(38, 81, Util::formatCnab('9', $chaveNfe, 44)); // Chave da nota 1
+
+            $this->add(82, 96, Util::formatCnab('X', ltrim(substr($chaveNfe, 22, 9), 0), 15)); // Numero da nota 2
+            $this->add(97, 109, Util::formatCnab('9', 0, 11, 2)); // valor da nota 2
+            $this->add(110, 117, Util::formatCnab('9', 0, 8)); // data nota 2
+            $this->add(118, 161, Util::formatCnab('9', 0, 44));  // Chave da nota 2
+
+            $this->add(162, 176, Util::formatCnab('X', ltrim(substr($chaveNfe, 22, 9), 0), 15)); // Numero da nota 3
+            $this->add(177, 189, Util::formatCnab('9', 0, 11, 2)); // valor da nota 3
+            $this->add(190, 197, Util::formatCnab('9', 0, 8)); // data nota 3
+            $this->add(198, 241, Util::formatCnab('9', 0, 44));  // Chave da nota 3
+
             $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
         }
 
