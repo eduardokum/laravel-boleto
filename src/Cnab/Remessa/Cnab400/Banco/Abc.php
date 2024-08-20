@@ -197,7 +197,7 @@ class Abc extends AbstractRemessa implements RemessaContract
         $this->add(382, 385, Util::formatCnab('X', '', 4));
         $this->add(386, 391, Util::formatCnab('X', '', 6));
         $this->add(392, 393, Util::formatCnab('9', $boleto->getDiasProtesto('0'), 2));
-        $this->add(394, 394, $boleto->getMoeda());
+        $this->add(394, 394, $boleto->getMoeda() == 9 ? '1' : $boleto->getMoeda());
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
 
         if (count($boleto->getNotasFiscais()) > 0) {
