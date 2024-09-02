@@ -58,7 +58,7 @@ class Abc extends AbstractBoleto implements BoletoContract
      *
      * @var int
      */
-    protected $moeda = 0;
+    protected $moeda = 9;
 
     /**
      * @var string

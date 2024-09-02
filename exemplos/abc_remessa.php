@@ -49,4 +49,5 @@ $remessa = new Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco\Abc([
 ]);
 $remessa->addBoleto($boleto);
 
+echo '<pre>';
 echo $remessa->gerar();

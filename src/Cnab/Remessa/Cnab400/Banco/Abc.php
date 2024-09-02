@@ -151,7 +151,7 @@ class Abc extends AbstractRemessa implements RemessaContract
         $this->add(74, 86, Util::formatCnab('X', '', 11));
         $this->add(87, 89, Util::formatCnab('X', '', 3));
         $this->add(90, 90, $boleto->getMulta() > 0 ? '2' : '0');
-        $this->add(91, 103, Util::formatCnab('9', $boleto->getMulta(), 13, 2));
+        $this->add(91, 103, Util::formatCnab('9', $boleto->getMulta(), 13, 4));
         $this->add(104, 105, $boleto->getMulta() > 0 ? Util::numberFormatGeral($boleto->getMultaApos(), 2) : '00');
         $this->add(106, 107, '');
         $this->add(108, 108, Util::formatCnab('9', $this->getCarteira(), 1));
@@ -197,13 +197,31 @@ class Abc extends AbstractRemessa implements RemessaContract
         $this->add(382, 385, Util::formatCnab('X', '', 4));
         $this->add(386, 391, Util::formatCnab('X', '', 6));
         $this->add(392, 393, Util::formatCnab('9', $boleto->getDiasProtesto('0'), 2));
-        $this->add(394, 394, $boleto->getMoeda());
+        $this->add(394, 394, $boleto->getMoeda() == 9 ? '1' : $boleto->getMoeda());
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
 
-        if ($chaveNfe = $boleto->getChaveNfe()) {
+        if (count($boleto->getNotasFiscais()) > 0) {
             $this->iniciaDetalhe();
             $this->add(1, 1, '4');
-            $this->add(38, 81, Util::formatCnab('9', $chaveNfe, 44));
+
+            $nota1 = $boleto->getNotaFiscal(0);
+            $this->add(2, 16, Util::formatCnab('X', $nota1->getNumero(), 15)); // Numero da nota 1
+            $this->add(17, 29, Util::formatCnab('9', $nota1->getValor(), 13, 2)); // valor da nota 1
+            $this->add(30, 37, Util::formatCnab('9', $nota1->getData('dmY'), 8)); // data nota 1
+            $this->add(38, 81, Util::formatCnab('9', $nota1->getChave(), 44)); // Chave da nota 1
+
+            $nota2 = $boleto->getNotaFiscal(1);
+            $this->add(82, 96, Util::formatCnab('X', $nota2->getNumero(), 15)); // Numero da nota 2
+            $this->add(97, 109, Util::formatCnab('9', $nota2->getValor(), 13, 2)); // valor da nota 2
+            $this->add(110, 117, Util::formatCnab('9', $nota2->getData('dmY'), 8)); // data nota 2
+            $this->add(118, 161, Util::formatCnab('9', $nota2->getChave(), 44));  // Chave da nota 2
+
+            $nota3 = $boleto->getNotaFiscal(2);
+            $this->add(162, 176, Util::formatCnab('X', $nota3->getNumero(), 15)); // Numero da nota 3
+            $this->add(177, 189, Util::formatCnab('9', $nota3->getValor(), 13, 2)); // valor da nota 3
+            $this->add(190, 197, Util::formatCnab('9', $nota3->getData('dmY'), 8)); // data nota 3
+            $this->add(198, 241, Util::formatCnab('9', $nota3->getChave(), 44));  // Chave da nota 3
+
             $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
         }
 

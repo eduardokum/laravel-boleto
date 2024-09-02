@@ -5,12 +5,14 @@ namespace Eduardokum\LaravelBoleto\Boleto;
 use Exception;
 use Throwable;
 use Carbon\Carbon;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
 use Eduardokum\LaravelBoleto\Util;
 use chillerlan\QRCode\Data\QRMatrix;
 use Eduardokum\LaravelBoleto\MagicTrait;
+use Eduardokum\LaravelBoleto\NotaFiscal;
 use chillerlan\QRCode\Output\QROutputInterface;
 use Eduardokum\LaravelBoleto\Boleto\Render\Pdf;
 use Eduardokum\LaravelBoleto\Boleto\Render\Html;
@@ -19,6 +21,7 @@ use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto;
 use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Eduardokum\LaravelBoleto\Contracts\NotaFiscal as NotaFiscalContract;
 
 /**
  * Class AbstractBoleto
@@ -297,6 +300,13 @@ abstract class AbstractBoleto implements BoletoContract
      * @var PessoaContract
      */
     public $pagador;
+
+    /**
+     * Notas fiscais vinculadas ao Boleto
+     *
+     * @var NotaFiscalContract[]
+     */
+    public $notasFiscais = [];
 
     /**
      * Entidade sacadora avalista
@@ -632,6 +642,58 @@ abstract class AbstractBoleto implements BoletoContract
     public function getBeneficiario()
     {
         return $this->beneficiario;
+    }
+
+    /**
+     * Add notas fiscais
+     *
+     * @param $notasFiscais
+     *
+     * @return AbstractBoleto
+     * @throws ValidationException
+     */
+    public function setNotasFiscais($notasFiscais)
+    {
+        $notasFiscais = Arr::get($notasFiscais, '0') ? $notasFiscais : [$notasFiscais];
+        foreach ($notasFiscais as $notaFiscal) {
+            Util::addNotaFiscal($this->notasFiscais, $notaFiscal);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Retorna as notas fiscais
+     *
+     * @return NotaFiscalContract[]
+     */
+    public function getNotasFiscais()
+    {
+        if (count($this->notasFiscais) == 0 && $this->chaveNfe) {
+            return [
+                new NotaFiscal([
+                    'chave' => $this->chaveNfe,
+                ]),
+            ];
+        }
+
+        return $this->notasFiscais;
+    }
+
+    /**
+     * Retorna a notas fiscal
+     *
+     * @return NotaFiscalContract
+     */
+    public function getNotaFiscal($indice)
+    {
+        if ($indice == 0 && count($this->notasFiscais) == 0 && $this->chaveNfe) {
+            return new NotaFiscal([
+                'chave' => $this->chaveNfe,
+            ]);
+        }
+
+        return optional(Arr::get($this->notasFiscais, $indice));
     }
 
     /**
@@ -997,6 +1059,10 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getChaveNfe()
     {
+        if (count($this->notasFiscais) > 0) {
+            return Arr::first($this->getNotasFiscais())->getChave();
+        }
+
         if (strlen($this->chaveNfe) != 44) {
             return null;
         }
