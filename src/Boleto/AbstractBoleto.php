@@ -431,6 +431,8 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function __construct($params = [])
     {
+        $this->campoCodigoBarras =  $params['campoCodigoBarras'];
+        $this->campoLinhaDigitavel = $params['campoLinhaDigitavel'];
         Util::fillClass($this, $params);
         // Marca a data de emissão para hoje, caso não especificada
         if (! $this->getDataDocumento()) {
