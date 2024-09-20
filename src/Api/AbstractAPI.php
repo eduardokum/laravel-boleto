@@ -368,6 +368,7 @@ abstract class AbstractAPI implements Api
     public function setBeneficiario($beneficiario)
     {
         Util::addPessoa($this->beneficiario, $beneficiario);
+        $this->beneficiario->setTipo('beneficiario');
 
         return $this;
     }
@@ -464,7 +465,7 @@ abstract class AbstractAPI implements Api
      * @throws UnauthorizedException
      * @throws CurlException
      */
-    protected function post($url, array $post, $raw = false, $clear=true)
+    protected function post($url, array $post, $raw = false, $clear = true)
     {
         $url = ltrim($url, '/');
         $this->init()
@@ -474,7 +475,7 @@ abstract class AbstractAPI implements Api
             ]));
 
         // clean string
-        if($clear) {
+        if ($clear) {
             $post = $this->arrayMapRecursive(function ($data) {
                 return Util::normalizeChars($data);
             }, $post);

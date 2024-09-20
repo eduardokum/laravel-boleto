@@ -10,6 +10,11 @@ class Pessoa implements PessoaContract
     /**
      * @var string
      */
+    protected $tipo;
+
+    /**
+     * @var string
+     */
     protected $nome;
 
     /**
@@ -72,15 +77,15 @@ class Pessoa implements PessoaContract
     public static function create($nome, $documento, $endereco = null, $bairro = null, $cep = null, $cidade = null, $uf = null, $email = null, $nomeFantasia = null)
     {
         return new static([
-            'nome'      => $nome,
-            'nomeFantasia'  => $nomeFantasia,
-            'endereco'  => $endereco,
-            'bairro'    => $bairro,
-            'cep'       => $cep,
-            'uf'        => $uf,
-            'cidade'    => $cidade,
-            'documento' => $documento,
-            'email'     => $email,
+            'nome'         => $nome,
+            'nomeFantasia' => $nomeFantasia,
+            'endereco'     => $endereco,
+            'bairro'       => $bairro,
+            'cep'          => $cep,
+            'uf'           => $uf,
+            'cidade'       => $cidade,
+            'documento'    => $documento,
+            'email'        => $email,
         ]);
     }
 
@@ -92,6 +97,39 @@ class Pessoa implements PessoaContract
     public function __construct($params = [])
     {
         Util::fillClass($this, $params);
+    }
+
+    /**
+     * Define o tipo
+     *
+     * @param $tipo
+     * @param bool $force
+     * @return Pessoa
+     * @throws ValidationException
+     */
+    public function setTipo($tipo, $force = false)
+    {
+        if (! in_array($tipo, ['pagador', 'beneficiario', 'sacadorAvalista'])) {
+            throw new ValidationException("Tipo de pessoa inválido [$tipo]");
+        }
+
+        if ($this->getTipo() && ! $force) {
+            return $this;
+        }
+
+        $this->tipo = $tipo;
+
+        return $this;
+    }
+
+    /**
+     * Retorna o bairro
+     *
+     * @return string
+     */
+    public function getTipo()
+    {
+        return $this->tipo;
     }
 
     /**
@@ -248,7 +286,7 @@ class Pessoa implements PessoaContract
     {
         return $this->nome;
     }
-    
+
     /**
      * Define o Nome Fantasia
      *

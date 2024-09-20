@@ -278,6 +278,7 @@ abstract class AbstractRemessa
     public function setBeneficiario($beneficiario)
     {
         Util::addPessoa($this->beneficiario, $beneficiario);
+        $this->beneficiario->setTipo('beneficiario');
 
         return $this;
     }

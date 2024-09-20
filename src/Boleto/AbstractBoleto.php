@@ -624,6 +624,7 @@ abstract class AbstractBoleto implements BoletoContract
     public function setBeneficiario($beneficiario)
     {
         Util::addPessoa($this->beneficiario, $beneficiario);
+        $this->beneficiario->setTipo('beneficiario');
 
         return $this;
     }
@@ -1271,6 +1272,7 @@ abstract class AbstractBoleto implements BoletoContract
     public function setPagador($pagador)
     {
         Util::addPessoa($this->pagador, $pagador);
+        $this->pagador->setTipo('pagador');
 
         return $this;
     }
@@ -1296,6 +1298,7 @@ abstract class AbstractBoleto implements BoletoContract
     public function setSacadorAvalista($sacadorAvalista)
     {
         Util::addPessoa($this->sacadorAvalista, $sacadorAvalista);
+        $this->sacadorAvalista->setTipo('sacadorAvalista');
 
         return $this;
     }
