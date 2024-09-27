@@ -601,7 +601,7 @@ class Detalhe implements DetalheContract
     public function setPagador($pagador)
     {
         Util::addPessoa($this->pagador, $pagador);
-        $this->pagador->setTipo('pagador');
+        $this->pagador->setTipo(Pessoa::TIPO_PAGADOR);
 
         return $this;
     }

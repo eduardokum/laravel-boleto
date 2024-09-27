@@ -11,6 +11,7 @@ use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
 use Eduardokum\LaravelBoleto\Util;
 use chillerlan\QRCode\Data\QRMatrix;
+use Eduardokum\LaravelBoleto\Pessoa;
 use Eduardokum\LaravelBoleto\MagicTrait;
 use Eduardokum\LaravelBoleto\NotaFiscal;
 use chillerlan\QRCode\Output\QROutputInterface;
@@ -624,7 +625,7 @@ abstract class AbstractBoleto implements BoletoContract
     public function setBeneficiario($beneficiario)
     {
         Util::addPessoa($this->beneficiario, $beneficiario);
-        $this->beneficiario->setTipo('beneficiario');
+        $this->beneficiario->setTipo(Pessoa::TIPO_BENEFICIARIO);
 
         return $this;
     }
@@ -1272,7 +1273,7 @@ abstract class AbstractBoleto implements BoletoContract
     public function setPagador($pagador)
     {
         Util::addPessoa($this->pagador, $pagador);
-        $this->pagador->setTipo('pagador');
+        $this->pagador->setTipo(Pessoa::TIPO_PAGADOR);
 
         return $this;
     }
@@ -1298,7 +1299,7 @@ abstract class AbstractBoleto implements BoletoContract
     public function setSacadorAvalista($sacadorAvalista)
     {
         Util::addPessoa($this->sacadorAvalista, $sacadorAvalista);
-        $this->sacadorAvalista->setTipo('sacadorAvalista');
+        $this->sacadorAvalista->setTipo(Pessoa::TIPO_SACADOR);
 
         return $this;
     }

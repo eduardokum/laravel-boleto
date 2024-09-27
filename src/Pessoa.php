@@ -7,6 +7,10 @@ use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
 
 class Pessoa implements PessoaContract
 {
+    const TIPO_PAGADOR = 'pagador';
+    const TIPO_BENEFICIARIO = 'beneficiario';
+    const TIPO_SACADOR = 'sacadorAvalista';
+
     /**
      * @var string
      */
@@ -109,7 +113,7 @@ class Pessoa implements PessoaContract
      */
     public function setTipo($tipo, $force = false)
     {
-        if (! in_array($tipo, ['pagador', 'beneficiario', 'sacadorAvalista'])) {
+        if (! in_array($tipo, [self::TIPO_PAGADOR, self::TIPO_BENEFICIARIO, self::TIPO_SACADOR])) {
             throw new ValidationException("Tipo de pessoa inválido [$tipo]");
         }
 

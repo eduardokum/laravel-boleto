@@ -368,7 +368,7 @@ abstract class AbstractAPI implements Api
     public function setBeneficiario($beneficiario)
     {
         Util::addPessoa($this->beneficiario, $beneficiario);
-        $this->beneficiario->setTipo('beneficiario');
+        $this->beneficiario->setTipo(Pessoa::TIPO_BENEFICIARIO);
 
         return $this;
     }

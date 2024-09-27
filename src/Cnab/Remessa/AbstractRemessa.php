@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Eduardokum\LaravelBoleto\Util;
 use Illuminate\Support\Collection;
+use Eduardokum\LaravelBoleto\Pessoa;
 use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Contracts\Pessoa as PessoaContract;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
@@ -278,7 +279,7 @@ abstract class AbstractRemessa
     public function setBeneficiario($beneficiario)
     {
         Util::addPessoa($this->beneficiario, $beneficiario);
-        $this->beneficiario->setTipo('beneficiario');
+        $this->beneficiario->setTipo(Pessoa::TIPO_BENEFICIARIO);
 
         return $this;
     }
