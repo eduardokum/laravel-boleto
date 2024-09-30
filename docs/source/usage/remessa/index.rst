@@ -15,7 +15,7 @@ Banrisul                   yes*  yes
 Banco do Brasil            yes*  yes
 Banco do Nordeste          no    yes*
 Bradesco                   yes*  yes
-Caixa Econônica Federal    yes*  yes
+Caixa Econômica Federal    yes*  yes
 HSBC                       no    yes
 Itaú                       yes*  yes
 Santander                  yes*  yes

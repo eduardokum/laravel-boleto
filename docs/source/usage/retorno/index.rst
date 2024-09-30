@@ -15,7 +15,7 @@ Banrisul                   yes*  yes*
 Banco do Brasil            yes   yes*
 Banco do Nordeste          no    no
 Bradesco                   yes   yes*
-Caixa Econônica Federal    yes   yes*
+Caixa Econômica Federal    yes   yes*
 HSBC                       no    yes
 Itaú                       yes   yes*
 Santander                  yes   yes
@@ -129,7 +129,7 @@ Bradesco
      // To process the file
     $return->processar();
 
-Caixa Econônica Federal
+Caixa Econômica Federal
 -----------------------
 
 .. code-block:: php
