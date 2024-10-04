@@ -215,8 +215,8 @@ class Daycoval extends AbstractRemessa implements RemessaContract
             $this->add(3, 71, Util::formatCnab('X', Arr::get($instrucoes, 0), 69));
             $this->add(72, 140, Util::formatCnab('X', Arr::get($instrucoes, 1), 69));
             $this->add(141, 209, Util::formatCnab('X', Arr::get($instrucoes, 2), 69));
-            $this->add(210, 274, Util::formatCnab('X', Arr::get($instrucoes, 3), 69));
-            $this->add(275, 394, '');
+            $this->add(210, 278, Util::formatCnab('X', Arr::get($instrucoes, 3), 69));
+            $this->add(279, 394, '');
             $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
         }
 
