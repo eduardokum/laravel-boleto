@@ -3,6 +3,7 @@
 namespace Eduardokum\LaravelBoleto\Tests\Boleto;
 
 use Exception;
+use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Pessoa;
 use PHPUnit\Framework\Constraint\IsType;
 use Eduardokum\LaravelBoleto\Tests\TestCase;
@@ -878,5 +879,66 @@ class BoletoTest extends TestCase
         $this->assertThat($boleto->toArray(), (new IsType(IsType::TYPE_ARRAY)));
         $this->assertNotNull($boleto->renderHTML());
         $this->assertNotNull($boleto->renderPDF());
+    }
+
+    public function testBoletoApiUnicred()
+    {
+        $boleto = new Boleto\Unicred([
+            'logo' => realpath(__DIR__ . '/../../logos/') . DIRECTORY_SEPARATOR . '136.png',
+            'dataVencimento' => new \Carbon\Carbon(),
+            'valor' => 100,
+            'multa' => 5,
+            'juros' => 5,
+            'numero' => 1,
+            'numeroDocumento' => 1,
+            'pagador' => self::$pagador,
+            'beneficiario' => self::$beneficiario,
+            'carteira' => '21',
+            'convenio' => '000000',
+            'agencia' => 1111,
+            'agenciaDv' => 1,
+            'conta' => 11111,
+            'contaDv' => 1,
+            'descricaoDemonstrativo' => ['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'],
+            'instrucoes' => ['instrucao 1', 'instrucao 2', 'instrucao 3'],
+            'aceite' => 'S',
+            'especieDoc' => 'DM',
+            'tipoJuro' => 'VALOR_DIARIO',
+            'tipoMulta' => 'VALOR_FIXO',
+        ]);
+        $this->assertThat($boleto->toAPI(), (new IsType(IsType::TYPE_ARRAY)));
+
+        $this->assertEquals($boleto->toAPI(), [
+            'seuNumero'     => $boleto->getNumero(),
+            'valor'         => Util::nFloat($boleto->getValor(), 2, false),
+            'vencimento'    => $boleto->getDataVencimento()->format('Y-m-d'),
+            'pagador' => [
+                'nomeRazaoSocial' => substr($boleto->getPagador()->getNome(), 0, 40),
+                'tipoPessoa'      => strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? 'J' : 'F',
+                'numeroDocumento' => Util::onlyNumbers($boleto->getPagador()->getDocumento()),
+                'nomeFantasia'    => $boleto->getPagador()->getNomeFantasia(),
+                'email'           => $boleto->getPagador()->getEmail(),
+                'endereco' => [
+                    'logradouro' => $boleto->getPagador()->getEndereco(),
+                    'bairro'     => $boleto->getPagador()->getBairro(),
+                    'cidade'     => $boleto->getPagador()->getCidade(),
+                    'uf'         => $boleto->getPagador()->getUf(),
+                    'cep'        => Util::onlyNumbers($boleto->getPagador()->getCep())
+                ]
+            ],
+            'mensagensFichaCompensacao' => array_filter(array_map(function($instrucao) {
+                return is_null($instrucao) ? null : trim($instrucao);
+            }, $boleto->getInstrucoes())),
+            'multa' => [
+                'codigo' => $boleto->getTipoMulta(),
+                'dataInicio' => ($boleto->getDataVencimento()->copy())->addDay()->format('Y-m-d'),
+                'valor' => Util::nFloat($boleto->getMulta()),
+            ],
+            'juros' => [
+                'codigo' => $boleto->getTipoJuro(),
+                'dataInicio' => ($boleto->getDataVencimento()->copy())->addDays($boleto->getJurosApos() > 0 ? $boleto->getJurosApos() : 1)->format('Y-m-d'),
+                'valor' => Util::nFloat($boleto->getJuros()),
+            ]
+        ]);
     }
 }
