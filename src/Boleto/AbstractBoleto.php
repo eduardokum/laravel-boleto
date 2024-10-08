@@ -129,6 +129,12 @@ abstract class AbstractBoleto implements BoletoContract
     public $diasProtesto = 0;
 
     /**
+     * Tipo de prostesto se dias úteis, dias corridos, não protestar
+     * @var int
+     */
+    public $tipoProtesto = 0;
+
+    /**
      * Dias para baixa automática
      *
      * @var int
@@ -1504,6 +1510,38 @@ abstract class AbstractBoleto implements BoletoContract
     public function getDiasProtesto($default = 0)
     {
         return $this->diasProtesto > 0 ? $this->diasProtesto : $default;
+    }
+
+    /**
+     * Seta dias para protesto
+     * 0 = Não protestar, 1 = Dias corridos, 2 = Dias úteis, 3 = Negativar dias corridos, 4 = Não negativar
+     * @param int $tipoProtesto
+     *
+     * @return AbstractBoleto
+     * @throws \Exception
+     */
+    public function setTipoProtesto($tipoProtesto)
+    {
+        $tipoProtesto = (int)$tipoProtesto;
+        $this->tipoProtesto = $tipoProtesto > 0 ? $tipoProtesto : 0;
+
+        if (!empty($tipoProtesto) && $this->getDiasProtesto() == 0) {
+            throw new \Exception('Você deve informar dias de protesto se informar tipo de protesto');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Retorna os diasProtesto
+     *
+     * @param int $default
+     *
+     * @return int
+     */
+    public function getTipoProtesto($default = 0)
+    {
+        return $this->tipoProtesto > 0 ? $this->tipoProtesto : $default;
     }
 
     /**
