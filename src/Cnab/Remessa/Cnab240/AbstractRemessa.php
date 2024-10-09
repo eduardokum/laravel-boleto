@@ -177,7 +177,7 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
         $this->headerLote();
         $stringRemessa .= $this->valida($this->getHeaderLote()) . $this->fimLinha;
 
-        foreach ($this->getDetalhes() as $i => $detalhe) {
+        foreach ($this->getDetalhes() as $detalhe) {
             $stringRemessa .= $this->valida($detalhe) . $this->fimLinha;
         }
 

@@ -276,9 +276,8 @@ abstract class AbstractPdf extends FPDF
     {
         $args = func_get_args();
         $var = utf8_decode(array_shift($args));
-        $s = vsprintf($var, $args);
 
-        return $s;
+        return vsprintf($var, $args);
     }
 
     protected function textFitCell($w, $h, $txt, $border, $ln, $align, $dec = 0.1)

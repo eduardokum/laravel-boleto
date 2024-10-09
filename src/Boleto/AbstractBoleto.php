@@ -115,7 +115,7 @@ abstract class AbstractBoleto implements BoletoContract
     public $juros = 0;
 
     /**
-     * Dias apos vencimento do juros
+     * Dias após vencimento do juros
      *
      * @var int
      */
@@ -511,7 +511,6 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * @param $id
      * @return AbstractBoleto
-     * @throws ValidationException
      */
     public function setID($id)
     {
@@ -948,7 +947,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Retorna o campo Número do documento
      *
-     * @return string
+     * @return int
      */
     public function getNumeroDocumento()
     {
@@ -996,7 +995,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Retorna o número definido pelo cliente para controle da remessa
      *
-     * @return int
+     * @return string
      */
     public function getNumeroControle()
     {
@@ -1103,7 +1102,7 @@ abstract class AbstractBoleto implements BoletoContract
         if (count($this->getInstrucoes()) > 8) {
             throw new ValidationException('Atingido o máximo de 5 instruções.');
         }
-        array_push($this->instrucoes, $instrucao);
+        $this->instrucoes[] = $instrucao;
 
         return $this;
     }
@@ -1133,7 +1132,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getInstrucoes()
     {
-        return array_slice((array) $this->instrucoes + [null, null, null, null, null, null, null, null], 0, 8);
+        return array_slice($this->instrucoes + [null, null, null, null, null, null, null, null], 0, 8);
     }
 
     /**
@@ -1162,7 +1161,7 @@ abstract class AbstractBoleto implements BoletoContract
     public function getInstrucoesImpressao()
     {
         if (! empty($this->instrucoes_impressao)) {
-            return array_slice((array) $this->instrucoes_impressao + [null, null, null, null, null], 0, 5);
+            return array_slice($this->instrucoes_impressao + [null, null, null, null, null], 0, 5);
         } else {
             return [];
         }
@@ -1181,7 +1180,7 @@ abstract class AbstractBoleto implements BoletoContract
         if (count($this->getDescricaoDemonstrativo()) > 5) {
             throw new ValidationException('Atingido o máximo de 5 demonstrativos.');
         }
-        array_push($this->descricaoDemonstrativo, $descricaoDemonstrativo);
+        $this->descricaoDemonstrativo[] = $descricaoDemonstrativo;
 
         return $this;
     }
@@ -1211,7 +1210,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getDescricaoDemonstrativo()
     {
-        return array_slice((array) $this->descricaoDemonstrativo + [null, null, null, null, null], 0, 5);
+        return array_slice($this->descricaoDemonstrativo + [null, null, null, null, null], 0, 5);
     }
 
     /**
@@ -1371,7 +1370,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setMulta($multa)
     {
-        $this->multa = (float) ($multa > 0.00 ? $multa : 0.00);
+        $this->multa = (float) (max($multa, 0.00));
 
         return $this;
     }
@@ -1395,7 +1394,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setJuros($juros)
     {
-        $this->juros = (float) ($juros > 0.00 ? $juros : 0.00);
+        $this->juros = max($juros, 0.00);
 
         return $this;
     }
@@ -1433,8 +1432,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setJurosApos($jurosApos)
     {
-        $jurosApos = (int) $jurosApos;
-        $this->jurosApos = $jurosApos > 0 ? $jurosApos : 0;
+        $this->jurosApos = max((int) $jurosApos, 0);
 
         return $this;
     }
@@ -1446,7 +1444,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getJurosApos()
     {
-        return $this->jurosApos ? $this->jurosApos : false;
+        return $this->jurosApos ?: false;
     }
 
     /**
@@ -1458,8 +1456,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setMultaApos($multaApos)
     {
-        $multaApos = (int) $multaApos;
-        $this->multaApos = $multaApos > 0 ? $multaApos : 0;
+        $this->multaApos = max((int) $multaApos, 0);
 
         return $this;
     }
@@ -1475,7 +1472,7 @@ abstract class AbstractBoleto implements BoletoContract
     }
 
     /**
-     * Seta dias para protesto
+     * Seta os dias para protesto
      *
      * @param int $diasProtesto
      *
@@ -1484,10 +1481,9 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setDiasProtesto($diasProtesto)
     {
-        $diasProtesto = (int) $diasProtesto;
-        $this->diasProtesto = $diasProtesto > 0 ? $diasProtesto : 0;
+        $this->diasProtesto = max((int) $diasProtesto, 0);
 
-        if (! empty($diasProtesto) && $this->getDiasBaixaAutomatica() > 0) {
+        if (! empty($this->diasProtesto) && $this->getDiasBaixaAutomatica() > 0) {
             throw new ValidationException('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
         }
 
@@ -1527,7 +1523,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getDiasBaixaAutomatica($default = 0)
     {
-        //Caso não tenha valor definido de dias pra protesto setar 60 dias como valor padrão para baixa automatica.
+        //Caso não tenha valor definido de dias para protesto setar 60 dias como valor padrão para baixa automática.
         //O valor padrão só será utilizado caso não haja nenhum valor definido para baixaAutomatica
         if (empty($this->getDiasProtesto())) {
             $default = (empty($default) ? 60 : $default);
@@ -1557,7 +1553,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getLogo()
     {
-        return $this->logo ? $this->logo : 'http://dummyimage.com/300x70/f5/0.png&text=Sem+Logo';
+        return $this->logo ?: 'https://dummyimage.com/300x70/f5/0.png&text=Sem+Logo';
     }
 
     /**
@@ -2084,7 +2080,6 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * @param $id
      * @return string
-     * @throws ValidationException
      */
     protected function validateId($id)
     {

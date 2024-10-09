@@ -45,7 +45,7 @@ abstract class AbstractAPI implements Api
 
     protected $beneficiario;
 
-    private $curl = null;
+    private $curl;
 
     private $responseHttpCode = null;
 
@@ -596,7 +596,7 @@ abstract class AbstractAPI implements Api
     {
         $compiledHeader = [];
         foreach ($headers as $param => $value) {
-            if (is_integer($param) && preg_match('/([\w-]+): ?(.*)/g', $value)) {
+            if (is_integer($param) && preg_match('/([\w-]+): ?(.*)/', $value)) {
                 $compiledHeader[] = $value;
             } else {
                 $compiledHeader[] = "$param: $value";
