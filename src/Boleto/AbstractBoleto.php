@@ -313,7 +313,7 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Array com as linhas do demonstrativo (descrição do pagamento)
      *
-     * @var array
+     * @var array|null
      */
     protected $descricaoDemonstrativo;
 
@@ -327,14 +327,14 @@ abstract class AbstractBoleto implements BoletoContract
     /**
      * Array com as linhas de instruções
      *
-     * @var array
+     * @var array|null
      */
     protected $instrucoes = ['Pagar até a data do vencimento.'];
 
     /**
      * Array com as linhas de instruções de impressão
      *
-     * @var array
+     * @var array|null
      */
     protected $instrucoes_impressao = [];
 
@@ -1132,7 +1132,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getInstrucoes()
     {
-        return array_slice($this->instrucoes + [null, null, null, null, null, null, null, null], 0, 8);
+        return array_slice(((array) $this->instrucoes) + [null, null, null, null, null, null, null, null], 0, 8);
     }
 
     /**
@@ -1161,7 +1161,7 @@ abstract class AbstractBoleto implements BoletoContract
     public function getInstrucoesImpressao()
     {
         if (! empty($this->instrucoes_impressao)) {
-            return array_slice($this->instrucoes_impressao + [null, null, null, null, null], 0, 5);
+            return array_slice(((array) $this->instrucoes_impressao) + [null, null, null, null, null], 0, 5);
         } else {
             return [];
         }
@@ -1210,7 +1210,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getDescricaoDemonstrativo()
     {
-        return array_slice($this->descricaoDemonstrativo + [null, null, null, null, null], 0, 5);
+        return array_slice(((array) $this->descricaoDemonstrativo) + [null, null, null, null, null], 0, 5);
     }
 
     /**
