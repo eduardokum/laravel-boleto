@@ -125,7 +125,7 @@ class Daycoval extends AbstractRemessa implements RemessaContract
         $this->add(3, 9, 'REMESSA');
         $this->add(10, 11, '01');
         $this->add(12, 26, Util::formatCnab('X', 'COBRANCA', 15));
-        $this->add(27, 42, Util::formatCnab('X', $this->getCodigoCliente(), 20));
+        $this->add(27, 46, Util::formatCnab('X', $this->getCodigoCliente(), 20));
         $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(77, 79, $this->getCodigoBanco());
         $this->add(80, 94, Util::formatCnab('X', 'BANCO DAYCOVAL', 15));
