@@ -175,7 +175,7 @@ class Daycoval extends AbstractBoleto implements BoletoContract
      */
     public function imprimeBoleto()
     {
-        return $this->getCarteira() == 112;
+        return $this->getCarteira() == 121;
     }
 
     /**
