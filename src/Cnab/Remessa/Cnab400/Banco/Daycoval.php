@@ -49,7 +49,7 @@ class Daycoval extends AbstractRemessa implements RemessaContract
      * 3 Cobrança Caucionada
      * @var array
      */
-    protected $carteiras = [3];
+    protected $carteiras = [6];
 
     /**
      * Caracter de fim de linha

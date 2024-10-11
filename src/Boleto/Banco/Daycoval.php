@@ -29,7 +29,7 @@ class Daycoval extends AbstractBoleto implements BoletoContract
      * 3 Cobrança Caucionada
      * @var array
      */
-    protected $carteiras = [3];
+    protected $carteiras = [6];
 
     /**
      * Espécie do documento, coódigo para remessa
@@ -125,7 +125,7 @@ class Daycoval extends AbstractBoleto implements BoletoContract
      */
     public function getCarteira()
     {
-        return '112';
+        return '121';
     }
 
     /**
