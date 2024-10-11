@@ -18,6 +18,13 @@ class Daycoval extends AbstractBoleto implements BoletoContract
     protected $codigoBanco = Boleto::COD_BANCO_DAYCOVAL;
 
     /**
+     * Linha de local de pagamento
+     *
+     * @var string
+     */
+    protected $localPagamento = 'PAGAVEL EM QUALQUER AGÊNCIA BANCÁRIA, MESMO APÓS VENCIMENTO';
+
+    /**
      * Define as carteiras disponíveis para este banco
      * 3 Cobrança Caucionada
      * @var array
@@ -58,7 +65,7 @@ class Daycoval extends AbstractBoleto implements BoletoContract
     public function __construct(array $params = [])
     {
         parent::__construct($params);
-        $this->setCamposObrigatorios('numero', 'agencia', 'carteira', 'operacao');
+        $this->setCamposObrigatorios('numero', 'agencia', 'carteira', 'operacao', 'conta');
     }
 
     /**
@@ -141,7 +148,7 @@ class Daycoval extends AbstractBoleto implements BoletoContract
      */
     public function getNossoNumeroBoleto()
     {
-        return substr_replace($this->getNossoNumero(), '-', -1, 0);
+        return $this->getCarteira() . '/' . substr_replace($this->getNossoNumero(), '-', -1, 0);
     }
 
     /**
