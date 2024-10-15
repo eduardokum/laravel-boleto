@@ -510,9 +510,9 @@ final class Util
 
         // Verifica se o tipo é 'x' minúsculo e então retorna a string em minúsculas
         if ($tipo === 'Z') {
-            return strtolower(sprintf("%{$left}{$sFill}{$tamanho}{$type}", mb_substr($valor, 0, $tamanho)));
+            return strtolower(sprintf("%$left$sFill$tamanho$type", mb_substr($valor, 0, $tamanho)));
         } else {
-            return sprintf("%{$left}{$sFill}{$tamanho}{$type}", mb_substr($valor, 0, $tamanho));
+            return sprintf("%$left$sFill$tamanho$type", mb_substr($valor, 0, $tamanho));
         }
     }
 
@@ -896,7 +896,7 @@ final class Util
     /**
      * @param $file
      *
-     * @return array|bool
+     * @return array
      */
     public static function file2array($file)
     {
@@ -1101,7 +1101,7 @@ final class Util
      */
     public static function addPessoa(&$property, $obj)
     {
-        if (is_subclass_of($obj, 'Eduardokum\\LaravelBoleto\\Contracts\\Pessoa')) {
+        if (is_subclass_of($obj, "Eduardokum\LaravelBoleto\Contracts\Pessoa")) {
             $property = $obj;
 
             return $obj;
@@ -1123,7 +1123,7 @@ final class Util
      */
     public static function addNotaFiscal(&$property, $obj)
     {
-        if (is_subclass_of($obj, 'Eduardokum\\LaravelBoleto\\Contracts\\NotaFiscal')) {
+        if (is_subclass_of($obj, "Eduardokum\LaravelBoleto\Contracts\NotaFiscal")) {
             $property[] = $obj;
 
             return $obj;
@@ -1192,12 +1192,10 @@ final class Util
         }
         for ($s = 10, $n = 0, $i = 0; $s >= 2; $n += $c[$i++] * $s--);
         if ($c[9] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
-
             return false;
         }
         for ($s = 11, $n = 0, $i = 0; $s >= 2; $n += $c[$i++] * $s--);
         if ($c[10] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
-
             return false;
         }
 
@@ -1217,12 +1215,10 @@ final class Util
         }
         for ($i = 0, $n = 0; $i < 12; $n += $c[$i] * $b[++$i]);
         if ($c[12] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
-
             return false;
         }
         for ($i = 0, $n = 0; $i <= 12; $n += $c[$i] * $b[$i++]);
         if ($c[13] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
-
             return false;
         }
 
