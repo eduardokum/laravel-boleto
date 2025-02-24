@@ -1,11 +1,13 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
+use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
-use Eduardokum\LaravelBoleto\Util;
 
 class Bnb extends AbstractRemessa implements RemessaContract
 {
@@ -15,7 +17,6 @@ class Bnb extends AbstractRemessa implements RemessaContract
     const ESPECIE_CARNE = '04';
     const ESPECIE_RECIBO = '05';
     const ESPECIE_OUTROS = '19';
-
     const OCORRENCIA_REMESSA = '01';
     const OCORRENCIA_PEDIDO_BAIXA = '02';
     const OCORRENCIA_CONCESSAO_ABATIMENTO = '04';
@@ -29,7 +30,6 @@ class Bnb extends AbstractRemessa implements RemessaContract
     const OCORRENCIA_PEDIDO_DEVOLUCAO = '32';
     const OCORRENCIA_PEDIDO_DEVOLUCAO_ENTREGUE_SACADO = '33';
     const OCORRENCIA_PEDIDO_DOS_TITULOS_EM_ABERTO = '99';
-
     const INSTRUCAO_SEM = '00';
     const INSTRUCAO_ACATAR_INSTRUCOES_TITULO = '05';
     const INSTRUCAO_NAO_COBRAR_ENCARGOS = '08';
@@ -74,12 +74,13 @@ class Bnb extends AbstractRemessa implements RemessaContract
         if ($this->getCarteira() == '21') {
             return '4';
         }
+
         return '1';
     }
 
     /**
-     * @return $this
-     * @throws \Exception
+     * @return Bnb
+     * @throws ValidationException
      */
     protected function header()
     {
@@ -93,7 +94,7 @@ class Bnb extends AbstractRemessa implements RemessaContract
         $this->add(27, 30, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(31, 32, '00');
         $this->add(33, 39, Util::formatCnab('9', $this->getConta(), 7));
-        $this->add(40, 40, $this->getContaDv() ?: CalculoDV::bnbContaCorrente($this->getAgencia(), $this->getConta()));
+        $this->add(40, 40, ! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::bnbContaCorrente($this->getAgencia(), $this->getConta()));
         $this->add(41, 46, '');
         $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
         $this->add(77, 79, $this->getCodigoBanco());
@@ -106,21 +107,26 @@ class Bnb extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @param BoletoContract $boleto
+     * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Bnb $boleto
      *
-     * @return $this
-     * @throws \Exception
+     * @return Bnb
+     * @throws ValidationException
      */
     public function addBoleto(BoletoContract $boleto)
     {
         $this->boletos[] = $boleto;
-        $this->iniciaDetalhe();
+        if ($chaveNfe = $boleto->getChaveNfe()) {
+            $this->iniciaDetalheExtendido();
+        } else {
+            $this->iniciaDetalhe();
+        }
+
         $this->add(1, 1, '1');
         $this->add(2, 17, '');
         $this->add(18, 21, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(22, 23, '00');
         $this->add(24, 30, Util::formatCnab('9', $this->getConta(), 7));
-        $this->add(31, 31, $this->getContaDv() ?: CalculoDV::bnbContaCorrente($this->getAgencia(), $this->getConta()));
+        $this->add(31, 31, ! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::bnbContaCorrente($this->getAgencia(), $this->getConta()));
         $this->add(32, 33, Util::formatCnab('9', round($boleto->getMulta()), 2)); // Só aceita números inteiros
         $this->add(34, 37, '');
         $this->add(38, 62, Util::formatCnab('X', $boleto->getNumeroControle(), 25)); // Numero de controle
@@ -174,13 +180,16 @@ class Bnb extends AbstractRemessa implements RemessaContract
         }
         $this->add(394, 394, '0');
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
+        if ($chaveNfe) {
+            $this->add(401, 444, Util::formatCnab('9', $chaveNfe, 44));
+        }
 
         return $this;
     }
 
     /**
-     * @return $this
-     * @throws \Exception
+     * @return Bnb
+     * @throws ValidationException
      */
     protected function trailer()
     {

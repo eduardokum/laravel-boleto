@@ -1,131 +1,108 @@
 name: build
 
 on:
-  push:
-    branches:
-      - "*"
-  pull_request:
-    branches:
-      - "*"
+    push:
+        branches:
+            - "*"
+    pull_request:
+        branches:
+            - "*"
 
 jobs:
-  test:
-    if: "!contains(github.event.head_commit.message, 'skip ci')"
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu]
-        php: ["7.3"]
-        # Apenas versões com suporte
-        laravel:
-          - "5.5.*"
-          - "5.8.*"
-          - "6.*"
-          - "7.*"
-          - "8.*"
-        include:
-          - os: ubuntu
-            php: "7.3"
-            laravel: "8.*"
-          - os: macos
-            php: "7.3"
-            laravel: "7.*"
-          - os: windows
-            php: "7.3"
-            laravel: "7.*"
-    runs-on: ${{ matrix.os }}-latest
-    name: LRV ${{ matrix.laravel }} (${{ matrix.os }})
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          extensions: intl, mbstring, mcrypt, openssl
-          tools: composer
+    test:
+        if: "!contains(github.event.head_commit.message, 'skip ci')"
+        strategy:
+            fail-fast: false
+            matrix:
+                php: [ 8.2, 8.1, 8.0, 7.4 ]
+                laravel: [ 11.*, 10.*, 9.*, 8.*, 7.*, 6.*]
+                dependency-version: [ prefer-stable ]
+                os: [ ubuntu-latest ]
+                include:
+                    -   laravel: 11.*
+                        testbench: 9.*
+                    -   laravel: 10.*
+                        testbench: 8.*
+                    -   laravel: 9.*
+                        testbench: 7.*
+                    -   laravel: 8.*
+                        testbench: 6.*
+                    -   laravel: 7.*
+                        testbench: 5.*
+                    -   laravel: 6.*
+                        testbench: 4.*
+                    -   php: 8.2
+                        unitconfig: phpunit_gt_81.xml
+                    -   php: 8.1
+                        unitconfig: phpunit_gt_81.xml
+                    -   php: 8.0
+                        unitconfig: phpunit.xml
+                    -   php: 7.4
+                        unitconfig: phpunit.xml
+                exclude:
+                    -   laravel: 6.*
+                        php: 8
+                    -   laravel: 6.*
+                        php: 8.1
+                    -   laravel: 6.*
+                        php: 8.2
+                    -   laravel: 7.*
+                        php: 8
+                    -   laravel: 7.*
+                        php: 8.1
+                    -   laravel: 7.*
+                        php: 8.2
+                    -   laravel: 8.*
+                        php: 7.4
+                    -   laravel: 9.*
+                        php: 7.4
+                    -   laravel: 10.*
+                        php: 7.4
+                    -   laravel: 10.*
+                        php: 8.0
+                    -   laravel: 11.*
+                        php: 7.4
+                    -   laravel: 11.*
+                        php: 8.0
+                    -   laravel: 11.*
+                        php: 8.1
+        runs-on: ${{ matrix.os }}
+        name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.dependency-version }} - ${{ matrix.os }}
         env:
-          COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            extensions: intl, json, mbstring, dom, curl, openssl, mcrypt
 
-      - name: Setup problem matchers
-        run: |
-          echo "::add-matcher::${{ runner.tool_cache }}/php.json"
-          echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v2
 
-      # Necessário para usar a versão correta de teste do laravel
-      - name: Setup Laravel
-        run: |
-          composer require "orchestra/testbench=*" --no-update --no-suggest --ignore-platform-reqs --dev
-          composer require "laravel/framework=${{ matrix.laravel }}" --no-update --no-suggest --ignore-platform-reqs
+            -   name: Cache dependencies
+                uses: actions/cache@v1
+                with:
+                    path: ~/.composer/cache/files
+                    key: dependencies-laravel-${{ matrix.laravel }}-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
 
-      - name: Get composer cache directory
-        id: composercache
-        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+            -   name: Setup PHP extensions
+                id: cache-env
+                uses: shivammathur/cache-extensions@v1
+                with:
+                    php-version: ${{ matrix.php }}
+                    extensions: ${{ env.extensions }}
+                    key: php-extensions-cache-v1
 
-      - name: Cache dependencies
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.composercache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
-          restore-keys: ${{ runner.os }}-composer-
+            -   name: Setup PHP  ${{ matrix.php }}
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: ${{ matrix.php }}
+                    extensions: ${{ env.extensions }}
+                    tools: composer
+                env:
+                    COMPOSER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install dependencies
-        run: composer install --no-suggest --ignore-platform-reqs
+            -   name: Setup Laravel ${{ matrix.laravel }}
+                run: |
+                    composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
+                    composer update --${{ matrix.dependency-version }} --prefer-dist --no-interaction --no-suggest
 
-      - name: Run tests
-        run: "vendor/bin/phpunit -c phpunit.xml --coverage-clover=coverage.clover"
-
-      # Tenta enviar a cobertura de código até 5 vezes
-      - name: Upload coverage
-        run: |
-          cover() {
-            curl -s https://scrutinizer-ci.com/ocular.phar -o ocular.phar
-            php ocular.phar code-coverage:upload --format=php-clover coverage.clover
-          }
-          for i in {1..5}; do cover && break || sleep 5; done
-        shell: bash
-        continue-on-error: true
-
-  update-docs:
-    # Atualizar a documentação apenas a partir do ramo master
-    needs: [test]
-    if: "!contains(github.event.head_commit.message, 'skip ci') && github.ref == 'refs/heads/master'"
-    runs-on: ubuntu-latest
-    name: Update Docs
-    steps:
-      - name: Checkout source
-        uses: actions/checkout@v2
-        with:
-          path: source
-
-      - name: Checkout gh-pages
-        uses: actions/checkout@v2
-        with:
-          ref: gh-pages
-          path: gh-pages
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: 7.1
-          extensions: intl, mbstring, mcrypt, openssl
-
-      - name: Generate docs
-        run: |
-          wget http://www.apigen.org/apigen.phar
-          php apigen.phar generate -s source/src -d tmp-doc --title 'Documentação laravel-boletos' --template-theme bootstrap
-        continue-on-error: true
-
-      # Remove todos arquivos antigos e adiciona os novos
-      - name: Publish
-        working-directory: gh-pages
-        run: |
-          rm -rf *
-          cp -r ../tmp-doc/. ./
-          git config user.name github-actions
-          git config user.email github-action@users.noreply.github.com
-          git add .
-          git commit -m "Documentacao atualizada"
-          git push
-        continue-on-error: true
+            -   name: Run tests
+                run: |
+                    vendor/bin/phpunit -c ${{ matrix.unitconfig }} --coverage-clover=coverage.clover

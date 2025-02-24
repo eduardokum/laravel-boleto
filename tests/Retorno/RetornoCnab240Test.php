@@ -1,13 +1,10 @@
 <?php
 
-namespace Eduardokum\LaravelBoleto\Tests\Retorno;
+namespace Retorno;
 
-use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Detalhe;
-use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\DetalheSegmentoT;
-use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\DetalheSegmentoU;
-use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\DetalheSegmentoY;
-use Eduardokum\LaravelBoleto\Tests\TestCase;
 use Illuminate\Support\Collection;
+use Eduardokum\LaravelBoleto\Tests\TestCase;
+use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab240\Detalhe;
 
 class RetornoCnab240Test extends TestCase
 {
@@ -34,5 +31,4 @@ class RetornoCnab240Test extends TestCase
             $this->assertArrayHasKey('numeroDocumento', $detalhe->toArray());
         }
     }
-
 }

@@ -1,11 +1,13 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\Banco;
 
+use Illuminate\Support\Arr;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\RetornoCnab400;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Retorno\Cnab400\AbstractRetorno;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use Illuminate\Support\Arr;
 
 class Itau extends AbstractRetorno implements RetornoCnab400
 {
@@ -187,7 +189,7 @@ class Itau extends AbstractRetorno implements RetornoCnab400
      * @param array $header
      *
      * @return bool
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function processarHeader(array $header)
     {
@@ -208,12 +210,15 @@ class Itau extends AbstractRetorno implements RetornoCnab400
      * @param array $detalhe
      *
      * @return bool
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function processarDetalhe(array $detalhe)
     {
-        $d = $this->detalheAtual();
+        if ($this->rem(1, 1, $detalhe) == 3) {
+            return $this->processarPix($detalhe);
+        }
 
+        $d = $this->detalheAtual();
         $d->setCarteira($this->rem(83, 85, $detalhe))
             ->setNossoNumero($this->rem(86, 94, $detalhe))
             ->setNumeroDocumento($this->rem(117, 126, $detalhe))
@@ -251,12 +256,7 @@ class Itau extends AbstractRetorno implements RetornoCnab400
             $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
         } elseif ($d->hasOcorrencia('03', '15', '16', '17', '18', '60')) {
             $this->totais['erros']++;
-            $error = Util::appendStrings(
-                Arr::get($this->rejeicoes, $msgAdicional[0], ''),
-                Arr::get($this->rejeicoes, $msgAdicional[1], ''),
-                Arr::get($this->rejeicoes, $msgAdicional[2], ''),
-                Arr::get($this->rejeicoes, $msgAdicional[3], '')
-            );
+            $error = Util::appendStrings(Arr::get($this->rejeicoes, $msgAdicional[0], ''), Arr::get($this->rejeicoes, $msgAdicional[1], ''), Arr::get($this->rejeicoes, $msgAdicional[2], ''), Arr::get($this->rejeicoes, $msgAdicional[3], ''));
             $d->setError($error);
         } else {
             $d->setOcorrenciaTipo($d::OCORRENCIA_OUTROS);
@@ -269,7 +269,7 @@ class Itau extends AbstractRetorno implements RetornoCnab400
      * @param array $trailer
      *
      * @return bool
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function processarTrailer(array $trailer)
     {
@@ -283,5 +283,40 @@ class Itau extends AbstractRetorno implements RetornoCnab400
             ->setQuantidadeAlterados((int) $this->totais['alterados']);
 
         return true;
+    }
+
+    /**
+     * @param array $detalhe
+     * @return bool
+     * @throws ValidationException
+     */
+    private function processarPix(array $detalhe)
+    {
+        $d = $this->getDetalhe($this->increment - 1);
+
+        $aErrorPix = [
+            '000' => null,
+            '001' => 'VALOR MAIOR QUE O MÁXIMO PERMITIDO',
+            '002' => 'NÃO É COMPATÍVEL COM O CNPJ INFORMADO',
+            '003' => 'CHAVE INVÁLIDA',
+            '004' => 'CHAVE SEM CADASTRO NA DICT',
+            '005' => 'CHAVE NÃO CADASTRADA NO MESMO CNPJ DA AG/CONTA DA REMESSA.',
+            '006' => 'EMISSÃO DE QR CODE NÃO PERMITIDA',
+            '007' => 'DATA DE DESCONTO MAIOR QUE A DATA DE VENCIMENTO',
+            '008' => 'IDLOCATION JÁ ESTÁ SENDO UTILIZADO POR OUTRA COBRANÇA PIX.',
+            '009' => 'LOCATION CRIADA PARA TIPO “COBRANÇA COM VENCIMENTO”',
+            '010' => 'BOLETO COM PIX NÃO É PERMITIDO PARA BOLETO COM PAGAMENTO PARCIAL',
+            '011' => 'BOLETO COM PIX NÃO É PERMITIDO PARA A CARTEIRA DO BOLETO',
+            '999' => 'PIX NÃO EMITIDO POR PROLEMAS NA PLATAFORMA. ENTRE EM CONTATO COM AS ÁREAS DE SUPORTE DO ITAÚ UNIBANCO',
+        ];
+
+        $d->setPixQrCode(trim($this->rem(2, 391, $detalhe)));
+        if ($decoded = Util::decodePixCopiaECola($d->getPixQrCode())) {
+            $d->setPixLocation(Arr::get($decoded, '26.25'));
+            $d->setId(Arr::get($decoded, '62.05'));
+        }
+        $d->appendError($aErrorPix[sprintf('%03s', $this->rem(392, 394, $detalhe))]);
+
+        return false;
     }
 }

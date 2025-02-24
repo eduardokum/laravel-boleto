@@ -1,32 +1,39 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Tests;
 
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
-use PHPUnit\Framework\Constraint\IsType;
-use PHPUnit\Framework\Constraint\StringContains;
 
 class TestCase extends OrchestraTestCase
 {
-    public static function assertIsArray($actual, string $message = ''): void
+
+    protected function aceite()
     {
-        if (method_exists(OrchestraTestCase::class, 'assertIsArray')) {
-            parent::assertIsArray($actual, $message);
-        } else {
-            static::assertThat(
-                $actual,
-                new IsType(IsType::TYPE_ARRAY),
-                $message
-            );
-        }
+        $aValues = ['S', 'N'];
+        return $aValues[rand() & 1];
     }
 
-    public static function assertStringContainsString(string $needle, string $haystack, string $message = ''): void
+    protected function vencimento()
     {
-        if (method_exists(OrchestraTestCase::class, 'assertStringContainsString')) {
-            parent::assertStringContainsString($needle, $haystack, $message);
-        } else {
-            $constraint = new StringContains($needle, false);
-            static::assertThat($haystack, $constraint, $message);
-        }
+        return (new \Carbon\Carbon())->addDays(rand(0, 365));
+    }
+
+    protected function valor()
+    {
+        return mt_rand(100, 30000);
+    }
+
+    protected function multa()
+    {
+        //       sem multa, decimal entre 1 e 10
+        $aValues = [false, (mt_rand(10, 10 * 10) / 10)];
+        return $aValues[rand() & 1];
+    }
+
+    protected function juros()
+    {
+        //       sem multa, decimal entre 1 e 10
+        $aValues = [false, (mt_rand(10, 10 * 10) / 10)];
+        return $aValues[rand() & 1];
     }
 }

@@ -1,9 +1,23 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto;
+
+use Illuminate\Support\Str;
 
 trait MagicTrait
 {
     protected $trash = [];
+
+    public function __call($name, $arguments)
+    {
+        if (method_exists($this, $name)) {
+            return $this->{$name}($arguments);
+        }
+
+        $property = lcfirst(str_replace(['get', 'set'], ['', ''], $name));
+
+        return $this->{$property};
+    }
 
     /**
      * Fast set method.
@@ -30,7 +44,8 @@ trait MagicTrait
     public function __get($name)
     {
         if (property_exists($this, $name)) {
-            $method = 'get' . ucwords($name);
+            $method = 'get' . Str::camel($name);
+
             return $this->{$method}();
         } elseif (isset($this->trash[$name])) {
             return $this->trash[$name];
@@ -42,7 +57,7 @@ trait MagicTrait
     /**
      * Determine if an attribute exists
      *
-     * @param  string $key
+     * @param string $key
      * @return bool
      */
     public function __isset($key)
@@ -67,6 +82,7 @@ trait MagicTrait
                 $aRet[$var] = $aRet[$var]->toArray();
             }
         }
+
         return $aRet;
     }
 }

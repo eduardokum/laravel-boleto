@@ -1,4 +1,5 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Contracts\Cnab;
 
 use Illuminate\Support\Collection;
@@ -31,7 +32,7 @@ interface RetornoCnab400 extends Retorno
     public function getHeader();
 
     /**
-     *  @return Retorno\Cnab400\Trailer
+     * @return Retorno\Cnab400\Trailer
      */
     public function getTrailer();
 

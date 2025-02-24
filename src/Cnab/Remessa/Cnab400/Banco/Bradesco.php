@@ -1,12 +1,13 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
-use DeepCopyTest\B;
-use Eduardokum\LaravelBoleto\CalculoDV;
-use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 
 class Bradesco extends AbstractRemessa implements RemessaContract
 {
@@ -19,7 +20,6 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     const ESPECIE_NOTA_DEBITO = '11';
     const ESPECIE_DUPLICATA_SERVICO = '12';
     const ESPECIE_OUTROS = '99';
-
     const OCORRENCIA_REMESSA = '01';
     const OCORRENCIA_PEDIDO_BAIXA = '02';
     const OCORRENCIA_CONCESSAO_ABATIMENTO = '04';
@@ -37,8 +37,6 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     const OCORRENCIA_DESAGENDAMENTO_DEBITO_AUT = '35';
     const OCORRENCIA_ACERTO_RATEIO_CREDITO = '68';
     const OCORRENCIA_CANC_RATEIO_CREDITO = '69';
-
-
     const INSTRUCAO_SEM = '00';
     const INSTRUCAO_PROTESTAR_FAMILIAR_XX = '05';
     const INSTRUCAO_PROTESTAR_XX = '06';
@@ -58,7 +56,6 @@ class Bradesco extends AbstractRemessa implements RemessaContract
         $this->addCampoObrigatorio('idremessa');
     }
 
-
     /**
      * Código do banco
      *
@@ -71,8 +68,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
      *
      * @var array
      */
-
-    protected $carteiras = ['04', '09', '28'];
+    protected $carteiras = ['02', '04', '09', '28'];
 
     /**
      * Caracter de fim de linha
@@ -99,15 +95,15 @@ class Bradesco extends AbstractRemessa implements RemessaContract
      * Retorna o codigo do cliente.
      *
      * @return mixed
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function getCodigoCliente()
     {
         if (empty($this->codigoCliente)) {
             $this->codigoCliente = Util::formatCnab('9', $this->getCarteiraNumero(), 4) .
-            Util::formatCnab('9', $this->getAgencia(), 5) .
-            Util::formatCnab('9', $this->getConta(), 7) .
-            Util::formatCnab('9', $this->getContaDv() ?: CalculoDV::bradescoContaCorrente($this->getConta()), 1);
+                Util::formatCnab('9', $this->getAgencia(), 5) .
+                Util::formatCnab('9', $this->getConta(), 7) .
+                Util::formatCnab('9', ! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::bradescoContaCorrente($this->getConta()), 1);
         }
 
         return $this->codigoCliente;
@@ -128,8 +124,8 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @return $this
-     * @throws \Exception
+     * @return Bradesco
+     * @throws ValidationException
      */
     protected function header()
     {
@@ -155,15 +151,19 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @param BoletoContract $boleto
+     * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Bradesco $boleto
      *
-     * @return $this
-     * @throws \Exception
+     * @return Bradesco
+     * @throws ValidationException
      */
     public function addBoleto(BoletoContract $boleto)
     {
         $this->boletos[] = $boleto;
-        $this->iniciaDetalhe();
+        if ($chaveNfe = $boleto->getChaveNfe()) {
+            $this->iniciaDetalheExtendido();
+        } else {
+            $this->iniciaDetalhe();
+        }
 
         $this->add(1, 1, '1');
         $this->add(2, 6, '');
@@ -231,13 +231,16 @@ class Bradesco extends AbstractRemessa implements RemessaContract
         $this->add(327, 334, Util::formatCnab('9', Util::onlyNumbers($boleto->getPagador()->getCep()), 8));
         $this->add(335, 394, Util::formatCnab('X', $boleto->getSacadorAvalista() ? $boleto->getSacadorAvalista()->getNome() : '', 60));
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
+        if ($chaveNfe) {
+            $this->add(401, 444, Util::formatCnab('9', $chaveNfe, 44));
+        }
 
         return $this;
     }
 
     /**
-     * @return $this
-     * @throws \Exception
+     * @return Bradesco
+     * @throws ValidationException
      */
     protected function trailer()
     {

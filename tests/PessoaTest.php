@@ -2,14 +2,15 @@
 
 namespace Eduardokum\LaravelBoleto\Tests;
 
-use Eduardokum\LaravelBoleto\Pessoa;
-use Eduardokum\LaravelBoleto\Util;
 use Exception;
+use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Pessoa;
+use PHPUnit\Framework\Constraint\StringContains;
 
 class PessoaTest extends TestCase
 {
-
-    public function testPessoaCriandoConstrutor(){
+    public function testPessoaCriandoConstrutor()
+    {
 
         $nome = 'Cliente';
         $endereco = 'Rua um, 123';
@@ -18,18 +19,18 @@ class PessoaTest extends TestCase
         $uf = 'UF';
         $cidade = 'CIDADE';
         $documento = '99999999999';
+        $email = 'email@dominio.com';
 
-        $pessoa = new Pessoa(
-            [
-                'nome' => $nome,
-                'endereco' => $endereco,
-                'bairro' => $bairro,
-                'cep' => $cep,
-                'uf' => $uf,
-                'cidade' => $cidade,
-                'documento' => $documento,
-            ]
-        );
+        $pessoa = new Pessoa([
+            'nome' => $nome,
+            'endereco' => $endereco,
+            'bairro' => $bairro,
+            'cep' => $cep,
+            'uf' => $uf,
+            'cidade' => $cidade,
+            'documento' => $documento,
+            'email' => $email,
+        ]);
 
         $this->assertEquals($nome, $pessoa->getNome());
         $this->assertEquals($endereco, $pessoa->getEndereco());
@@ -37,16 +38,18 @@ class PessoaTest extends TestCase
         $this->assertEquals(Util::maskString($cep, '#####-###'), $pessoa->getCep());
         $this->assertEquals($uf, $pessoa->getUf());
         $this->assertEquals($cidade, $pessoa->getCidade());
+        $this->assertEquals($email, $pessoa->getEmail());
         $this->assertEquals(Util::maskString($documento, '###.###.###-##'), $pessoa->getDocumento());
         $this->assertEquals('CPF', $pessoa->getTipoDocumento());
 
-        $this->assertStringContainsString(Util::maskString($cep, '#####-###'), $pessoa->getCepCidadeUf());
-        $this->assertStringContainsString($cidade, $pessoa->getCepCidadeUf());
-        $this->assertStringContainsString($uf, $pessoa->getCepCidadeUf());
+        $this->assertThat($pessoa->getCepCidadeUf(), new StringContains(Util::maskString($cep, '#####-###'), false));
+        $this->assertThat($pessoa->getCepCidadeUf(), new StringContains(Util::maskString($cep, '#####-###'), false));
+        $this->assertThat($pessoa->getCepCidadeUf(), new StringContains($cidade, false));
+        $this->assertThat($pessoa->getCepCidadeUf(), new StringContains($uf, false));
 
-        $this->assertStringContainsString($nome, $pessoa->getNomeDocumento());
-        $this->assertStringContainsString('CPF', $pessoa->getNomeDocumento());
-        $this->assertStringContainsString(Util::maskString($documento, '###.###.###-##'), $pessoa->getNomeDocumento());
+        $this->assertThat($pessoa->getNomeDocumento(), new StringContains($nome, false));
+        $this->assertThat($pessoa->getNomeDocumento(), new StringContains('CPF', false));
+        $this->assertThat($pessoa->getNomeDocumento(), new StringContains(Util::maskString($documento, '###.###.###-##'), false));
 
         $pessoa->setDocumento('');
         $this->assertEquals($nome, $pessoa->getNomeDocumento());
@@ -63,18 +66,17 @@ class PessoaTest extends TestCase
 
     }
 
-    public function testPessoaDocumentoErrado(){
+    public function testPessoaDocumentoErrado()
+    {
         $this->expectException(Exception::class);
 
-        $pessoa = new Pessoa(
-            [
-                'documento' => '99999',
-            ]
-        );
+        $pessoa = new Pessoa([
+            'documento' => '99999',
+        ]);
     }
 
-
-    public function testPessoaCriandoMetodoCreate(){
+    public function testPessoaCriandoMetodoCreate()
+    {
 
         $nome = 'Cliente';
         $endereco = 'Rua um, 123';
@@ -83,20 +85,20 @@ class PessoaTest extends TestCase
         $uf = 'UF';
         $cidade = 'CIDADE';
         $documento = '99999999999';
+        $email = 'email@dominio.com';
 
-        $pessoa = new Pessoa(
-            [
-                'nome' => $nome,
-                'endereco' => $endereco,
-                'bairro' => $bairro,
-                'cep' => $cep,
-                'uf' => $uf,
-                'cidade' => $cidade,
-                'documento' => $documento,
-            ]
-        );
+        $pessoa = new Pessoa([
+            'nome' => $nome,
+            'endereco' => $endereco,
+            'bairro' => $bairro,
+            'cep' => $cep,
+            'uf' => $uf,
+            'cidade' => $cidade,
+            'documento' => $documento,
+            'email' => $email,
+        ]);
 
-        $pessoa2 = Pessoa::create($nome, $documento, $endereco, $bairro, $cep, $cidade, $uf);
+        $pessoa2 = Pessoa::create($nome, $documento, $endereco, $bairro, $cep, $cidade, $uf, $email);
 
         $pessoa_contrutor = new \ReflectionClass($pessoa);
         $pessoa_create = new \ReflectionClass($pessoa2);
@@ -118,7 +120,8 @@ class PessoaTest extends TestCase
 
     }
 
-    public function testPessoaMascara(){
+    public function testPessoaMascara()
+    {
 
         $pessoa = new Pessoa;
 

@@ -1,10 +1,12 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Boleto\Banco;
 
-use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
-use Eduardokum\LaravelBoleto\CalculoDV;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 class Sicredi extends AbstractBoleto implements BoletoContract
 {
@@ -20,18 +22,21 @@ class Sicredi extends AbstractBoleto implements BoletoContract
      * @var string
      */
     protected $localPagamento = 'Pagável preferencialmente nas cooperativas de crédito do sicredi';
+
     /**
      * Código do banco
      *
      * @var string
      */
     protected $codigoBanco = self::COD_BANCO_SICREDI;
+
     /**
      * Define as carteiras disponíveis para este banco
      *
      * @var array
      */
     protected $carteiras = ['1', '2', '3'];
+
     /**
      * Espécie do documento, coódigo para remessa
      *
@@ -39,17 +44,18 @@ class Sicredi extends AbstractBoleto implements BoletoContract
      */
     protected $especiesCodigo240 = [
         'DMI' => '03', // Duplicata Mercantil por Indicação
-        'DM' => '05', // Duplicata Mercantil por Indicação
-        'DR' => '06', // Duplicata Rural
-        'NP' => '12', // Nota Promissória
-        'NR' => '13', // Nota Promissória Rural
-        'NS' => '16', // Nota de Seguros
-        'RC' => '17', // Recibo
-        'LC' => '07', // Letra de Câmbio
-        'ND' => '19', // Nota de Débito
+        'DM'  => '05', // Duplicata Mercantil por Indicação
+        'DR'  => '06', // Duplicata Rural
+        'NP'  => '12', // Nota Promissória
+        'NR'  => '13', // Nota Promissória Rural
+        'NS'  => '16', // Nota de Seguros
+        'RC'  => '17', // Recibo
+        'LC'  => '07', // Letra de Câmbio
+        'ND'  => '19', // Nota de Débito
         'DSI' => '99', // Duplicata de Serviço por Indicação
-        'OS' => '99', // Outros
+        'OS'  => '99', // Outros
     ];
+
     /**
      * Espécie do documento, coódigo para remessa
      *
@@ -57,37 +63,41 @@ class Sicredi extends AbstractBoleto implements BoletoContract
      */
     protected $especiesCodigo400 = [
         'DMI' => 'A', // Duplicata Mercantil por Indicação
-        'DM' => 'A', // Duplicata Mercantil por Indicação
-        'DR' => 'B', // Duplicata Rural
-        'NP' => 'C', // Nota Promissória
-        'NR' => 'D', // Nota Promissória Rural
-        'NS' => 'E', // Nota de Seguros
-        'RC' => 'G', // Recibo
-        'LC' => 'H', // Letra de Câmbio
-        'ND' => 'I', // Nota de Débito
+        'DM'  => 'A', // Duplicata Mercantil por Indicação
+        'DR'  => 'B', // Duplicata Rural
+        'NP'  => 'C', // Nota Promissória
+        'NR'  => 'D', // Nota Promissória Rural
+        'NS'  => 'E', // Nota de Seguros
+        'RC'  => 'G', // Recibo
+        'LC'  => 'H', // Letra de Câmbio
+        'ND'  => 'I', // Nota de Débito
         'DSI' => 'J', // Duplicata de Serviço por Indicação
-        'OS' => 'K', // Outros
+        'OS'  => 'K', // Outros
     ];
+
     /**
      * Se possui registro o boleto (tipo = 1 com registro e 3 sem registro)
      *
      * @var bool
      */
     protected $registro = true;
+
     /**
      * Código do posto do cliente no banco.
      *
      * @var int
      */
     protected $posto;
+
     /**
      * Byte que compoe o nosso número.
      *
      * @var int
      */
     protected $byte = 2;
+
     /**
-     * Código do cliente (é código do cedente, também chamado de código do beneficiário) é o código do emissor junto ao banco, geralmente é o próprio número da conta sem o dígito verificador. 
+     * Código do cliente (é código do cedente, também chamado de código do beneficiário) é o código do emissor junto ao banco, geralmente é o próprio número da conta sem o dígito verificador.
      * O código do cliente/cedente/beneficiário será diferente desse padrão em casos como quando um cliente bancário faz a migração da sua conta entre agências.
      *
      * @var string
@@ -97,14 +107,16 @@ class Sicredi extends AbstractBoleto implements BoletoContract
     /**
      * Define se possui ou não registro
      *
-     * @param  bool $registro
-     * @return $this
+     * @param bool $registro
+     * @return Sicredi
      */
     public function setComRegistro($registro)
     {
         $this->registro = $registro;
+
         return $this;
     }
+
     /**
      * Retorna se é com registro.
      *
@@ -114,17 +126,20 @@ class Sicredi extends AbstractBoleto implements BoletoContract
     {
         return $this->registro;
     }
+
     /**
      * Define o posto do cliente
      *
-     * @param  int $posto
-     * @return $this
+     * @param int $posto
+     * @return Sicredi
      */
     public function setPosto($posto)
     {
         $this->posto = $posto;
+
         return $this;
     }
+
     /**
      * Retorna o posto do cliente
      *
@@ -138,19 +153,21 @@ class Sicredi extends AbstractBoleto implements BoletoContract
     /**
      * Define o byte
      *
-     * @param  int $byte
+     * @param int $byte
      *
-     * @return $this
-     * @throws \Exception
+     * @return Sicredi
+     * @throws ValidationException
      */
     public function setByte($byte)
     {
         if ($byte > 9) {
-            throw new \Exception('O byte deve ser compreendido entre 1 e 9');
+            throw new ValidationException('O byte deve ser compreendido entre 1 e 9');
         }
         $this->byte = $byte;
+
         return $this;
     }
+
     /**
      * Retorna o byte
      *
@@ -160,12 +177,13 @@ class Sicredi extends AbstractBoleto implements BoletoContract
     {
         return $this->byte;
     }
+
     /**
-     * Seta o codigo do cliente.
+     * Seta o código do cliente.
      *
      * @param mixed $codigoCliente
      *
-     * @return $this
+     * @return Sicredi
      */
     public function setCodigoCliente($codigoCliente)
     {
@@ -173,6 +191,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
 
         return $this;
     }
+
     /**
      * Retorna o codigo do cliente.
      *
@@ -182,6 +201,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
     {
         return $this->codigoCliente;
     }
+
     /**
      * Retorna o campo Agência/Beneficiário do boleto
      *
@@ -191,6 +211,7 @@ class Sicredi extends AbstractBoleto implements BoletoContract
     {
         return sprintf('%04s.%02s.%05s', $this->getAgencia(), $this->getPosto(), $this->getCodigoCliente());
     }
+
     /**
      * Gera o Nosso Número.
      *
@@ -201,10 +222,11 @@ class Sicredi extends AbstractBoleto implements BoletoContract
         $ano = $this->getDataDocumento()->format('y');
         $byte = $this->getByte();
         $numero_boleto = Util::numberFormatGeral($this->getNumero(), 5);
-        $nossoNumero = $ano . $byte . $numero_boleto
+
+        return $ano . $byte . $numero_boleto
             . CalculoDV::sicrediNossoNumero($this->getAgencia(), $this->getPosto(), $this->getCodigoCliente(), $ano, $byte, $numero_boleto);
-        return $nossoNumero;
     }
+
     /**
      * Método que retorna o nosso numero usado no boleto. alguns bancos possuem algumas diferenças.
      *
@@ -214,11 +236,12 @@ class Sicredi extends AbstractBoleto implements BoletoContract
     {
         return Util::maskString($this->getNossoNumero(), '##/######-#');
     }
+
     /**
      * Método para gerar o código da posição de 20 a 44
      *
      * @return string
-     * @throws \Exception
+     * @throws ValidationException
      */
     protected function getCampoLivre()
     {
@@ -245,17 +268,18 @@ class Sicredi extends AbstractBoleto implements BoletoContract
      *
      * @return array
      */
-    public static function parseCampoLivre($campoLivre) {
+    public static function parseCampoLivre($campoLivre)
+    {
         return [
-            'convenio' => null,
-            'agenciaDv' => null,
+            'convenio'        => null,
+            'agenciaDv'       => null,
             'contaCorrenteDv' => null,
-            'codigoCliente' => substr($campoLivre, 17, 5),
-            'carteira' => substr($campoLivre, 1, 1),
-            'nossoNumero' => substr($campoLivre, 2, 8),
-            'nossoNumeroDv' => substr($campoLivre, 10, 1),
+            'codigoCliente'   => substr($campoLivre, 17, 5),
+            'carteira'        => substr($campoLivre, 1, 1),
+            'nossoNumero'     => substr($campoLivre, 2, 8),
+            'nossoNumeroDv'   => substr($campoLivre, 10, 1),
             'nossoNumeroFull' => substr($campoLivre, 2, 9),
-            'agencia' => substr($campoLivre, 11, 4),
+            'agencia'         => substr($campoLivre, 11, 4),
             //'contaCorrente' => substr($campoLivre, 17, 5),
         ];
     }

@@ -4,7 +4,8 @@
         <td valign="bottom" colspan="8" class="noborder nopadding">
             <div class="logocontainer">
                 <div class="logobanco">
-                    <img src="{{ isset($logo_banco_base64) && !empty($logo_banco_base64) ? $logo_banco_base64 : 'https://dummyimage.com/150x75/fff/000000.jpg&text=+' }}" alt="logo do banco">
+                    <img src="{{ isset($logo_banco_base64) && !empty($logo_banco_base64) ? $logo_banco_base64 : 'https://dummyimage.com/150x75/fff/000000.jpg&text=+' }}"
+                         alt="logo do banco">
                 </div>
                 <div class="codbanco">{{ $codigo_banco_com_dv }}</div>
             </div>
@@ -25,7 +26,9 @@
         <td colspan="7">
             <div class="titulo">Beneficiário</div>
             <div class="conteudo">{{ $beneficiario['nome_documento'] }}</div>
-            @if($mostrar_endereco_ficha_compensacao)<div class="conteudo">{{ $beneficiario['endereco_completo'] }}</div>@endif
+            @if($mostrar_endereco_ficha_compensacao)
+                <div class="conteudo">{{ $beneficiario['endereco_completo'] }}</div>
+            @endif
         </td>
         <td>
             <div class="titulo">Agência/Código beneficiário</div>
@@ -64,9 +67,9 @@
                 <div class="titulo">Uso do banco</div>
                 <div class="conteudo">{{ $uso_banco }}</div>
             </td>
-            @endif
-            @if (isset($mostra_cip) && $mostra_cip)
-                    <!-- Campo exclusivo do Bradesco -->
+        @endif
+        @if (isset($mostra_cip) && $mostra_cip)
+            <!-- Campo exclusivo do Bradesco -->
             <td width="20">
                 <div class="titulo">CIP</div>
                 <div class="conteudo">{{ $cip }}</div>
@@ -95,16 +98,24 @@
         </td>
     </tr>
     <tr>
-        <td colspan="7">
-            <div class="titulo">Instruções de responsabilidade do beneficiário. Qualquer dúvida sobre este boleto, contate o beneficiário</div>
+        <td colspan="{{ isset($pix_qrcode) && $localizacao_pix == \Eduardokum\LaravelBoleto\Boleto\Render\Html::PIX_INSTRUCAO ? 6 : 7 }}">
+            <div class="titulo">Instruções de responsabilidade do beneficiário. Qualquer dúvida sobre este boleto,
+                contate o beneficiário
+            </div>
         </td>
+        @if(isset($pix_qrcode) && $localizacao_pix == \Eduardokum\LaravelBoleto\Boleto\Render\Html::PIX_INSTRUCAO)
+            <td colspan="1" rowspan="5">
+                <p class="conteudo" style="text-align: center">Pague com PIX</p>
+                <img src="{{ $pix_qrcode_image }}" style="height: 100%; width: 100%;" alt="QR Code PIX">
+            </td>
+        @endif
         <td>
             <div class="titulo">(-) Descontos / Abatimentos</div>
             <div class="conteudo rtl"></div>
         </td>
     </tr>
     <tr>
-        <td colspan="7" class="notopborder">
+        <td colspan="{{ isset($pix_qrcode) && $localizacao_pix == \Eduardokum\LaravelBoleto\Boleto\Render\Html::PIX_INSTRUCAO ? 6 : 7 }}" class="notopborder">
             <div class="conteudo">{{ $instrucoes[0] }}</div>
             <div class="conteudo">{{ $instrucoes[1] }}</div>
         </td>
@@ -114,7 +125,7 @@
         </td>
     </tr>
     <tr>
-        <td colspan="7" class="notopborder">
+        <td colspan="{{ isset($pix_qrcode) && $localizacao_pix == \Eduardokum\LaravelBoleto\Boleto\Render\Html::PIX_INSTRUCAO ? 6 : 7 }}" class="notopborder">
             <div class="conteudo">{{ $instrucoes[2] }}</div>
             <div class="conteudo">{{ $instrucoes[3] }}</div>
         </td>
@@ -124,7 +135,7 @@
         </td>
     </tr>
     <tr>
-        <td colspan="7" class="notopborder">
+        <td colspan="{{ isset($pix_qrcode) && $localizacao_pix == \Eduardokum\LaravelBoleto\Boleto\Render\Html::PIX_INSTRUCAO ? 6 : 7 }}" class="notopborder">
             <div class="conteudo">{{ $instrucoes[4] }}</div>
             <div class="conteudo">{{ $instrucoes[5] }}</div>
         </td>
@@ -134,7 +145,7 @@
         </td>
     </tr>
     <tr>
-        <td colspan="7" class="notopborder">
+        <td colspan="{{ isset($pix_qrcode) && $localizacao_pix == \Eduardokum\LaravelBoleto\Boleto\Render\Html::PIX_INSTRUCAO ? 6 : 7 }}" class="notopborder">
             <div class="conteudo">{{ $instrucoes[6] }}</div>
             <div class="conteudo">{{ $instrucoes[7] }}</div>
         </td>
@@ -158,7 +169,7 @@
 
     <tr>
         <td colspan="6" class="noleftborder">
-            <div class="titulo">Sacador/Avalista
+            <div class="titulo">Beneficiário Final
                 <div class="conteudo sacador">{{ $sacador_avalista ? $sacador_avalista['nome_documento'] : '' }}</div>
             </div>
         </td>
@@ -170,8 +181,23 @@
     <tr>
         <td colspan="8" class="noborder">
             {!! $codigo_barras !!}
+            @if(isset($pix_qrcode) && $localizacao_pix == \Eduardokum\LaravelBoleto\Boleto\Render\Html::PIX_COD_BARRAS)
+                <table style="float: right">
+                    <tr>
+                        <td colspan="2" class="noborder"><div class="conteudo">Pague com PIX</div></td>
+                        <td class="noborder" rowspan="3"><img src="{{ $pix_qrcode_image }}" style="height: 50px;margin-left: 20px;" alt="QR Code PIX"></td>
+                    </tr>
+                    <tr>
+                        <td class="noborder"><div class="conteudo">Vencimento:</div></td>
+                        <td class="noborder"><div class="titulo">{{ $data_vencimento->format('d/m/Y') }}</div></td>
+                    </tr>
+                    <tr>
+                        <td class="noborder"><div class="conteudo">Valor:</div></td>
+                        <td class="noborder"><div class="titulo">{{ $valor }}</div></td>
+                    </tr>
+                </table>
+            @endif
         </td>
     </tr>
-
     </tbody>
 </table>

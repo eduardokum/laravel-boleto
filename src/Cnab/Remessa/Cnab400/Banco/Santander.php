@@ -1,11 +1,13 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
+use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
-use Eduardokum\LaravelBoleto\Util;
 
 class Santander extends AbstractRemessa implements RemessaContract
 {
@@ -15,7 +17,6 @@ class Santander extends AbstractRemessa implements RemessaContract
     const ESPECIE_RECIBO = '05';
     const ESPECIE_DUPLICATA_SERVICO = '06';
     const ESPECIE_LETRA_CAMBIO = '07';
-
     const OCORRENCIA_REMESSA = '01';
     const OCORRENCIA_PEDIDO_BAIXA = '02';
     const OCORRENCIA_CONCESSAO_ABATIMENTO = '04';
@@ -25,7 +26,6 @@ class Santander extends AbstractRemessa implements RemessaContract
     const OCORRENCIA_ALT_SEUNUMERO = '08';
     const OCORRENCIA_PROTESTAR = '09';
     const OCORRENCIA_SUSTAR_PROTESTO = '18';
-
     const INSTRUCAO_SEM = '00';
     const INSTRUCAO_BAIXAR_APOS_VENC_15 = '02';
     const INSTRUCAO_BAIXAR_APOS_VENC_30 = '03';
@@ -39,7 +39,6 @@ class Santander extends AbstractRemessa implements RemessaContract
         parent::__construct($params);
         $this->addCampoObrigatorio('codigoCliente');
     }
-
 
     /**
      * Código do banco
@@ -104,7 +103,7 @@ class Santander extends AbstractRemessa implements RemessaContract
      * Retorna o codigo de transmissão.
      *
      * @return string
-     * @throws \Exception
+     * @throws ValidationException
      */
     public function getCodigoTransmissao()
     {
@@ -126,8 +125,8 @@ class Santander extends AbstractRemessa implements RemessaContract
     private $total = 0;
 
     /**
-     * @return $this
-     * @throws \Exception
+     * @return Santander
+     * @throws ValidationException
      */
     protected function header()
     {
@@ -152,15 +151,19 @@ class Santander extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @param BoletoContract $boleto
+     * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Santander $boleto
      *
-     * @return $this
-     * @throws \Exception
+     * @return Santander
+     * @throws ValidationException
      */
     public function addBoleto(BoletoContract $boleto)
     {
         $this->boletos[] = $boleto;
-        $this->iniciaDetalhe();
+        if ($chaveNfe = $boleto->getChaveNfe()) {
+            $this->iniciaDetalheExtendido();
+        } else {
+            $this->iniciaDetalhe();
+        }
 
         $this->total += $boleto->getValor();
 
@@ -225,7 +228,7 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(352, 381, Util::formatCnab('X', $boleto->getSacadorAvalista() ? $boleto->getSacadorAvalista()->getNome() : '', 30));
         $this->add(382, 382, '');
         $this->add(383, 383, 'I');
-        $this->add(384, 385, substr($this->getConta(), -1) . CalculoDV::santanderContaCorrente($this->getAgencia(), $this->getConta()));
+        $this->add(384, 385, substr($this->getConta(), -1) . (! is_null($this->getContaDv()) ? $this->getContaDv() : CalculoDV::santanderContaCorrente($this->getAgencia(), $this->getConta())));
         if (strlen($this->getConta()) == 9) {
             $this->add(384, 385, substr($this->getConta(), -2));
         }
@@ -233,13 +236,40 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(392, 393, Util::formatCnab('9', $boleto->getDiasProtesto('0'), 2));
         $this->add(394, 394, '');
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
+        if ($chaveNfe) {
+            $this->add(401, 444, Util::formatCnab('9', $chaveNfe, 44));
+        }
+
+        if ($boleto->validarPix()) {
+            $tipoChave = [
+                $boleto::TIPO_CHAVEPIX_CPF       => 1,
+                $boleto::TIPO_CHAVEPIX_CNPJ      => 2,
+                $boleto::TIPO_CHAVEPIX_CELULAR   => 3,
+                $boleto::TIPO_CHAVEPIX_EMAIL     => 4,
+                $boleto::TIPO_CHAVEPIX_ALEATORIA => 5,
+            ];
+            $this->iniciaDetalhe();
+            $this->add(1, 1, '8');
+            $this->add(2, 3, '00'); // '00' = Conforme Perfil do Beneficiário; '01' = Aceita qualquer valor; ‘02’ = Entre o mínimo e o máximo; ‘03’ = Não aceita pagamento com o valor divergente
+            $this->add(4, 5, '01'); // Quantidade de pagamentos
+            $this->add(6, 6, '2'); // '1' = % (percentual); '2' = valor
+            $this->add(7, 19, Util::formatCnab('9', $boleto->getValor(), 13, 2));
+            $this->add(20, 24, Util::formatCnab('9', 200, 5, 2));
+            $this->add(25, 37, Util::formatCnab('9', $boleto->getValor(), 13, 2));
+            $this->add(38, 42, Util::formatCnab('9', 100, 5, 2));
+            $this->add(43, 43, Util::formatCnab('9', $tipoChave[$boleto->getPixChaveTipo()], 1));
+            $this->add(44, 120, Util::formatCnab('Z', $boleto->getPixChave(), 77));
+            $this->add(121, 155, Util::formatCnab('X', $boleto->getID(), 35));
+            $this->add(156, 394, '');
+            $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
+        }
 
         return $this;
     }
 
     /**
-     * @return $this
-     * @throws \Exception
+     * @return Santander
+     * @throws ValidationException
      */
     protected function trailer()
     {

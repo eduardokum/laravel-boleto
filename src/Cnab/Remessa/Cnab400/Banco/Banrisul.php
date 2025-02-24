@@ -1,12 +1,12 @@
 <?php
 
-
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
-use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
+use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 
 class Banrisul extends AbstractRemessa implements RemessaContract
 {
@@ -14,14 +14,12 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     const TIPO_COBRANCA_ESCRITURAL = '06';
     const TIPO_COBRANCA_CREDENCIADA = '08';
     const TIPO_TITULO_TERCEIROS = '09';
-
     const INSTRUCAO_SEM = '00';
     const INSTRUCAO_PROTESTAR_XX = '09';
     const INSTRUCAO_DEVOLVER_XX = '15';
     const INSTRUCAO_MULTA_XX = '18';
     const INSTRUCAO_MULTA_FRACAO_XX = '20';
     const INSTRUCAO_NAO_PROTESTAR = '23';
-
     const OCORRENCIA_REMESSA = '01';
     const OCORRENCIA_PEDIDO_BAIXA = '02';
     const OCORRENCIA_CONCESSAO_ABATIMENTO = '04';
@@ -89,7 +87,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
      *
      * @var array
      */
-    protected $carteiras =['1', '3', '4', '5', '6', '7', '8', 'C', 'D', 'E', 'F', 'H', 'I', 'K', 'M', 'N', 'R', 'S', 'X'];
+    protected $carteiras = ['1', '3', '4', '5', '6', '7', '8', 'C', 'D', 'E', 'F', 'H', 'I', 'K', 'M', 'N', 'R', 'S', 'X'];
 
     /**
      * Caracter de fim de linha
@@ -111,6 +109,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
      * @var string
      */
     protected $codigoCliente;
+
     /**
      * Codigo do cliente office banking junto ao banco.
      *
@@ -128,15 +127,16 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     /**
      * Define se é teste
      *
-     * @param  boolean $teste
-     * @return $this
+     * @param bool $teste
+     * @return Banrisul
      */
-
     public function setTeste($teste)
     {
-        $this->teste = (boolean) $teste;
+        $this->teste = (bool) $teste;
+
         return $this;
     }
+
     /**
      * Retorna se é com registro.
      *
@@ -146,6 +146,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     {
         return $this->teste;
     }
+
     /**
      * Retorna o codigo do cliente.
      *
@@ -169,6 +170,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
 
         return $this;
     }
+
     /**
      * Retorna o codigo do cliente office banking.
      *
@@ -194,8 +196,8 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @return $this
-     * @throws \Exception
+     * @return Banrisul
+     * @throws ValidationException
      */
     protected function header()
     {
@@ -235,15 +237,19 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     }
 
     /**
-     * @param BoletoContract $boleto
+     * @param \Eduardokum\LaravelBoleto\Boleto\Banco\Banrisul $boleto
      *
-     * @return bool
-     * @throws \Exception
+     * @return Banrisul
+     * @throws ValidationException
      */
     public function addBoleto(BoletoContract $boleto)
     {
         $this->boletos[] = $boleto;
-        $this->iniciaDetalhe();
+        if ($chaveNfe = $boleto->getChaveNfe()) {
+            $this->iniciaDetalheExtendido();
+        } else {
+            $this->iniciaDetalhe();
+        }
 
         $this->add(1, 1, 1);
         $this->add(2, 17, '');
@@ -259,7 +265,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
             $this->add(109, 110, self::OCORRENCIA_PEDIDO_BAIXA); // BAIXA
         }
         if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
-            throw new \Exception('Banrisul não suporta alteração geral, use o comando `comandarInstrucao` no boleto para enviar uma solicitação especifica');
+            throw new ValidationException('Banrisul não suporta alteração geral, use o comando `comandarInstrucao` no boleto para enviar uma solicitação especifica');
         }
         if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO_DATA) {
             $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO);
@@ -289,10 +295,10 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(162, 173, Util::formatCnab('9', $boleto->getMoraDia(), 12, 2));
         $this->add(174, 192, '');
 
-		if ($boleto->getDesconto() > 0) {
-			$this->add(174, 179, $boleto->getDataDesconto()->format('dmy'));
-			$this->add(180, 192, Util::formatCnab('9', $boleto->getDesconto(), 13, 2));
-		}
+        if ($boleto->getDesconto() > 0) {
+            $this->add(174, 179, $boleto->getDataDesconto()->format('dmy'));
+            $this->add(180, 192, Util::formatCnab('9', $boleto->getDesconto(), 13, 2));
+        }
 
         $this->add(193, 205, Util::formatCnab('9', 0, 13, 2));
         $this->add(206, 218, Util::formatCnab('9', 0, 13, 2));
@@ -308,9 +314,9 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(335, 349, Util::formatCnab('X', $boleto->getPagador()->getCidade(), 15));
         $this->add(350, 351, Util::formatCnab('X', $boleto->getPagador()->getUf(), 2));
 
-        if ($this->isCarteiraRSX()){
+        if ($this->isCarteiraRSX()) {
             $this->add(352, 371, '');
-        }else{
+        } else {
             $this->add(352, 355, '');
             $this->add(356, 357, '');
             $this->add(358, 369, '');
@@ -319,15 +325,18 @@ class Banrisul extends AbstractRemessa implements RemessaContract
 
         $this->add(372, 394, '');
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
+        if ($chaveNfe) {
+            $this->add(401, 444, Util::formatCnab('9', $chaveNfe, 44));
+        }
 
         $this->valorTotal += $boleto->getValor();
 
-        return true;
+        return $this;
     }
 
     /**
-     * @return $this
-     * @throws \Exception
+     * @return Banrisul
+     * @throws ValidationException
      */
     protected function trailer()
     {

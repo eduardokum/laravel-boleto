@@ -1,29 +1,30 @@
 <?php
+
 namespace Eduardokum\LaravelBoleto\Cnab\Retorno;
 
-use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
-use Eduardokum\LaravelBoleto\Contracts\Cnab\Retorno;
 use Eduardokum\LaravelBoleto\Util;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 
 class Factory
 {
     /**
      * @param $file
      *
-     * @return Retorno
-     * @throws \Exception
+     * @return AbstractRetorno
+     * @throws ValidationException
      */
     public static function make($file)
     {
-        if (!$file_content = Util::file2array($file)) {
-            throw new \Exception("Arquivo: não existe");
+        if (! $file_content = Util::file2array($file)) {
+            throw new ValidationException('Arquivo: não existe');
         }
 
-        if (!Util::isHeaderRetorno($file_content[0])) {
-            throw new \Exception("Arquivo: $file, não é um arquivo de retorno");
+        if (! Util::isHeaderRetorno($file_content[0])) {
+            throw new ValidationException("Arquivo: $file, não é um arquivo de retorno");
         }
 
         $instancia = self::getBancoClass($file_content);
+
         return $instancia->processar();
     }
 
@@ -31,7 +32,7 @@ class Factory
      * @param $file_content
      *
      * @return mixed
-     * @throws \Exception
+     * @throws ValidationException
      */
     private static function getBancoClass($file_content)
     {
@@ -45,24 +46,12 @@ class Factory
             $namespace = __NAMESPACE__ . '\\Cnab240\\';
         }
 
-        $aBancos = [
-            BoletoContract::COD_BANCO_BB => 'Banco\\Bb',
-            BoletoContract::COD_BANCO_SANTANDER => 'Banco\\Santander',
-            BoletoContract::COD_BANCO_CEF => 'Banco\\Caixa',
-            BoletoContract::COD_BANCO_BRADESCO => 'Banco\\Bradesco',
-            BoletoContract::COD_BANCO_ITAU => 'Banco\\Itau',
-            BoletoContract::COD_BANCO_HSBC => 'Banco\\Hsbc',
-            BoletoContract::COD_BANCO_SICREDI => 'Banco\\Sicredi',
-            BoletoContract::COD_BANCO_BANRISUL => 'Banco\\Banrisul',
-            BoletoContract::COD_BANCO_BANCOOB => 'Banco\\Bancoob',
-            BoletoContract::COD_BANCO_BNB => 'Banco\\Bnb',
-        ];
+        $bancoClass = $namespace . Util::getBancoClass($banco);
 
-        if (array_key_exists($banco, $aBancos)) {
-            $bancoClass = $namespace . Util::getBancoClass($banco);
-            return new $bancoClass($file_content);
+        if (! class_exists($bancoClass)) {
+            throw new ValidationException('Banco não possui essa versão de CNAB');
         }
 
-        throw new \Exception("Banco: $banco, inválido");
+        return new $bancoClass($file_content);
     }
 }
