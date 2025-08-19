@@ -11,6 +11,10 @@ use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 class Inter extends AbstractRemessa implements RemessaContract
 {
     const OCORRENCIA_REMESSA = '01';
+    const OCORRENCIA_ALT_VENCIMENTO = '06';
+    const OCORRENCIA_PEDIDO_BAIXA = '07';
+    const OCORRENCIA_ALT_VALOR = '20';
+    const OCORRENCIA_ALT_VENCIMENTO_E_VALOR = '26';
 
     public function __construct(array $params = [])
     {
@@ -98,6 +102,18 @@ class Inter extends AbstractRemessa implements RemessaContract
         $this->add(90, 100, Util::formatCnab('9', '0', 11));
         $this->add(101, 108, '');
         $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
+        if ($boleto->getStatus() == $boleto::STATUS_BAIXA) {
+            $this->add(109, 110, self::OCORRENCIA_PEDIDO_BAIXA); // BAIXA
+        }
+        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
+            $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO); // ALTERAR VENCIMENTO
+        }
+        if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO_DATA) {
+            $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO);
+        }
+        if ($boleto->getStatus() == $boleto::STATUS_CUSTOM) {
+            $this->add(109, 110, sprintf('%2.02s', $boleto->getComando()));
+        }
         $this->add(111, 120, Util::formatCnab('X', $boleto->getNumeroDocumento(), 10));
         $this->add(121, 126, $boleto->getDataVencimento()->format('dmy'));
         $this->add(127, 139, Util::formatCnab('9', $boleto->getValor(), 13, 2));
