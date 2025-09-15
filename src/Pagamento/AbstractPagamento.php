@@ -275,6 +275,13 @@ abstract class AbstractPagamento implements PagamentoContract
     protected $tipoConta;
 
     /**
+     * Forma de iniciação
+     *
+     * @var string
+     */
+    protected $formaIniciacao;
+
+    /**
      * Modalidade de cobrança do cliente, geralmente Cobrança Simples ou Registrada
      *
      * @var string
