@@ -31,7 +31,7 @@ abstract class AbstractPagamento
     protected $camposObrigatorios = [
         'agencia',
         'conta',
-        'beneficiario',
+        'pagador',
     ];
 
     /**

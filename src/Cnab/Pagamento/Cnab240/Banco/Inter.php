@@ -183,8 +183,9 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(173, 177, self::CAMPO_BRANCO); // Número do local da empresa
         $this->add(178, 192, self::CAMPO_BRANCO); // Casa, Apto, Sala, Etc.
         $this->add(193, 212, Util::formatCnab('X', $this->getPagador()->getCidade(), 20)); // Nome da cidade da empresa
-        $this->add(213, 217, Util::onlyNumbers($this->getPagador()->getCep())); // CEP da empresa
-        $this->add(218, 220, self::CAMPO_BRANCO); // Complemento do CEP
+        $cep = Util::onlyNumbers($this->getPagador()->getCep());
+        $this->add(213, 217, substr($cep, 0, 5)); // CEP da empresa
+        $this->add(218, 220, substr($cep, 5, 3)); // Complemento do CEP
         $this->add(221, 222, $this->getPagador()->getUf()); // Sigla do estado da empresa
         $this->add(223, 230, self::CAMPO_BRANCO); // Campo em branco
         $this->add(231, 240, self::CAMPO_BRANCO); // Códigos das ocorrências para retorno
@@ -416,7 +417,7 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
             $this->add(21, 23, str_pad($pagamento->getBanco() ?? '0', 3, '0', STR_PAD_LEFT)); // [Favorecido] Código do banco
             $this->add(24, 28, str_pad($pagamento->getAgencia() ?? '0', 5, '0', STR_PAD_LEFT)); // [Favorecido] Agência mantenedora da conta
             $this->add(29, 29, $pagamento->getAgenciaDv() ?? '0'); // [Favorecido] Dígito verificador da agência
-            $this->add(30, 41, str_pad($pagamento->getConta() ?? '0', 12, '0', STR_PAD_LEFT)); // [Favorecido] Número da conta corrente
+            $this->add(30, 41, Util::onlyNumbers(str_pad($pagamento->getConta() ?? '0', 12, '0', STR_PAD_LEFT))); // [Favorecido] Número da conta corrente
             $this->add(42, 42, $pagamento->getContaDv() ?? '0'); // [Favorecido] Dígito verificador da conta
             $this->add(44, 73, Util::formatCnab('X', $pagamento->getBeneficiario()->getNome() ?? '', 30)); // [Favorecido] Nome
         } else {
