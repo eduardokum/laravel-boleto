@@ -138,7 +138,7 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(71, 71, $this->getContaDv()); // Dígito verificador da conta
         $this->add(72, 72, self::CAMPO_BRANCO); // Campo em branco
         $this->add(73, 102, Util::formatCnab('X', $this->getPagador()->getNome(), 30)); // Nome da empresa
-        $this->add(103, 132, self::NOME_BANCO); // Nome do banco
+        $this->add(103, 132, Util::formatCnab('X', self::NOME_BANCO, 30)); // Nome do banco
         $this->add(133, 142, self::CAMPO_BRANCO); // Campo em branco
         $this->add(143, 143, self::CODIGO_REMESSA); // Código de remessa
         $this->add(144, 151, $this->getDataRemessa('dmY')); // Data de geração do arquivo
@@ -174,7 +174,7 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(33, 52, self::CAMPO_BRANCO); // Campo em branco
         $this->add(53, 57, self::AGENCIA_EMPRESA); // Agência mantenedora da conta da empresa
         $this->add(58, 58, self::AGENCIA_DV_EMPRESA); // Dígito verificador da agência
-        $this->add(59, 70, Util::onlyNumbers($this->getConta())); // Número da conta corrente da empresa
+        $this->add(59, 70, Util::formatCnab(9, $this->getConta(), 12)); // Número da conta corrente da empresa
         $this->add(71, 71, $this->getContaDv()); // Dígito verificador da conta
         $this->add(72, 72, self::CAMPO_BRANCO); // Campo em branco
         $this->add(73, 102, Util::formatCnab('X', $this->getPagador()->getNome(), 30)); // Nome da empresa

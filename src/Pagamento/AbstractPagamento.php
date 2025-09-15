@@ -589,6 +589,30 @@ abstract class AbstractPagamento implements PagamentoContract
     }
 
     /**
+     * Retorna a forma de iniciação
+     *
+     * @return string
+     */
+    public function getFormaIniciacao()
+    {
+        return $this->formaIniciacao;
+    }
+
+    /**
+     * Define a forma de iniciação
+     *
+     * @param string $formaIniciacao
+     * 
+     * @return AbstractPagamento
+     * @throws ValidationException
+     */
+    public function setFormaIniciacao($formaIniciacao)
+    {
+        $this->formaIniciacao = $formaIniciacao;
+    }
+
+
+    /**
      * Define o código da carteira (Com ou sem registro)
      *
      * @param string $carteira
