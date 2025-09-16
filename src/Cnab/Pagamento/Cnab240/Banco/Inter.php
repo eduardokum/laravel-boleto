@@ -174,7 +174,7 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(33, 52, self::CAMPO_BRANCO); // Campo em branco
         $this->add(53, 57, self::AGENCIA_EMPRESA); // Agência mantenedora da conta da empresa
         $this->add(58, 58, self::AGENCIA_DV_EMPRESA); // Dígito verificador da agência
-        $this->add(59, 70, Util::formatCnab(9, $this->getConta(), 12)); // Número da conta corrente da empresa
+        $this->add(59, 70, Util::formatCnab('9L', $this->getConta(), 12)); // Número da conta corrente da empresa
         $this->add(71, 71, $this->getContaDv()); // Dígito verificador da conta
         $this->add(72, 72, self::CAMPO_BRANCO); // Campo em branco
         $this->add(73, 102, Util::formatCnab('X', $this->getPagador()->getNome(), 30)); // Nome da empresa
@@ -384,7 +384,7 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(155, 162, self::DATA_RETORNO_VAZIA); // Data real da efetivação do pagamento (Retorno)
         $this->add(163, 177, self::VALOR_RETORNO_VAZIO); // Valor real da efetivação do pagamento (Retorno)
         $this->add(178, 199, self::CAMPO_BRANCO); // Campo em branco
-        $this->add(200, 201, $pagamento['tipo_conta'] ?? self::TIPO_CONTA_CORRENTE); // [Identificação do Pagamento] Tipo de conta
+        $this->add(200, 201, $pagamento->getTipoConta() ?? self::TIPO_CONTA_CORRENTE); // [Identificação do Pagamento] Tipo de conta
         $this->add(202, 230, self::CAMPO_BRANCO); // Campo em branco (conforme Item 27 da imagem)
         $this->add(231, 240, self::CAMPO_BRANCO); // Códigos das ocorrências para retorno
 
@@ -436,13 +436,17 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(102, 104, self::TIPO_MOEDA); // Tipo da moeda
         $this->add(105, 119, self::QUANTIDADE_MOEDA); // Quantidade da moeda
         $valor = $pagamento->getValor() ? number_format($pagamento->getValor(), 2, '', '') : '000000000000000';
-        $this->add(120, 134, str_pad($valor, 15, '0', STR_PAD_LEFT)); // Valor do pagamento
+        $this->add(120, 134, Util::formatCnab('9L', $valor, 15)); // Valor do pagamento
         $this->add(135, 154, self::CAMPO_BRANCO); // Número do documento atribuído pelo banco
         $this->add(155, 162, self::DATA_RETORNO_VAZIA); // Data real da efetivação do pagamento (Retorno)
         $this->add(163, 177, self::VALOR_RETORNO_VAZIO); // Valor real da efetivação do pagamento (Retorno)
-        $this->add(178, 191, str_pad(Util::onlyNumbers($pagamento->getBeneficiario()->getDocumento()) ?? '0', 14, '0', STR_PAD_LEFT)); // [Identificação do Pagamento] Número do CPF/CNPJ
+
+        $this->add(178, 191, Util::formatCnab('9L', $pagamento->getBeneficiario()->getDocumento(), 14)); // [Identificação do Pagamento] Número do CPF/CNPJ
         $this->add(192, 199, str_pad($pagamento->getBanco() ?? '0', 8, '0', STR_PAD_LEFT)); // [Identificação do Pagamento] Código do ISPB
-        $this->add(200, 201, $pagamento->getTipoConta() ?? self::TIPO_CONTA_CORRENTE); // [Identificação do Pagamento] Tipo de conta
+        if ($formaIniciacao == self::FORMA_INICIACAO_PIX_DADOS_BANCARIOS)
+            $this->add(200, 201, $pagamento->getTipoConta() ?? self::TIPO_CONTA_CORRENTE); // [Identificação do Pagamento] Tipo de conta
+        else
+            $this->add(200, 201, '00');
         $this->add(202, 230, self::CAMPO_BRANCO); // Campo em branco (conforme Item 27 da imagem)
         $this->add(231, 240, self::CAMPO_BRANCO); // Códigos das ocorrências para retorno
 
@@ -471,8 +475,7 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
         // CPF/CNPJ (preenchido apenas se forma de iniciação = "03")
         $formaIniciacao = $pagamento->getFormaIniciacao() ?? self::FORMA_INICIACAO_PIX_CPF_CNPJ;
         if ($formaIniciacao == self::FORMA_INICIACAO_PIX_CPF_CNPJ) {
-            $documento = str_pad(Util::onlyNumbers($pagamento->getBeneficiario()->getDocumento()) ?? '0', 14, '0', STR_PAD_LEFT);
-            $this->add(19, 32, $documento); // [Favorecido] CPF/CNPJ
+            $this->add(19, 32, Util::formatCnab('9L', $pagamento->getBeneficiario()->getDocumento(), 14)); // [Favorecido] CPF/CNPJ
         } else {
             $this->add(19, 32, self::CAMPO_BRANCO); // [Favorecido] CPF/CNPJ
         }
@@ -488,7 +491,7 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
         }
 
         $this->add(227, 232, self::CAMPO_BRANCO); // Campo em branco
-        $this->add(233, 240, str_pad($pagamento->getBanco() ?? '0', 8, '0', STR_PAD_LEFT)); // [Favorecido] Código ISPB
+        $this->add(233, 240, self::CAMPO_BRANCO); // [Favorecido] Código ISPB
 
         $this->iRegistrosLote++;
         return $this;

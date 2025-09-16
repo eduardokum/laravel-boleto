@@ -163,6 +163,13 @@ abstract class AbstractPagamento implements PagamentoContract
     public $dataVencimento;
 
     /**
+     * Data de pagamento
+     *
+     * @var Carbon
+     */
+    public $dataPagamento;
+
+    /**
      * Data de limite de desconto
      *
      * @var Carbon
@@ -867,6 +874,30 @@ abstract class AbstractPagamento implements PagamentoContract
     public function getDataVencimento()
     {
         return $this->dataVencimento;
+    }
+
+    /**
+     * Define a data de vencimento
+     *
+     * @param Carbon $dataPagamento
+     *
+     * @return AbstractPagamento
+     */
+    public function setDataPagamento(Carbon $dataPagamento)
+    {
+        $this->dataPagamento = $dataPagamento;
+
+        return $this;
+    }
+
+    /**
+     * Retorna a data de vencimento
+     *
+     * @return Carbon
+     */
+    public function getDataPagamento()
+    {
+        return $this->dataPagamento;
     }
 
     /**
