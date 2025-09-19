@@ -143,7 +143,7 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(143, 143, self::CODIGO_REMESSA); // Código de remessa
         $this->add(144, 151, $this->getDataRemessa('dmY')); // Data de geração do arquivo
         $this->add(152, 157, $this->getDataRemessa('His')); // Hora de geração do arquivo
-        $this->add(158, 163, str_pad($this->getIdremessa(), 6, '0', STR_PAD_LEFT)); // Número sequencial do arquivo
+        $this->add(158, 163, Util::formatCnab('9L', $this->getIdremessa(), 6)); // Número sequencial do arquivo
         $this->add(164, 166, self::VERSAO_LAYOUT); // Número da versão do layout do arquivo
         $this->add(167, 171, self::DENSIDADE_GRAVACAO); // Densidade de gravação do arquivo
         $this->add(172, 191, self::CAMPO_BRANCO); // Para uso reservado do banco
@@ -228,9 +228,9 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(4, 7, self::LOTE_SERVICO); // Lote de serviço (Número do lote)
         $this->add(8, 8, self::TIPO_REGISTRO_TRAILER_LOTE); // Tipo de registro
         $this->add(9, 17, self::CAMPO_BRANCO); // Campo em branco
-        $this->add(18, 23, str_pad($this->getCountRegistrosLote(), 6, '0', STR_PAD_LEFT)); // Quantidade de lotes no arquivo
-        $this->add(24, 41, str_pad($this->getValorTotalLote(), 18, '0', STR_PAD_LEFT)); // Somatória dos valores
-        $this->add(42, 59, self::QUANTIDADE_MOEDA); // Somatória de quantidade de moedas
+        $this->add(18, 23, Util::formatCnab('9L', $this->getCountRegistrosLote(), 6)); // Quantidade de lotes no arquivo
+        $this->add(24, 41, Util::formatCnab('9L', $this->getValorTotalLote(), 18)); // Somatória dos valores
+        $this->add(42, 59, Util::formatCnab('9L', self::QUANTIDADE_MOEDA, 18)); // Somatória de quantidade de moedas
         $this->add(60, 65, self::CAMPO_BRANCO); // Número aviso de débito
         $this->add(66, 230, self::CAMPO_BRANCO); // Campo em branco
         $this->add(231, 240, self::CAMPO_BRANCO); // Códigos das ocorrências para retorno
@@ -250,8 +250,8 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(4, 7, self::LOTE_SERVICO_TRAILER); // Lote de serviço
         $this->add(8, 8, self::TIPO_REGISTRO_TRAILER); // Tipo de registro
         $this->add(9, 17, self::CAMPO_BRANCO); // Campo em branco
-        $this->add(18, 23, str_pad($this->getCountLotes(), 6, '0', STR_PAD_LEFT)); // Quantidade de lotes do arquivo
-        $this->add(24, 29, str_pad($this->getCount(), 6, '0', STR_PAD_LEFT)); // Quantidade de registros do arquivo
+        $this->add(18, 23, Util::formatCnab('9L', $this->getCountLotes(), 6)); // Quantidade de lotes do arquivo
+        $this->add(24, 29, Util::formatCnab('9L', $this->getCount(), 6)); // Quantidade de registros do arquivo
         $this->add(30, 240, self::CAMPO_BRANCO); // Campo em branco
 
         return $this;
@@ -296,7 +296,9 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
      */
     protected function getCountRegistrosLote()
     {
-        return $this->iRegistrosLote + 2; // +2 para incluir header e trailer do lote
+        $countDetalhes = $this->getCountDetalhes();
+
+        return $countDetalhes + 2; // header do lote (1) + registros de detalhe + trailer do lote (1)
     }
 
     /**
@@ -305,8 +307,15 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
      */
     protected function getValorTotalLote()
     {
-        // Por enquanto retorna 0, será implementado quando adicionarmos os pagamentos
-        return '000000000000000000'; // 18 zeros
+        $valorTotal = 0;
+
+        // Soma todos os valores dos pagamentos no lote
+        foreach ($this->pagamentos as $pagamento) {
+            if (method_exists($pagamento, 'getValor') && $pagamento->getValor() > 0)
+                $valorTotal += $pagamento->getValor();
+        }
+
+        return Util::formatCnab('9L', $valorTotal * 100, 18);
     }
 
     /**
@@ -370,7 +379,7 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(1, 3, self::BANCO); // Código do banco na compensação
         $this->add(4, 7, self::LOTE_SERVICO); // Lote de serviço
         $this->add(8, 8, self::TIPO_REGISTRO_DETALHE); // Tipo de registro
-        $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote, 5)); // Número sequencial do registro detalhe
+        $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote + 1, 5)); // Número sequencial do registro detalhe
         $this->add(14, 14, self::CODIGO_SEGMENTO_A); // Código de segmento do registro detalhe
         $this->add(15, 15, self::TIPO_MOVIMENTO); // Tipo de movimento
         $this->add(16, 17, self::CODIGO_INSTRUCAO_MOVIMENTO); // Código da instrução para movimento
@@ -420,7 +429,7 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(1, 3, self::BANCO); // Código do banco na compensação
         $this->add(4, 7, self::LOTE_SERVICO); // Lote de serviço
         $this->add(8, 8, self::TIPO_REGISTRO_DETALHE); // Tipo de registro
-        $this->add(9, 13, str_pad($this->iRegistrosLote, 5, '0', STR_PAD_LEFT)); // Número sequencial do registro detalhe
+        $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote + 1, 5)); // Número sequencial do registro detalhe
         $this->add(14, 14, self::CODIGO_SEGMENTO_A); // Código de segmento do registro detalhe
         $this->add(15, 15, self::TIPO_MOVIMENTO); // Tipo de movimento
         $this->add(16, 17, self::CODIGO_INSTRUCAO_MOVIMENTO); // Código da instrução para movimento
@@ -457,7 +466,7 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(163, 177, self::VALOR_RETORNO_VAZIO); // Valor real da efetivação do pagamento (Retorno)
 
         $this->add(178, 191, Util::formatCnab('9L', $pagamento->getBeneficiario()->getDocumento(), 14)); // [Identificação do Pagamento] Número do CPF/CNPJ
-        $this->add(192, 199, str_pad($pagamento->getBanco() ?? '0', 8, '0', STR_PAD_LEFT)); // [Identificação do Pagamento] Código do ISPB
+        $this->add(192, 199, Util::formatCnab('9L', $pagamento->getBanco(), 8)); // [Identificação do Pagamento] Código do ISPB
         if ($formaIniciacao == self::FORMA_INICIACAO_PIX_DADOS_BANCARIOS)
             $this->add(200, 201, $pagamento->getTipoConta() ?? self::TIPO_CONTA_CORRENTE); // [Identificação do Pagamento] Tipo de conta
         else
@@ -482,7 +491,7 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(1, 3, self::BANCO); // Código do banco na compensação
         $this->add(4, 7, self::LOTE_SERVICO); // Lote de serviço
         $this->add(8, 8, self::TIPO_REGISTRO_DETALHE); // Tipo de registro
-        $this->add(9, 13, str_pad($this->iRegistrosLote, 5, '0', STR_PAD_LEFT)); // Número sequencial do registro detalhe
+        $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote + 1, 5)); // Número sequencial do registro detalhe
         $this->add(14, 14, self::CODIGO_SEGMENTO_B); // Código de segmento do registro detalhe
         $this->add(15, 17, $pagamento->getFormaIniciacao() ?? self::FORMA_INICIACAO_PIX_CPF_CNPJ); // Forma de iniciação (tipo de chave)
         $this->add(18, 18, $pagamento->getBeneficiario()->getTipoDocumento() == 'CPF' ? self::TIPO_DOCUMENTO_CPF : self::TIPO_DOCUMENTO_CNPJ); // [Favorecido] Tipo de documento
@@ -525,7 +534,7 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(1, 3, self::BANCO); // Código do banco na compensação
         $this->add(4, 7, self::LOTE_SERVICO); // Lote de serviço
         $this->add(8, 8, self::TIPO_REGISTRO_DETALHE); // Tipo de registro
-        $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote, 5)); // Número sequencial do registro detalhe
+        $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote + 1, 5)); // Número sequencial do registro detalhe
         $this->add(14, 14, self::CODIGO_SEGMENTO_B); // Código de segmento do registro detalhe
         $this->add(15, 17, self::CAMPO_BRANCO); // Campo em branco
         $this->add(18, 18, $pagamento->getBeneficiario()->getTipoDocumento() == 'CPF' ? self::TIPO_DOCUMENTO_CPF : self::TIPO_DOCUMENTO_CNPJ); // [Favorecido] Tipo de documento
