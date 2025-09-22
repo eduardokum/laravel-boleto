@@ -17,7 +17,6 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
     const BANCO = '077';
     const LOTE_SERVICO = '0001';
     const TIPO_REGISTRO = '0';
-    const TIPO_DOCUMENTO_EMPRESA = '2'; // CNPJ
     const CODIGO_REMESSA = '1';
     const VERSAO_LAYOUT = '107';
     const DENSIDADE_GRAVACAO = '01600';
@@ -129,8 +128,8 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(4, 7, self::LOTE_SERVICO); // Lote de serviço
         $this->add(8, 8, self::TIPO_REGISTRO); // Tipo de registro
         $this->add(9, 17, self::CAMPO_BRANCO); // Campo em branco
-        $this->add(18, 18, self::TIPO_DOCUMENTO_EMPRESA); // Tipo de documento da empresa (CNPJ)
-        $this->add(19, 32, Util::onlyNumbers($this->getPagador()->getDocumento())); // CPF/CNPJ da empresa
+        $this->add(18, 18, Util::formatCnab('9L', $this->getPagador()->getTipoDocumento() == 'CPF' ? self::TIPO_DOCUMENTO_CPF : self::TIPO_DOCUMENTO_CNPJ, 1)); // Tipo de documento da empresa (CNPJ)
+        $this->add(19, 32, Util::formatCnab('9L', $this->getPagador()->getDocumento(), 14)); // CPF/CNPJ da empresa
         $this->add(33, 52, self::CAMPO_BRANCO); // Campo em branco
         $this->add(53, 57, self::AGENCIA_EMPRESA); // Agência mantenedora da conta da empresa
         $this->add(58, 58, self::AGENCIA_DV_EMPRESA); // Dígito verificador da agência
@@ -169,8 +168,7 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(12, 13, $this->getFormaLancamento()); // Forma de lançamento (varia por tipo)
         $this->add(14, 16, self::VERSAO_LAYOUT_LOTE); // Número da versão do layout do Lote
         $this->add(17, 17, self::CAMPO_BRANCO); // Campo em branco
-        $this->add(18, 18, self::TIPO_DOCUMENTO_EMPRESA); // Tipo de documento da empresa (CNPJ)
-        $this->add(19, 32, Util::onlyNumbers($this->getPagador()->getDocumento())); // CPF/CNPJ da empresa
+        $this->add(18, 18, Util::formatCnab('9L', $this->getPagador()->getTipoDocumento() == 'CPF' ? self::TIPO_DOCUMENTO_CPF : self::TIPO_DOCUMENTO_CNPJ, 1)); // Tipo de documento da empresa (CNPJ)
         $this->add(33, 52, self::CAMPO_BRANCO); // Campo em branco
         $this->add(53, 57, self::AGENCIA_EMPRESA); // Agência mantenedora da conta da empresa
         $this->add(58, 58, self::AGENCIA_DV_EMPRESA); // Dígito verificador da agência
@@ -183,7 +181,9 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(173, 177, self::CAMPO_BRANCO); // Número do local da empresa
         $this->add(178, 192, self::CAMPO_BRANCO); // Casa, Apto, Sala, Etc.
         $this->add(193, 212, Util::formatCnab('X', $this->getPagador()->getCidade(), 20)); // Nome da cidade da empresa
-        $cep = Util::onlyNumbers($this->getPagador()->getCep());
+
+        $cep = Util::formatCnab('9L', $this->getPagador()->getCep(), 8);
+
         $this->add(213, 217, substr($cep, 0, 5)); // CEP da empresa
         $this->add(218, 220, substr($cep, 5, 3)); // Complemento do CEP
         $this->add(221, 222, $this->getPagador()->getUf()); // Sigla do estado da empresa
@@ -417,6 +417,39 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
     }
 
     /**
+     * Adiciona um segmento B para TED
+     *
+     * @param BancoInter $pagamento
+     * @return $this
+     */
+    public function segmentoB($pagamento)
+    {
+        $this->iniciaDetalhe();
+
+        $this->add(1, 3, self::BANCO); // Código do banco na compensação
+        $this->add(4, 7, self::LOTE_SERVICO); // Lote de serviço
+        $this->add(8, 8, self::TIPO_REGISTRO_DETALHE); // Tipo de registro
+        $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote + 1, 5)); // Número sequencial do registro detalhe
+        $this->add(14, 14, self::CODIGO_SEGMENTO_B); // Código de segmento do registro detalhe
+        $this->add(15, 17, self::CAMPO_BRANCO); // Campo em branco
+        $this->add(18, 18, $pagamento->getBeneficiario()->getTipoDocumento() == 'CPF' ? self::TIPO_DOCUMENTO_CPF : self::TIPO_DOCUMENTO_CNPJ); // [Favorecido] Tipo de documento
+        $this->add(19, 32, Util::formatCnab('9L', $pagamento->getBeneficiario()->getDocumento(), 14)); // [Favorecido] CPF/CNPJ
+        $this->add(33, 67, Util::formatCnab('X', $pagamento->getBeneficiario()->getEndereco(), 35)); // [Favorecido] Logradouro
+        $this->add(68, 72, Util::formatCnab('X', '', 5)); // [Favorecido] Número do local
+        $this->add(73, 87, Util::formatCnab('X', '', 15)); // [Favorecido] Complemento
+        $this->add(88, 102, Util::formatCnab('X', $pagamento->getBeneficiario()->getBairro(), 15)); // [Favorecido] Bairro
+        $this->add(103, 117, Util::formatCnab('X', $pagamento->getBeneficiario()->getCidade(), 15)); // [Favorecido] Nome da cidade
+
+        $this->add(118, 125, Util::formatCnab('9L', $pagamento->getBeneficiario()->getCep(), 8)); // [Favorecido] CEP
+        $this->add(126, 127, Util::formatCnab('X', $pagamento->getBeneficiario()->getUf(), 2)); // [Favorecido] Sigla do estado
+        $this->add(128, 232, self::CAMPO_BRANCO); // Campo em branco
+        $this->add(233, 240, self::CAMPO_BRANCO); // [Favorecido] Código ISPB
+
+        $this->iRegistrosLote++;
+        return $this;
+    }
+
+    /**
      * Adiciona um segmento A para PIX
      *
      * @param BancoInter $pagamento
@@ -515,39 +548,6 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
         }
 
         $this->add(227, 232, self::CAMPO_BRANCO); // Campo em branco
-        $this->add(233, 240, self::CAMPO_BRANCO); // [Favorecido] Código ISPB
-
-        $this->iRegistrosLote++;
-        return $this;
-    }
-
-    /**
-     * Adiciona um segmento B para TED
-     *
-     * @param BancoInter $pagamento
-     * @return $this
-     */
-    public function segmentoB($pagamento)
-    {
-        $this->iniciaDetalhe();
-
-        $this->add(1, 3, self::BANCO); // Código do banco na compensação
-        $this->add(4, 7, self::LOTE_SERVICO); // Lote de serviço
-        $this->add(8, 8, self::TIPO_REGISTRO_DETALHE); // Tipo de registro
-        $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote + 1, 5)); // Número sequencial do registro detalhe
-        $this->add(14, 14, self::CODIGO_SEGMENTO_B); // Código de segmento do registro detalhe
-        $this->add(15, 17, self::CAMPO_BRANCO); // Campo em branco
-        $this->add(18, 18, $pagamento->getBeneficiario()->getTipoDocumento() == 'CPF' ? self::TIPO_DOCUMENTO_CPF : self::TIPO_DOCUMENTO_CNPJ); // [Favorecido] Tipo de documento
-        $this->add(19, 32, Util::formatCnab('9L', $pagamento->getBeneficiario()->getDocumento(), 14)); // [Favorecido] CPF/CNPJ
-        $this->add(33, 67, Util::formatCnab('X', $pagamento->getBeneficiario()->getEndereco(), 35)); // [Favorecido] Logradouro
-        $this->add(68, 72, Util::formatCnab('X', '', 5)); // [Favorecido] Número do local
-        $this->add(73, 87, Util::formatCnab('X', '', 15)); // [Favorecido] Complemento
-        $this->add(88, 102, Util::formatCnab('X', $pagamento->getBeneficiario()->getBairro(), 15)); // [Favorecido] Bairro
-        $this->add(103, 117, Util::formatCnab('X', $pagamento->getBeneficiario()->getCidade(), 15)); // [Favorecido] Nome da cidade
-
-        $this->add(118, 125, Util::formatCnab('9L', $pagamento->getBeneficiario()->getCep(), 8)); // [Favorecido] CEP
-        $this->add(126, 127, Util::formatCnab('X', $pagamento->getBeneficiario()->getUf(), 2)); // [Favorecido] Sigla do estado
-        $this->add(128, 232, self::CAMPO_BRANCO); // Campo em branco
         $this->add(233, 240, self::CAMPO_BRANCO); // [Favorecido] Código ISPB
 
         $this->iRegistrosLote++;
