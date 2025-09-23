@@ -384,11 +384,11 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(15, 15, self::TIPO_MOVIMENTO); // Tipo de movimento
         $this->add(16, 17, self::CODIGO_INSTRUCAO_MOVIMENTO); // Código da instrução para movimento
         $this->add(18, 20, self::CODIGO_CAMARA_CENTRALIZADORA); // Código da câmara centralizadora
-        $this->add(21, 23, Util::formatCnab('9L', $pagamento->getBanco(), 3)); // [Favorecido] Código do banco
+        $this->add(21, 23, Util::formatCnab('9L', $pagamento->getCodigoBanco(), 3)); // [Favorecido] Código do banco
         $this->add(24, 28, Util::formatCnab('9L', $pagamento->getAgencia(), 5)); // [Favorecido] Agência mantenedora da conta
-        $this->add(29, 29, $pagamento->getAgenciaDv()); // [Favorecido] Dígito verificador da agência
+        $this->add(29, 29, Util::formatCnab('9L', $pagamento->getAgenciaDv(), 1)); // [Favorecido] Dígito verificador da agência
         $this->add(30, 41, Util::formatCnab('9L', $pagamento->getConta(), 12)); // [Favorecido] Número da conta corrente
-        $this->add(42, 42, $pagamento->getContaDv()); // [Favorecido] Dígito verificador da conta
+        $this->add(42, 42, Util::formatCnab('9L', $pagamento->getContaDv(), 1)); // [Favorecido] Dígito verificador da conta
         $this->add(43, 43, self::CAMPO_BRANCO); // Campo em branco
         $this->add(44, 73, Util::formatCnab('X', $pagamento->getBeneficiario()->getNome(), 30)); // [Favorecido] Nome
         $this->add(74, 93, Util::formatCnab('X', $pagamento->getNumeroDocumento(), 20)); // Número do documento atribuído para empresa
@@ -471,11 +471,11 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
         // Dados bancários do favorecido (preenchidos apenas se forma de iniciação = "05")
         $formaIniciacao = $pagamento->getFormaIniciacao() ?? self::FORMA_INICIACAO_PIX_DADOS_BANCARIOS;
         if ($formaIniciacao == self::FORMA_INICIACAO_PIX_DADOS_BANCARIOS) {
-            $this->add(21, 23, Util::formatCnab('9L', $pagamento->getBanco(), 3)); // [Favorecido] Código do banco
+            $this->add(21, 23, Util::formatCnab('9L', $pagamento->getCodigoBanco(), 3)); // [Favorecido] Código do banco
             $this->add(24, 28, Util::formatCnab('9L', $pagamento->getAgencia(), 5)); // [Favorecido] Agência mantenedora da conta
-            $this->add(29, 29, $pagamento->getAgenciaDv()); // [Favorecido] Dígito verificador da agência
+            $this->add(29, 29, Util::formatCnab('9L', $pagamento->getAgenciaDv(), 1)); // [Favorecido] Dígito verificador da agência
             $this->add(30, 41, Util::formatCnab('9L', $pagamento->getConta(), 12)); // [Favorecido] Número da conta corrente
-            $this->add(42, 42, $pagamento->getContaDv()); // [Favorecido] Dígito verificador da conta
+            $this->add(42, 42, Util::formatCnab('9L', $pagamento->getContaDv(), 1)); // [Favorecido] Dígito verificador da conta
             $this->add(44, 73, Util::formatCnab('X', $pagamento->getBeneficiario()->getNome(), 30)); // [Favorecido] Nome
         } else {
             $this->add(21, 23, '000'); // [Favorecido] Código do banco
@@ -499,7 +499,7 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(163, 177, self::VALOR_RETORNO_VAZIO); // Valor real da efetivação do pagamento (Retorno)
 
         $this->add(178, 191, Util::formatCnab('9L', $pagamento->getBeneficiario()->getDocumento(), 14)); // [Identificação do Pagamento] Número do CPF/CNPJ
-        $this->add(192, 199, Util::formatCnab('9L', $pagamento->getBanco(), 8)); // [Identificação do Pagamento] Código do ISPB
+        $this->add(192, 199, Util::formatCnab('9L', $pagamento->getCodigoBanco(), 8)); // [Identificação do Pagamento] Código do ISPB
         if ($formaIniciacao == self::FORMA_INICIACAO_PIX_DADOS_BANCARIOS)
             $this->add(200, 201, $pagamento->getTipoConta() ?? self::TIPO_CONTA_CORRENTE); // [Identificação do Pagamento] Tipo de conta
         else

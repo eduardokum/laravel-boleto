@@ -5,7 +5,7 @@ namespace Eduardokum\LaravelBoleto\Cnab\Pagamento\Cnab240\Banco;
 use Eduardokum\LaravelBoleto\Cnab\Pagamento\Cnab240\AbstractPagamento;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Pagamento as PagamentoRemessaContract;
 use Eduardokum\LaravelBoleto\Contracts\Pagamento\Pagamento as PagamentoContract;
-use Eduardokum\LaravelBoleto\Pagamento\AbstractPagamento as PagamentoAbstractPagamento;
+use Eduardokum\LaravelBoleto\Pagamento\Banco\Banco;
 use Eduardokum\LaravelBoleto\Util;
 
 /**
@@ -367,7 +367,7 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
 
     /**
      * Cria o segmento A CNAB 240 conforme especificação do Bancoob
-     * @param PagamentoAbstractPagamento $pagamento
+     * @param Banco $pagamento
      * @return Bancoob
      * @throws \Exception
      */
@@ -422,7 +422,7 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
 
     /**
      * Cria o segmento B CNAB 240 conforme especificação do Bancoob
-     * @param PagamentoAbstractPagamento $pagamento
+     * @param Banco $pagamento
      * @return Bancoob
      * @throws \Exception
      */
