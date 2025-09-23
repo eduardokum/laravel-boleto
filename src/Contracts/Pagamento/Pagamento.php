@@ -67,16 +67,6 @@ interface Pagamento
     public function getID();
 
     /**
-     * @return mixed
-     */
-    public function getLinhaDigitavel();
-
-    /**
-     * @return mixed
-     */
-    public function getCodigoBarras();
-
-    /**
      * @return PessoaContract
      */
     public function getBeneficiario();
@@ -84,32 +74,7 @@ interface Pagamento
     /**
      * @return mixed
      */
-    public function getLogoBase64();
-
-    /**
-     * @return mixed
-     */
-    public function getLogo();
-
-    /**
-     * @return mixed
-     */
-    public function getLogoBancoBase64();
-
-    /**
-     * @return mixed
-     */
-    public function getLogoBanco();
-
-    /**
-     * @return mixed
-     */
     public function getCodigoBanco();
-
-    /**
-     * @return mixed
-     */
-    public function getCodigoBancoComDv();
 
     /**
      * @return int
@@ -122,105 +87,14 @@ interface Pagamento
     public function getDataVencimento();
 
     /**
-     * @return Carbon
-     */
-    public function getDataVencimentoApos();
-
-    /**
-     * @return Carbon
-     */
-    public function getDataDesconto();
-
-    /**
-     * @return Carbon
-     */
-    public function getDataProcessamento();
-
-    /**
-     * @return Carbon
-     */
-    public function getDataDocumento();
-
-    /**
      * @return mixed
      */
     public function getValor();
 
     /**
-     * @return mixed
-     */
-    public function getDesconto();
-
-    /**
-     * @return mixed
-     */
-    public function getMulta();
-
-    /**
-     * @return mixed
-     */
-    public function getJuros();
-
-    /**
-     * @return mixed
-     */
-    public function getMoraDia();
-
-    /**
-     * @return mixed
-     */
-    public function getJurosApos();
-
-    /**
-     * @return mixed
-     */
-    public function getMultaApos();
-
-    /**
-     * @param int $default
-     *
-     * @return mixed
-     */
-    public function getDiasProtesto($default = 0);
-
-    /**
-     * @param int $default
-     *
-     * @return mixed
-     */
-    public function getTipoProtesto($default = 0);
-
-    /**
-     * @param int $default
-     *
-     * @return mixed
-     */
-    public function getDiasBaixaAutomatica($default = 0);
-
-    /**
-     * @return PessoaContract
-     */
-    public function getSacadorAvalista();
-
-    /**
      * @return PessoaContract
      */
     public function getPagador();
-
-    /**
-     * @return array
-     */
-    public function getDescricaoDemonstrativo();
-
-    /**
-     * @return mixed
-     */
-    public function getInstrucoes();
-
-    /**
-     * @return mixed
-     */
-    public function getLocalPagamento();
 
     /**
      * @return mixed
@@ -240,92 +114,12 @@ interface Pagamento
     /**
      * @return mixed
      */
-    public function getAgenciaCodigoBeneficiario();
-
-    /**
-     * @return mixed
-     */
     public function getNossoNumero();
 
     /**
      * @return mixed
      */
-    public function getNossoNumeroBoleto();
-
-    /**
-     * @return mixed
-     */
-    public function getEspecieDoc();
-
-    /**
-     * @param int $default
-     * @param int $tipo
-     *
-     * @return mixed
-     */
-    public function getEspecieDocCodigo($default = 99, $tipo = 240);
-
-    /**
-     * @return mixed
-     */
-    public function getAceite();
-
-    /**
-     * @return mixed
-     */
-    public function getCarteira();
-
-    /**
-     * @return mixed
-     */
-    public function getCarteiraNome();
-
-    /**
-     * @return mixed
-     */
     public function getUsoBanco();
-
-    /**
-     * @return mixed
-     */
-    public function getChaveNfe();
-
-    /**
-     * @return mixed
-     */
-    public function getStatus();
-
-    /**
-     * @return mixed
-     */
-    public function alterarBoleto();
-
-    /**
-     * @return mixed
-     */
-    public function baixarBoleto();
-
-    /**
-     * @return mixed
-     */
-    public function alterarDataDeVencimento();
-
-    /**
-     * @param $instrucao
-     *
-     * @return mixed
-     */
-    public function comandarInstrucao($instrucao);
-
-    /**
-     * @return mixed
-     */
-    public function getComando();
-
-    /**
-     * @return mixed
-     */
-    public function getPixQrCode();
 
     /**
      * @return mixed
@@ -336,23 +130,4 @@ interface Pagamento
      * @return mixed
      */
     public function getPixChaveTipo();
-
-    /**
-     * Método onde qualquer boleto deve extender para gerar o código da posição de 20 a 44
-     *
-     * @param $campoLivre
-     *
-     * @return array
-     */
-    public static function parseCampoLivre($campoLivre);
-
-    /**
-     * @return mixed
-     */
-    public function getMostrarEnderecoFichaCompensacao();
-
-    /**
-     * @return bool
-     */
-    public function imprimeBoleto();
 }
