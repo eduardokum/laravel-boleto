@@ -648,6 +648,31 @@ abstract class AbstractPagamento implements PagamentoContract
 
 
     /**
+     * Define a data de geração do boleto
+     *
+     * @param Carbon $dataProcessamento
+     *
+     * @return AbstractPagamento
+     */
+    public function setDataProcessamento(Carbon $dataProcessamento)
+    {
+        $this->dataProcessamento = $dataProcessamento;
+
+        return $this;
+    }
+
+    /**
+     * Retorna a data de geração do boleto
+     *
+     * @return Carbon
+     */
+    public function getDataProcessamento()
+    {
+        return $this->dataProcessamento;
+    }
+
+
+    /**
      * Define a moeda utilizada pelo boleto
      *
      * @param int $moeda
@@ -958,8 +983,6 @@ abstract class AbstractPagamento implements PagamentoContract
         $this->validarPix();
 
         return array_merge([
-            'linha_digitavel' => $linha_digitavel,
-            'codigo_barras'   => $codigo_barras,
             'beneficiario'    => [
                 'nome'              => $this->getBeneficiario()->getNome(),
                 'endereco'          => $this->getBeneficiario()->getEndereco(),
@@ -972,38 +995,11 @@ abstract class AbstractPagamento implements PagamentoContract
                 'endereco2'         => $this->getBeneficiario()->getCepCidadeUf(),
                 'endereco_completo' => $this->getBeneficiario()->getEnderecoCompleto(),
             ],
-            'logo_base64'         => $this->getLogoBase64(),
-            'logo'                => $this->getLogo(),
-            'logo_banco_base64'   => $this->getLogoBancoBase64(),
-            'logo_banco'          => $this->getLogoBanco(),
             'codigo_banco'        => $this->getCodigoBanco(),
             'codigo_banco_com_dv' => $this->getCodigoBancoComDv(),
-            'especie'             => 'R$',
             'data_vencimento'     => $this->getDataVencimento(),
             'data_processamento'  => $this->getDataProcessamento(),
-            'data_documento'      => $this->getDataDocumento(),
-            'data_desconto'       => $this->getDataDesconto(),
             'valor'               => Util::nReal($this->getValor(), 2, false),
-            'desconto'            => Util::nReal($this->getDesconto(), 2, false),
-            'multa'               => Util::nReal($this->getMulta(), 2, false),
-            'juros'               => Util::nReal($this->getJuros(), 2, false),
-            'juros_apos'          => $this->getJurosApos(),
-            'multa_apos'          => $this->getMultaApos(),
-            'dias_protesto'       => $this->getDiasProtesto(),
-            'sacador_avalista'    => $this->getSacadorAvalista()
-                ? [
-                    'nome'              => $this->getSacadorAvalista()->getNome(),
-                    'endereco'          => $this->getSacadorAvalista()->getEndereco(),
-                    'bairro'            => $this->getSacadorAvalista()->getBairro(),
-                    'cep'               => $this->getSacadorAvalista()->getCep(),
-                    'uf'                => $this->getSacadorAvalista()->getUf(),
-                    'cidade'            => $this->getSacadorAvalista()->getCidade(),
-                    'documento'         => $this->getSacadorAvalista()->getDocumento(),
-                    'nome_documento'    => $this->getSacadorAvalista()->getNomeDocumento(),
-                    'endereco2'         => $this->getSacadorAvalista()->getCepCidadeUf(),
-                    'endereco_completo' => $this->getSacadorAvalista()->getEnderecoCompleto(),
-                ]
-                : [],
             'pagador' => [
                 'nome'              => $this->getPagador()->getNome(),
                 'endereco'          => $this->getPagador()->getEndereco(),
@@ -1016,28 +1012,14 @@ abstract class AbstractPagamento implements PagamentoContract
                 'endereco2'         => $this->getPagador()->getCepCidadeUf(),
                 'endereco_completo' => $this->getPagador()->getEnderecoCompleto(),
             ],
-            'demonstrativo'                      => $this->getDescricaoDemonstrativo(),
-            'instrucoes'                         => $this->getInstrucoes(),
-            'instrucoes_impressao'               => $this->getInstrucoesImpressao(),
-            'local_pagamento'                    => $this->getLocalPagamento(),
             'numero'                             => $this->getNumero(),
             'numero_documento'                   => $this->getNumeroDocumento(),
             'numero_controle'                    => $this->getNumeroControle(),
             'agencia_codigo_beneficiario'        => $this->getAgenciaCodigoBeneficiario(),
             'nosso_numero'                       => $nosso_numero,
-            'nosso_numero_boleto'                => $nosso_numero_boleto,
-            'especie_doc'                        => $this->getEspecieDoc(),
-            'especie_doc_cod'                    => $this->getEspecieDocCodigo(),
-            'aceite'                             => $this->getAceite(),
-            'carteira'                           => $this->getCarteira(),
-            'carteira_nome'                      => $this->getCarteiraNome(),
             'uso_banco'                          => $this->getUsoBanco(),
-            'status'                             => $this->getStatus(),
-            'mostrar_endereco_ficha_compensacao' => $this->getMostrarEnderecoFichaCompensacao(),
             'pix_chave'                          => $this->getPixChave(),
             'pix_chave_tipo'                     => $this->getPixChaveTipo(),
-            'pix_qrcode'                         => $this->getPixQrCode(),
-            'pix_qrcode_image'                   => $this->getPixQrCodeBase64(),
         ], $this->variaveis_adicionais);
     }
 }
