@@ -457,19 +457,19 @@ abstract class AbstractBoleto implements BoletoContract
     {
         Util::fillClass($this, $params);
         // Marca a data de emissão para hoje, caso não especificada
-        if (! $this->getDataDocumento()) {
+        if (!$this->getDataDocumento()) {
             $this->setDataDocumento(new Carbon());
         }
         // Marca a data de processamento para hoje, caso não especificada
-        if (! $this->getDataProcessamento()) {
+        if (!$this->getDataProcessamento()) {
             $this->setDataProcessamento(new Carbon());
         }
         // Marca a data de vencimento para daqui a 5 dias, caso não especificada
-        if (! $this->getDataVencimento()) {
+        if (!$this->getDataVencimento()) {
             $this->setDataVencimento(new Carbon(date('Y-m-d', strtotime('+5 days'))));
         }
         // Marca a data de desconto
-        if (! $this->getDataDesconto()) {
+        if (!$this->getDataDesconto()) {
             $this->setDataDesconto($this->getDataVencimento());
         }
     }
@@ -507,8 +507,8 @@ abstract class AbstractBoleto implements BoletoContract
     {
         $args = func_get_args();
         foreach ($args as $arg) {
-            ! is_array($arg) || call_user_func_array([$this, __FUNCTION__], $arg);
-            ! is_string($arg) || array_push($this->camposObrigatorios, $arg);
+            !is_array($arg) || call_user_func_array([$this, __FUNCTION__], $arg);
+            !is_string($arg) || array_push($this->camposObrigatorios, $arg);
         }
 
         return $this;
@@ -572,6 +572,34 @@ abstract class AbstractBoleto implements BoletoContract
     }
 
     /**
+     * Define o dígito da agência
+     *
+     * @param string $linhaDigitavel
+     *
+     * @return AbstractBoleto
+     */
+    public function setLinhaDigitavel($linhaDigitavel)
+    {
+        $this->campoLinhaDigitavel = $linhaDigitavel;
+
+        return $this;
+    }
+
+    /**
+     * Define o dígito da agência
+     *
+     * @param string $codigoDeBarras
+     *
+     * @return AbstractBoleto
+     */
+    public function setCodigoDeBarras($codigoDeBarras)
+    {
+        $this->campoCodigoBarras = $codigoDeBarras;
+
+        return $this;
+    }
+
+    /**
      * Retorna o dígito da agência
      *
      * @return string
@@ -591,7 +619,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setCarteira($carteira)
     {
-        if ($this->getCarteiras() !== false && ! in_array($carteira, $this->getCarteiras())) {
+        if ($this->getCarteiras() !== false && !in_array($carteira, $this->getCarteiras())) {
             throw new ValidationException('Carteira `' . $$carteira . '` não disponível! Carteiras válidas: ' . implode(', ', $this->getCarteiras()));
         }
         $this->carteira = $carteira;
@@ -923,9 +951,9 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getEspecieDocCodigo($default = 99, $tipo = 240)
     {
-        if (! empty($this->especiesCodigo240) && $tipo == 240) {
+        if (!empty($this->especiesCodigo240) && $tipo == 240) {
             $especie = $this->especiesCodigo240;
-        } elseif (! empty($this->especiesCodigo400) && $tipo == 400) {
+        } elseif (!empty($this->especiesCodigo400) && $tipo == 400) {
             $especie = $this->especiesCodigo400;
         } else {
             $especie = $this->especiesCodigo;
@@ -1044,7 +1072,7 @@ abstract class AbstractBoleto implements BoletoContract
     {
         $chaveNfe = Util::onlyNumbers($chaveNfe);
 
-        if (strlen($chaveNfe) != 44 && ! empty($chaveNfe)) {
+        if (strlen($chaveNfe) != 44 && !empty($chaveNfe)) {
             throw new ValidationException('Chave de nfe não possui 44 posições');
         }
 
@@ -1166,7 +1194,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getInstrucoesImpressao()
     {
-        if (! empty($this->instrucoes_impressao)) {
+        if (!empty($this->instrucoes_impressao)) {
             return array_slice(((array) $this->instrucoes_impressao) + [null, null, null, null, null], 0, 5);
         } else {
             return [];
@@ -1489,7 +1517,7 @@ abstract class AbstractBoleto implements BoletoContract
     {
         $this->diasProtesto = max((int) $diasProtesto, 0);
 
-        if (! empty($this->diasProtesto) && $this->getDiasBaixaAutomatica() > 0) {
+        if (!empty($this->diasProtesto) && $this->getDiasBaixaAutomatica() > 0) {
             throw new ValidationException('Você deve usar dias de protesto ou dias de baixa, nunca os 2');
         }
 
@@ -1521,7 +1549,7 @@ abstract class AbstractBoleto implements BoletoContract
         $tipoProtesto = (int) $tipoProtesto;
         $this->tipoProtesto = $tipoProtesto > 0 ? $tipoProtesto : 0;
 
-        if (! empty($tipoProtesto) && $this->getDiasProtesto() == 0) {
+        if (!empty($tipoProtesto) && $this->getDiasProtesto() == 0) {
             throw new Exception('Você deve informar dias de protesto se informar tipo de protesto');
         }
 
@@ -1802,11 +1830,11 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getCodigoBarras()
     {
-        if (! empty($this->campoCodigoBarras)) {
+        if (!empty($this->campoCodigoBarras)) {
             return $this->campoCodigoBarras;
         }
 
-        if (! $this->isValid($messages)) {
+        if (!$this->isValid($messages)) {
             throw new ValidationException('Campos requeridos pelo banco, aparentam estar ausentes ' . $messages);
         }
 
@@ -1845,7 +1873,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getLinhaDigitavel()
     {
-        if (! empty($this->campoLinhaDigitavel)) {
+        if (!empty($this->campoLinhaDigitavel)) {
             return $this->campoLinhaDigitavel;
         }
 
@@ -1974,7 +2002,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setPixChaveTipo($pixChaveTipo)
     {
-        if (! in_array($pixChaveTipo, [self::TIPO_CHAVEPIX_CPF, self::TIPO_CHAVEPIX_CNPJ, self::TIPO_CHAVEPIX_CELULAR, self::TIPO_CHAVEPIX_EMAIL, self::TIPO_CHAVEPIX_ALEATORIA])) {
+        if (!in_array($pixChaveTipo, [self::TIPO_CHAVEPIX_CPF, self::TIPO_CHAVEPIX_CNPJ, self::TIPO_CHAVEPIX_CELULAR, self::TIPO_CHAVEPIX_EMAIL, self::TIPO_CHAVEPIX_ALEATORIA])) {
             throw new ValidationException(sprintf('Tipo de chave %s não é válido', $pixChaveTipo));
         }
         $this->pixChaveTipo = $pixChaveTipo;
@@ -1997,7 +2025,7 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function setQrCodeStyle($qrCodeStyle)
     {
-        if (! in_array($qrCodeStyle, [self::QRCODE_ESTILO_QUADRADO, self::QRCODE_ESTILO_PONTO])) {
+        if (!in_array($qrCodeStyle, [self::QRCODE_ESTILO_QUADRADO, self::QRCODE_ESTILO_PONTO])) {
             throw new ValidationException(sprintf('Estilo QRCODE %s não é válido', $qrCodeStyle));
         }
 
@@ -2131,39 +2159,39 @@ abstract class AbstractBoleto implements BoletoContract
     public function validarPix()
     {
         if ($this->getPixChave() || $this->getPixChaveTipo()) {
-            if (! $this->getPixChave()) {
+            if (!$this->getPixChave()) {
                 throw new ValidationException('Informado tipo de chave de Pix porém não foi informado a chave');
             }
-            if (! $this->getPixChaveTipo()) {
+            if (!$this->getPixChaveTipo()) {
                 throw new ValidationException('Informado chave de Pix porém não foi informado o tipo de chave');
             }
-//            if (! $this->getID()) {
+            //            if (! $this->getID()) {
 //                throw new ValidationException('ID necessita ser informado para geração da cobrança');
 //            }
 
             switch ($this->getPixChaveTipo()) {
                 case self::TIPO_CHAVEPIX_CPF:
-                    if (! Util::validarCpf($this->getPixChave())) {
+                    if (!Util::validarCpf($this->getPixChave())) {
                         throw new ValidationException(sprintf('Chave do tipo CPF é invalida: %s', $this->getPixChave()));
                     }
                     break;
                 case self::TIPO_CHAVEPIX_CNPJ:
-                    if (! Util::validarCnpj($this->getPixChave())) {
+                    if (!Util::validarCnpj($this->getPixChave())) {
                         throw new ValidationException(sprintf('Chave do tipo CNPJ é invalida: %s', $this->getPixChave()));
                     }
                     break;
                 case self::TIPO_CHAVEPIX_EMAIL:
-                    if (! filter_var($this->getPixChave(), FILTER_VALIDATE_EMAIL)) {
+                    if (!filter_var($this->getPixChave(), FILTER_VALIDATE_EMAIL)) {
                         throw new ValidationException(sprintf('Chave do tipo EMAIL é invalida: %s', $this->getPixChave()));
                     }
                     break;
                 case self::TIPO_CHAVEPIX_CELULAR:
-                    if (! preg_match('/^(\+\d{2}\s?)?[-.\s]?\(?\d{2}\)?[-.\s]?(\d\s?)?\d{4}[-.\s]?\d{4}$/', $this->getPixChave())) {
+                    if (!preg_match('/^(\+\d{2}\s?)?[-.\s]?\(?\d{2}\)?[-.\s]?(\d\s?)?\d{4}[-.\s]?\d{4}$/', $this->getPixChave())) {
                         throw new ValidationException(sprintf('Chave do tipo CELULAR é invalida: %s', $this->getPixChave()));
                     }
                     break;
                 case self::TIPO_CHAVEPIX_ALEATORIA:
-                    if (! preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/', $this->getPixChave())) {
+                    if (!preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/', $this->getPixChave())) {
                         throw new ValidationException(sprintf('Chave do tipo ALEATÓRIA é invalida: %s', $this->getPixChave()));
                     }
                     break;
@@ -2205,7 +2233,7 @@ abstract class AbstractBoleto implements BoletoContract
             $pdf = new Pdf();
         }
         $pdf->addBoleto($this);
-        ! $print || $pdf->showPrint();
+        !$print || $pdf->showPrint();
         $instrucoes || $pdf->hideInstrucoes();
 
         return $pdf->gerarBoleto('S', null);
@@ -2224,7 +2252,7 @@ abstract class AbstractBoleto implements BoletoContract
     {
         $html = new Html();
         $html->addBoleto($this);
-        ! $print || $html->showPrint();
+        !$print || $html->showPrint();
         $instrucoes || $html->hideInstrucoes();
 
         return $html->gerarBoleto();
@@ -2270,85 +2298,85 @@ abstract class AbstractBoleto implements BoletoContract
 
         return array_merge([
             'linha_digitavel' => $linha_digitavel,
-            'codigo_barras'   => $codigo_barras,
-            'beneficiario'    => [
-                'nome'              => $this->getBeneficiario()->getNome(),
-                'endereco'          => $this->getBeneficiario()->getEndereco(),
-                'bairro'            => $this->getBeneficiario()->getBairro(),
-                'cep'               => $this->getBeneficiario()->getCep(),
-                'uf'                => $this->getBeneficiario()->getUf(),
-                'cidade'            => $this->getBeneficiario()->getCidade(),
-                'documento'         => $this->getBeneficiario()->getDocumento(),
-                'nome_documento'    => $this->getBeneficiario()->getNomeDocumento(),
-                'endereco2'         => $this->getBeneficiario()->getCepCidadeUf(),
+            'codigo_barras' => $codigo_barras,
+            'beneficiario' => [
+                'nome' => $this->getBeneficiario()->getNome(),
+                'endereco' => $this->getBeneficiario()->getEndereco(),
+                'bairro' => $this->getBeneficiario()->getBairro(),
+                'cep' => $this->getBeneficiario()->getCep(),
+                'uf' => $this->getBeneficiario()->getUf(),
+                'cidade' => $this->getBeneficiario()->getCidade(),
+                'documento' => $this->getBeneficiario()->getDocumento(),
+                'nome_documento' => $this->getBeneficiario()->getNomeDocumento(),
+                'endereco2' => $this->getBeneficiario()->getCepCidadeUf(),
                 'endereco_completo' => $this->getBeneficiario()->getEnderecoCompleto(),
             ],
-            'logo_base64'         => $this->getLogoBase64(),
-            'logo'                => $this->getLogo(),
-            'logo_banco_base64'   => $this->getLogoBancoBase64(),
-            'logo_banco'          => $this->getLogoBanco(),
-            'codigo_banco'        => $this->getCodigoBanco(),
+            'logo_base64' => $this->getLogoBase64(),
+            'logo' => $this->getLogo(),
+            'logo_banco_base64' => $this->getLogoBancoBase64(),
+            'logo_banco' => $this->getLogoBanco(),
+            'codigo_banco' => $this->getCodigoBanco(),
             'codigo_banco_com_dv' => $this->getCodigoBancoComDv(),
-            'especie'             => 'R$',
-            'data_vencimento'     => $this->getDataVencimento(),
-            'data_processamento'  => $this->getDataProcessamento(),
-            'data_documento'      => $this->getDataDocumento(),
-            'data_desconto'       => $this->getDataDesconto(),
-            'valor'               => Util::nReal($this->getValor(), 2, false),
-            'desconto'            => Util::nReal($this->getDesconto(), 2, false),
-            'multa'               => Util::nReal($this->getMulta(), 2, false),
-            'juros'               => Util::nReal($this->getJuros(), 2, false),
-            'juros_apos'          => $this->getJurosApos(),
-            'multa_apos'          => $this->getMultaApos(),
-            'dias_protesto'       => $this->getDiasProtesto(),
-            'sacador_avalista'    => $this->getSacadorAvalista()
+            'especie' => 'R$',
+            'data_vencimento' => $this->getDataVencimento(),
+            'data_processamento' => $this->getDataProcessamento(),
+            'data_documento' => $this->getDataDocumento(),
+            'data_desconto' => $this->getDataDesconto(),
+            'valor' => Util::nReal($this->getValor(), 2, false),
+            'desconto' => Util::nReal($this->getDesconto(), 2, false),
+            'multa' => Util::nReal($this->getMulta(), 2, false),
+            'juros' => Util::nReal($this->getJuros(), 2, false),
+            'juros_apos' => $this->getJurosApos(),
+            'multa_apos' => $this->getMultaApos(),
+            'dias_protesto' => $this->getDiasProtesto(),
+            'sacador_avalista' => $this->getSacadorAvalista()
                 ? [
-                    'nome'              => $this->getSacadorAvalista()->getNome(),
-                    'endereco'          => $this->getSacadorAvalista()->getEndereco(),
-                    'bairro'            => $this->getSacadorAvalista()->getBairro(),
-                    'cep'               => $this->getSacadorAvalista()->getCep(),
-                    'uf'                => $this->getSacadorAvalista()->getUf(),
-                    'cidade'            => $this->getSacadorAvalista()->getCidade(),
-                    'documento'         => $this->getSacadorAvalista()->getDocumento(),
-                    'nome_documento'    => $this->getSacadorAvalista()->getNomeDocumento(),
-                    'endereco2'         => $this->getSacadorAvalista()->getCepCidadeUf(),
+                    'nome' => $this->getSacadorAvalista()->getNome(),
+                    'endereco' => $this->getSacadorAvalista()->getEndereco(),
+                    'bairro' => $this->getSacadorAvalista()->getBairro(),
+                    'cep' => $this->getSacadorAvalista()->getCep(),
+                    'uf' => $this->getSacadorAvalista()->getUf(),
+                    'cidade' => $this->getSacadorAvalista()->getCidade(),
+                    'documento' => $this->getSacadorAvalista()->getDocumento(),
+                    'nome_documento' => $this->getSacadorAvalista()->getNomeDocumento(),
+                    'endereco2' => $this->getSacadorAvalista()->getCepCidadeUf(),
                     'endereco_completo' => $this->getSacadorAvalista()->getEnderecoCompleto(),
                 ]
                 : [],
             'pagador' => [
-                'nome'              => $this->getPagador()->getNome(),
-                'endereco'          => $this->getPagador()->getEndereco(),
-                'bairro'            => $this->getPagador()->getBairro(),
-                'cep'               => $this->getPagador()->getCep(),
-                'uf'                => $this->getPagador()->getUf(),
-                'cidade'            => $this->getPagador()->getCidade(),
-                'documento'         => $this->getPagador()->getDocumento(),
-                'nome_documento'    => $this->getPagador()->getNomeDocumento(),
-                'endereco2'         => $this->getPagador()->getCepCidadeUf(),
+                'nome' => $this->getPagador()->getNome(),
+                'endereco' => $this->getPagador()->getEndereco(),
+                'bairro' => $this->getPagador()->getBairro(),
+                'cep' => $this->getPagador()->getCep(),
+                'uf' => $this->getPagador()->getUf(),
+                'cidade' => $this->getPagador()->getCidade(),
+                'documento' => $this->getPagador()->getDocumento(),
+                'nome_documento' => $this->getPagador()->getNomeDocumento(),
+                'endereco2' => $this->getPagador()->getCepCidadeUf(),
                 'endereco_completo' => $this->getPagador()->getEnderecoCompleto(),
             ],
-            'demonstrativo'                      => $this->getDescricaoDemonstrativo(),
-            'instrucoes'                         => $this->getInstrucoes(),
-            'instrucoes_impressao'               => $this->getInstrucoesImpressao(),
-            'local_pagamento'                    => $this->getLocalPagamento(),
-            'numero'                             => $this->getNumero(),
-            'numero_documento'                   => $this->getNumeroDocumento(),
-            'numero_controle'                    => $this->getNumeroControle(),
-            'agencia_codigo_beneficiario'        => $this->getAgenciaCodigoBeneficiario(),
-            'nosso_numero'                       => $nosso_numero,
-            'nosso_numero_boleto'                => $nosso_numero_boleto,
-            'especie_doc'                        => $this->getEspecieDoc(),
-            'especie_doc_cod'                    => $this->getEspecieDocCodigo(),
-            'aceite'                             => $this->getAceite(),
-            'carteira'                           => $this->getCarteira(),
-            'carteira_nome'                      => $this->getCarteiraNome(),
-            'uso_banco'                          => $this->getUsoBanco(),
-            'status'                             => $this->getStatus(),
+            'demonstrativo' => $this->getDescricaoDemonstrativo(),
+            'instrucoes' => $this->getInstrucoes(),
+            'instrucoes_impressao' => $this->getInstrucoesImpressao(),
+            'local_pagamento' => $this->getLocalPagamento(),
+            'numero' => $this->getNumero(),
+            'numero_documento' => $this->getNumeroDocumento(),
+            'numero_controle' => $this->getNumeroControle(),
+            'agencia_codigo_beneficiario' => $this->getAgenciaCodigoBeneficiario(),
+            'nosso_numero' => $nosso_numero,
+            'nosso_numero_boleto' => $nosso_numero_boleto,
+            'especie_doc' => $this->getEspecieDoc(),
+            'especie_doc_cod' => $this->getEspecieDocCodigo(),
+            'aceite' => $this->getAceite(),
+            'carteira' => $this->getCarteira(),
+            'carteira_nome' => $this->getCarteiraNome(),
+            'uso_banco' => $this->getUsoBanco(),
+            'status' => $this->getStatus(),
             'mostrar_endereco_ficha_compensacao' => $this->getMostrarEnderecoFichaCompensacao(),
-            'pix_chave'                          => $this->getPixChave(),
-            'pix_chave_tipo'                     => $this->getPixChaveTipo(),
-            'pix_qrcode'                         => $this->getPixQrCode(),
-            'pix_qrcode_image'                   => $this->getPixQrCodeBase64(),
+            'pix_chave' => $this->getPixChave(),
+            'pix_chave_tipo' => $this->getPixChaveTipo(),
+            'pix_qrcode' => $this->getPixQrCode(),
+            'pix_qrcode_image' => $this->getPixQrCodeBase64(),
         ], $this->variaveis_adicionais);
     }
 }
