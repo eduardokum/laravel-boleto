@@ -5,6 +5,8 @@ namespace Eduardokum\LaravelBoleto\Cnab\Pagamento\Cnab240;
 use ForceUTF8\Encoding;
 use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Pagamento\AbstractPagamento as AbstractPagamentoGeneric;
+use Eduardokum\LaravelBoleto\Pagamento\Banco\Banco;
+use Eduardokum\LaravelBoleto\Util;
 
 abstract class AbstractPagamento extends AbstractPagamentoGeneric
 {
@@ -41,6 +43,18 @@ abstract class AbstractPagamento extends AbstractPagamentoGeneric
      * Quantidade de registros do lote.
      */
     protected $iRegistrosLote;
+
+    /**
+     * Array de lotes organizados por tipo de pagamento
+     * @var array
+     */
+    protected $lotes = [];
+
+    /**
+     * Contador de lotes
+     * @var int
+     */
+    protected $loteCounter = 0;
 
     /**
      * Função para gerar o cabeçalho do arquivo.
@@ -181,26 +195,186 @@ abstract class AbstractPagamento extends AbstractPagamentoGeneric
         }
 
         $stringRemessa = '';
-        if ($this->iRegistros < 1) {
-            throw new ValidationException('Nenhuma linha detalhe foi adicionada');
+
+        // Agrupa pagamentos por tipo
+        $this->agruparPagamentosPorTipo();
+
+        if (empty($this->lotes)) {
+            throw new ValidationException('Nenhum pagamento foi adicionado');
         }
 
+        // Header do arquivo
         $this->header();
         $stringRemessa .= $this->valida($this->getHeader()) . $this->fimLinha;
 
-        $this->headerLote();
-        $stringRemessa .= $this->valida($this->getHeaderLote()) . $this->fimLinha;
+        // Processa cada lote
+        foreach ($this->lotes as $tipoPagamento => $lote) {
+            // Header do lote
+            $this->headerLoteMulti($lote);
+            $stringRemessa .= $this->valida($this->getHeaderLote()) . $this->fimLinha;
 
-        foreach ($this->getDetalhes() as $detalhe) {
-            $stringRemessa .= $this->valida($detalhe) . $this->fimLinha;
+            // Gera segmentos diretamente para cada pagamento do lote
+            foreach ($lote['pagamentos'] as $pagamento) {
+                $this->gerarSegmentos($pagamento);
+            }
+
+            // Detalhes do lote
+            foreach ($this->getDetalhes() as $detalhe) {
+                $stringRemessa .= $this->valida($detalhe) . $this->fimLinha;
+            }
+
+            // Trailer do lote
+            $this->trailerLoteMulti($lote);
+            $stringRemessa .= $this->valida($this->getTrailerLote()) . $this->fimLinha;
+
+            // Limpa detalhes para o próximo lote
+            $this->aRegistros[self::DETALHE] = [];
+            $this->iRegistros = 0;
+            $this->iRegistrosLote = 0;
         }
 
-        $this->trailerLote();
-        $stringRemessa .= $this->valida($this->getTrailerLote()) . $this->fimLinha;
-
-        $this->trailer();
+        // Trailer do arquivo
+        $this->trailerMulti();
         $stringRemessa .= $this->valida($this->getTrailer()) . $this->fimArquivo;
 
         return Encoding::toUTF8($stringRemessa);
+    }
+
+    /**
+     * Agrupa pagamentos por tipo automaticamente
+     */
+    protected function agruparPagamentosPorTipo()
+    {
+        $this->lotes = [];
+        $this->loteCounter = 0;
+
+        foreach ($this->pagamentos as $pagamento) {
+            $tipoPagamento = $this->getTipoPagamentoDoPagamento($pagamento);
+
+            // Se não existe lote para este tipo, cria um novo
+            if (!isset($this->lotes[$tipoPagamento])) {
+                $this->lotes[$tipoPagamento] = [
+                    'numero' => ++$this->loteCounter,
+                    'tipo' => $tipoPagamento,
+                    'pagamentos' => []
+                ];
+            }
+
+            // Adiciona o pagamento ao lote
+            $this->lotes[$tipoPagamento]['pagamentos'][] = $pagamento;
+        }
+    }
+
+    /**
+     * Retorna o tipo de pagamento de um pagamento específico
+     * 
+     * @param Banco $pagamento
+     * @return string
+     */
+    protected function getTipoPagamentoDoPagamento(Banco $pagamento)
+    {
+        // Se o pagamento tem um método getTipoPagamento, usa ele
+        if (method_exists($pagamento, 'getTipoPagamento')) {
+            return $pagamento->getTipoPagamento();
+        }
+
+        // Tenta acessar a propriedade diretamente (caso seja pública)
+        if (isset($pagamento->tipoPagamento) && !empty($pagamento->tipoPagamento)) {
+            return $pagamento->tipoPagamento;
+        }
+
+        // Se o pagamento tem uma propriedade tipoPagamento, usa ela
+        if (property_exists($pagamento, 'tipoPagamento') && !empty($pagamento->tipoPagamento)) {
+            return $pagamento->tipoPagamento;
+        }
+
+        // Se não, usa o tipo padrão 'TED'
+        return 'TED';
+    }
+
+    /**
+     * Header do lote para múltiplos lotes (sobrescrever nas classes filhas)
+     *
+     * @param array $lote
+     * @return mixed
+     */
+    protected function headerLoteMulti(array $lote)
+    {
+        return $this->headerLote();
+    }
+
+    /**
+     * Trailer do lote para múltiplos lotes (sobrescrever nas classes filhas)
+     *
+     * @param array $lote
+     * @return mixed
+     */
+    protected function trailerLoteMulti(array $lote)
+    {
+        return $this->trailerLote();
+    }
+
+    /**
+     * Trailer do arquivo para múltiplos lotes (sobrescrever nas classes filhas)
+     *
+     * @return mixed
+     */
+    protected function trailerMulti()
+    {
+        return $this->trailer();
+    }
+
+    /**
+     * Retorna a quantidade de lotes
+     *
+     * @return int
+     */
+    protected function getCountLotes()
+    {
+        return count($this->lotes);
+    }
+
+    /**
+     * Retorna o valor total de um lote específico
+     *
+     * @param array $lote
+     * @return string
+     */
+    protected function getValorTotalLoteMulti(array $lote)
+    {
+        $valorTotal = 0;
+
+        // Soma todos os valores dos pagamentos no lote
+        foreach ($lote['pagamentos'] as $pagamento) {
+            if (method_exists($pagamento, 'getValor') && $pagamento->getValor() > 0)
+                $valorTotal += $pagamento->getValor();
+        }
+
+        return Util::formatCnab('9L', $valorTotal * 100, 18);
+    }
+
+    /**
+     * Processa um pagamento gerando os segmentos necessários
+     *
+     * @param Banco $pagamento
+     * @return void
+     */
+    protected function processarPagamento(Banco $pagamento)
+    {
+        // Gera os segmentos diretamente sem chamar addPagamento novamente
+        $this->gerarSegmentos($pagamento);
+    }
+
+    /**
+     * Gera os segmentos de um pagamento (sobrescrever nas classes filhas)
+     *
+     * @param Banco $pagamento
+     * @return void
+     */
+    protected function gerarSegmentos(Banco $pagamento)
+    {
+        // Método abstrato - deve ser implementado pelas classes filhas
+        // Não chama addPagamento aqui para evitar duplicação
+        throw new \Exception('Método gerarSegmentos deve ser implementado pela classe filha');
     }
 }

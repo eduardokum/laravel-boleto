@@ -362,6 +362,8 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
     public function addPagamento(PagamentoContract $pagamento)
     {
         $this->pagamentos[] = $pagamento;
+        $this->segmentoA($pagamento);
+        $this->segmentoB($pagamento);
         return $this;
     }
 
@@ -386,7 +388,7 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(15, 15, self::TIPO_MOVIMENTO); // 06.3A Movimento Tipo - Tipo de Movimento
         $this->add(16, 17, self::CODIGO_INSTRUCAO_MOVIMENTO); // 07.3A Movimento Código - Código da Instrução p/ Movimento
         $this->add(18, 20, self::CODIGO_CAMARA_CENTRALIZADORA); // 08.3A Câmara - Código da Câmara Centralizadora
-        $this->add(21, 23, Util::formatCnab('9L', $pagamento->getBanco(), 3)); // 09.3A Banco - Código do Banco do Favorecido
+        $this->add(21, 23, Util::formatCnab('9L', $pagamento->getCodigoBanco(), 3)); // 09.3A Banco - Código do Banco do Favorecido
 
         // Favorecido - Usando dados do beneficiário (quem recebe o pagamento)
         $this->add(24, 28, Util::formatCnab('9L', $this->getAgencia(), 5)); // 10.3A Agência Código - Ag. Mantenedora da Cta do Favor.

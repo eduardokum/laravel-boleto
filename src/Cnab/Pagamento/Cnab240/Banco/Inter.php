@@ -201,18 +201,6 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
     public function addPagamento(PagamentoContract $pagamento)
     {
         $this->pagamentos[] = $pagamento;
-
-        switch ($this->getTipoPagamento()) {
-            case 'PIX': // PIX
-                $this->segmentoAPix($pagamento);
-                $this->segmentoBPix($pagamento);
-                break;
-            default: // TED
-                $this->segmentoA($pagamento);
-                $this->segmentoB($pagamento);
-                break;
-        }
-
         return $this;
     }
 
@@ -287,7 +275,7 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
      */
     protected function getCountLotes()
     {
-        return 1; // Para pagamentos, geralmente há apenas 1 lote
+        return count($this->lotes);
     }
 
     /**
@@ -552,5 +540,151 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
 
         $this->iRegistrosLote++;
         return $this;
+    }
+
+    /**
+     * Header do lote para múltiplos lotes
+     *
+     * @param array $lote
+     * @return Inter
+     * @throws \Exception
+     */
+    protected function headerLoteMulti(array $lote)
+    {
+        $this->iniciaHeaderLote();
+
+        $this->add(1, 3, self::BANCO); // Código do banco na compensação
+        $this->add(4, 7, Util::formatCnab('9L', $lote['numero'], 4)); // Lote de serviço (número do lote)
+        $this->add(8, 8, self::TIPO_REGISTRO_HEADER_LOTE); // Tipo de registro
+        $this->add(9, 9, self::TIPO_OPERACAO); // Tipo da operação
+        $this->add(10, 11, $this->getTipoServico()); // Tipo do serviço
+        $this->add(12, 13, $this->getFormaLancamentoPorTipo($lote['tipo'])); // Forma de lançamento (varia por tipo)
+        $this->add(14, 16, self::VERSAO_LAYOUT_LOTE); // Número da versão do layout do Lote
+        $this->add(17, 17, self::CAMPO_BRANCO); // Campo em branco
+        $this->add(18, 18, Util::formatCnab('9L', $this->getPagador()->getTipoDocumento() == 'CPF' ? self::TIPO_DOCUMENTO_CPF : self::TIPO_DOCUMENTO_CNPJ, 1)); // Tipo de documento da empresa (CNPJ)
+        $this->add(33, 52, self::CAMPO_BRANCO); // Campo em branco
+        $this->add(53, 57, self::AGENCIA_EMPRESA); // Agência mantenedora da conta da empresa
+        $this->add(58, 58, self::AGENCIA_DV_EMPRESA); // Dígito verificador da agência
+        $this->add(59, 70, Util::formatCnab('9L', $this->getConta(), 12)); // Número da conta corrente da empresa
+        $this->add(71, 71, $this->getContaDv()); // Dígito verificador da conta
+        $this->add(72, 72, self::CAMPO_BRANCO); // Campo em branco
+        $this->add(73, 102, Util::formatCnab('X', $this->getPagador()->getNome(), 30)); // Nome da empresa
+        $this->add(103, 142, self::CAMPO_BRANCO); // Informação genérica opcional
+        $this->add(143, 172, Util::formatCnab('X', $this->getPagador()->getEndereco(), 30)); // Nome da Rua, Av, Pça, Etc.
+        $this->add(173, 177, self::CAMPO_BRANCO); // Número do local da empresa
+        $this->add(178, 192, self::CAMPO_BRANCO); // Casa, Apto, Sala, Etc.
+        $this->add(193, 212, Util::formatCnab('X', $this->getPagador()->getCidade(), 20)); // Nome da cidade da empresa
+
+        $cep = Util::formatCnab('9L', $this->getPagador()->getCep(), 8);
+
+        $this->add(213, 217, substr($cep, 0, 5)); // CEP da empresa
+        $this->add(218, 220, substr($cep, 5, 3)); // Complemento do CEP
+        $this->add(221, 222, $this->getPagador()->getUf()); // Sigla do estado da empresa
+        $this->add(223, 230, self::CAMPO_BRANCO); // Campo em branco
+        $this->add(231, 240, self::CAMPO_BRANCO); // Códigos das ocorrências para retorno
+
+        return $this;
+    }
+
+    /**
+     * Trailer do lote para múltiplos lotes
+     *
+     * @param array $lote
+     * @return Inter
+     * @throws \Exception
+     */
+    protected function trailerLoteMulti(array $lote)
+    {
+        $this->iniciaTrailerLote();
+
+        $this->add(1, 3, self::BANCO); // Código do banco na compensação
+        $this->add(4, 7, Util::formatCnab('9L', $lote['numero'], 4)); // Lote de serviço (Número do lote)
+        $this->add(8, 8, self::TIPO_REGISTRO_TRAILER_LOTE); // Tipo de registro
+        $this->add(9, 17, self::CAMPO_BRANCO); // Campo em branco
+        $this->add(18, 23, Util::formatCnab('9L', $this->getCountRegistrosLote(), 6)); // Quantidade de lotes no arquivo
+        $this->add(24, 41, Util::formatCnab('9L', $this->getValorTotalLoteMulti($lote), 18)); // Somatória dos valores
+        $this->add(42, 59, Util::formatCnab('9L', self::QUANTIDADE_MOEDA, 18)); // Somatória de quantidade de moedas
+        $this->add(60, 65, self::CAMPO_BRANCO); // Número aviso de débito
+        $this->add(66, 230, self::CAMPO_BRANCO); // Campo em branco
+        $this->add(231, 240, self::CAMPO_BRANCO); // Códigos das ocorrências para retorno
+
+        return $this;
+    }
+
+    /**
+     * Trailer do arquivo para múltiplos lotes
+     *
+     * @return Inter
+     * @throws \Exception
+     */
+    protected function trailerMulti()
+    {
+        $this->iniciaTrailer();
+
+        $this->add(1, 3, self::BANCO); // Código do banco na compensação
+        $this->add(4, 7, self::LOTE_SERVICO_TRAILER); // Lote de serviço
+        $this->add(8, 8, self::TIPO_REGISTRO_TRAILER); // Tipo de registro
+        $this->add(9, 17, self::CAMPO_BRANCO); // Campo em branco
+        $this->add(18, 23, Util::formatCnab('9L', $this->getCountLotes(), 6)); // Quantidade de lotes do arquivo
+        $this->add(24, 29, Util::formatCnab('9L', $this->getCountMulti(), 6)); // Quantidade de registros do arquivo
+        $this->add(30, 240, self::CAMPO_BRANCO); // Campo em branco
+
+        return $this;
+    }
+
+    /**
+     * Retorna a forma de lançamento baseada no tipo de pagamento específico
+     *
+     * @param string $tipoPagamento
+     * @return string
+     */
+    protected function getFormaLancamentoPorTipo($tipoPagamento)
+    {
+        switch ($tipoPagamento) {
+            case 'TED':
+                return '03'; // TED
+            case 'PIX':
+                return '45'; // Transferência via PIX
+            default:
+                return '03'; // Padrão TED
+        }
+    }
+
+    /**
+     * Retorna a quantidade total de registros para múltiplos lotes
+     *
+     * @return int
+     */
+    protected function getCountMulti()
+    {
+        $totalRegistros = 0;
+        foreach ($this->lotes as $lote) {
+            $totalRegistros += count($lote['pagamentos']) * 2; // Segmento A + B para cada pagamento
+            $totalRegistros += 2; // Header + Trailer do lote
+        }
+        $totalRegistros += 2; // Header + Trailer do arquivo
+        return $totalRegistros;
+    }
+
+    /**
+     * Gera os segmentos de um pagamento baseado no tipo
+     *
+     * @param \Eduardokum\LaravelBoleto\Pagamento\Banco\Banco $pagamento
+     * @return void
+     */
+    protected function gerarSegmentos(\Eduardokum\LaravelBoleto\Pagamento\Banco\Banco $pagamento)
+    {
+        $tipoPagamento = $this->getTipoPagamentoDoPagamento($pagamento);
+
+        switch ($tipoPagamento) {
+            case 'PIX':
+                $this->segmentoAPix($pagamento);
+                $this->segmentoBPix($pagamento);
+                break;
+            default: // TED
+                $this->segmentoA($pagamento);
+                $this->segmentoB($pagamento);
+                break;
+        }
     }
 }
