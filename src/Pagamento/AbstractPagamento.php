@@ -971,12 +971,9 @@ abstract class AbstractPagamento implements PagamentoContract
      */
     public function toArray()
     {
-        $nosso_numero = $nosso_numero_boleto = $linha_digitavel = $codigo_barras = null;
+        $nosso_numero = null;
         try {
             $nosso_numero = $this->getNossoNumero();
-            $nosso_numero_boleto = $this->getNossoNumeroBoleto();
-            $linha_digitavel = $this->getLinhaDigitavel();
-            $codigo_barras = $this->getCodigoBarras();
         } catch (Exception $e) {
         }
 
