@@ -291,7 +291,7 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
      */
     protected function getCountLotes()
     {
-        return 1; // Para pagamentos, geralmente há apenas 1 lote
+        return count($this->lotes);
     }
 
     /**
@@ -350,6 +350,130 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
         }
 
         return Util::formatCnab('9L', $valorTotal * 100, 18);
+    }
+
+    /**
+     * Header do lote para múltiplos lotes
+     *
+     * @param array $lote
+     * @return Bancoob
+     * @throws \Exception
+     */
+    protected function headerLoteMulti(array $lote)
+    {
+        $this->iniciaHeaderLote();
+
+        $this->add(1, 3, self::BANCO); // 01.1 Banco - Código do Banco na Compensação
+        $this->add(4, 7, Util::formatCnab('9L', $lote['numero'], 4)); // 02.1 Controle Lote - Lote de Serviço (número do lote)
+        $this->add(8, 8, self::TIPO_REGISTRO_HEADER_LOTE); // 03.1 Registro - Tipo de Registro
+        $this->add(9, 9, self::TIPO_OPERACAO); // 04.1 Operação - Tipo da Operação
+        $this->add(10, 11, self::TIPO_SERVICO); // 05.1 Serviço - Tipo do Serviço
+        $this->add(12, 13, self::FORMA_LANCAMENTO); // 06.1 Serviço - Forma Lançamento
+        $this->add(14, 16, self::VERSAO_LAYOUT_LOTE); // 07.1 Layout do Lote - Nº da Versão do Layout do Lote
+        $this->add(17, 17, self::CAMPO_BRANCO); // 08.1 CNAB - Uso Exclusivo da FEBRABAN/CNAB
+        $this->add(18, 18, $this->getPagador()->getTipoDocumento() == 'CPF' ? self::TIPO_DOCUMENTO_CPF : self::TIPO_DOCUMENTO_CNPJ); // 09.1 Inscrição Tipo - Tipo de Inscrição da Empresa
+        $this->add(19, 32, Util::formatCnab('9L', $this->getPagador()->getDocumento(), 14)); // 10.1 Inscrição Número - Número de Inscrição da Empresa
+
+        $convenio = $this->getConvenio() ?? '';
+
+        $this->add(33, 52, Util::formatCnab('X', $convenio, 20)); // 11.1 Convênio - Código do Convênio no Banco
+        $this->add(53, 57, Util::formatCnab('9L', $this->getAgencia(), 5)); // 12.1 Empresa Agência Código - Agência Mantenedora da Conta
+        $this->add(58, 58, $this->getAgenciaDv()); // 13.1 Empresa Agência DV - Dígito Verificador da Agência
+        $this->add(59, 70, Util::formatCnab('9L', $this->getConta(), 12)); // 14.1 Empresa Conta Corrente Número - Número da Conta Corrente
+        $this->add(71, 71, $this->getContaDv()); // 15.1 Empresa Conta Corrente DV - Dígito Verificador da Conta
+        $this->add(72, 72, $this->getAgenciaContaDv()); // 16.1 Empresa Conta Corrente DV - Dígito Verificador da Ag/Conta
+        $this->add(73, 102, Util::formatCnab('X', $this->getPagador()->getNome(), 30)); // 17.1 Nome - Nome da Empresa
+        $this->add(103, 142, Util::formatCnab('X', '', 40)); // 18.1 Informação 1 - Mensagem
+        $this->add(143, 172, Util::formatCnab('X', $this->getPagador()->getEndereco(), 30)); // 19.1 Endereço da Empresa Logradouro - Nome da Rua, Av, Pça, Etc
+        $this->add(173, 177, Util::formatCnab('9L', '', 5)); // 20.1 Endereço da Empresa Número - Número do Local
+        $this->add(178, 192, Util::formatCnab('X', '', 15)); // 21.1 Endereço da Empresa Complemento - Casa, Apto, Sala, Etc
+        $this->add(193, 212, Util::formatCnab('X', $this->getPagador()->getCidade(), 20)); // 22.1 Endereço da Empresa Cidade - Nome da Cidade
+
+        $cep = Util::formatCnab('9L', $this->getPagador()->getCep(), 8);
+
+        $this->add(213, 217, substr($cep, 0, 5)); // 23.1 Endereço da Empresa CEP - CEP
+        $this->add(218, 220, substr($cep, 5, 3)); // 24.1 Endereço da Empresa Complemento CEP - Complemento do CEP
+        $this->add(221, 222, Util::formatCnab('X', $this->getPagador()->getUf(), 2)); // 25.1 Endereço da Empresa Estado - Sigla do Estado
+        $this->add(223, 224, self::INDICATIVO_FORMA_PAGAMENTO); // 26.1 Indicativo de Forma de Pagamento - Indicativo da Forma de Pagamento do Serviço
+        $this->add(225, 230, Util::formatCnab('X', '', 6)); // 27.1 CNAB - Uso Exclusivo FEBRABAN/CNAB
+        $this->add(231, 240, Util::formatCnab('X', '', 10)); // 28.1 Ocorrências - Códigos das Ocorrências p/ Retorno
+
+        return $this;
+    }
+
+    /**
+     * Trailer do lote para múltiplos lotes
+     *
+     * @param array $lote
+     * @return Bancoob
+     * @throws \Exception
+     */
+    protected function trailerLoteMulti(array $lote)
+    {
+        $this->iniciaTrailerLote();
+
+        $this->add(1, 3, self::BANCO); // 01.5 Banco - Código do Banco na Compensação
+        $this->add(4, 7, Util::formatCnab('9L', $lote['numero'], 4)); // 02.5 Controle Lote - Lote de Serviço (Número do lote)
+        $this->add(8, 8, self::TIPO_REGISTRO_TRAILER_LOTE); // 03.5 Registro - Tipo de Registro
+        $this->add(9, 17, self::CAMPO_BRANCO); // 04.5 CNAB - Uso Exclusivo FEBRABAN/CNAB
+        $this->add(18, 23, Util::formatCnab('9L', $this->getCountRegistrosLote(), 6)); // 05.5 Qtde de Registros - Quantidade de Registros do Lote
+        $this->add(24, 41, Util::formatCnab('9L', $this->getValorTotalLoteMulti($lote), 18)); // 06.5 Totais Valor - Somatória dos Valores
+        $this->add(42, 59, Util::formatCnab('9L', self::QUANTIDADE_MOEDA_ZERO, 18)); // 07.5 Totais Qtde de Moeda - Somatória de Quantidade de Moedas
+        $this->add(60, 65, Util::formatCnab('9L', self::NUMERO_AVISO_DEBITO_ZERO, 6)); // 08.5 Número Aviso Débito - Número Aviso de Débito
+        $this->add(66, 230, self::CAMPO_BRANCO); // 09.5 CNAB - Uso Exclusivo FEBRABAN/CNAB
+        $this->add(231, 240, Util::formatCnab('X', '', 10)); // 10.5 Ocorrências - Códigos das Ocorrências para Retorno
+
+        return $this;
+    }
+
+    /**
+     * Trailer do arquivo para múltiplos lotes
+     *
+     * @return Bancoob
+     * @throws \Exception
+     */
+    protected function trailerMulti()
+    {
+        $this->iniciaTrailer();
+
+        $this->add(1, 3, self::BANCO); // 01.9 Banco - Código do Banco na Compensação
+        $this->add(4, 7, self::LOTE_SERVICO_TRAILER); // 02.9 Controle Lote - Lote de Serviço
+        $this->add(8, 8, self::TIPO_REGISTRO_TRAILER); // 03.9 Registro - Tipo de Registro
+        $this->add(9, 17, self::CAMPO_BRANCO); // 04.9 CNAB - Uso Exclusivo FEBRABAN/CNAB
+        $this->add(18, 23, Util::formatCnab('9L', $this->getCountLotes(), 6)); // 05.9 Qtde. de Lotes - Quantidade de Lotes do Arquivo
+        $this->add(24, 29, Util::formatCnab('9L', $this->getCountMulti(), 6)); // 06.9 Totais Qtde. de Registros - Quantidade de Registros do Arquivo
+        $this->add(30, 35, Util::formatCnab('9L', $this->getCountContasConciliacao(), 6)); // 07.9 Qtde. de Contas Concil. - Qtde de Contas p/ Conc. (Lotes)
+        $this->add(36, 240, self::CAMPO_BRANCO); // 08.9 CNAB - Uso Exclusivo FEBRABAN/CNAB
+
+        return $this;
+    }
+
+    /**
+     * Retorna a quantidade total de registros para múltiplos lotes
+     *
+     * @return int
+     */
+    protected function getCountMulti()
+    {
+        $totalRegistros = 0;
+        foreach ($this->lotes as $lote) {
+            $totalRegistros += count($lote['pagamentos']) * 2; // Segmento A + B para cada pagamento
+            $totalRegistros += 2; // Header + Trailer do lote
+        }
+        $totalRegistros += 2; // Header + Trailer do arquivo
+        return $totalRegistros;
+    }
+
+    /**
+     * Gera os segmentos de um pagamento
+     *
+     * @param Banco $pagamento
+     * @return void
+     */
+    protected function gerarSegmentos(Banco $pagamento)
+    {
+        $this->segmentoA($pagamento);
+        $this->segmentoB($pagamento);
     }
 
 

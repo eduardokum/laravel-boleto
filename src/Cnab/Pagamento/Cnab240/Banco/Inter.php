@@ -15,6 +15,7 @@ use Eduardokum\LaravelBoleto\Util;
 class Inter extends AbstractPagamento implements PagamentoRemessaContract
 {
     const BANCO = '077';
+    const CODIGO_ISPB = '00416968';
     const LOTE_SERVICO = '0001';
     const TIPO_REGISTRO = '0';
     const CODIGO_REMESSA = '1';
@@ -431,7 +432,7 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(118, 125, Util::formatCnab('9L', $pagamento->getBeneficiario()->getCep(), 8)); // [Favorecido] CEP
         $this->add(126, 127, Util::formatCnab('X', $pagamento->getBeneficiario()->getUf(), 2)); // [Favorecido] Sigla do estado
         $this->add(128, 232, self::CAMPO_BRANCO); // Campo em branco
-        $this->add(233, 240, self::CAMPO_BRANCO); // [Favorecido] Código ISPB
+        $this->add(233, 240, self::CODIGO_ISPB); // [Favorecido] Código ISPB
 
         $this->iRegistrosLote++;
         return $this;
@@ -487,7 +488,7 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(163, 177, self::VALOR_RETORNO_VAZIO); // Valor real da efetivação do pagamento (Retorno)
 
         $this->add(178, 191, Util::formatCnab('9L', $pagamento->getBeneficiario()->getDocumento(), 14)); // [Identificação do Pagamento] Número do CPF/CNPJ
-        $this->add(192, 199, Util::formatCnab('9L', $pagamento->getCodigoBanco(), 8)); // [Identificação do Pagamento] Código do ISPB
+        $this->add(192, 199, self::CODIGO_ISPB); // [Identificação do Pagamento] Código do ISPB
         if ($formaIniciacao == self::FORMA_INICIACAO_PIX_DADOS_BANCARIOS)
             $this->add(200, 201, $pagamento->getTipoConta() ?? self::TIPO_CONTA_CORRENTE); // [Identificação do Pagamento] Tipo de conta
         else
@@ -536,7 +537,7 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
         }
 
         $this->add(227, 232, self::CAMPO_BRANCO); // Campo em branco
-        $this->add(233, 240, self::CAMPO_BRANCO); // [Favorecido] Código ISPB
+        $this->add(233, 240, self::CODIGO_ISPB); // [Favorecido] Código ISPB
 
         $this->iRegistrosLote++;
         return $this;
