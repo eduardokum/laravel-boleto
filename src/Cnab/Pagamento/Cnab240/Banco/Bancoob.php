@@ -486,8 +486,6 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
     public function addPagamento(PagamentoContract $pagamento)
     {
         $this->pagamentos[] = $pagamento;
-        $this->segmentoA($pagamento);
-        $this->segmentoB($pagamento);
         return $this;
     }
 
@@ -523,14 +521,14 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(44, 73, Util::formatCnab('X', $pagamento->getBeneficiario()->getNome(), 30)); // 15.3A Nome - Nome do Favorecido
 
         // Crédito
-        $this->add(74, 93, Util::formatCnab('X', $pagamento->getNumeroDocumento(), 20)); // 16.3A Seu Número - Nº do Docum. Atribuído p/ Empresa
+        $this->add(74, 93, Util::formatCnab('X', $pagamento->getNumeroDocumento() . '-' . $pagamento->getNumeroControle(), 20)); // 16.3A Seu Número - Nº do Docum. Atribuído p/ Empresa
 
         $dataPagamento = $pagamento->getDataPagamento() ? date('dmY', strtotime($pagamento->getDataPagamento())) : date('dmY');
 
         $this->add(94, 101, $dataPagamento); // 17.3A Data Pagamento - Data do Pagamento
         $this->add(102, 104, self::TIPO_MOEDA); // 18.3A Moeda Tipo - Tipo da Moeda (BRL)
         $this->add(105, 119, self::QUANTIDADE_MOEDA); // 19.3A Moeda Quantidade - Quantidade da Moeda
-        $this->add(120, 134, Util::formatCnab('9L', $pagamento->getValor(), 13, 2)); // 20.3A Valor Pagamento - Valor do Pagamento
+        $this->add(120, 134, Util::formatCnab('9L', $pagamento->getValor(), 15)); // 20.3A Valor Pagamento - Valor do Pagamento
         $this->add(135, 154, Util::formatCnab('X', $pagamento->getNossoNumero(), 20)); // 21.3A Nosso Número - Nº do Docum. Atribuído pelo Banco
         $this->add(155, 162, self::DATA_REAL_ZERO); // 22.3A Data Real - Data Real da Efetivação Pagto
         $this->add(163, 177, self::VALOR_REAL_ZERO); // 23.3A Valor Real - Valor Real da Efetivação do Pagto
@@ -583,12 +581,12 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
 
         // Pagamento
         $this->add(128, 135, $pagamento->getDataVencimento()->format('dmY')); // 17.3B Vencimento - Data do Vencimento (Nominal)
-        $this->add(136, 150, Util::formatCnab('9L', $pagamento->getValor(), 13, 2)); // 18.3B Valor Docum. - Valor do Documento (Nominal)
-        $this->add(151, 165, Util::formatCnab('9L', 0, 13, 2)); // 19.3B Abatimento - Valor do Abatimento
-        $this->add(166, 180, Util::formatCnab('9L', $pagamento->getDesconto() ?: 0, 13, 2)); // 20.3B Desconto - Valor do Desconto
-        $this->add(181, 195, Util::formatCnab('9L', $pagamento->getJuros() ?: 0, 13, 2)); // 21.3B Mora - Valor da Mora
-        $this->add(196, 210, Util::formatCnab('9L', $pagamento->getMulta() ?: 0, 13, 2)); // 22.3B Multa - Valor da Multa
-        $this->add(211, 225, Util::formatCnab('X', $pagamento->getNumeroDocumento(), 15)); // 23.3B Cód/Doc. Favorec. - Código/Documento do Favorecido
+        $this->add(136, 150, Util::formatCnab('9L', $pagamento->getValor(), 15)); // 18.3B Valor Docum. - Valor do Documento (Nominal)
+        $this->add(151, 165, Util::formatCnab('9L', 0, 15)); // 19.3B Abatimento - Valor do Abatimento
+        $this->add(166, 180, Util::formatCnab('9L', $pagamento->getDesconto() ?: 0, 15)); // 20.3B Desconto - Valor do Desconto
+        $this->add(181, 195, Util::formatCnab('9L', $pagamento->getJuros() ?: 0, 15)); // 21.3B Mora - Valor da Mora
+        $this->add(196, 210, Util::formatCnab('9L', $pagamento->getMulta() ?: 0, 15)); // 22.3B Multa - Valor da Multa
+        $this->add(211, 225, Util::formatCnab('X', $pagamento->getNumeroDocumento() . '-' . $pagamento->getNumeroControle(), 15)); // 23.3B Cód/Doc. Favorec. - Código/Documento do Favorecido
         $this->add(226, 226, self::AVISO_FAVORECIDO); // 24.3B Aviso - Aviso ao Favorecido
         $this->add(227, 232, Util::formatCnab('9L', 0, 6)); // 25.3B Código UG Centralizadora - Uso Exclusivo para o SIAPE
         $this->add(233, 240, self::CAMPO_BRANCO); // 26.3B CNAB - Uso Exclusivo FEBRABAN/CNAB
