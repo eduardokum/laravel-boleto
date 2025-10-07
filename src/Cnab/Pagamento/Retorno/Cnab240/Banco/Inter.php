@@ -171,6 +171,8 @@ class Inter extends AbstractRetorno
                 ->setAgenciaFavorecido($this->rem(24, 28, $detalhe))
                 ->setContaFavorecido($this->rem(30, 41, $detalhe))
                 ->setSeuNumero($this->rem(74, 93, $detalhe))
+                ->setNumeroDocumento(explode('-', trim($this->rem(74, 93, $detalhe)))[0])
+                ->setNumeroControle(explode('-', trim($this->rem(74, 93, $detalhe)))[1])
                 ->setDataPagamento($this->rem(94, 101, $detalhe))
                 ->setValor(Util::nFloat($this->rem(120, 134, $detalhe) / 100, 2, false))
                 ->setNossoNumero($this->rem(135, 154, $detalhe))
@@ -223,14 +225,15 @@ class Inter extends AbstractRetorno
             $codigosRejeicao = str_split($this->rem(214, 223, $detalhe), 2);
             foreach ($codigosRejeicao as $codigo) {
                 $codigo = trim($codigo);
-                if (!empty($codigo) && $codigo != '00') {
+                if (!empty($codigo) && $codigo != '00' && $codigo != 'BD') {
                     $descricao = Arr::get($this->rejeicoes, $codigo, 'Rejeição Desconhecida');
                     $d->addRejeicao($codigo, $descricao);
                 }
             }
 
-            // Se tem rejeições, marca como erro
-            if (count($d->getRejeicoes()) > 0) {
+            // Se tem rejeições E não foi marcado como pago, marca como erro
+            // Não sobrescreve se já foi definido como PAGO no Segmento A
+            if (count($d->getRejeicoes()) > 0 && $d->getOcorrenciaTipo() != $d::OCORRENCIA_PAGO) {
                 $this->totais['erros']++;
                 $error = implode('; ', $d->getRejeicoes());
                 $d->setError($error);

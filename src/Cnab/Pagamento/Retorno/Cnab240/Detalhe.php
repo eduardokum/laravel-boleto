@@ -42,6 +42,11 @@ class Detalhe
     protected $ocorrenciaDescricao;
 
     /**
+     * @var int
+     */
+    protected $numeroControle;
+
+    /**
      * Número do documento/controle
      * @var string
      */
@@ -234,6 +239,26 @@ class Detalhe
     public function setNumeroDocumento($numeroDocumento)
     {
         $this->numeroDocumento = $numeroDocumento;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumeroControle()
+    {
+        return $this->numeroControle;
+    }
+
+    /**
+     * @param int $numeroControle
+     *
+     * @return Detalhe
+     */
+    public function setNumeroControle($numeroControle)
+    {
+        $this->numeroControle = $numeroControle;
+
         return $this;
     }
 

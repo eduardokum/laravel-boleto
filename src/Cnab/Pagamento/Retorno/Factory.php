@@ -19,9 +19,6 @@ class Factory
         if (!$file_content = is_array($file) ? $file : Util::file2array($file))
             throw new ValidationException('Arquivo: não existe ou está vazio');
 
-        if (!Util::isHeaderRetorno($file_content[0]))
-            throw new ValidationException("Arquivo não é um arquivo de retorno válido");
-
         $instancia = self::getBancoClass($file_content);
 
         return $instancia->processar();
