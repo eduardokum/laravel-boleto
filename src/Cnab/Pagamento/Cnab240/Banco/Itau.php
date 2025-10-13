@@ -21,7 +21,6 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     const TIPO_DOCUMENTO_CNPJ = '2'; // CNPJ
     const CODIGO_REMESSA = '1'; // Código de remessa (1=REMESSA, 2=RETORNO)
     const VERSAO_LAYOUT = '080'; // Versão do layout do arquivo (conforme especificação)
-    const DENSIDADE_GRAVACAO = ''; // Densidade de gravação do arquivo (NOTA 2)
     const NOME_BANCO = 'ITAU'; // Nome do banco
     const CAMPO_BRANCO = '';
 
@@ -33,8 +32,8 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     const LOTE_SERVICO_HEADER = '0001'; // Lote de serviço (header do lote)
     const TIPO_REGISTRO_HEADER_LOTE = '1'; // Tipo de registro (header do lote)
     const TIPO_OPERACAO = 'C'; // Tipo da operação (Crédito)
-    const TIPO_SERVICO = '01'; // Tipo do serviço (Transferência entre contas)
-    const FORMA_LANCAMENTO = '03'; // Forma de lançamento (TED)
+    const FORMA_LANCAMENTO_TED = '41'; // Forma de lançamento (TED)
+    const FORMA_LANCAMENTO_PIX = '45'; // Forma de lançamento (PIX)
     const VERSAO_LAYOUT_LOTE = '045'; // Versão do layout do lote
 
     // Constantes para trailer do lote
@@ -134,7 +133,7 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(144, 151, $this->getDataRemessa('dmY')); // Posição 144-151: Data de Geração do Arquivo (DDMMAAAA)
         $this->add(152, 157, $this->getDataRemessa('His')); // Posição 152-157: Hora de Geração do Arquivo (HHMMSS)
         $this->add(158, 166, Util::formatCnab('9', '0', 9)); // Posição 158-166: Zeros - Complemento de Registro
-        $this->add(167, 171, self::DENSIDADE_GRAVACAO); // Posição 167-171: Densidade de Gravação do Arquivo (NOTA 2)
+        $this->add(167, 171, Util::formatCnab('9', '0', 5)); // Posição 167-171: Densidade de Gravação do Arquivo (NOTA 2) - zeros para teleprocessamento
         $this->add(172, 240, self::CAMPO_BRANCO); // Posição 172-240: Brancos - Complemento de Registro
 
         return $this;
@@ -188,6 +187,29 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     }
 
     /**
+     * Retorna o tipo de serviço baseado no tipo de pagamento
+     * @return string
+     */
+    public function getTipoServico()
+    {
+        return $this->tipoServico ?? '20';
+    }
+
+    /**
+     * Retorna a forma de lançamento baseada no tipo de pagamento
+     * @return string
+     */
+    public function getFormaLancamento()
+    {
+        // Verifica se o tipo de pagamento é PIX
+        if (isset($this->tipoPagamento) && strtoupper($this->tipoPagamento) === 'PIX') {
+            return self::FORMA_LANCAMENTO_PIX; // 45 para PIX
+        }
+
+        return self::FORMA_LANCAMENTO_TED; // 41 para TED (padrão)
+    }
+
+    /**
      * Cria o header do lote CNAB 240 conforme especificação do Itaú
      * @return Itau
      * @throws \Exception
@@ -200,8 +222,8 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(4, 7, self::LOTE_SERVICO_HEADER); // Posição 004-007: Código do Lote (NOTA 3)
         $this->add(8, 8, self::TIPO_REGISTRO_HEADER_LOTE); // Posição 008-008: Tipo de Registro (1)
         $this->add(9, 9, self::TIPO_OPERACAO); // Posição 009-009: Tipo de Operação (C=CRÉDITO)
-        $this->add(10, 11, self::TIPO_SERVICO); // Posição 010-011: Tipo de Pagamento (NOTA 4)
-        $this->add(12, 13, self::FORMA_LANCAMENTO); // Posição 012-013: Forma de Pagamento (NOTA 5)
+        $this->add(10, 11, $this->getTipoServico()); // Posição 010-011: Tipo de Pagamento (NOTA 4)
+        $this->add(12, 13, $this->getFormaLancamento()); // Posição 012-013: Forma de Pagamento (NOTA 5) - 41=TED, 45=PIX
         $this->add(14, 16, '040'); // Posição 014-016: Nº da Versão do Layout do Lote (040)
         $this->add(17, 17, self::CAMPO_BRANCO); // Posição 017-017: Brancos
         $this->add(18, 18, Util::formatCnab('9L', $this->getPagador()->getTipoDocumento() == 'CPF' ? self::TIPO_DOCUMENTO_CPF : self::TIPO_DOCUMENTO_CNPJ, 1)); // Posição 018-018: Tipo Inscrição Empresa Debitada (1=CPF, 2=CNPJ)
@@ -374,11 +396,6 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
             return true;
         }
 
-        // Verifica se tem tipo de chave PIX configurado
-        if (method_exists($pagamento, 'getTipoChavePix') && !empty($pagamento->getTipoChavePix())) {
-            return true;
-        }
-
         // Verifica se o tipo de pagamento está definido como PIX
         if (isset($this->tipoPagamento) && strtoupper($this->tipoPagamento) === 'PIX') {
             return true;
@@ -397,50 +414,49 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     {
         $this->iniciaDetalhe();
 
-        $this->add(1, 3, self::BANCO); // Posição 001-003: Código do Banco na Compensação (341)
-        $this->add(4, 7, self::LOTE_SERVICO_HEADER); // Posição 004-007: Código do Lote (NOTA 3)
-        $this->add(8, 8, self::TIPO_REGISTRO_DETALHE); // Posição 008-008: Tipo de Registro (3)
+        $this->add(1, 3, Util::formatCnab('9L', self::BANCO, 3)); // Posição 001-003: Código do Banco na Compensação (341)
+        $this->add(4, 7, Util::formatCnab('9L', self::LOTE_SERVICO_HEADER, 4)); // Posição 004-007: Código do Lote (NOTA 3)
+        $this->add(8, 8, Util::formatCnab('9L', self::TIPO_REGISTRO_DETALHE, 1)); // Posição 008-008: Tipo de Registro (3)
         $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote + 1, 5)); // Posição 009-013: Nº Sequencial Registro no Lote (NOTA 9)
-        $this->add(14, 14, self::CODIGO_SEGMENTO_A); // Posição 014-014: Código Segmento Reg. Detalhe (A)
-        $this->add(15, 17, self::TIPO_MOVIMENTO); // Posição 015-017: Tipo de Movimento (NOTA 10)
-        $this->add(18, 20, self::CODIGO_CAMARA_CENTRALIZADORA); // Posição 018-020: Código da Câmara Centralizadora (NOTA 35)
+        $this->add(14, 14, Util::formatCnab('X', self::CODIGO_SEGMENTO_A, 1)); // Posição 014-014: Código Segmento Reg. Detalhe (A)
+        $this->add(15, 17, Util::formatCnab('9L', '000', 3)); // Posição 015-017: Tipo de Movimento (NOTA 10)
+        $this->add(18, 20, Util::formatCnab('9L', '000', 3)); // Posição 018-020: Código da Câmara Centralizadora (NOTA 35)
         $this->add(21, 23, Util::formatCnab('9L', $pagamento->getCodigoBanco(), 3)); // Posição 021-023: Código Banco Favorecido
 
-        // Posição 024-043: Agência/Conta Favorecido (NOTA 11)
-        $this->add(24, 28, Util::formatCnab('9L', $pagamento->getAgencia(), 5)); // Agência
-        $this->add(29, 29, Util::formatCnab('X', '', 1)); // Brancos
-        $this->add(30, 41, Util::formatCnab('9L', $pagamento->getConta(), 12)); // Conta
-        $this->add(42, 42, Util::formatCnab('X', '', 1)); // Brancos
-        $this->add(43, 43, Util::formatCnab('X', $pagamento->getContaDv(), 1)); // DV Conta
+        // Posição 024-043: Agência/Conta Favorecido (NOTA 11) - Campo único X(20)
+        $agenciaConta = Util::formatCnab('9L', $pagamento->getAgencia(), 5) .
+            Util::formatCnab('X', '', 1) .
+            Util::formatCnab('9L', $pagamento->getConta(), 12) .
+            Util::formatCnab('X', '', 1) .
+            Util::formatCnab('X', $pagamento->getContaDv(), 1);
+        $this->add(24, 43, $agenciaConta); // Posição 024-043: Agência/Conta Favorecido (NOTA 11)
 
         $this->add(44, 73, Util::formatCnab('X', $pagamento->getBeneficiario()->getNome(), 30)); // Posição 044-073: Nome do Favorecido (NOTA 34)
-        $this->add(74, 93, Util::formatCnab('X', $pagamento->getNumeroDocumento(), 20)); // Posição 074-093: Nº Docto Atribuído pela Empresa (Seu Número)
+        $this->add(74, 93, Util::formatCnab('X', $pagamento->getNumeroDocumento() . '-' . $pagamento->getNumeroControle(), 20)); // Posição 074-093: Nº Docto Atribuído pela Empresa (Seu Número)
 
         // Data de Pagamento
         $dataPagamento = $pagamento->getDataPagamento() ? date('dmY', strtotime($pagamento->getDataPagamento())) : date('dmY');
-        $this->add(94, 101, $dataPagamento); // Posição 094-101: Data Prevista para Pagto (DDMMAAAA)
+        $this->add(94, 101, Util::formatCnab('9L', $dataPagamento, 8)); // Posição 094-101: Data Prevista para Pagto (DDMMAAAA)
 
-        $this->add(102, 104, 'REA'); // Posição 102-104: Tipo da Moeda (REA ou 009)
-        $this->add(105, 112, self::CAMPO_BRANCO); // Posição 105-112: Código ISPB (NOTA 35)
-        $this->add(113, 114, self::CAMPO_BRANCO); // Posição 113-114: Identif. Transferência Conta/Pagamento PIX (NOTA 36)
-        $this->add(115, 119, Util::formatCnab('9', '0', 5)); // Posição 115-119: Zeros
+        $this->add(102, 104, Util::formatCnab('X', 'REA', 3)); // Posição 102-104: Tipo da Moeda (REA ou 009)
+        $this->add(105, 119, Util::formatCnab('9L', '0', 5)); // Posição 115-119: Zeros
 
-        // Valor do Pagamento
-        $valor = $pagamento->getValor() ? number_format($pagamento->getValor(), 2, '', '') : '000000000000000';
+        // Valor do Pagamento - 9(13)V9(02) = 15 dígitos com vírgula decimal assumida
+        $valor = $pagamento->getValor() ? $pagamento->getValor() * 100 : 0;
         $this->add(120, 134, Util::formatCnab('9L', $valor, 15)); // Posição 120-134: Valor Previsto do Pagto 9(13)V9(2)
 
-        $this->add(135, 149, self::CAMPO_BRANCO); // Posição 135-149: Nosso Número (NOTA 12)
-        $this->add(150, 154, self::CAMPO_BRANCO); // Posição 150-154: Brancos (NOTA 42)
-        $this->add(155, 162, Util::formatCnab('9', '0', 8)); // Posição 155-162: Data Real Efetivação do Pagto (DDMMAAAA)
-        $this->add(163, 177, Util::formatCnab('9', '0', 15)); // Posição 163-177: Valor Efetivo 9(13)V9(2)
-        $this->add(178, 197, self::CAMPO_BRANCO); // Posição 178-197: Finalidade Detalhe TED/Hist C/C (NOTA 13)
-        $this->add(198, 203, self::CAMPO_BRANCO); // Posição 198-203: Nº do Doc/TED ou Cheque (NOTA 14)
+        $this->add(135, 149, Util::formatCnab('X', '', 15)); // Posição 135-149: Nosso Número (NOTA 12)
+        $this->add(150, 154, Util::formatCnab('X', '', 5)); // Posição 150-154: Brancos (NOTA 42)
+        $this->add(155, 162, Util::formatCnab('9L', '0', 8)); // Posição 155-162: Data Real Efetivação do Pagto (DDMMAAAA)
+        $this->add(163, 177, Util::formatCnab('9L', '0', 15)); // Posição 163-177: Valor Efetivo 9(13)V9(2)
+        $this->add(178, 197, Util::formatCnab('X', '', 20)); // Posição 178-197: Finalidade Detalhe TED/Hist C/C (NOTA 13)
+        $this->add(198, 203, Util::formatCnab('9L', '0', 6)); // Posição 198-203: Nº do Doc/TED ou Cheque (NOTA 14)
         $this->add(204, 217, Util::formatCnab('9L', $pagamento->getBeneficiario()->getDocumento(), 14)); // Posição 204-217: Nº de Inscrição do Favorecido CPF/CNPJ (NOTA 15)
-        $this->add(218, 219, self::CAMPO_BRANCO); // Posição 218-219: Finalidade Tipo e Status Funcionário (NOTA 30)
-        $this->add(220, 224, self::CAMPO_BRANCO); // Posição 220-224: Finalidade TED (NOTA 26)
-        $this->add(225, 229, self::CAMPO_BRANCO); // Posição 225-229: Brancos
-        $this->add(230, 230, self::AVISO_FAVORECIDO); // Posição 230-230: Aviso ao Favorecido (NOTA 16)
-        $this->add(231, 240, self::CAMPO_BRANCO); // Posição 231-240: Ocorrências (NOTA 8)
+        $this->add(218, 219, Util::formatCnab('X', '', 2)); // Posição 218-219: Finalidade Tipo e Status Funcionário (NOTA 30)
+        $this->add(220, 224, Util::formatCnab('X', '', 5)); // Posição 220-224: Finalidade TED (NOTA 26)
+        $this->add(225, 229, Util::formatCnab('X', '', 5)); // Posição 225-229: Brancos
+        $this->add(230, 230, Util::formatCnab('X', '0', 1)); // Posição 230-230: Aviso ao Favorecido (NOTA 16)
+        $this->add(231, 240, Util::formatCnab('X', '', 10)); // Posição 231-240: Ocorrências (NOTA 8)
 
         $this->iRegistrosLote++;
         return $this;
@@ -499,7 +515,7 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(14, 14, self::CODIGO_SEGMENTO_B); // Posição 014-014: Código Segmento Reg. Detalhe (B)
 
         // Tipo de Chave PIX (NOTA 37)
-        $tipoChave = $pagamento->getTipoChavePix() ?? '01'; // Default: 01 = CPF/CNPJ
+        $tipoChave = $pagamento->getFormaIniciacao() ?? '01'; // Default: 01 = CPF/CNPJ
         $this->add(15, 16, Util::formatCnab('X', $tipoChave, 2)); // Posição 015-016: Tipo Identificação da Chave (NOTA 37)
 
         $this->add(17, 17, self::CAMPO_BRANCO); // Posição 017-017: Brancos
@@ -537,8 +553,8 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(4, 7, Util::formatCnab('9L', $lote['numero'], 4)); // Posição 004-007: Código do Lote (NOTA 3)
         $this->add(8, 8, self::TIPO_REGISTRO_HEADER_LOTE); // Posição 008-008: Tipo de Registro (1)
         $this->add(9, 9, self::TIPO_OPERACAO); // Posição 009-009: Tipo de Operação (C=CRÉDITO)
-        $this->add(10, 11, self::TIPO_SERVICO); // Posição 010-011: Tipo de Pagamento (NOTA 4)
-        $this->add(12, 13, self::FORMA_LANCAMENTO); // Posição 012-013: Forma de Pagamento (NOTA 5)
+        $this->add(10, 11, $this->getTipoServico()); // Posição 010-011: Tipo de Pagamento (NOTA 4)
+        $this->add(12, 13, $this->getFormaLancamentoPorTipo($lote['tipo'])); // Posição 012-013: Forma de Pagamento (NOTA 5) - 41=TED, 45=PIX
         $this->add(14, 16, '040'); // Posição 014-016: Nº da Versão do Layout do Lote (040)
         $this->add(17, 17, self::CAMPO_BRANCO); // Posição 017-017: Brancos
         $this->add(18, 18, Util::formatCnab('9L', $this->getPagador()->getTipoDocumento() == 'CPF' ? self::TIPO_DOCUMENTO_CPF : self::TIPO_DOCUMENTO_CNPJ, 1)); // Posição 018-018: Tipo Inscrição Empresa Debitada (1=CPF, 2=CNPJ)
@@ -608,10 +624,27 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(9, 17, self::CAMPO_BRANCO); // Posição 009-017: Brancos
         $this->add(18, 23, Util::formatCnab('9L', $this->getCountLotes(), 6)); // Posição 018-023: Quantidade de Lotes do Arquivo
         $this->add(24, 29, Util::formatCnab('9L', $this->getCountMulti(), 6)); // Posição 024-029: Quantidade de Registros do Arquivo
-        $this->add(30, 35, Util::formatCnab('9L', $this->getCountLotes(), 6)); // Posição 030-035: Quantidade de Contas para Conciliação (Lotes)
-        $this->add(36, 240, self::CAMPO_BRANCO); // Posição 036-240: Brancos
+        $this->add(30, 240, self::CAMPO_BRANCO); // Posição 036-240: Brancos
 
         return $this;
+    }
+
+    /**
+     * Retorna a forma de lançamento baseada no tipo de pagamento específico
+     *
+     * @param string $tipoPagamento
+     * @return string
+     */
+    protected function getFormaLancamentoPorTipo($tipoPagamento)
+    {
+        switch ($tipoPagamento) {
+            case 'TED':
+                return '41'; // TED
+            case 'PIX':
+                return '45'; // Transferência via PIX
+            default:
+                return '41'; // Padrão TED
+        }
     }
 
     /**

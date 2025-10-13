@@ -465,7 +465,6 @@ class Itau extends AbstractRetorno
                 ->setCodigoBancoFavorecido($this->rem(21, 23, $detalhe))
                 ->setAgenciaFavorecido($this->rem(24, 28, $detalhe))
                 ->setContaFavorecido($this->rem(30, 41, $detalhe))
-                ->setContaDvFavorecido($this->rem(43, 43, $detalhe))
                 ->setSeuNumero($this->rem(74, 93, $detalhe))
                 ->setNumeroDocumento(explode('-', trim($this->rem(74, 93, $detalhe)))[0] ?? '')
                 ->setNumeroControle(explode('-', trim($this->rem(74, 93, $detalhe)))[1] ?? '')
