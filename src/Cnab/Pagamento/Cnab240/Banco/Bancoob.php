@@ -33,8 +33,8 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
     const LOTE_SERVICO_HEADER = '0001'; // Lote de serviço (header do lote)
     const TIPO_REGISTRO_HEADER_LOTE = '1'; // Tipo de registro (header do lote)
     const TIPO_OPERACAO = 'C'; // Tipo da operação (Crédito)
-    const TIPO_SERVICO = '01'; // Tipo do serviço (Transferência entre contas)
-    const FORMA_LANCAMENTO = '03'; // Forma de lançamento (TED)
+    const TIPO_SERVICO = '10'; // Tipo do serviço (Transferência entre contas)
+    const FORMA_LANCAMENTO = '41'; // Forma de lançamento (TED)
     const VERSAO_LAYOUT_LOTE = '045'; // Versão do layout do lote
     const INDICATIVO_FORMA_PAGAMENTO = '01'; // Indicativo da forma de pagamento
 
