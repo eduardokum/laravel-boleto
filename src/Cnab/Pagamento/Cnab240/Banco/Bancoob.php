@@ -540,7 +540,6 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(230, 230, self::AVISO_FAVORECIDO); // 29.3A Aviso - Aviso ao Favorecido
         $this->add(231, 240, self::CAMPO_BRANCO); // 29.3A Ocorrências - Códigos das Ocorrências p/ Retorno
 
-        $this->iRegistrosLote++;
         return $this;
     }
 
@@ -591,7 +590,6 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(227, 232, Util::formatCnab('9L', 0, 6)); // 25.3B Código UG Centralizadora - Uso Exclusivo para o SIAPE
         $this->add(233, 240, self::CAMPO_BRANCO); // 26.3B CNAB - Uso Exclusivo FEBRABAN/CNAB
 
-        $this->iRegistrosLote++;
         return $this;
     }
 }
