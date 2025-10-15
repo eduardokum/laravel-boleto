@@ -185,9 +185,9 @@ class Bancoob extends AbstractRetorno
             } elseif ($formaLancamento == '01') {
                 $tipoPagamento = 'DOC';
             } elseif ($formaLancamento == '41') {
-                $tipoPagamento = 'TED - Mesma Titularidade';
-            } elseif ($formaLancamento == '43') {
                 $tipoPagamento = 'TED - Outra Titularidade';
+            } elseif ($formaLancamento == '43') {
+                $tipoPagamento = 'TED - Mesma Titularidade';
             }
             $d->setTipoPagamento($tipoPagamento);
 
