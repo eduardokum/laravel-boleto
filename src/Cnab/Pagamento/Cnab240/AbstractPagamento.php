@@ -42,7 +42,7 @@ abstract class AbstractPagamento extends AbstractPagamentoGeneric
     /**
      * Quantidade de registros do lote.
      */
-    protected $iRegistrosLote;
+    protected $iRegistrosLote = 0;
 
     /**
      * Array de lotes organizados por tipo de pagamento
@@ -230,7 +230,7 @@ abstract class AbstractPagamento extends AbstractPagamentoGeneric
             // Limpa detalhes para o próximo lote
             $this->aRegistros[self::DETALHE] = [];
             $this->iRegistros = 0;
-            $this->iRegistrosLote = 0;
+            $this->iRegistrosLote = 0; // Reseta o contador para o próximo lote
         }
 
         // Trailer do arquivo

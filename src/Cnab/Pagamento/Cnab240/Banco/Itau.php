@@ -368,10 +368,10 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     /**
      * Gera os segmentos de um pagamento
      *
-     * @param Banco $pagamento
+     * @param \Eduardokum\LaravelBoleto\Pagamento\Banco\Banco $pagamento
      * @return void
      */
-    protected function gerarSegmentos(Banco $pagamento)
+    protected function gerarSegmentos(\Eduardokum\LaravelBoleto\Pagamento\Banco\Banco $pagamento)
     {
         $this->segmentoA($pagamento);
 
@@ -386,10 +386,10 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     /**
      * Verifica se o pagamento é do tipo PIX
      *
-     * @param Banco $pagamento
+     * @param \Eduardokum\LaravelBoleto\Pagamento\Banco\Banco $pagamento
      * @return bool
      */
-    protected function isPix($pagamento)
+    protected function isPix(\Eduardokum\LaravelBoleto\Pagamento\Banco\Banco $pagamento)
     {
         // Verifica se tem chave PIX configurada
         if (method_exists($pagamento, 'getPixChave') && !empty($pagamento->getPixChave())) {
