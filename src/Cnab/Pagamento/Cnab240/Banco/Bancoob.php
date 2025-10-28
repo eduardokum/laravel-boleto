@@ -66,6 +66,7 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
     {
         parent::__construct($params);
         $this->codigoBanco = self::BANCO;
+        $this->setCamposObrigatorios('convenio');
     }
 
     /**
@@ -467,10 +468,10 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
     /**
      * Gera os segmentos de um pagamento
      *
-     * @param Banco $pagamento
+     * @param \Eduardokum\LaravelBoleto\Pagamento\Banco\Banco $pagamento
      * @return void
      */
-    protected function gerarSegmentos(Banco $pagamento)
+    protected function gerarSegmentos(\Eduardokum\LaravelBoleto\Pagamento\Banco\Banco $pagamento)
     {
         $this->segmentoA($pagamento);
         $this->segmentoB($pagamento);

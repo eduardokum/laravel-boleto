@@ -5,7 +5,7 @@ namespace Eduardokum\LaravelBoleto\Cnab\Pagamento\Cnab240\Banco;
 use Eduardokum\LaravelBoleto\Cnab\Pagamento\Cnab240\AbstractPagamento;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Pagamento as PagamentoRemessaContract;
 use Eduardokum\LaravelBoleto\Contracts\Pagamento\Pagamento as PagamentoContract;
-use Eduardokum\LaravelBoleto\Pagamento\Banco\Inter as BancoInter;
+use Eduardokum\LaravelBoleto\Pagamento\Banco\Banco;
 use Eduardokum\LaravelBoleto\Util;
 
 /**
@@ -358,10 +358,10 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
     /**
      * Adiciona um segmento A para TED
      *
-     * @param BancoInter $pagamento
+     * @param Banco $pagamento
      * @return $this
      */
-    public function segmentoA($pagamento)
+    public function segmentoA(Banco $pagamento)
     {
         $this->iniciaDetalhe();
 
@@ -408,10 +408,10 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
     /**
      * Adiciona um segmento B para TED
      *
-     * @param BancoInter $pagamento
+     * @param Banco $pagamento
      * @return $this
      */
-    public function segmentoB($pagamento)
+    public function segmentoB(Banco $pagamento)
     {
         $this->iniciaDetalhe();
 
@@ -441,10 +441,10 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
     /**
      * Adiciona um segmento A para PIX
      *
-     * @param BancoInter $pagamento
+     * @param Banco $pagamento
      * @return $this
      */
-    public function segmentoAPix($pagamento)
+    public function segmentoAPix(Banco $pagamento)
     {
         $this->iniciaDetalhe();
 
@@ -503,10 +503,10 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
     /**
      * Adiciona um segmento B para PIX
      *
-     * @param BancoInter $pagamento
+     * @param Banco $pagamento
      * @return $this
      */
-    public function segmentoBPix($pagamento)
+    public function segmentoBPix(Banco $pagamento)
     {
         $this->iniciaDetalhe();
 
