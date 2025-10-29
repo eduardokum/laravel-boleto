@@ -47,11 +47,13 @@ if ($argc < 3) {
     echo "BANCOS SUPORTADOS:\n";
     echo "  077 - Banco Inter\n";
     echo "  341 - Itaú\n";
-    echo "  756 - Bancoob/Sicoob\n\n";
-    echo "OCORRÊNCIAS (Inter):\n";
-    echo "  {$VERDE}Sucesso:{$RESET} 00, BD\n";
+    echo "  756 - Bancoob/Sicoob\n";
+    echo "  748 - Sicredi\n\n";
+    echo "OCORRÊNCIAS EXEMPLOS:\n";
+    echo "  {$VERDE}Sucesso:{$RESET} 00, BD, 03 (Sicredi também: BE, BF, BI, BJ)\n";
     echo "  {$VERMELHO}Erros gerais:{$RESET} HF, AG, AR, AP\n";
-    echo "  {$AMARELO}Erros PIX:{$RESET} PM, PJ, PA\n\n";
+    echo "  {$AMARELO}Erros PIX:{$RESET} PM, PJ, PA\n";
+    echo "  {$VERMELHO}Erros Sicredi:{$RESET} AA, AB, AC, HA, HB, HC, etc.\n\n";
     exit(1);
 }
 
