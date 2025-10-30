@@ -46,6 +46,7 @@ if ($argc < 3) {
     echo "  php {$argv[0]} 077 remessa.txt PM\n\n";
     echo "BANCOS SUPORTADOS:\n";
     echo "  077 - Banco Inter\n";
+    echo "  104 - Caixa Econômica Federal\n";
     echo "  341 - Itaú\n";
     echo "  756 - Bancoob/Sicoob\n";
     echo "  748 - Sicredi\n\n";

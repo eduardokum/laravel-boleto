@@ -522,7 +522,7 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(44, 73, Util::formatCnab('X', $pagamento->getBeneficiario()->getNome(), 30)); // 15.3A Nome - Nome do Favorecido
 
         // Crédito
-        $this->add(74, 93, Util::formatCnab('X', $pagamento->getNumeroDocumento() . '-' . $pagamento->getNumeroControle(), 20)); // 16.3A Seu Número - Nº do Docum. Atribuído p/ Empresa
+        $this->add(74, 93, Util::formatCnab('X', $pagamento->getNumeroControle(), 20)); // 16.3A Seu Número - Nº do Docum. Atribuído p/ Empresa
 
         $dataPagamento = $pagamento->getDataPagamento() ? date('dmY', strtotime($pagamento->getDataPagamento())) : date('dmY');
 
@@ -586,7 +586,7 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(166, 180, Util::formatCnab('9L', $pagamento->getDesconto() ?: 0, 15)); // 20.3B Desconto - Valor do Desconto
         $this->add(181, 195, Util::formatCnab('9L', $pagamento->getJuros() ?: 0, 15)); // 21.3B Mora - Valor da Mora
         $this->add(196, 210, Util::formatCnab('9L', $pagamento->getMulta() ?: 0, 15)); // 22.3B Multa - Valor da Multa
-        $this->add(211, 225, Util::formatCnab('X', $pagamento->getNumeroDocumento() . '-' . $pagamento->getNumeroControle(), 15)); // 23.3B Cód/Doc. Favorec. - Código/Documento do Favorecido
+        $this->add(211, 225, Util::formatCnab('X', $pagamento->getNumeroControle(), 15)); // 23.3B Cód/Doc. Favorec. - Código/Documento do Favorecido
         $this->add(226, 226, self::AVISO_FAVORECIDO); // 24.3B Aviso - Aviso ao Favorecido
         $this->add(227, 232, Util::formatCnab('9L', 0, 6)); // 25.3B Código UG Centralizadora - Uso Exclusivo para o SIAPE
         $this->add(233, 240, self::CAMPO_BRANCO); // 26.3B CNAB - Uso Exclusivo FEBRABAN/CNAB

@@ -380,7 +380,7 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(42, 42, Util::formatCnab('9L', $pagamento->getContaDv(), 1)); // [Favorecido] Dígito verificador da conta
         $this->add(43, 43, self::CAMPO_BRANCO); // Campo em branco
         $this->add(44, 73, Util::formatCnab('X', $pagamento->getBeneficiario()->getNome(), 30)); // [Favorecido] Nome
-        $this->add(74, 93, Util::formatCnab('X', $pagamento->getNumeroDocumento() . '-' . $pagamento->getNumeroControle(), 20)); // Número do documento atribuído para empresa
+        $this->add(74, 93, Util::formatCnab('X', $pagamento->getNumeroControle(), 20)); // Número do documento atribuído para empresa
 
         $dataPagamento = $pagamento->getDataPagamento() ? date('dmY', strtotime($pagamento->getDataPagamento())) : date('dmY');
 
@@ -476,7 +476,7 @@ class Inter extends AbstractPagamento implements PagamentoRemessaContract
         }
 
         $this->add(43, 43, self::CAMPO_BRANCO); // Campo em branco
-        $this->add(74, 93, Util::formatCnab('X', $pagamento->getNumeroDocumento() . '-' . $pagamento->getNumeroControle() ?? '', 20)); // Número do documento atribuído para empresa
+        $this->add(74, 93, Util::formatCnab('X', $pagamento->getNumeroControle() ?? '', 20)); // Número do documento atribuído para empresa
         $dataPagamento = $pagamento->getDataVencimento() ? date('dmY', strtotime($pagamento->getDataVencimento())) : date('dmY');
         $this->add(94, 101, $dataPagamento); // Data do pagamento
         $this->add(102, 104, self::TIPO_MOEDA); // Tipo da moeda

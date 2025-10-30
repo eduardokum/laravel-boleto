@@ -632,7 +632,7 @@ class Caixa extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(43, 43, self::CAMPO_BRANCO); // A.14 DV Agência/Conta Destino
 
         $this->add(44, 73, Util::formatCnab('X', $pagamento->getBeneficiario()->getNome(), 30)); // A.15 Nome do Terceiro
-        $this->add(74, 79, Util::formatCnab('9L', $pagamento->getNumeroDocumento(), 6)); // A.16 Nº Documento atribuído pela Empresa
+        $this->add(74, 79, Util::formatCnab('9L', $pagamento->getNumeroControle(), 6)); // A.16 Nº Documento atribuído pela Empresa
         $this->add(80, 92, Util::formatCnab('X', '', 13)); // A.17 Filler
         $this->add(93, 93, self::TIPO_CONTA_CORRENTE); // A.18 Tipo de conta – Finalidade TED
         $this->add(94, 101, $pagamento->getDataVencimento()->format('dmY')); // A.19 Data Vencimento
