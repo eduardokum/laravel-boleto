@@ -432,7 +432,7 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(24, 43, $agenciaConta); // Posição 024-043: Agência/Conta Favorecido (NOTA 11)
 
         $this->add(44, 73, Util::formatCnab('X', $pagamento->getBeneficiario()->getNome(), 30)); // Posição 044-073: Nome do Favorecido (NOTA 34)
-        $this->add(74, 93, Util::formatCnab('X', $pagamento->getNumeroDocumento() . '-' . $pagamento->getNumeroControle(), 20)); // Posição 074-093: Nº Docto Atribuído pela Empresa (Seu Número)
+        $this->add(74, 93, Util::formatCnab('X', $pagamento->getNumeroControle(), 20)); // Posição 074-093: Nº Docto Atribuído pela Empresa (Seu Número)
 
         // Data de Pagamento
         $dataPagamento = $pagamento->getDataPagamento() ? date('dmY', strtotime($pagamento->getDataPagamento())) : date('dmY');

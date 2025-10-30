@@ -35,11 +35,17 @@ class FakeRetornoPagamento
             case '077': // Inter
                 return self::gerarRetornoInter($linhas, $ocorrenciaForcada);
 
+            case '104': // Caixa Econômica Federal
+                return self::gerarRetornoCaixa($linhas, $ocorrenciaForcada);
+
             case '341': // Itaú
                 return self::gerarRetornoItau($linhas, $ocorrenciaForcada);
 
             case '756': // Bancoob
                 return self::gerarRetornoBancoob($linhas, $ocorrenciaForcada);
+
+            case '748': // Sicredi
+                return self::gerarRetornoSicredi($linhas, $ocorrenciaForcada);
 
             default:
                 throw new ValidationException("Banco $codigoBanco não suportado");
@@ -132,6 +138,99 @@ class FakeRetornoPagamento
                 case '5': // Trailer do lote
                     // Atualiza valor total do lote
                     $linha = substr_replace($linha, str_pad((int) $totalValorEfetivado, 18, '0', STR_PAD_LEFT), 23, 18);
+                    break;
+            }
+
+            $retorno[] = $linha;
+        }
+
+        return implode("\r\n", $retorno) . "\r\n";
+    }
+
+    /**
+     * Gera retorno fake para Caixa Econômica Federal
+     * 
+     * @param array $linhas
+     * @param string|null $ocorrenciaForcada
+     * @return string
+     */
+    private static function gerarRetornoCaixa(array $linhas, $ocorrenciaForcada = null)
+    {
+        // Ocorrências possíveis da Caixa (usando padrões comuns CNAB240)
+        $ocorrenciasSucesso = ['00', 'BD'];
+        $ocorrenciasRejeicao = ['HF', 'AG', 'AR', 'AP'];
+        $ocorrenciasPix = ['PM', 'PJ', 'PA'];
+
+        $retorno = [];
+        $totalValorEfetivado = 0;
+        $numeroPagamento = 0;
+
+        foreach ($linhas as $linha) {
+            $linha = str_pad($linha, 240, ' ');
+            $tipoRegistro = substr($linha, 7, 1);
+
+            switch ($tipoRegistro) {
+                case '0': // Header do arquivo
+                    // Muda código remessa (1) para retorno (2)
+                    $linha = substr_replace($linha, '2', 142, 1);
+                    // Atualiza data/hora
+                    $linha = substr_replace($linha, date('dmYHis'), 143, 14);
+                    break;
+
+                case '3': // Detalhe (Segmento A ou B)
+                    $segmento = substr($linha, 13, 1);
+
+                    if ($segmento === 'A') {
+                        $numeroPagamento++;
+
+                        // Define ocorrência para este pagamento
+                        if ($ocorrenciaForcada !== null) {
+                            $ocorrencia = $ocorrenciaForcada;
+                        } else {
+                            // Gera mix realista (70% sucesso, 30% erro)
+                            $rand = rand(1, 100);
+                            if ($rand <= 70) {
+                                $ocorrencia = $ocorrenciasSucesso[array_rand($ocorrenciasSucesso)];
+                            } elseif ($rand <= 90) {
+                                $ocorrencia = $ocorrenciasRejeicao[array_rand($ocorrenciasRejeicao)];
+                            } else {
+                                $ocorrencia = $ocorrenciasPix[array_rand($ocorrenciasPix)];
+                            }
+                        }
+
+                        // Pega valor original da remessa
+                        $valorOriginal = substr($linha, 119, 15);
+
+                        // Preenche data de efetivação
+                        $ehSucesso = in_array($ocorrencia, $ocorrenciasSucesso);
+                        $dataEfetivacao = $ehSucesso ? date('dmY') : '00000000';
+                        $linha = substr_replace($linha, str_pad($dataEfetivacao, 8, '0', STR_PAD_LEFT), 154, 8);
+
+                        // Preenche valor efetivado
+                        $valorEfetivado = $ehSucesso ? $valorOriginal : str_pad('0', 15, '0', STR_PAD_LEFT);
+                        $linha = substr_replace($linha, $valorEfetivado, 162, 15);
+
+                        // Acumula total
+                        if ($ehSucesso) {
+                            $totalValorEfetivado += (float) $valorEfetivado;
+                        }
+
+                        // Preenche ocorrência
+                        $linha = substr_replace($linha, str_pad($ocorrencia, 10, ' '), 230, 10);
+                    } elseif ($segmento === 'B') {
+                        // Usa a mesma ocorrência do segmento A correspondente
+                        if (count($retorno) > 0) {
+                            $ocorrenciaSegmentoA = trim(substr($retorno[count($retorno) - 1], 230, 10));
+                            $linha = substr_replace($linha, str_pad($ocorrenciaSegmentoA, 10, ' '), 230, 10);
+                        }
+                    }
+                    break;
+
+                case '5': // Trailer do lote
+                    // Atualiza valor total do lote
+                    $linha = substr_replace($linha, str_pad((int) $totalValorEfetivado, 18, '0', STR_PAD_LEFT), 23, 18);
+                    // Zera total para próximo lote (se houver)
+                    $totalValorEfetivado = 0;
                     break;
             }
 
@@ -287,6 +386,121 @@ class FakeRetornoPagamento
 
                 case '5': // Trailer lote
                     $linha = substr_replace($linha, str_pad((int) $totalValorEfetivado, 18, '0', STR_PAD_LEFT), 23, 18);
+                    break;
+            }
+
+            $retorno[] = $linha;
+        }
+
+        return implode("\r\n", $retorno) . "\r\n";
+    }
+
+    /**
+     * Gera retorno fake para Sicredi
+     * 
+     * @param array $linhas
+     * @param string|null $ocorrenciaForcada
+     * @return string
+     */
+    private static function gerarRetornoSicredi(array $linhas, $ocorrenciaForcada = null)
+    {
+        // Ocorrências possíveis do Sicredi (apenas as mais úteis para testes)
+        $ocorrenciasSucesso = ['00', '03', 'BD', 'BE', 'BF', 'BI', 'BJ'];
+        $ocorrenciasRejeicao = [
+            '01',  // Insuficiência de fundos
+            'AG',  // Agência/conta corrente/DV inválido
+            'AR',  // Valor do lançamento inválido
+            'AP',  // Data lançamento inválido
+            'HF',  // Conta corrente da empresa com saldo insuficiente
+            'AB',  // Tipo de operação inválido
+            'AC',  // Tipo de serviço inválido
+            'AL',  // Código do banco favorecido inválido
+            'AM',  // Agência mantenedora da conta corrente do favorecido inválida
+            'AN',  // Conta corrente/DV do favorecido inválido
+            'AO',  // Nome do favorecido não informado
+            'HA',  // Lote não aceito
+            'HB',  // Inscrição da empresa inválida para o contrato
+            'HC',  // Convênio com a empresa inexistente/inválido
+            'HD',  // Agência/conta corrente da empresa inexistente/inválido
+            'HE',  // Tipo de serviço inválido para o contrato
+            'ZI',  // Beneficiário divergente
+            'TA',  // Lote não aceito - totais do lote com diferença
+        ];
+
+        $retorno = [];
+        $totalValorEfetivado = 0;
+        $numeroPagamento = 0;
+
+        foreach ($linhas as $linha) {
+            $linha = str_pad($linha, 240, ' ');
+            $tipoRegistro = substr($linha, 7, 1);
+
+            switch ($tipoRegistro) {
+                case '0': // Header do arquivo
+                    // Muda código remessa (1) para retorno (2) - posição 143
+                    $linha = substr_replace($linha, '2', 142, 1);
+                    // Atualiza data/hora - posições 144-157
+                    $linha = substr_replace($linha, date('dmYHis'), 143, 14);
+                    break;
+
+                case '3': // Detalhe (Segmento A ou B)
+                    $segmento = substr($linha, 13, 1);
+
+                    if ($segmento === 'A') {
+                        $numeroPagamento++;
+
+                        // Define ocorrência para este pagamento
+                        if ($ocorrenciaForcada !== null) {
+                            // Se forçou uma ocorrência, usa ela
+                            $ocorrencia = $ocorrenciaForcada;
+                        } else {
+                            // Gera mix realista (70% sucesso, 30% rejeição)
+                            $rand = rand(1, 100);
+                            if ($rand <= 70) {
+                                // 70% aprovados
+                                $ocorrencia = $ocorrenciasSucesso[array_rand($ocorrenciasSucesso)];
+                            } else {
+                                // 30% rejeições
+                                $ocorrencia = $ocorrenciasRejeicao[array_rand($ocorrenciasRejeicao)];
+                            }
+                        }
+
+                        // Pega valor original da remessa (posições 120-134) - já está em centavos
+                        $valorOriginal = substr($linha, 119, 15);
+
+                        // Preenche data de efetivação (posições 155-162)
+                        $ehSucesso = in_array($ocorrencia, $ocorrenciasSucesso);
+                        $dataEfetivacao = $ehSucesso ? date('dmY') : '00000000';
+                        $linha = substr_replace($linha, str_pad($dataEfetivacao, 8, '0', STR_PAD_LEFT), 154, 8);
+
+                        // Preenche valor efetivado (posições 163-177)
+                        $valorEfetivado = $ehSucesso ? $valorOriginal : str_pad('0', 15, '0', STR_PAD_LEFT);
+                        $linha = substr_replace($linha, $valorEfetivado, 162, 15);
+
+                        // Acumula total (valor já está em centavos como string)
+                        if ($ehSucesso) {
+                            $totalValorEfetivado += (int) $valorEfetivado;
+                        }
+
+                        // Preenche ocorrência (posições 231-240) - G059
+                        $linha = substr_replace($linha, str_pad($ocorrencia, 10, ' ', STR_PAD_RIGHT), 230, 10);
+                    } elseif ($segmento === 'B') {
+                        // Usa a mesma ocorrência do segmento A correspondente
+                        // (pega da linha anterior processada)
+                        if (count($retorno) > 0) {
+                            $ocorrenciaSegmentoA = trim(substr($retorno[count($retorno) - 1], 230, 10));
+                            $linha = substr_replace($linha, str_pad($ocorrenciaSegmentoA, 10, ' ', STR_PAD_RIGHT), 230, 10);
+                        }
+                    }
+                    break;
+
+                case '5': // Trailer do lote
+                    // Atualiza valor total do lote (posições 24-41)
+                    // Valor já está em centavos (sem decimais), ex: 390000 = R$ 3.900,00
+                    $valorTotalCentavos = (int) $totalValorEfetivado;
+                    $linha = substr_replace($linha, str_pad($valorTotalCentavos, 18, '0', STR_PAD_LEFT), 23, 18);
+                    // Zera total para próximo lote (se houver)
+                    $totalValorEfetivado = 0;
                     break;
             }
 
