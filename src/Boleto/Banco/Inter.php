@@ -195,12 +195,31 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
             'taxa'           => 0,
             'valor'          => 0,
         ];
-        if ($this->getDesconto()) {
+        $descontoData = $this->getDataDesconto() ? $this->getDataDesconto()->format('Y-m-d') : '';
+        $descontoCodigo = $this->getDescontoCodigo();
+        $descontoPercentual = $this->getDescontoPercentual();
+        $descontoValor = $this->getDesconto();
+
+        if ($descontoCodigo === '1' && $descontoValor > 0) {
             $desconto = [
                 'codigoDesconto' => 'VALORFIXODATAINFORMADA',
-                'data'           => $this->getDataDesconto()->format('Y-m-d'),
+                'data'           => $descontoData,
                 'taxa'           => 0,
-                'valor'          => Util::nFloat($this->getDesconto()),
+                'valor'          => Util::nFloat($descontoValor),
+            ];
+        } elseif ($descontoCodigo === '4' && $descontoPercentual > 0) {
+            $desconto = [
+                'codigoDesconto' => 'PERCENTUALDATAINFORMADA',
+                'data'           => $descontoData,
+                'taxa'           => Util::nFloat($descontoPercentual),
+                'valor'          => 0,
+            ];
+        } elseif ($descontoValor > 0) {
+            $desconto = [
+                'codigoDesconto' => 'VALORFIXODATAINFORMADA',
+                'data'           => $descontoData,
+                'taxa'           => 0,
+                'valor'          => Util::nFloat($descontoValor),
             ];
         }
 
@@ -318,11 +337,31 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
             ]),
             'multa'         => Arr::get($boleto, 'multa.valor', 0),
             'juros'         => Arr::get($boleto, 'juros.taxa', 0),
-            'desconto'      => Arr::get($boleto, 'desconto1.taxa', 0),
+            'desconto'      => Arr::get($boleto, 'desconto1.valor', Arr::get($boleto, 'desconto1.taxa', 0)),
+            'desconto_percentual' => Arr::get($boleto, 'desconto1.taxa', 0),
+            'desconto_codigo' => self::mapCodigoDescontoFromApi(Arr::get($boleto, 'desconto1.codigoDesconto')),
             'data_desconto' => Arr::get($boleto, 'desconto1.data'),
             'carteira'      => $ipte['campo_livre_parsed']['carteira'],
             'operacao'      => $ipte['campo_livre_parsed']['convenio'],
         ]), $appends));
+    }
+
+    /**
+     * Mapeia o código de desconto retornado pela API do Inter para o código numérico utilizado em CNAB
+     *
+     * @param string|null $codigo
+     * @return string
+     */
+    protected static function mapCodigoDescontoFromApi($codigo)
+    {
+        switch ($codigo) {
+            case 'VALORFIXODATAINFORMADA':
+                return '1';
+            case 'PERCENTUALDATAINFORMADA':
+                return '4';
+            default:
+                return '0';
+        }
     }
 
     /**

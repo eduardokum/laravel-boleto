@@ -94,6 +94,20 @@ abstract class AbstractBoleto implements BoletoContract
     public $desconto;
 
     /**
+     * Código do desconto para remessa/API
+     *
+     * @var string
+     */
+    protected $descontoCodigo = '0';
+
+    /**
+     * Percentual do desconto
+     *
+     * @var float
+     */
+    protected $descontoPercentual = 0.00;
+
+    /**
      * Valor para multa
      *
      * @var float
@@ -1368,6 +1382,54 @@ abstract class AbstractBoleto implements BoletoContract
     }
 
     /**
+     * Define o código do desconto utilizado em remessas e API
+     *
+     * @param string|int $codigo
+     *
+     * @return AbstractBoleto
+     */
+    public function setDescontoCodigo($codigo)
+    {
+        $this->descontoCodigo = (string) $codigo ?: '0';
+
+        return $this;
+    }
+
+    /**
+     * Retorna o código do desconto
+     *
+     * @return string
+     */
+    public function getDescontoCodigo()
+    {
+        return $this->descontoCodigo ?: '0';
+    }
+
+    /**
+     * Define o percentual do desconto
+     *
+     * @param float $percentual
+     *
+     * @return AbstractBoleto
+     */
+    public function setDescontoPercentual($percentual)
+    {
+        $this->descontoPercentual = max((float) $percentual, 0.00);
+
+        return $this;
+    }
+
+    /**
+     * Retorna o percentual do desconto
+     *
+     * @return float
+     */
+    public function getDescontoPercentual()
+    {
+        return (float) $this->descontoPercentual;
+    }
+
+    /**
      * Seta a % de multa
      *
      * @param float $multa
@@ -2137,9 +2199,9 @@ abstract class AbstractBoleto implements BoletoContract
             if (! $this->getPixChaveTipo()) {
                 throw new ValidationException('Informado chave de Pix porém não foi informado o tipo de chave');
             }
-//            if (! $this->getID()) {
-//                throw new ValidationException('ID necessita ser informado para geração da cobrança');
-//            }
+            //            if (! $this->getID()) {
+            //                throw new ValidationException('ID necessita ser informado para geração da cobrança');
+            //            }
 
             switch ($this->getPixChaveTipo()) {
                 case self::TIPO_CHAVEPIX_CPF:
