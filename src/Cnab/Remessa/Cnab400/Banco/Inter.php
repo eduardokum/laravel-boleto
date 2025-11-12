@@ -129,10 +129,32 @@ class Inter extends AbstractRemessa implements RemessaContract
         $this->add(161, 173, Util::formatCnab('9', 0, 13, 2));
         $this->add(174, 177, Util::formatCnab('9', $boleto->getJuros(), 4, 2));
         $this->add(178, 183, $boleto->getJuros() > 0 ? ($boleto->getDataVencimento()->copy())->addDays($boleto->getJurosApos() > 0 ? $boleto->getJurosApos() : 1)->format('dmy') : '000000');
-        $this->add(184, 184, $boleto->getDesconto() > 0 ? 1 : 0);
-        $this->add(185, 197, Util::formatCnab('9', $boleto->getDesconto() > 0 ? $boleto->getDesconto() : 0, 13, 2));
-        $this->add(198, 201, '0000');
-        $this->add(202, 207, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmy') : '000000');
+        $descontoCodigo = $boleto->getDescontoCodigo() ?: '0';
+        $descontoValor = $descontoCodigo === '1' ? $boleto->getDesconto() : 0;
+        $descontoPercentual = $descontoCodigo === '4' ? $boleto->getDescontoPercentual() : 0;
+
+        if ($descontoCodigo === '1' && $descontoValor <= 0) {
+            $descontoCodigo = '0';
+        }
+        if ($descontoCodigo === '4' && $descontoPercentual <= 0) {
+            $descontoCodigo = '0';
+        }
+
+        if ($descontoCodigo === '0') {
+            $descontoValor = 0;
+            $descontoPercentual = 0;
+        }
+
+        $descontoData = '000000';
+
+        if ($descontoCodigo !== '0' && $boleto->getDataDesconto()) {
+            $descontoData = $boleto->getDataDesconto()->format('dmy');
+        }
+
+        $this->add(184, 184, $descontoCodigo);
+        $this->add(185, 197, Util::formatCnab('9', $descontoValor, 13, 2));
+        $this->add(198, 201, Util::formatCnab('9', $descontoPercentual, 4, 2));
+        $this->add(202, 207, $descontoData);
         $this->add(208, 220, Util::formatCnab('9', 0, 13, 2));
         $this->add(221, 222, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? '02' : '01');
         $this->add(223, 236, Util::formatCnab('9', Util::onlyNumbers($boleto->getPagador()->getDocumento()), 14));
