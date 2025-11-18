@@ -754,9 +754,27 @@ final class Util
                 self::adiciona($retorno[0], 27, 46, self::remove(27, 46, $remessa[0]));
                 break;
             case BoletoContract::COD_BANCO_ITAU:
-                self::adiciona($retorno[0], 27, 30, self::remove(27, 30, $remessa[0]));
-                self::adiciona($retorno[0], 33, 37, self::remove(33, 37, $remessa[0]));
-                self::adiciona($retorno[0], 38, 38, self::remove(38, 38, $remessa[0]));
+                // Header do retorno conforme especificação CNAB400 do Itaú
+                self::adiciona($retorno[0], 1, 1, '0'); // Tipo de Registro
+                self::adiciona($retorno[0], 2, 2, '2'); // Código de Retorno
+                self::adiciona($retorno[0], 3, 9, 'RETORNO'); // Literal de Retorno
+                self::adiciona($retorno[0], 10, 11, '01'); // Código do Serviço
+                self::adiciona($retorno[0], 12, 26, str_pad('COBRANCA', 15, ' ', STR_PAD_RIGHT)); // Literal de Serviço
+                self::adiciona($retorno[0], 27, 30, self::remove(27, 30, $remessa[0])); // Agência
+                self::adiciona($retorno[0], 31, 32, '00'); // Zeros
+                self::adiciona($retorno[0], 33, 37, self::remove(33, 37, $remessa[0])); // Conta
+                self::adiciona($retorno[0], 38, 38, self::remove(38, 38, $remessa[0])); // DAC
+                self::adiciona($retorno[0], 39, 46, str_repeat(' ', 8)); // Brancos
+                self::adiciona($retorno[0], 47, 76, self::remove(47, 76, $remessa[0])); // Nome da Empresa
+                self::adiciona($retorno[0], 77, 79, $banco); // Código do Banco
+                self::adiciona($retorno[0], 80, 94, str_pad('BANCO ITAU SA', 15, ' ', STR_PAD_RIGHT)); // Nome do Banco
+                self::adiciona($retorno[0], 95, 100, date('dmy')); // Data de Geração
+                self::adiciona($retorno[0], 101, 105, str_repeat('0', 5)); // Densidade
+                self::adiciona($retorno[0], 106, 108, 'BPI'); // Unidade de Densidade
+                self::adiciona($retorno[0], 109, 113, str_repeat('0', 5)); // Nº Seq. Arquivo Ret.
+                self::adiciona($retorno[0], 114, 119, date('dmy')); // Data de Crédito
+                self::adiciona($retorno[0], 120, 394, str_repeat(' ', 275)); // Brancos
+                self::adiciona($retorno[0], 395, 400, self::remove(395, 400, $remessa[0])); // Número Sequencial
                 break;
             case BoletoContract::COD_BANCO_HSBC:
                 self::adiciona($retorno[0], 28, 31, self::remove(28, 31, $remessa[0]));
@@ -855,43 +873,58 @@ final class Util
                     self::adiciona($retorno[$i], 71, 82, self::remove(71, 82, $detalhe));
                     break;
                 case BoletoContract::COD_BANCO_ITAU:
-                    // Detalhe do retorno fake do Itaú - SEGMENTO T - CNAB 240
-                    self::adiciona($retorno[$i], 1, 3, '341'); // CÓDIGO DO BANCO
-                    self::adiciona($retorno[$i], 4, 7, '0001'); // CÓDIGO DO LOTE
-                    self::adiciona($retorno[$i], 8, 8, '3'); // TIPO DE REGISTRO (3=Detalhe)
-                    self::adiciona($retorno[$i], 9, 13, str_pad($i, 5, '0', STR_PAD_LEFT)); // N.º DO REGISTRO
-                    self::adiciona($retorno[$i], 14, 14, 'T'); // SEGMENTO (T=Obrigatório)
-                    self::adiciona($retorno[$i], 15, 15, 'N'); // BOLETO DDA (N=Não)
-                    self::adiciona($retorno[$i], 16, 17, '06'); // CÓD.DE OCORRÊNCIA (06=Crédito)
-                    self::adiciona($retorno[$i], 18, 18, '0'); // ZEROS
-                    self::adiciona($retorno[$i], 19, 22, '0001'); // AGÊNCIA
-                    self::adiciona($retorno[$i], 23, 30, '00000000'); // ZEROS
-                    self::adiciona($retorno[$i], 31, 35, '00001'); // CONTA
-                    self::adiciona($retorno[$i], 36, 36, '0'); // ZEROS
-                    self::adiciona($retorno[$i], 37, 37, '0'); // DAC
-                    self::adiciona($retorno[$i], 38, 40, '000'); // N.º DA CARTEIRA
-                    self::adiciona($retorno[$i], 41, 48, '00000001'); // NOSSO NÚMERO
-                    self::adiciona($retorno[$i], 49, 49, '0'); // DAC NOSSO NÚMERO
-                    self::adiciona($retorno[$i], 50, 57, str_repeat(' ', 8)); // BRANCOS
-                    self::adiciona($retorno[$i], 58, 58, '0'); // ZEROS
-                    self::adiciona($retorno[$i], 59, 68, 'FATURA001'); // SEU NÚMERO
-                    self::adiciona($retorno[$i], 69, 73, str_repeat(' ', 5)); // BRANCOS
-                    self::adiciona($retorno[$i], 74, 81, date('dmY')); // VENCIMENTO
-                    self::adiciona($retorno[$i], 82, 96, '00000000000010000'); // VALOR TÍTULO (R$ 100,00)
-                    self::adiciona($retorno[$i], 97, 99, '000'); // ZEROS
-                    self::adiciona($retorno[$i], 100, 104, '00001'); // AGÊNCIA COBRADORA
-                    self::adiciona($retorno[$i], 105, 105, '0'); // DAC AGÊNCIA COBRADORA
-                    self::adiciona($retorno[$i], 106, 130, str_pad('FATURA TESTE', 25, ' ', STR_PAD_RIGHT)); // USO DA EMPRESA
-                    self::adiciona($retorno[$i], 131, 132, '00'); // ZEROS
-                    self::adiciona($retorno[$i], 133, 133, '1'); // CÓDIGO DE INSCRIÇÃO (1=CPF)
-                    self::adiciona($retorno[$i], 134, 148, '12345678901'); // INSCRIÇÃO NÚMERO (CPF)
-                    self::adiciona($retorno[$i], 149, 178, str_pad('CLIENTE TESTE', 30, ' ', STR_PAD_RIGHT)); // NOME
-                    self::adiciona($retorno[$i], 179, 188, str_repeat(' ', 10)); // BRANCOS
-                    self::adiciona($retorno[$i], 189, 198, '0000000000'); // ZEROS
-                    self::adiciona($retorno[$i], 199, 213, '000000000000000'); // TARIFAS/CUSTAS
-                    self::adiciona($retorno[$i], 214, 221, '00000000'); // ERROS
-                    self::adiciona($retorno[$i], 222, 223, '01'); // CÓD. DE LIQUIDAÇÃO
-                    self::adiciona($retorno[$i], 224, 240, str_repeat(' ', 17)); // BRANCOS
+                    // Detalhe do retorno CNAB400 do Itaú conforme especificação
+                    self::adiciona($retorno[$i], 1, 1, '1'); // Tipo de Registro
+                    self::adiciona($retorno[$i], 2, 3, self::remove(2, 3, $detalhe)); // Código de Inscrição (da remessa)
+                    self::adiciona($retorno[$i], 4, 17, self::remove(4, 17, $detalhe)); // Número de Inscrição (da remessa)
+                    self::adiciona($retorno[$i], 18, 21, self::remove(18, 21, $detalhe)); // Agência (da remessa)
+                    self::adiciona($retorno[$i], 22, 23, '00'); // Zeros
+                    self::adiciona($retorno[$i], 24, 28, self::remove(24, 28, $detalhe)); // Conta (da remessa)
+                    self::adiciona($retorno[$i], 29, 29, self::remove(29, 29, $detalhe)); // DAC (da remessa)
+                    self::adiciona($retorno[$i], 30, 37, str_repeat(' ', 8)); // Brancos
+                    self::adiciona($retorno[$i], 38, 62, self::remove(38, 62, $detalhe)); // Uso da Empresa (da remessa)
+                    self::adiciona($retorno[$i], 63, 70, self::remove(63, 70, $detalhe)); // Nosso Número (da remessa)
+                    self::adiciona($retorno[$i], 71, 82, str_repeat(' ', 12)); // Brancos
+                    self::adiciona($retorno[$i], 83, 85, self::remove(84, 86, $detalhe)); // Carteira (Número da Carteira)
+                    // Nosso Número completo com DAC (posições 86-94)
+                    $nossoNumeroCompleto = self::remove(63, 70, $detalhe);
+                    self::adiciona($retorno[$i], 86, 93, $nossoNumeroCompleto); // Nosso Número (confirmação)
+                    // O DAC do Nosso Número é o último dígito do nosso número completo da remessa
+                    $nossoNumeroRemessa = self::remove(63, 70, $detalhe);
+                    self::adiciona($retorno[$i], 94, 94, strlen($nossoNumeroRemessa) > 0 ? substr($nossoNumeroRemessa, -1) : '0'); // DAC Nosso Número
+                    self::adiciona($retorno[$i], 95, 107, str_repeat(' ', 13)); // Brancos
+                    self::adiciona($retorno[$i], 108, 108, self::remove(108, 108, $detalhe) ?: 'I'); // Carteira (Código da Carteira) - padrão 'I' se não houver
+                    self::adiciona($retorno[$i], 109, 110, $ocorrencia); // Código de Ocorrência
+                    self::adiciona($retorno[$i], 111, 116, date('dmy')); // Data de Ocorrência
+                    self::adiciona($retorno[$i], 117, 126, self::remove(111, 120, $detalhe)); // Nº do Documento (da remessa)
+                    self::adiciona($retorno[$i], 127, 134, $nossoNumeroCompleto); // Nosso Número (confirmação)
+                    self::adiciona($retorno[$i], 135, 146, str_repeat(' ', 12)); // Brancos
+                    self::adiciona($retorno[$i], 147, 152, self::remove(121, 126, $detalhe)); // Vencimento (da remessa)
+                    self::adiciona($retorno[$i], 153, 165, self::remove(127, 139, $detalhe)); // Valor do Título (da remessa)
+                    self::adiciona($retorno[$i], 166, 168, $banco); // Código do Banco
+                    self::adiciona($retorno[$i], 169, 172, str_repeat('0', 4)); // Agência Cobradora
+                    self::adiciona($retorno[$i], 173, 173, '0'); // DAC Ag. Cobradora
+                    self::adiciona($retorno[$i], 174, 175, self::remove(148, 149, $detalhe)); // Espécie (da remessa)
+                    self::adiciona($retorno[$i], 176, 188, str_repeat('0', 13)); // Tarifa de Cobrança
+                    self::adiciona($retorno[$i], 189, 214, str_repeat(' ', 26)); // Brancos
+                    self::adiciona($retorno[$i], 215, 227, str_repeat('0', 13)); // Valor do IOF
+                    self::adiciona($retorno[$i], 228, 240, str_repeat('0', 13)); // Valor Abatimento
+                    self::adiciona($retorno[$i], 241, 253, str_repeat('0', 13)); // Descontos
+                    self::adiciona($retorno[$i], 254, 266, self::remove(127, 139, $detalhe)); // Valor Principal (mesmo do título)
+                    self::adiciona($retorno[$i], 267, 279, str_repeat('0', 13)); // Juros de Mora/Multa
+                    self::adiciona($retorno[$i], 280, 292, str_repeat('0', 13)); // Outros Créditos
+                    self::adiciona($retorno[$i], 293, 293, 'N'); // Boleto DDA (N=Não)
+                    self::adiciona($retorno[$i], 294, 295, str_repeat(' ', 2)); // Brancos
+                    self::adiciona($retorno[$i], 296, 301, date('dmy')); // Data Crédito
+                    self::adiciona($retorno[$i], 302, 305, str_repeat('0', 4)); // Instrução Cancelada
+                    self::adiciona($retorno[$i], 306, 311, str_repeat(' ', 6)); // Brancos
+                    self::adiciona($retorno[$i], 312, 324, str_repeat('0', 13)); // Zeros
+                    self::adiciona($retorno[$i], 325, 354, self::remove(235, 264, $detalhe)); // Nome do Pagador (da remessa)
+                    self::adiciona($retorno[$i], 355, 377, str_repeat(' ', 23)); // Brancos
+                    self::adiciona($retorno[$i], 378, 385, str_repeat(' ', 8)); // Erros
+                    self::adiciona($retorno[$i], 386, 392, str_repeat(' ', 7)); // Brancos
+                    self::adiciona($retorno[$i], 393, 394, '01'); // Cód. de Liquidação
+                    // Número Sequencial já foi preenchido na linha 849
                     break;
                 case BoletoContract::COD_BANCO_HSBC:
                     self::adiciona($retorno[$i], 63, 73, self::remove(63, 73, $detalhe));
@@ -943,6 +976,35 @@ final class Util
         }
 
 
+        // Calcula totais dos detalhes para o trailer
+        $qtdDetalhes = 0;
+        $valorTotalInformado = 0;
+        $qtdTitulosSimples = 0;
+        $valorTotalSimples = 0;
+        $qtdTitulosVinculada = 0;
+        $valorTotalVinculada = 0;
+        $qtdTitulosDireta = 0;
+        $valorTotalDireta = 0;
+
+        foreach ($retorno as $idx => $linha) {
+            if ($idx == 0) continue; // Pula o header
+            if (is_array($linha) && isset($linha[0]) && $linha[0] == '1') { // É um detalhe
+                $qtdDetalhes++;
+                // Extrai valor do título (posições 153-165) - formato CNAB: 13 dígitos (11 inteiros + 2 decimais)
+                $valorTituloStr = '';
+                for ($j = 152; $j < 165; $j++) { // Posições 153-165 (índice 0-based: 152-164)
+                    $valorTituloStr .= isset($linha[$j]) ? $linha[$j] : '0';
+                }
+                $valorTituloStr = trim($valorTituloStr);
+                $valorTitulo = $valorTituloStr ? (float)($valorTituloStr / 100) : 0;
+                $valorTotalInformado += $valorTitulo;
+
+                // Por padrão, considera como cobrança simples
+                $qtdTitulosSimples++;
+                $valorTotalSimples += $valorTitulo;
+            }
+        }
+
         if ($banco === BoletoContract::COD_BANCO_INTER) {
             $i = count($retorno);
             $retorno[$i] = array_fill(0, 400, ' '); // Preenche com espaços para o trailer
@@ -962,6 +1024,42 @@ final class Util
             self::adiciona($retorno[$i], 121, 132, str_pad(0, 12, '0', STR_PAD_LEFT)); // Valor dos registros Ocorrência 04
             self::adiciona($retorno[$i], 133, 394, str_repeat(' ', 262)); // Campo em branco
             self::adiciona($retorno[$i], 395, 400, sprintf('%06d', count($retorno))); // Número sequencial de registros
+        } elseif ($banco === BoletoContract::COD_BANCO_ITAU) {
+            // Trailer do retorno CNAB400 do Itaú conforme especificação
+            $i = count($retorno);
+            $retorno[$i] = array_fill(0, 400, '0');
+
+            // Número sequencial do arquivo retorno (do header, posições 109-113)
+            $numeroSequencialArquivo = self::remove(109, 113, $retorno[0]);
+            $numeroSequencialArquivo = str_pad($numeroSequencialArquivo ?: '00000', 5, '0', STR_PAD_LEFT);
+
+            // Formata valores (remove vírgula decimal, multiplica por 100)
+            $valorTotalSimplesFormatado = str_pad((int)($valorTotalSimples * 100), 14, '0', STR_PAD_LEFT);
+            $valorTotalVinculadaFormatado = str_pad((int)($valorTotalVinculada * 100), 14, '0', STR_PAD_LEFT);
+            $valorTotalDiretaFormatado = str_pad((int)($valorTotalDireta * 100), 14, '0', STR_PAD_LEFT);
+            $valorTotalInformadoFormatado = str_pad((int)($valorTotalInformado * 100), 14, '0', STR_PAD_LEFT);
+
+            self::adiciona($retorno[$i], 1, 1, '9'); // Tipo de Registro
+            self::adiciona($retorno[$i], 2, 2, '2'); // Código de Retorno
+            self::adiciona($retorno[$i], 3, 4, '01'); // Código de Serviço
+            self::adiciona($retorno[$i], 5, 7, $banco); // Código do Banco
+            self::adiciona($retorno[$i], 8, 17, str_repeat(' ', 10)); // Brancos
+            self::adiciona($retorno[$i], 18, 25, str_pad($qtdTitulosSimples, 8, '0', STR_PAD_LEFT)); // Qtde. de Títulos - Cobrança Simples
+            self::adiciona($retorno[$i], 26, 39, $valorTotalSimplesFormatado); // Valor Total - Cobrança Simples
+            self::adiciona($retorno[$i], 40, 47, str_repeat(' ', 8)); // Aviso Bancário
+            self::adiciona($retorno[$i], 48, 57, str_repeat(' ', 10)); // Brancos
+            self::adiciona($retorno[$i], 58, 65, str_pad($qtdTitulosVinculada, 8, '0', STR_PAD_LEFT)); // Qtde. de Títulos - Cobrança/Vinculada
+            self::adiciona($retorno[$i], 66, 79, $valorTotalVinculadaFormatado); // Valor Total - Cobrança/Vinculada
+            self::adiciona($retorno[$i], 80, 87, str_repeat(' ', 8)); // Aviso Bancário
+            self::adiciona($retorno[$i], 88, 177, str_repeat(' ', 90)); // Brancos
+            self::adiciona($retorno[$i], 178, 185, str_pad($qtdTitulosDireta, 8, '0', STR_PAD_LEFT)); // Qtde. de Títulos - Cobrança Direta/Escritural
+            self::adiciona($retorno[$i], 186, 199, $valorTotalDiretaFormatado); // Valor Total - Cobrança Direta/Escritural
+            self::adiciona($retorno[$i], 200, 207, str_repeat(' ', 8)); // Aviso Bancário
+            self::adiciona($retorno[$i], 208, 212, $numeroSequencialArquivo); // Controle do Arquivo
+            self::adiciona($retorno[$i], 213, 220, str_pad($qtdDetalhes, 8, '0', STR_PAD_LEFT)); // Qtde de Detalhes
+            self::adiciona($retorno[$i], 221, 234, $valorTotalInformadoFormatado); // Vlr Total Informado
+            self::adiciona($retorno[$i], 235, 394, str_repeat(' ', 160)); // Brancos
+            self::adiciona($retorno[$i], 395, 400, sprintf('%06s', count($retorno))); // Número Sequencial
         } else {
             $i = count($retorno);
             $retorno[$i] = array_fill(0, 400, '0');
