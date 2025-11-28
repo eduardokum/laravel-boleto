@@ -283,4 +283,15 @@ class Itau extends AbstractRemessa implements RemessaContract
 
         return $this;
     }
+
+    /**
+     * Retorna o nome sugerido para o arquivo de remessa
+     *
+     * @return string
+     */
+    public function nomeSugerido()
+    {
+        $idremessa = $this->getIdremessa() ?: 0;
+        return sprintf('%08d.REM', $idremessa);
+    }
 }
