@@ -17,7 +17,7 @@
         "php": ">5.5.0",
         "ext-intl": "*",
         "ext-mbstring": "*",
-        "laravel/framework": "^6.0|^7.0|^8.0|^9.0|^10.0|^11.0",
+        "laravel/framework": "^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0",
         "neitanod/forceutf8": "^2.0",
         "setasign/fpdf": "^1.8",
         "ext-curl": "*",
