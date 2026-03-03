@@ -88,6 +88,7 @@ class Inter extends AbstractRetorno implements RetornoCnab400
 
         $d = $this->detalheAtual();
         $d->setCarteira($this->rem(21, 23, $detalhe))
+            ->setOperacao(trim($this->rem(381, 394, $detalhe)))
             ->setNossoNumero($this->rem(71, 81, $detalhe))
             ->setNumeroDocumento($this->rem(98, 107, $detalhe))
             ->setNumeroControle($this->rem(38, 62, $detalhe))
