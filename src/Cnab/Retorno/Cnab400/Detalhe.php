@@ -134,6 +134,11 @@ class Detalhe implements DetalheContract
     protected $error;
 
     /**
+     * @var string
+     */
+    protected $operacao;
+
+    /**
      * @return string
      */
     public function getCarteira()
@@ -209,6 +214,26 @@ class Detalhe implements DetalheContract
     public function setNumeroControle($numeroControle)
     {
         $this->numeroControle = $numeroControle;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOperacao()
+    {
+        return $this->operacao;
+    }
+
+    /**
+     * @param string $operacao
+     *
+     * @return Detalhe
+     */
+    public function setOperacao($operacao)
+    {
+        $this->operacao = $operacao;
 
         return $this;
     }
