@@ -19,6 +19,7 @@ class Banrisul extends AbstractPagamento implements PagamentoRemessaContract
     const BANCO = '041';
     const NOME_BANCO = 'BANRISUL';
     const LOTE_SERVICO = '0000';
+    const LOTE_SERVICO_HEADER = '0001';
     const TIPO_REGISTRO_HEADER = '0';
     const TIPO_REGISTRO_HEADER_LOTE = '1';
     const TIPO_REGISTRO_DETALHE = '3';
@@ -181,11 +182,7 @@ class Banrisul extends AbstractPagamento implements PagamentoRemessaContract
      */
     public function getFormaLancamento()
     {
-        if (isset($this->tipoPagamento) && strtoupper($this->tipoPagamento) === 'DOC') {
-            return self::FORMA_LANCAMENTO_DOC_TED;
-        }
-
-        return self::FORMA_LANCAMENTO_DOC_TED; // Padrao TED usa forma 03
+        return $this->getFormaLancamentoPorTipo($this->tipoPagamento);
     }
 
     /**
@@ -304,8 +301,8 @@ class Banrisul extends AbstractPagamento implements PagamentoRemessaContract
 
         // 001-003: Codigo do Banco na Compensacao (041)
         $this->add(1, 3, self::BANCO);
-        // 004-007: Lote de Servico (sequencial)
-        $this->add(4, 7, Util::formatCnab('9L', '0001', 4));
+        // 004-007: Lote de Servico
+        $this->add(4, 7, Util::formatCnab('9L', self::LOTE_SERVICO_HEADER, 4));
         // 008-008: Tipo de Registro (1 = Header de Lote)
         $this->add(8, 8, self::TIPO_REGISTRO_HEADER_LOTE);
         // 009-009: Tipo de Operacao (C = Credito)
@@ -374,7 +371,7 @@ class Banrisul extends AbstractPagamento implements PagamentoRemessaContract
         // 001-003: Codigo do Banco na Compensacao (041)
         $this->add(1, 3, self::BANCO);
         // 004-007: Lote de Servico
-        $this->add(4, 7, Util::formatCnab('9L', '0001', 4));
+        $this->add(4, 7, Util::formatCnab('9L', self::LOTE_SERVICO_HEADER, 4));
         // 008-008: Tipo de Registro (3 = Detalhe)
         $this->add(8, 8, self::TIPO_REGISTRO_DETALHE);
         // 009-013: Numero sequencial do registro no Lote
@@ -456,7 +453,7 @@ class Banrisul extends AbstractPagamento implements PagamentoRemessaContract
         // 001-003: Codigo do Banco na Compensacao (041)
         $this->add(1, 3, self::BANCO);
         // 004-007: Lote de Servico
-        $this->add(4, 7, Util::formatCnab('9L', '0001', 4));
+        $this->add(4, 7, Util::formatCnab('9L', self::LOTE_SERVICO_HEADER, 4));
         // 008-008: Tipo de Registro (3 = Detalhe)
         $this->add(8, 8, self::TIPO_REGISTRO_DETALHE);
         // 009-013: Numero Sequencial do Registro no Lote
@@ -526,7 +523,7 @@ class Banrisul extends AbstractPagamento implements PagamentoRemessaContract
         // 001-003: Codigo do Banco na Compensacao (041)
         $this->add(1, 3, self::BANCO);
         // 004-007: Lote de Servico (igual ao header do lote)
-        $this->add(4, 7, Util::formatCnab('9L', '0001', 4));
+        $this->add(4, 7, Util::formatCnab('9L', self::LOTE_SERVICO_HEADER, 4));
         // 008-008: Tipo de Registro (5 = Trailer de Lote)
         $this->add(8, 8, self::TIPO_REGISTRO_TRAILER_LOTE);
         // 009-017: Brancos
