@@ -378,7 +378,7 @@ class Banrisul extends AbstractPagamento implements PagamentoRemessaContract
         // 008-008: Tipo de Registro (3 = Detalhe)
         $this->add(8, 8, self::TIPO_REGISTRO_DETALHE);
         // 009-013: Numero sequencial do registro no Lote
-        $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote + 1, 5));
+        $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote, 5));
         // 014-014: Codigo do Segmento (A)
         $this->add(14, 14, self::CODIGO_SEGMENTO_A);
         // 015-015: Tipo de Movimento (0 = Inclusao)
@@ -439,7 +439,6 @@ class Banrisul extends AbstractPagamento implements PagamentoRemessaContract
         // 231-240: Codigos das ocorrencias de retorno
         $this->add(231, 240, self::CAMPO_BRANCO);
 
-        $this->iRegistrosLote++;
         return $this;
     }
 
@@ -461,7 +460,7 @@ class Banrisul extends AbstractPagamento implements PagamentoRemessaContract
         // 008-008: Tipo de Registro (3 = Detalhe)
         $this->add(8, 8, self::TIPO_REGISTRO_DETALHE);
         // 009-013: Numero Sequencial do Registro no Lote
-        $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote + 1, 5));
+        $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote, 5));
         // 014-014: Codigo de Segmento (B)
         $this->add(14, 14, self::CODIGO_SEGMENTO_B);
         // 015-017: Uso exclusivo FEBRABAN/CNAB - Brancos
@@ -511,7 +510,6 @@ class Banrisul extends AbstractPagamento implements PagamentoRemessaContract
         // 233-240: Codigo do ISPB do Banco Destinatario
         $this->add(233, 240, Util::formatCnab('9', '0', 8));
 
-        $this->iRegistrosLote++;
         return $this;
     }
 
