@@ -135,10 +135,10 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
                 $this->loteAtual = (int) $this->rem(4, 7, $linha);
                 $this->processarHeaderLote($linha);
             } elseif ($recordType == '3') {
-                // Detalhe (Segmento A ou B)
+                // Detalhe (Segmento A/B, J/J-52, N, O, Z, etc.)
                 $segmentType = $this->getSegmentType($linha);
 
-                if ($segmentType == 'A')
+                if ($this->isStartOfDetalhe($segmentType, $linha))
                     $this->incrementDetalhe();
 
                 $detalhes = true;
@@ -174,5 +174,33 @@ abstract class AbstractRetorno extends AbstractRetornoGeneric
         $this->processado = true;
 
         return $this;
+    }
+
+    /**
+     * Determina se o segmento atual inicia um novo detalhe (incrementando o
+     * índice) ou apenas complementa o anterior (B, J-52, W, Z, etc.).
+     *
+     * Por padrão, seguimos o layout FEBRABAN CNAB 240:
+     *  - A (créditos em conta, TED, DOC, PIX)
+     *  - J (liquidação de boletos) - exceto quando posições 18-19 = "52" (J-52)
+     *  - N (tributos sem código de barras / FGTS)
+     *  - O (concessionárias e tributos com código de barras)
+     *
+     * @param string $segmentType
+     * @param string $linha
+     * @return bool
+     */
+    protected function isStartOfDetalhe($segmentType, $linha)
+    {
+        if ($segmentType === 'A' || $segmentType === 'N' || $segmentType === 'O') {
+            return true;
+        }
+
+        if ($segmentType === 'J') {
+            // J-52 identifica o registro opcional complementar do segmento J.
+            return $this->rem(18, 19, $linha) !== '52';
+        }
+
+        return false;
     }
 }

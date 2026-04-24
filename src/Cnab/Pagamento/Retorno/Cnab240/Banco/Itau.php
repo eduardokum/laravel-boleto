@@ -447,6 +447,42 @@ class Itau extends AbstractRetorno
     }
 
     /**
+     * Mapeia a forma de lançamento (NOTA 5) para um "tipo de pagamento"
+     * conceitual usado no Detalhe (TED, PIX, DOC, BOLETO, ...).
+     *
+     * @param string $formaLancamento
+     * @return string
+     */
+    protected function resolveTipoPagamento($formaLancamento)
+    {
+        switch ($formaLancamento) {
+            case '01':
+            case '05':
+            case '06':
+                return 'TED'; // Crédito em conta / poupança / mesma titularidade
+            case '02':
+                return 'CHEQUE';
+            case '03':
+            case '07':
+                return 'DOC';
+            case '41':
+            case '43':
+                return 'TED';
+            case '45':
+                return 'PIX';
+            case '47':
+                return 'PIX_QRCODE';
+            case '30':
+            case '31':
+                return 'BOLETO';
+            case '32':
+                return 'NF_LIQUIDACAO';
+            default:
+                return 'OUTROS';
+        }
+    }
+
+    /**
      * @param array $detalhe
      * @return bool
      * @throws ValidationException
@@ -455,6 +491,26 @@ class Itau extends AbstractRetorno
     {
         $d = $this->detalheAtual();
         $segmentType = $this->getSegmentType($detalhe);
+
+        // Segmentos J e J-52 (liquidação de boletos)
+        if ($segmentType == 'J') {
+            return $this->rem(18, 19, $detalhe) === '52'
+                ? $this->processarSegmentoJ52($detalhe, $d)
+                : $this->processarSegmentoJ($detalhe, $d);
+        }
+
+        // Segmento Z (autenticação eletrônica do pagamento - opcional)
+        if ($segmentType == 'Z') {
+            $d->setAutenticacao(trim($this->rem(15, 78, $detalhe)));
+            if (empty($d->getSeuNumero())) {
+                $d->setSeuNumero(trim($this->rem(79, 98, $detalhe)));
+            }
+            if (empty($d->getNossoNumero())) {
+                $d->setNossoNumero(trim($this->rem(104, 118, $detalhe)));
+            }
+
+            return true;
+        }
 
         if ($segmentType == 'A') {
             // Segmento A - Dados principais do pagamento
@@ -475,38 +531,10 @@ class Itau extends AbstractRetorno
                 ->setValorRealEfetivado(Util::nFloat($this->rem(163, 177, $detalhe) / 100, 2, false));
 
             // Determina o tipo de pagamento pela forma de lançamento do lote
-            $formaLancamento = $this->getHeaderLote()->getFormaLancamento();
-            $tipoPagamento = 'TED'; // Padrão
-            if ($formaLancamento == '45') {
-                $tipoPagamento = 'PIX';
-            } elseif ($formaLancamento == '03') {
-                $tipoPagamento = 'TED';
-            } elseif ($formaLancamento == '01') {
-                $tipoPagamento = 'DOC';
-            }
-            $d->setTipoPagamento($tipoPagamento);
+            $d->setTipoPagamento($this->resolveTipoPagamento($this->getHeaderLote()->getFormaLancamento()));
 
             // Processa ocorrências
-            if (in_array($ocorrencias, ['00', 'BD', 'BI', 'BJ'])) {
-                // Pagamento efetivado
-                $this->totais['pagos']++;
-                $this->totais['valor_total'] += $d->getValor();
-                $d->setOcorrenciaTipo($d::OCORRENCIA_PAGO);
-            } elseif (in_array($ocorrencias, ['02'])) {
-                // Pagamento cancelado
-                $this->totais['cancelados']++;
-                $d->setOcorrenciaTipo($d::OCORRENCIA_CANCELADO);
-            } elseif (substr($ocorrencias, 0, 1) == 'A' || substr($ocorrencias, 0, 1) == 'H' || substr($ocorrencias, 0, 1) == 'P' || in_array($ocorrencias, ['ZC', 'ZI'])) {
-                // Pagamento rejeitado ou com erro
-                $this->totais['rejeitados']++;
-                $d->setOcorrenciaTipo($d::OCORRENCIA_REJEITADO);
-            } elseif (in_array($ocorrencias, ['01'])) {
-                // Insuficiência de fundos
-                $this->totais['rejeitados']++;
-                $d->setOcorrenciaTipo($d::OCORRENCIA_REJEITADO);
-            } else {
-                $d->setOcorrenciaTipo($d::OCORRENCIA_OUTROS);
-            }
+            $this->classificarOcorrencia($d, $ocorrencias);
         }
 
         if ($segmentType == 'B') {
@@ -561,6 +589,141 @@ class Itau extends AbstractRetorno
         }
 
         return true;
+    }
+
+    /**
+     * Processa o segmento J - dados principais da liquidação de boleto.
+     *
+     * @param array    $detalhe
+     * @param \Eduardokum\LaravelBoleto\Cnab\Pagamento\Retorno\Cnab240\Detalhe $d
+     * @return bool
+     * @throws ValidationException
+     */
+    protected function processarSegmentoJ(array $detalhe, $d)
+    {
+        $ocorrencias = trim($this->rem(231, 240, $detalhe));
+
+        // Reconstrói o código de barras (44 dígitos) a partir das posições 018-061.
+        $codigoBarras = $this->rem(18, 20, $detalhe)   // Banco favorecido
+            . $this->rem(21, 21, $detalhe)             // Moeda
+            . $this->rem(22, 22, $detalhe)             // DV
+            . $this->rem(23, 26, $detalhe)             // Fator de vencimento
+            . $this->rem(27, 36, $detalhe)             // Valor
+            . $this->rem(37, 61, $detalhe);            // Campo livre
+
+        $d->setCodigoBarras($codigoBarras)
+            ->setCodigoBancoFavorecido(substr($codigoBarras, 0, 3))
+            ->setOcorrencia($ocorrencias)
+            ->setOcorrenciaDescricao(Arr::get($this->ocorrencias, $ocorrencias, 'Desconhecida'))
+            ->setTipoPagamento($this->resolveTipoPagamento($this->getHeaderLote()->getFormaLancamento()))
+            ->setSeuNumero(trim($this->rem(183, 202, $detalhe)))
+            ->setNossoNumero(trim($this->rem(216, 230, $detalhe)))
+            ->setDataVencimento($this->rem(92, 99, $detalhe))
+            ->setValorTitulo(Util::nFloat($this->rem(100, 114, $detalhe) / 100, 2, false))
+            ->setDesconto(Util::nFloat($this->rem(115, 129, $detalhe) / 100, 2, false))
+            ->setAcrescimo(Util::nFloat($this->rem(130, 144, $detalhe) / 100, 2, false))
+            ->setDataPagamento($this->rem(145, 152, $detalhe))
+            ->setValor(Util::nFloat($this->rem(153, 167, $detalhe) / 100, 2, false))
+            ->setValorRealEfetivado(Util::nFloat($this->rem(153, 167, $detalhe) / 100, 2, false));
+
+        $this->classificarOcorrencia($d, $ocorrencias);
+
+        return true;
+    }
+
+    /**
+     * Processa o segmento J-52 - identificação de sacado, cedente e sacador
+     * avalista vinculados ao boleto liquidado.
+     *
+     * @param array    $detalhe
+     * @param \Eduardokum\LaravelBoleto\Cnab\Pagamento\Retorno\Cnab240\Detalhe $d
+     * @return bool
+     * @throws ValidationException
+     */
+    protected function processarSegmentoJ52(array $detalhe, $d)
+    {
+        $tipoInscSacado = $this->rem(20, 20, $detalhe);
+        $docSacado      = ltrim($this->rem(21, 35, $detalhe), '0');
+        $nomeSacado     = trim($this->rem(36, 75, $detalhe));
+
+        if ($docSacado !== '' || $nomeSacado !== '') {
+            $d->setSacado([
+                'nome'          => $nomeSacado,
+                'documento'     => $docSacado,
+                'tipoDocumento' => $tipoInscSacado === '1' ? 'CPF' : 'CNPJ',
+            ]);
+        }
+
+        $tipoInscCedente = $this->rem(76, 76, $detalhe);
+        $docCedente      = ltrim($this->rem(77, 91, $detalhe), '0');
+        $nomeCedente     = trim($this->rem(92, 131, $detalhe));
+
+        if ($docCedente !== '' || $nomeCedente !== '') {
+            $d->setCedente([
+                'nome'          => $nomeCedente,
+                'documento'     => $docCedente,
+                'tipoDocumento' => $tipoInscCedente === '1' ? 'CPF' : 'CNPJ',
+            ]);
+
+            // O cedente é o favorecido efetivo do pagamento do boleto.
+            if (! $d->getFavorecido()) {
+                $d->setFavorecido([
+                    'nome'          => $nomeCedente,
+                    'documento'     => $docCedente,
+                    'tipoDocumento' => $tipoInscCedente === '1' ? 'CPF' : 'CNPJ',
+                ]);
+            }
+        }
+
+        $tipoInscSacador = $this->rem(132, 132, $detalhe);
+        $docSacador      = ltrim($this->rem(133, 147, $detalhe), '0');
+        $nomeSacador     = trim($this->rem(148, 187, $detalhe));
+
+        if ($docSacador !== '' || $nomeSacador !== '') {
+            $d->setSacadorAvalista([
+                'nome'          => $nomeSacador,
+                'documento'     => $docSacador,
+                'tipoDocumento' => $tipoInscSacador === '1' ? 'CPF' : 'CNPJ',
+            ]);
+        }
+
+        return true;
+    }
+
+    /**
+     * Classifica a ocorrência em pago / cancelado / rejeitado / outros, além
+     * de alimentar os totalizadores.
+     *
+     * @param \Eduardokum\LaravelBoleto\Cnab\Pagamento\Retorno\Cnab240\Detalhe $d
+     * @param string $ocorrencias
+     * @return void
+     */
+    protected function classificarOcorrencia($d, $ocorrencias)
+    {
+        if (in_array($ocorrencias, ['00', 'BD', 'BI', 'BJ'])) {
+            $this->totais['pagos']++;
+            $this->totais['valor_total'] += $d->getValor();
+            $d->setOcorrenciaTipo($d::OCORRENCIA_PAGO);
+
+            return;
+        }
+
+        if (in_array($ocorrencias, ['02', 'CE'])) {
+            $this->totais['cancelados']++;
+            $d->setOcorrenciaTipo($d::OCORRENCIA_CANCELADO);
+
+            return;
+        }
+
+        $firstChar = substr($ocorrencias, 0, 1);
+        if (in_array($firstChar, ['A', 'H', 'P']) || in_array($ocorrencias, ['ZC', 'ZI', '01', 'RJ', 'SS'])) {
+            $this->totais['rejeitados']++;
+            $d->setOcorrenciaTipo($d::OCORRENCIA_REJEITADO);
+
+            return;
+        }
+
+        $d->setOcorrenciaTipo($d::OCORRENCIA_OUTROS);
     }
 
     /**

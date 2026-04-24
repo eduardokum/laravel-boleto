@@ -149,6 +149,69 @@ class Detalhe
     protected $informacoesAdicionais = [];
 
     /**
+     * Código de barras do boleto liquidado (segmento J).
+     *
+     * @var string|null
+     */
+    protected $codigoBarras;
+
+    /**
+     * Valor nominal do título (segmento J).
+     *
+     * @var float|null
+     */
+    protected $valorTitulo;
+
+    /**
+     * Valor de desconto + abatimento aplicado no pagamento (segmento J).
+     *
+     * @var float|null
+     */
+    protected $desconto;
+
+    /**
+     * Valor de mora + multa aplicado no pagamento (segmento J).
+     *
+     * @var float|null
+     */
+    protected $acrescimo;
+
+    /**
+     * Data de vencimento nominal do título (segmento J).
+     *
+     * @var Carbon|null
+     */
+    protected $dataVencimento;
+
+    /**
+     * Dados do sacado do boleto (segmento J-52).
+     *
+     * @var PessoaContract|null
+     */
+    protected $sacado;
+
+    /**
+     * Dados do cedente do boleto (segmento J-52).
+     *
+     * @var PessoaContract|null
+     */
+    protected $cedente;
+
+    /**
+     * Dados do sacador avalista (segmento J-52).
+     *
+     * @var PessoaContract|null
+     */
+    protected $sacadorAvalista;
+
+    /**
+     * Autenticação eletrônica do pagamento (segmento Z).
+     *
+     * @var string|null
+     */
+    protected $autenticacao;
+
+    /**
      * @return string
      */
     public function getOcorrencia()
@@ -613,5 +676,184 @@ class Detalhe
     {
         $this->informacoesAdicionais[$chave] = $valor;
         return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCodigoBarras()
+    {
+        return $this->codigoBarras;
+    }
+
+    /**
+     * @param string|null $codigoBarras
+     * @return Detalhe
+     */
+    public function setCodigoBarras($codigoBarras)
+    {
+        $this->codigoBarras = $codigoBarras;
+        return $this;
+    }
+
+    /**
+     * @return float|null
+     */
+    public function getValorTitulo()
+    {
+        return $this->valorTitulo;
+    }
+
+    /**
+     * @param float|null $valorTitulo
+     * @return Detalhe
+     */
+    public function setValorTitulo($valorTitulo)
+    {
+        $this->valorTitulo = $valorTitulo;
+        return $this;
+    }
+
+    /**
+     * @return float|null
+     */
+    public function getDesconto()
+    {
+        return $this->desconto;
+    }
+
+    /**
+     * @param float|null $desconto
+     * @return Detalhe
+     */
+    public function setDesconto($desconto)
+    {
+        $this->desconto = $desconto;
+        return $this;
+    }
+
+    /**
+     * @return float|null
+     */
+    public function getAcrescimo()
+    {
+        return $this->acrescimo;
+    }
+
+    /**
+     * @param float|null $acrescimo
+     * @return Detalhe
+     */
+    public function setAcrescimo($acrescimo)
+    {
+        $this->acrescimo = $acrescimo;
+        return $this;
+    }
+
+    /**
+     * @param string $format
+     * @return Carbon|null|string
+     */
+    public function getDataVencimento($format = 'd/m/Y')
+    {
+        return $this->dataVencimento instanceof Carbon
+            ? ($format === false ? $this->dataVencimento : $this->dataVencimento->format($format))
+            : null;
+    }
+
+    /**
+     * @param string $dataVencimento
+     * @param string $format
+     * @return Detalhe
+     */
+    public function setDataVencimento($dataVencimento, $format = 'dmY')
+    {
+        $this->dataVencimento = trim($dataVencimento, '0 ') ? Carbon::createFromFormat($format, $dataVencimento) : null;
+        return $this;
+    }
+
+    /**
+     * @return PessoaContract|null
+     */
+    public function getSacado()
+    {
+        return $this->sacado;
+    }
+
+    /**
+     * @param array|PessoaContract $sacado
+     * @return Detalhe
+     * @throws ValidationException
+     */
+    public function setSacado($sacado)
+    {
+        Util::addPessoa($this->sacado, $sacado);
+        return $this;
+    }
+
+    /**
+     * @return PessoaContract|null
+     */
+    public function getCedente()
+    {
+        return $this->cedente;
+    }
+
+    /**
+     * @param array|PessoaContract $cedente
+     * @return Detalhe
+     * @throws ValidationException
+     */
+    public function setCedente($cedente)
+    {
+        Util::addPessoa($this->cedente, $cedente);
+        return $this;
+    }
+
+    /**
+     * @return PessoaContract|null
+     */
+    public function getSacadorAvalista()
+    {
+        return $this->sacadorAvalista;
+    }
+
+    /**
+     * @param array|PessoaContract $sacadorAvalista
+     * @return Detalhe
+     * @throws ValidationException
+     */
+    public function setSacadorAvalista($sacadorAvalista)
+    {
+        Util::addPessoa($this->sacadorAvalista, $sacadorAvalista);
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAutenticacao()
+    {
+        return $this->autenticacao;
+    }
+
+    /**
+     * @param string|null $autenticacao
+     * @return Detalhe
+     */
+    public function setAutenticacao($autenticacao)
+    {
+        $this->autenticacao = $autenticacao;
+        return $this;
+    }
+
+    /**
+     * Indica se o detalhe corresponde a uma liquidação de boleto (segmento J).
+     *
+     * @return bool
+     */
+    public function isBoleto()
+    {
+        return ! empty($this->codigoBarras);
     }
 }

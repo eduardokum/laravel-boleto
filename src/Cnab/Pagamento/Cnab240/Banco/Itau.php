@@ -34,7 +34,22 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     const TIPO_OPERACAO = 'C'; // Tipo da operação (Crédito)
     const FORMA_LANCAMENTO_TED = '41'; // Forma de lançamento (TED)
     const FORMA_LANCAMENTO_PIX = '45'; // Forma de lançamento (PIX)
+    const FORMA_LANCAMENTO_BOLETO_ITAU = '30'; // Forma de lançamento (Pagamento de título em cobrança no Itaú)
+    const FORMA_LANCAMENTO_BOLETO_OUTROS = '31'; // Forma de lançamento (Pagamento de título em cobrança em outros bancos)
     const VERSAO_LAYOUT_LOTE = '045'; // Versão do layout do lote
+    const VERSAO_LAYOUT_LOTE_BOLETO = '030'; // Versão do layout do lote para boletos (segmento J/J-52)
+
+    // Tipos de pagamento (agrupamento interno)
+    const TIPO_PAGAMENTO_TED = 'TED';
+    const TIPO_PAGAMENTO_PIX = 'PIX';
+    const TIPO_PAGAMENTO_BOLETO = 'BOLETO';
+
+    // Tipo de serviço para fornecedores (NOTA 4)
+    const TIPO_SERVICO_FORNECEDOR = '20';
+
+    // Segmento J / J-52 (liquidação de boletos - NOTAS 18 e 31)
+    const CODIGO_SEGMENTO_J = 'J';
+    const CODIGO_REGISTRO_OPCIONAL_J52 = '52';
 
     // Constantes para trailer do lote
     const LOTE_SERVICO_TRAILER_LOTE = '0001'; // Lote de serviço (trailer do lote)
@@ -370,9 +385,17 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
      *
      * @param \Eduardokum\LaravelBoleto\Pagamento\Banco\Banco $pagamento
      * @return void
+     * @throws \Exception
      */
     protected function gerarSegmentos(\Eduardokum\LaravelBoleto\Pagamento\Banco\Banco $pagamento)
     {
+        if ($this->isBoleto($pagamento)) {
+            $this->segmentoJ($pagamento);
+            $this->segmentoJ52($pagamento);
+
+            return;
+        }
+
         $this->segmentoA($pagamento);
 
         // Verifica se é PIX ou TED/DOC para chamar o segmento B correto
@@ -381,6 +404,33 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
         } else {
             $this->segmentoB($pagamento);
         }
+    }
+
+    /**
+     * Verifica se o pagamento é liquidação de boleto (possui código de barras).
+     *
+     * @param \Eduardokum\LaravelBoleto\Pagamento\Banco\Banco $pagamento
+     * @return bool
+     */
+    protected function isBoleto(\Eduardokum\LaravelBoleto\Pagamento\Banco\Banco $pagamento)
+    {
+        return method_exists($pagamento, 'isBoleto') && $pagamento->isBoleto();
+    }
+
+    /**
+     * Resolve o agrupador de lote do pagamento - boletos ficam em lote próprio,
+     * demais casos seguem a detecção do parent (TED/PIX).
+     *
+     * @param \Eduardokum\LaravelBoleto\Pagamento\Banco\Banco $pagamento
+     * @return string
+     */
+    protected function getTipoPagamentoDoPagamento(\Eduardokum\LaravelBoleto\Pagamento\Banco\Banco $pagamento)
+    {
+        if ($this->isBoleto($pagamento)) {
+            return self::TIPO_PAGAMENTO_BOLETO;
+        }
+
+        return parent::getTipoPagamentoDoPagamento($pagamento);
     }
 
     /**
@@ -539,6 +589,143 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     }
 
     /**
+     * Segmento J - Liquidação de boletos em cobrança no Itaú e em outros bancos.
+     *
+     * NOTA 18: os campos posições 018-061 correspondem à decomposição do código
+     * de barras (banco, moeda, DV, fator de vencimento, valor, campo livre).
+     *
+     * @param \Eduardokum\LaravelBoleto\Pagamento\Banco\Banco $pagamento
+     * @return Itau
+     * @throws \Exception
+     */
+    public function segmentoJ($pagamento)
+    {
+        $this->iniciaDetalhe();
+
+        $codigoBarras = Util::onlyNumbers($pagamento->getCodigoBarras());
+
+        $this->add(1, 3, self::BANCO); // 001-003: Código do Banco na Compensação (341)
+        $this->add(4, 7, Util::formatCnab('9L', self::LOTE_SERVICO_HEADER, 4)); // 004-007: Código do Lote (NOTA 3)
+        $this->add(8, 8, self::TIPO_REGISTRO_DETALHE); // 008-008: Tipo de Registro (3)
+        $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote, 5)); // 009-013: Nº Sequencial Registro no Lote (NOTA 9)
+        $this->add(14, 14, self::CODIGO_SEGMENTO_J); // 014-014: Código Segmento (J)
+        $this->add(15, 17, Util::formatCnab('9L', '000', 3)); // 015-017: Tipo de Movimento (NOTA 10)
+
+        // 018-061: Decomposição do código de barras (NOTA 18)
+        $this->add(18, 20, substr($codigoBarras, 0, 3));   // Código do Banco Favorecido
+        $this->add(21, 21, substr($codigoBarras, 3, 1));   // Código da Moeda
+        $this->add(22, 22, substr($codigoBarras, 4, 1));   // DV do Código de Barras
+        $this->add(23, 26, substr($codigoBarras, 5, 4));   // Fator de Vencimento
+        $this->add(27, 36, substr($codigoBarras, 9, 10));  // Valor (9(8)V9(2))
+        $this->add(37, 61, substr($codigoBarras, 19, 25)); // Campo Livre
+
+        // Nome do favorecido (beneficiário do pagamento / cedente do boleto)
+        $this->add(62, 91, Util::formatCnab('X', $pagamento->getBeneficiario()->getNome(), 30));
+
+        // Data de vencimento (nominal) - DDMMAAAA
+        $dataVencimento = $pagamento->getDataVencimento()
+            ? $pagamento->getDataVencimento()->format('dmY')
+            : date('dmY');
+        $this->add(92, 99, Util::formatCnab('9L', $dataVencimento, 8));
+
+        // Valor nominal do título 9(13)V9(02)
+        $valorTitulo = (int) round($pagamento->getValorTitulo() * 100);
+        $this->add(100, 114, Util::formatCnab('9L', $valorTitulo, 15));
+
+        // Descontos (desconto + abatimento) 9(13)V9(02)
+        $valorDesconto = (int) round($pagamento->getDesconto() * 100);
+        $this->add(115, 129, Util::formatCnab('9L', $valorDesconto, 15));
+
+        // Acréscimos (mora + multa) 9(13)V9(02)
+        $valorAcrescimo = (int) round($pagamento->getAcrescimo() * 100);
+        $this->add(130, 144, Util::formatCnab('9L', $valorAcrescimo, 15));
+
+        // Data do pagamento (DDMMAAAA)
+        $dataPagamento = $pagamento->getDataPagamento()
+            ? $pagamento->getDataPagamento()->format('dmY')
+            : date('dmY');
+        $this->add(145, 152, Util::formatCnab('9L', $dataPagamento, 8));
+
+        // Valor do pagamento 9(13)V9(02)
+        $valorPagamento = (int) round($pagamento->getValor() * 100);
+        $this->add(153, 167, Util::formatCnab('9L', $valorPagamento, 15));
+
+        $this->add(168, 182, Util::formatCnab('9', '0', 15)); // 168-182: Zeros (complemento)
+        $this->add(183, 202, Util::formatCnab('X', $pagamento->getNumeroControle() ?? '', 20)); // 183-202: Seu Número
+        $this->add(203, 215, self::CAMPO_BRANCO); // 203-215: Brancos
+        $this->add(216, 230, self::CAMPO_BRANCO); // 216-230: Nosso Número (retorno)
+        $this->add(231, 240, self::CAMPO_BRANCO); // 231-240: Ocorrências (retorno)
+
+        return $this;
+    }
+
+    /**
+     * Segmento J-52 - Identificação do sacado, cedente e sacador avalista
+     * (obrigatório para formas de pagamento 30 e 31 - liquidação de boletos).
+     *
+     * @param \Eduardokum\LaravelBoleto\Pagamento\Banco\Banco $pagamento
+     * @return Itau
+     * @throws \Exception
+     */
+    public function segmentoJ52($pagamento)
+    {
+        $this->iniciaDetalhe();
+
+        // Sacado = quem paga o boleto = empresa pagadora (Header do Arquivo)
+        $sacado = $this->getPagador();
+        $tipoInscSacado = $sacado->getTipoDocumento() == 'CPF'
+            ? self::TIPO_DOCUMENTO_CPF
+            : self::TIPO_DOCUMENTO_CNPJ;
+
+        // Cedente = quem emitiu o boleto = beneficiário do pagamento
+        $cedente = $pagamento->getBeneficiario();
+        $tipoInscCedente = $cedente->getTipoDocumento() == 'CPF'
+            ? self::TIPO_DOCUMENTO_CPF
+            : self::TIPO_DOCUMENTO_CNPJ;
+
+        // Sacador avalista (opcional)
+        $sacadorAvalista = method_exists($pagamento, 'getSacadorAvalista')
+            ? $pagamento->getSacadorAvalista()
+            : null;
+
+        $this->add(1, 3, self::BANCO); // 001-003: Código do Banco
+        $this->add(4, 7, Util::formatCnab('9L', self::LOTE_SERVICO_HEADER, 4)); // 004-007: Código do Lote
+        $this->add(8, 8, self::TIPO_REGISTRO_DETALHE); // 008-008: Tipo de Registro (3)
+        $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote, 5)); // 009-013: Nº Sequencial
+        $this->add(14, 14, self::CODIGO_SEGMENTO_J); // 014-014: Segmento (J)
+        $this->add(15, 17, Util::formatCnab('9L', '000', 3)); // 015-017: Tipo de Movimento
+        $this->add(18, 19, self::CODIGO_REGISTRO_OPCIONAL_J52); // 018-019: Identificação do Registro Opcional (52)
+
+        // Sacado
+        $this->add(20, 20, $tipoInscSacado); // 020-020: Tipo Inscrição Sacado
+        $this->add(21, 35, Util::formatCnab('9L', $sacado->getDocumento(), 15)); // 021-035: Nº Inscrição Sacado
+        $this->add(36, 75, Util::formatCnab('X', $sacado->getNome(), 40)); // 036-075: Nome Sacado
+
+        // Cedente (obrigatório)
+        $this->add(76, 76, $tipoInscCedente); // 076-076: Tipo Inscrição Cedente
+        $this->add(77, 91, Util::formatCnab('9L', $cedente->getDocumento(), 15)); // 077-091: Nº Inscrição Cedente
+        $this->add(92, 131, Util::formatCnab('X', $cedente->getNome(), 40)); // 092-131: Nome Cedente
+
+        // Sacador Avalista (opcional)
+        if ($sacadorAvalista !== null) {
+            $tipoInscSacador = $sacadorAvalista->getTipoDocumento() == 'CPF'
+                ? self::TIPO_DOCUMENTO_CPF
+                : self::TIPO_DOCUMENTO_CNPJ;
+            $this->add(132, 132, $tipoInscSacador); // 132-132: Tipo Inscrição Sacador
+            $this->add(133, 147, Util::formatCnab('9L', $sacadorAvalista->getDocumento(), 15)); // 133-147: Nº Inscrição Sacador
+            $this->add(148, 187, Util::formatCnab('X', $sacadorAvalista->getNome(), 40)); // 148-187: Nome Sacador
+        } else {
+            $this->add(132, 132, '0'); // 132-132: Sem sacador avalista
+            $this->add(133, 147, Util::formatCnab('9', '0', 15)); // 133-147: Zeros
+            $this->add(148, 187, self::CAMPO_BRANCO); // 148-187: Brancos
+        }
+
+        $this->add(188, 240, self::CAMPO_BRANCO); // 188-240: Brancos
+
+        return $this;
+    }
+
+    /**
      * Header do lote para múltiplos lotes
      *
      * @param array $lote
@@ -549,13 +736,17 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     {
         $this->iniciaHeaderLote();
 
+        $isBoleto = $lote['tipo'] === self::TIPO_PAGAMENTO_BOLETO;
+        $versaoLayoutLote = $isBoleto ? self::VERSAO_LAYOUT_LOTE_BOLETO : '040';
+        $tipoServico = $isBoleto ? self::TIPO_SERVICO_FORNECEDOR : $this->getTipoServico();
+
         $this->add(1, 3, self::BANCO); // Posição 001-003: Código do Banco na Compensação (341)
         $this->add(4, 7, Util::formatCnab('9L', $lote['numero'], 4)); // Posição 004-007: Código do Lote (NOTA 3)
         $this->add(8, 8, self::TIPO_REGISTRO_HEADER_LOTE); // Posição 008-008: Tipo de Registro (1)
         $this->add(9, 9, self::TIPO_OPERACAO); // Posição 009-009: Tipo de Operação (C=CRÉDITO)
-        $this->add(10, 11, $this->getTipoServico()); // Posição 010-011: Tipo de Pagamento (NOTA 4)
-        $this->add(12, 13, $this->getFormaLancamentoPorTipo($lote['tipo'])); // Posição 012-013: Forma de Pagamento (NOTA 5) - 41=TED, 45=PIX
-        $this->add(14, 16, '040'); // Posição 014-016: Nº da Versão do Layout do Lote (040)
+        $this->add(10, 11, Util::formatCnab('9L', $tipoServico, 2)); // Posição 010-011: Tipo de Pagamento (NOTA 4)
+        $this->add(12, 13, $this->getFormaLancamentoPorTipo($lote['tipo'], $lote)); // Posição 012-013: Forma de Pagamento (NOTA 5)
+        $this->add(14, 16, $versaoLayoutLote); // Posição 014-016: Nº da Versão do Layout do Lote (040 - TED/PIX | 030 - Boleto)
         $this->add(17, 17, self::CAMPO_BRANCO); // Posição 017-017: Brancos
         $this->add(18, 18, Util::formatCnab('9L', $this->getPagador()->getTipoDocumento() == 'CPF' ? self::TIPO_DOCUMENTO_CPF : self::TIPO_DOCUMENTO_CNPJ, 1)); // Posição 018-018: Tipo Inscrição Empresa Debitada (1=CPF, 2=CNPJ)
         $this->add(19, 32, Util::formatCnab('9L', $this->getPagador()->getDocumento(), 14)); // Posição 019-032: CNPJ Empresa Debitada (NOTA 1)
@@ -595,11 +786,14 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     {
         $this->iniciaTrailerLote();
 
+        // Todos os tipos suportados geram 2 segmentos por pagamento (A+B, A+BPix ou J+J52)
+        $qtdRegistrosLote = (count($lote['pagamentos']) * 2) + 2; // + header e trailer do lote
+
         $this->add(1, 3, self::BANCO); // Posição 001-003: Código do Banco na Compensação (341)
         $this->add(4, 7, Util::formatCnab('9L', $lote['numero'], 4)); // Posição 004-007: Lote de Serviço (NOTA 3)
         $this->add(8, 8, self::TIPO_REGISTRO_TRAILER_LOTE); // Posição 008-008: Tipo de Registro (5)
         $this->add(9, 17, self::CAMPO_BRANCO); // Posição 009-017: Brancos
-        $this->add(18, 23, Util::formatCnab('9L', $this->getCountRegistrosLote(), 6)); // Posição 018-023: Qtde Registros do Lote (NOTA 17)
+        $this->add(18, 23, Util::formatCnab('9L', $qtdRegistrosLote, 6)); // Posição 018-023: Qtde Registros do Lote (NOTA 17)
         $this->add(24, 41, Util::formatCnab('9L', $this->getValorTotalLoteMulti($lote), 18)); // Posição 024-041: Soma Valor dos Pgtos do Lote (NOTA 17)
         $this->add(42, 59, Util::formatCnab('9', '0', 18)); // Posição 042-059: Zeros
         $this->add(60, 230, self::CAMPO_BRANCO); // Posição 060-230: Brancos
@@ -630,21 +824,50 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     }
 
     /**
-     * Retorna a forma de lançamento baseada no tipo de pagamento específico
+     * Retorna a forma de lançamento baseada no tipo de pagamento específico.
      *
-     * @param string $tipoPagamento
+     * Para boletos (tipo BOLETO), a forma efetiva (30 ou 31) depende do banco
+     * favorecido presente no código de barras e é resolvida em runtime pelo
+     * método getFormaLancamentoBoleto().
+     *
+     * @param string     $tipoPagamento
+     * @param array|null $lote         Quando informado, permite resolver a forma
+     *                                 real para boletos (30 Itaú / 31 outros).
      * @return string
      */
-    protected function getFormaLancamentoPorTipo($tipoPagamento)
+    protected function getFormaLancamentoPorTipo($tipoPagamento, array $lote = null)
     {
         switch ($tipoPagamento) {
-            case 'TED':
-                return '41'; // TED
-            case 'PIX':
-                return '45'; // Transferência via PIX
+            case self::TIPO_PAGAMENTO_TED:
+                return self::FORMA_LANCAMENTO_TED;
+            case self::TIPO_PAGAMENTO_PIX:
+                return self::FORMA_LANCAMENTO_PIX;
+            case self::TIPO_PAGAMENTO_BOLETO:
+                return $lote !== null
+                    ? $this->getFormaLancamentoBoleto($lote)
+                    : self::FORMA_LANCAMENTO_BOLETO_OUTROS;
             default:
-                return '41'; // Padrão TED
+                return self::FORMA_LANCAMENTO_TED;
         }
+    }
+
+    /**
+     * Resolve a forma de lançamento do lote de boletos: 30 (Itaú) se todos os
+     * títulos forem do Itaú, caso contrário 31 (outros bancos).
+     *
+     * @param array $lote
+     * @return string
+     */
+    protected function getFormaLancamentoBoleto(array $lote)
+    {
+        foreach ($lote['pagamentos'] as $pagamento) {
+            $bancoFavorecido = substr(Util::onlyNumbers($pagamento->getCodigoBarras()), 0, 3);
+            if ($bancoFavorecido !== self::BANCO) {
+                return self::FORMA_LANCAMENTO_BOLETO_OUTROS;
+            }
+        }
+
+        return self::FORMA_LANCAMENTO_BOLETO_ITAU;
     }
 
     /**

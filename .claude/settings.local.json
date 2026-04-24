@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs grep:*)",
+      "Bash(xargs -I {} basename {} .php)",
+      "Bash(php --version)",
+      "Bash(php exemplos/itau_pagamento_boleto_remessa.php)",
+      "Bash(awk '{print length\\($0\\)}' /d/laragon/www/laravel-boleto/exemplos/arquivos/itau_pagamento_boleto.txt)",
+      "Bash(php /tmp/test_itau_ted.php)",
+      "Bash(php /d/laragon/www/laravel-boleto/exemplos/itau_pagamento_ted_remessa.php)",
+      "Bash(php /d/laragon/www/laravel-boleto/exemplos/itau_pagamento_misto_remessa.php)",
+      "Bash(./vendor/bin/phpunit --stop-on-failure)",
+      "Bash(php /d/laragon/www/laravel-boleto/exemplos/itau_pagamento_boleto_retorno.php)",
+      "Bash(./vendor/bin/phpunit)",
+      "Bash(awk '{print length\\($0\\)}')"
+    ]
+  }
+}
