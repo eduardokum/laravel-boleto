@@ -204,6 +204,43 @@ abstract class AbstractPagamento implements PagamentoContract
     private $pixChaveTipo = null;
 
     /**
+     * Código de barras do boleto a ser liquidado (44 dígitos).
+     * Utilizado em pagamentos de títulos em cobrança (segmento J/J-52).
+     *
+     * @var string|null
+     */
+    protected $codigoBarras = null;
+
+    /**
+     * Valor nominal do título (antes de descontos/acréscimos).
+     * Quando não informado, assume o mesmo de getValor().
+     *
+     * @var float|null
+     */
+    protected $valorTitulo = null;
+
+    /**
+     * Desconto + abatimento concedidos no pagamento do boleto.
+     *
+     * @var float
+     */
+    protected $desconto = 0;
+
+    /**
+     * Mora + multa acrescidos no pagamento do boleto.
+     *
+     * @var float
+     */
+    protected $acrescimo = 0;
+
+    /**
+     * Sacador avalista (opcional) - para segmento J-52.
+     *
+     * @var PessoaContract|null
+     */
+    protected $sacadorAvalista = null;
+
+    /**
      * AbstractPagamento constructor.
      *
      * @param array $params
@@ -852,6 +889,146 @@ abstract class AbstractPagamento implements PagamentoContract
         $this->pixChaveTipo = $pixChaveTipo;
 
         return $this;
+    }
+
+    /**
+     * Define o código de barras do boleto (44 dígitos) ou aceita a linha digitável
+     * (47 dígitos) convertendo-a automaticamente.
+     *
+     * @param string|null $codigoBarras
+     * @return AbstractPagamento
+     * @throws ValidationException
+     */
+    public function setCodigoBarras($codigoBarras)
+    {
+        if ($codigoBarras === null || $codigoBarras === '') {
+            $this->codigoBarras = null;
+
+            return $this;
+        }
+
+        $codigoBarras = Util::onlyNumbers($codigoBarras);
+
+        if (strlen($codigoBarras) === 47 || strlen($codigoBarras) === 48) {
+            $codigoBarras = Util::IPTE2CodigoBarras($codigoBarras);
+        }
+
+        if (strlen($codigoBarras) !== 44) {
+            throw new ValidationException('Código de barras/linha digitável inválido: deve conter 44 (código de barras) ou 47/48 (linha digitável) dígitos numéricos');
+        }
+
+        $this->codigoBarras = $codigoBarras;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCodigoBarras()
+    {
+        return $this->codigoBarras;
+    }
+
+    /**
+     * Atalho para setCodigoBarras aceitando também a linha digitável do boleto.
+     *
+     * @param string|null $linhaDigitavel
+     * @return AbstractPagamento
+     * @throws ValidationException
+     */
+    public function setLinhaDigitavel($linhaDigitavel)
+    {
+        return $this->setCodigoBarras($linhaDigitavel);
+    }
+
+    /**
+     * @param float|null $valorTitulo
+     * @return AbstractPagamento
+     */
+    public function setValorTitulo($valorTitulo)
+    {
+        $this->valorTitulo = $valorTitulo === null ? null : Util::nFloat($valorTitulo, 2, false);
+
+        return $this;
+    }
+
+    /**
+     * Retorna o valor nominal do título (quando não informado, retorna o valor do pagamento).
+     *
+     * @return string
+     */
+    public function getValorTitulo()
+    {
+        return Util::nFloat($this->valorTitulo ?? $this->valor, 2, false);
+    }
+
+    /**
+     * @param float $desconto
+     * @return AbstractPagamento
+     */
+    public function setDesconto($desconto)
+    {
+        $this->desconto = Util::nFloat($desconto, 2, false);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDesconto()
+    {
+        return Util::nFloat($this->desconto, 2, false);
+    }
+
+    /**
+     * @param float $acrescimo
+     * @return AbstractPagamento
+     */
+    public function setAcrescimo($acrescimo)
+    {
+        $this->acrescimo = Util::nFloat($acrescimo, 2, false);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAcrescimo()
+    {
+        return Util::nFloat($this->acrescimo, 2, false);
+    }
+
+    /**
+     * @param PessoaContract|array $sacadorAvalista
+     * @return AbstractPagamento
+     * @throws ValidationException
+     */
+    public function setSacadorAvalista($sacadorAvalista)
+    {
+        Util::addPessoa($this->sacadorAvalista, $sacadorAvalista);
+
+        return $this;
+    }
+
+    /**
+     * @return PessoaContract|null
+     */
+    public function getSacadorAvalista()
+    {
+        return $this->sacadorAvalista;
+    }
+
+    /**
+     * Indica se o pagamento é uma liquidação de boleto (possui código de barras).
+     *
+     * @return bool
+     */
+    public function isBoleto()
+    {
+        return ! empty($this->codigoBarras);
     }
 
     /**
