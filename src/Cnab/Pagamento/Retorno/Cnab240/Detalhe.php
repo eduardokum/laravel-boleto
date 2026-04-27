@@ -125,6 +125,74 @@ class Detalhe
     protected $contaFavorecido;
 
     /**
+     * DAC (dígito verificador) da conta do favorecido.
+     *
+     * @var string|null
+     */
+    protected $contaFavorecidoDv;
+
+    /**
+     * Nome do favorecido (quando não há segmento B para compor a Pessoa).
+     *
+     * @var string|null
+     */
+    protected $nomeFavorecido;
+
+    /**
+     * CPF/CNPJ do favorecido (segmento A posições 204-217).
+     *
+     * @var string|null
+     */
+    protected $documentoFavorecido;
+
+    /**
+     * Tipo de movimento do registro detalhe (NOTA 10):
+     * 000 inclusão, 517 alt. valor, 519 alt. data, 999 exclusão, etc.
+     *
+     * @var string|null
+     */
+    protected $tipoMovimento;
+
+    /**
+     * Código da câmara centralizadora (obrigatório para TED a corretoras).
+     * "888" para STR / "009" para PIX.
+     *
+     * @var string|null
+     */
+    protected $camara;
+
+    /**
+     * Código ISPB da instituição favorecida (obrigatório para TED a
+     * corretoras e a contas pagamento).
+     *
+     * @var string|null
+     */
+    protected $codigoIspb;
+
+    /**
+     * Identificação do tipo de transferência (PIX) — posições 113-114
+     * do segmento A: 01 CC, PG Conta Pag., 03 Poupança, 04 Chave Pix.
+     *
+     * @var string|null
+     */
+    protected $identificacaoTransferencia;
+
+    /**
+     * Nº do DOC/TED/OP/Cheque atribuído pelo banco no retorno
+     * (segmento A posições 198-203).
+     *
+     * @var string|null
+     */
+    protected $numeroDocumentoBancario;
+
+    /**
+     * Finalidade da TED (NOTA 26). Ex.: "00005" Pagto a Fornecedores.
+     *
+     * @var string|null
+     */
+    protected $finalidadeTed;
+
+    /**
      * Tipo de pagamento (TED, PIX, DOC, etc)
      * @var string
      */
@@ -551,6 +619,168 @@ class Detalhe
     public function setContaFavorecido($contaFavorecido)
     {
         $this->contaFavorecido = $contaFavorecido;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getContaFavorecidoDv()
+    {
+        return $this->contaFavorecidoDv;
+    }
+
+    /**
+     * @param string|null $contaFavorecidoDv
+     * @return Detalhe
+     */
+    public function setContaFavorecidoDv($contaFavorecidoDv)
+    {
+        $this->contaFavorecidoDv = $contaFavorecidoDv;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getNomeFavorecido()
+    {
+        return $this->nomeFavorecido;
+    }
+
+    /**
+     * @param string|null $nomeFavorecido
+     * @return Detalhe
+     */
+    public function setNomeFavorecido($nomeFavorecido)
+    {
+        $this->nomeFavorecido = $nomeFavorecido;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDocumentoFavorecido()
+    {
+        return $this->documentoFavorecido;
+    }
+
+    /**
+     * @param string|null $documentoFavorecido
+     * @return Detalhe
+     */
+    public function setDocumentoFavorecido($documentoFavorecido)
+    {
+        $this->documentoFavorecido = $documentoFavorecido;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getTipoMovimento()
+    {
+        return $this->tipoMovimento;
+    }
+
+    /**
+     * @param string|null $tipoMovimento
+     * @return Detalhe
+     */
+    public function setTipoMovimento($tipoMovimento)
+    {
+        $this->tipoMovimento = $tipoMovimento;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCamara()
+    {
+        return $this->camara;
+    }
+
+    /**
+     * @param string|null $camara
+     * @return Detalhe
+     */
+    public function setCamara($camara)
+    {
+        $this->camara = $camara;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCodigoIspb()
+    {
+        return $this->codigoIspb;
+    }
+
+    /**
+     * @param string|null $codigoIspb
+     * @return Detalhe
+     */
+    public function setCodigoIspb($codigoIspb)
+    {
+        $this->codigoIspb = $codigoIspb;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getIdentificacaoTransferencia()
+    {
+        return $this->identificacaoTransferencia;
+    }
+
+    /**
+     * @param string|null $identificacaoTransferencia
+     * @return Detalhe
+     */
+    public function setIdentificacaoTransferencia($identificacaoTransferencia)
+    {
+        $this->identificacaoTransferencia = $identificacaoTransferencia;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getNumeroDocumentoBancario()
+    {
+        return $this->numeroDocumentoBancario;
+    }
+
+    /**
+     * @param string|null $numeroDocumentoBancario
+     * @return Detalhe
+     */
+    public function setNumeroDocumentoBancario($numeroDocumentoBancario)
+    {
+        $this->numeroDocumentoBancario = $numeroDocumentoBancario;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getFinalidadeTed()
+    {
+        return $this->finalidadeTed;
+    }
+
+    /**
+     * @param string|null $finalidadeTed
+     * @return Detalhe
+     */
+    public function setFinalidadeTed($finalidadeTed)
+    {
+        $this->finalidadeTed = $finalidadeTed;
         return $this;
     }
 

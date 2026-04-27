@@ -226,6 +226,14 @@ class Itau extends AbstractRetorno
     ];
 
     /**
+     * Snapshot de $this->increment ao entrar em cada lote, para calcular a
+     * quantidade real de pagamentos (A/J/N/O) no trailer do lote.
+     *
+     * @var int
+     */
+    private $incrementoInicioLote = 0;
+
+    /**
      * Roda antes dos métodos de processar
      */
     protected function init()
@@ -274,6 +282,11 @@ class Itau extends AbstractRetorno
      */
     protected function processarHeaderLote(array $headerLote)
     {
+        // Marca o início do lote para permitir contagem correta de
+        // pagamentos no trailer (independente de quantos segmentos por
+        // pagamento o layout contenha: A/B, J/J-52, etc.).
+        $this->incrementoInicioLote = (int) $this->increment;
+
         $this->getHeaderLote()
             ->setCodBanco($this->rem(1, 3, $headerLote))
             ->setNumeroLoteRetorno($this->rem(4, 7, $headerLote))
@@ -363,19 +376,35 @@ class Itau extends AbstractRetorno
             $codigos = $this->parseCodigosOcorrencia($this->rem(231, 240, $detalhe));
             $primary = $codigos[0] ?? '';
 
+            $bancoFavorecido = $this->rem(21, 23, $detalhe);
+            $identTransferencia = trim($this->rem(113, 114, $detalhe));
+            $conta = $this->parseContaFavorecido($detalhe, $bancoFavorecido, $identTransferencia);
+
+            $nomeFavorecido = trim($this->rem(44, 73, $detalhe));
+            $documentoFavorecido = ltrim(trim($this->rem(204, 217, $detalhe)), '0');
+
             $d->setOcorrencia($primary)
                 ->setOcorrenciaDescricao(Arr::get($this->ocorrencias, $primary, 'Desconhecida'))
-                ->setCodigoBancoFavorecido($this->rem(21, 23, $detalhe))
-                ->setAgenciaFavorecido($this->rem(24, 28, $detalhe))
-                ->setContaFavorecido($this->rem(30, 41, $detalhe))
+                ->setTipoMovimento(trim($this->rem(15, 17, $detalhe)))
+                ->setCamara(trim($this->rem(18, 20, $detalhe)))
+                ->setCodigoBancoFavorecido($bancoFavorecido)
+                ->setAgenciaFavorecido($conta['agencia'])
+                ->setContaFavorecido($conta['conta'])
+                ->setContaFavorecidoDv($conta['dv'])
+                ->setNomeFavorecido($nomeFavorecido)
+                ->setDocumentoFavorecido($documentoFavorecido)
                 ->setSeuNumero($this->rem(74, 93, $detalhe))
                 ->setNumeroDocumento(explode('-', trim($this->rem(74, 93, $detalhe)))[0] ?? '')
                 ->setNumeroControle(explode('-', trim($this->rem(74, 93, $detalhe)))[1] ?? '')
                 ->setDataPagamento($this->rem(94, 101, $detalhe))
+                ->setCodigoIspb(trim($this->rem(105, 112, $detalhe)))
+                ->setIdentificacaoTransferencia($identTransferencia)
                 ->setValor(Util::nFloat($this->rem(120, 134, $detalhe) / 100, 2, false))
-                ->setNossoNumero($this->rem(135, 149, $detalhe))
+                ->setNossoNumero(trim($this->rem(135, 149, $detalhe)))
                 ->setDataEfetivacao($this->rem(155, 162, $detalhe))
-                ->setValorRealEfetivado(Util::nFloat($this->rem(163, 177, $detalhe) / 100, 2, false));
+                ->setValorRealEfetivado(Util::nFloat($this->rem(163, 177, $detalhe) / 100, 2, false))
+                ->setNumeroDocumentoBancario(ltrim(trim($this->rem(198, 203, $detalhe)), '0'))
+                ->setFinalidadeTed(trim($this->rem(220, 224, $detalhe)));
 
             // Determina o tipo de pagamento pela forma de lançamento do lote
             $d->setTipoPagamento($this->resolveTipoPagamento($this->getHeaderLote()->getFormaLancamento()));
@@ -385,32 +414,55 @@ class Itau extends AbstractRetorno
         }
 
         if ($segmentType == 'B') {
-            // Segmento B - Dados complementares
-            // Verifica se é PIX ou TED/DOC pelo campo de tipo de chave (posição 15-16)
-            $tipoChave = trim($this->rem(15, 16, $detalhe));
+            // Segmento B - Dados complementares.
+            // Detecção PIX via forma de lançamento do lote (45 = Transferência,
+            // 47 = QR-Code). O campo "tipo chave" no próprio B pode vir em
+            // branco em retornos de rejeição, portanto não serve como fonte.
+            $formaLancamento = $this->getHeaderLote()->getFormaLancamento();
+            $isPix = in_array($formaLancamento, ['45', '47'], true);
 
-            if (!empty($tipoChave) && in_array($tipoChave, ['01', '02', '03', '04', '05'])) {
-                // É PIX - Segmento B específico para PIX
-                $d->setFavorecido([
-                    'documento' => $this->rem(19, 32, $detalhe),
-                    'tipo_chave_pix' => $tipoChave,
-                    'chave_pix' => trim($this->rem(128, 227, $detalhe)),
-                    'info_entre_usuarios' => trim($this->rem(63, 127, $detalhe)),
-                ]);
+            // NOTA 15: se B traz CPF/CNPJ válido, ele vence; caso contrário,
+            // mantém o que foi lido em A.
+            $documentoB = ltrim(trim($this->rem(19, 32, $detalhe)), '0');
+            $documento = $documentoB !== '' ? $documentoB : (string) $d->getDocumentoFavorecido();
+
+            $pessoa = [
+                'nome'      => $d->getNomeFavorecido(),
+                'documento' => $documento,
+            ];
+
+            if ($isPix) {
+                $tipoChave   = trim($this->rem(15, 16, $detalhe));
+                $chavePix    = trim($this->rem(128, 227, $detalhe));
+                $infoUsuario = trim($this->rem(63, 127, $detalhe));
+
+                $d->addInformacaoAdicional('tipo_chave_pix', $tipoChave);
+                $d->addInformacaoAdicional('chave_pix', $chavePix);
+                if ($infoUsuario !== '') {
+                    $d->addInformacaoAdicional('info_entre_usuarios', $infoUsuario);
+                }
             } else {
-                // É TED/DOC - Segmento B com endereço completo
-                $d->setFavorecido([
-                    'documento' => $this->rem(19, 32, $detalhe),
-                    'endereco' => $this->rem(33, 62, $detalhe),
-                    'numero' => $this->rem(63, 67, $detalhe),
-                    'complemento' => $this->rem(68, 82, $detalhe),
-                    'bairro' => $this->rem(83, 97, $detalhe),
-                    'cidade' => $this->rem(98, 117, $detalhe),
-                    'cep' => $this->rem(118, 125, $detalhe),
-                    'uf' => $this->rem(126, 127, $detalhe),
-                    'email' => trim($this->rem(128, 227, $detalhe)),
+                $pessoa = array_merge($pessoa, [
+                    'endereco' => trim($this->rem(33, 62, $detalhe)),
+                    'bairro'   => trim($this->rem(83, 97, $detalhe)),
+                    'cidade'   => trim($this->rem(98, 117, $detalhe)),
+                    'cep'      => trim($this->rem(118, 125, $detalhe)),
+                    'uf'       => trim($this->rem(126, 127, $detalhe)),
+                    'email'    => trim($this->rem(128, 227, $detalhe)),
                 ]);
+
+                // Campos não aceitos pela Pessoa viram informações adicionais.
+                $numero      = trim($this->rem(63, 67, $detalhe));
+                $complemento = trim($this->rem(68, 82, $detalhe));
+                if (ltrim($numero, '0') !== '') {
+                    $d->addInformacaoAdicional('numero_endereco', ltrim($numero, '0'));
+                }
+                if ($complemento !== '') {
+                    $d->addInformacaoAdicional('complemento_endereco', $complemento);
+                }
             }
+
+            $d->setFavorecido($pessoa);
 
             // Códigos de ocorrência no Segmento B: adiciona como rejeições
             // apenas os não mapeados (i.e., códigos de erro da NOTA 8).
@@ -466,7 +518,9 @@ class Itau extends AbstractRetorno
             ->setCodigoBancoFavorecido(substr($codigoBarras, 0, 3))
             ->setOcorrencia($primary)
             ->setOcorrenciaDescricao(Arr::get($this->ocorrencias, $primary, 'Desconhecida'))
+            ->setTipoMovimento(trim($this->rem(15, 17, $detalhe)))
             ->setTipoPagamento($this->resolveTipoPagamento($this->getHeaderLote()->getFormaLancamento()))
+            ->setNomeFavorecido(trim($this->rem(62, 91, $detalhe)))
             ->setSeuNumero(trim($this->rem(183, 202, $detalhe)))
             ->setNossoNumero(trim($this->rem(216, 230, $detalhe)))
             ->setDataVencimento($this->rem(92, 99, $detalhe))
@@ -539,6 +593,44 @@ class Itau extends AbstractRetorno
         }
 
         return true;
+    }
+
+    /**
+     * Extrai agência / conta / DAC do segmento A conforme NOTA 11 do manual.
+     *
+     * - Banco favorecido 341 ou 409: agência 25-28 (4), conta 36-41 (6), DAC 43.
+     * - Outros bancos: agência 24-28 (5), conta 30-41 (12), DAC 42-43.
+     * - Conta pagamento (identificação "PG"): conta ocupa 24-43 (20 dígitos),
+     *   agência e DAC ficam vazios.
+     *
+     * @param array  $detalhe
+     * @param string $bancoFavorecido
+     * @param string $identTransferencia
+     * @return array{agencia:string, conta:string, dv:string}
+     */
+    protected function parseContaFavorecido(array $detalhe, $bancoFavorecido, $identTransferencia = '')
+    {
+        if ($identTransferencia === 'PG') {
+            return [
+                'agencia' => '',
+                'conta'   => ltrim($this->rem(24, 43, $detalhe), '0'),
+                'dv'      => '',
+            ];
+        }
+
+        if (in_array($bancoFavorecido, ['341', '409'], true)) {
+            return [
+                'agencia' => $this->rem(25, 28, $detalhe),
+                'conta'   => $this->rem(36, 41, $detalhe),
+                'dv'      => trim($this->rem(43, 43, $detalhe)),
+            ];
+        }
+
+        return [
+            'agencia' => $this->rem(24, 28, $detalhe),
+            'conta'   => $this->rem(30, 41, $detalhe),
+            'dv'      => trim($this->rem(42, 43, $detalhe)),
+        ];
     }
 
     /**
@@ -619,13 +711,19 @@ class Itau extends AbstractRetorno
      */
     protected function processarTrailerLote(array $trailerLote)
     {
+        // Quantidade real de pagamentos no lote = detalhes iniciados
+        // (segmentos A/J/N/O) desde o header deste lote. O campo 18-23 no
+        // trailer conta TODOS os registros (tipos 1, 3, 5), incluindo os
+        // segmentos complementares B, J-52, C, D, E, F, W e Z.
+        $qtdPagamentos = (int) $this->increment - (int) $this->incrementoInicioLote;
+
         $this->getTrailerLote()
             ->setCodBanco($this->rem(1, 3, $trailerLote))
             ->setLoteServico($this->rem(4, 7, $trailerLote))
             ->setTipoRegistro($this->rem(8, 8, $trailerLote))
             ->setQtdRegistroLote((int) $this->rem(18, 23, $trailerLote))
             ->setValorTotalPagamentos(Util::nFloat($this->rem(24, 41, $trailerLote) / 100, 2, false))
-            ->setQtdPagamentos((int) $this->rem(18, 23, $trailerLote) - 2); // Subtrai header e trailer
+            ->setQtdPagamentos($qtdPagamentos);
 
         return true;
     }
