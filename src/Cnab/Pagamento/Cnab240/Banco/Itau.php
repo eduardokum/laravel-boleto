@@ -108,6 +108,15 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     protected $tipoPagamento = 'TED';
 
     /**
+     * Número do lote atualmente sendo processado pelo gerador. Setado pelo
+     * headerLoteMulti() para que os segmentos (A, B, J, J-52) gravem o mesmo
+     * número nas posições 4-7. Sem isso, todos os segmentos cairiam no lote
+     * "0001" mesmo quando o arquivo tem múltiplos lotes (ex.: TED + Boleto).
+     * @var int
+     */
+    protected $loteAtualNumero = 1;
+
+    /**
      * Caracter de fim de linha
      * @var string
      */
@@ -398,9 +407,16 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
 
         $this->segmentoA($pagamento);
 
-        // Verifica se é PIX ou TED/DOC para chamar o segmento B correto
+        // Para PIX, o layout do segmento B depende da Identificação do Tipo de
+        // Transferência (NOTA 36). Apenas o modelo "Chave" (04) usa o segmento
+        // B PIX (com chave de endereçamento). Para 01/PG/03 (dados bancários),
+        // o layout é o segmento B padrão — opcional, usado para aviso/email.
         if ($this->isPix($pagamento)) {
-            $this->segmentoBPix($pagamento);
+            if ($this->resolveTipoTransferenciaPix($pagamento) === '04') {
+                $this->segmentoBPix($pagamento);
+            } else {
+                $this->segmentoB($pagamento);
+            }
         } else {
             $this->segmentoB($pagamento);
         }
@@ -441,17 +457,137 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
      */
     protected function isPix(\Eduardokum\LaravelBoleto\Pagamento\Banco\Banco $pagamento)
     {
-        // Verifica se tem chave PIX configurada
+        // 1. Tem chave PIX configurada no pagamento (forte indicador de PIX)
         if (method_exists($pagamento, 'getPixChave') && !empty($pagamento->getPixChave())) {
             return true;
         }
 
-        // Verifica se o tipo de pagamento está definido como PIX
+        // 2. Pagamento individual marcado como PIX — cobre o caso de PIX por
+        // dados bancários, onde não há chave mas o consumidor sinaliza o tipo
+        // diretamente no pagamento (sem chamar setTipoPagamento('PIX') no arquivo).
+        if (method_exists($pagamento, 'getTipoPagamento')) {
+            $tipoPag = $pagamento->getTipoPagamento();
+            if (!empty($tipoPag) && strtoupper((string) $tipoPag) === 'PIX') {
+                return true;
+            }
+        }
+        if (isset($pagamento->tipoPagamento) && strtoupper((string) $pagamento->tipoPagamento) === 'PIX') {
+            return true;
+        }
+
+        // 3. Arquivo todo marcado como PIX (via $itau->setTipoPagamento('PIX'))
         if (isset($this->tipoPagamento) && strtoupper($this->tipoPagamento) === 'PIX') {
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * Resolve a Identificação do Tipo de Transferência PIX (NOTA 36) — código
+     * gravado nas posições 113-114 do segmento A. Valores válidos:
+     *   "01" Conta Corrente | "PG" Conta Pagamento | "03" Poupança | "04" Chave Pix
+     *
+     * Ordem de precedência:
+     *   1. $pagamento->getTipoTransferenciaPix() se existir e for válido
+     *   2. Tem chave PIX configurada → "04"
+     *   3. tipoConta = POUPANCA/POUP/03 → "03"
+     *   4. tipoConta = PAGAMENTO/PG → "PG"
+     *   5. Default → "01"
+     *
+     * @param \Eduardokum\LaravelBoleto\Pagamento\Banco\Banco $pagamento
+     * @return string
+     */
+    protected function resolveTipoTransferenciaPix($pagamento)
+    {
+        $valoresValidos = ['01', 'PG', '03', '04'];
+
+        if (method_exists($pagamento, 'getTipoTransferenciaPix')) {
+            $tipo = $pagamento->getTipoTransferenciaPix();
+            if (in_array($tipo, $valoresValidos, true)) {
+                return $tipo;
+            }
+        }
+
+        if (method_exists($pagamento, 'getPixChave') && ! empty($pagamento->getPixChave())) {
+            return '04';
+        }
+
+        if (method_exists($pagamento, 'getTipoConta')) {
+            $tipoConta = strtoupper((string) $pagamento->getTipoConta());
+            if (in_array($tipoConta, ['POUPANCA', 'POUP', '03'], true)) {
+                return '03';
+            }
+            if (in_array($tipoConta, ['PAGAMENTO', 'PG'], true)) {
+                return 'PG';
+            }
+        }
+
+        return '01';
+    }
+
+    /**
+     * Formata o campo Agência/Conta do Favorecido (posições 024-043 do segmento A)
+     * conforme NOTA 11 do manual SISPAG. O layout muda dependendo do banco
+     * favorecido e do tipo de transferência:
+     *
+     * - Conta Pagamento (PIX com ident. transferência "PG"):
+     *     conta ocupa toda a região 024-043 (20 dígitos numéricos)
+     * - Banco favorecido 341 (Itaú) ou 409 (Unibanco):
+     *     024     zero
+     *     025-028 agência (4 dígitos)
+     *     029     branco
+     *     030-035 zeros
+     *     036-041 conta (6 dígitos)
+     *     042     branco
+     *     043     DAC (1 dígito)
+     * - Outros bancos:
+     *     024-028 agência (5 dígitos)
+     *     029     branco
+     *     030-041 conta (12 dígitos)
+     *     042-043 DAC (1 ou 2 chars). Se DAC tem 2 chars, ocupa as duas
+     *             posições; se tem 1, branco em 042 e DAC em 043.
+     *
+     * @param \Eduardokum\LaravelBoleto\Pagamento\Banco\Banco $pagamento
+     * @param string $tipoTransferenciaPix '01'|'PG'|'03'|'04'|'' (vazio se não for PIX)
+     * @return string string de 20 caracteres
+     */
+    protected function formatAgenciaContaFavorecido($pagamento, $tipoTransferenciaPix = '')
+    {
+        $bancoFav = (string) $pagamento->getCodigoBanco();
+        $agencia  = (string) $pagamento->getAgencia();
+        $conta    = (string) $pagamento->getConta();
+        $contaDv  = (string) $pagamento->getContaDv();
+
+        // Conta Pagamento PIX: 20 dígitos contínuos
+        if ($tipoTransferenciaPix === 'PG') {
+            return Util::formatCnab('9L', $conta, 20);
+        }
+
+        // Itaú (341) ou Unibanco (409): layout específico
+        if (in_array($bancoFav, ['341', '409'], true)) {
+            return Util::formatCnab('9L', '0', 1)             // 024 (zero)
+                . Util::formatCnab('9L', $agencia, 4)         // 025-028
+                . Util::formatCnab('X', '', 1)                // 029 (branco)
+                . Util::formatCnab('9L', '0', 6)              // 030-035 (zeros)
+                . Util::formatCnab('9L', $conta, 6)           // 036-041
+                . Util::formatCnab('X', '', 1)                // 042 (branco)
+                . Util::formatCnab('X', $contaDv, 1);         // 043 (DAC)
+        }
+
+        // Outros bancos
+        $base = Util::formatCnab('9L', $agencia, 5)           // 024-028
+            . Util::formatCnab('X', '', 1)                    // 029 (branco)
+            . Util::formatCnab('9L', $conta, 12);             // 030-041
+
+        // DAC com 2 caracteres ocupa 042-043; senão, branco + DAC
+        if (strlen($contaDv) >= 2) {
+            return $base . substr($contaDv, 0, 2);
+        }
+
+        return $base
+            . Util::formatCnab('X', '', 1)                    // 042 (branco)
+            . Util::formatCnab('X', $contaDv, 1);             // 043
     }
 
     /**
@@ -464,22 +600,22 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     {
         $this->iniciaDetalhe();
 
+        // Para PIX, a câmara centralizadora vai como "009" (SPI) — NOTA 35.
+        $isPix = $this->isPix($pagamento);
+        $camara = $isPix ? '009' : '000';
+        $tipoTransferenciaPix = $isPix ? $this->resolveTipoTransferenciaPix($pagamento) : '';
+
         $this->add(1, 3, Util::formatCnab('9L', self::BANCO, 3)); // Posição 001-003: Código do Banco na Compensação (341)
-        $this->add(4, 7, Util::formatCnab('9L', self::LOTE_SERVICO_HEADER, 4)); // Posição 004-007: Código do Lote (NOTA 3)
+        $this->add(4, 7, Util::formatCnab('9L', $this->loteAtualNumero, 4)); // Posição 004-007: Código do Lote (NOTA 3)
         $this->add(8, 8, Util::formatCnab('9L', self::TIPO_REGISTRO_DETALHE, 1)); // Posição 008-008: Tipo de Registro (3)
-        $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote + 1, 5)); // Posição 009-013: Nº Sequencial Registro no Lote (NOTA 9)
+        $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote, 5)); // Posição 009-013: Nº Sequencial Registro no Lote (NOTA 9)
         $this->add(14, 14, Util::formatCnab('X', self::CODIGO_SEGMENTO_A, 1)); // Posição 014-014: Código Segmento Reg. Detalhe (A)
         $this->add(15, 17, Util::formatCnab('9L', '000', 3)); // Posição 015-017: Tipo de Movimento (NOTA 10)
-        $this->add(18, 20, Util::formatCnab('9L', '000', 3)); // Posição 018-020: Código da Câmara Centralizadora (NOTA 35)
+        $this->add(18, 20, Util::formatCnab('X', $camara, 3)); // Posição 018-020: Código da Câmara Centralizadora (NOTA 35) — "009" para PIX
         $this->add(21, 23, Util::formatCnab('9L', $pagamento->getCodigoBanco(), 3)); // Posição 021-023: Código Banco Favorecido
 
-        // Posição 024-043: Agência/Conta Favorecido (NOTA 11) - Campo único X(20)
-        $agenciaConta = Util::formatCnab('9L', $pagamento->getAgencia(), 5) .
-            Util::formatCnab('X', '', 1) .
-            Util::formatCnab('9L', $pagamento->getConta(), 12) .
-            Util::formatCnab('X', '', 1) .
-            Util::formatCnab('X', $pagamento->getContaDv(), 1);
-        $this->add(24, 43, $agenciaConta); // Posição 024-043: Agência/Conta Favorecido (NOTA 11)
+        // Posição 024-043: Agência/Conta Favorecido (NOTA 11) — layout depende do banco favorecido
+        $this->add(24, 43, $this->formatAgenciaContaFavorecido($pagamento, $tipoTransferenciaPix));
 
         $this->add(44, 73, Util::formatCnab('X', $pagamento->getBeneficiario()->getNome(), 30)); // Posição 044-073: Nome do Favorecido (NOTA 34)
         $this->add(74, 93, Util::formatCnab('X', $pagamento->getNumeroControle(), 20)); // Posição 074-093: Nº Docto Atribuído pela Empresa (Seu Número)
@@ -489,7 +625,16 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(94, 101, Util::formatCnab('9L', $dataPagamento, 8)); // Posição 094-101: Data Prevista para Pagto (DDMMAAAA)
 
         $this->add(102, 104, Util::formatCnab('X', 'REA', 3)); // Posição 102-104: Tipo da Moeda (REA ou 009)
-        $this->add(105, 119, Util::formatCnab('9L', '0', 5)); // Posição 115-119: Zeros
+
+        // Posição 105-112: Código ISPB (NOTA 35) — opcional para a maioria dos casos
+        $codigoIspb = method_exists($pagamento, 'getCodigoIspb') ? (string) $pagamento->getCodigoIspb() : '';
+        $this->add(105, 112, Util::formatCnab('X', $codigoIspb, 8));
+
+        // Posição 113-114: Identificação do Tipo de Transferência (NOTA 36) — só PIX usa
+        // 01 CC | PG Conta Pagamento | 03 Poupança | 04 Chave Pix
+        $this->add(113, 114, Util::formatCnab('X', $tipoTransferenciaPix, 2));
+
+        $this->add(115, 119, Util::formatCnab('9', '0', 5)); // Posição 115-119: Zeros
 
         // Valor do Pagamento - 9(13)V9(02) = 15 dígitos com vírgula decimal assumida
         $valor = $pagamento->getValor() ? $pagamento->getValor() * 100 : 0;
@@ -508,7 +653,6 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(230, 230, Util::formatCnab('X', '0', 1)); // Posição 230-230: Aviso ao Favorecido (NOTA 16)
         $this->add(231, 240, Util::formatCnab('X', '', 10)); // Posição 231-240: Ocorrências (NOTA 8)
 
-        $this->iRegistrosLote++;
         return $this;
     }
 
@@ -523,9 +667,9 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
         $this->iniciaDetalhe();
 
         $this->add(1, 3, self::BANCO); // Posição 001-003: Código do Banco na Compensação (341)
-        $this->add(4, 7, self::LOTE_SERVICO_HEADER); // Posição 004-007: Código do Lote (NOTA 3)
+        $this->add(4, 7, Util::formatCnab('9L', $this->loteAtualNumero, 4)); // Posição 004-007: Código do Lote (NOTA 3)
         $this->add(8, 8, self::TIPO_REGISTRO_DETALHE); // Posição 008-008: Tipo de Registro (3)
-        $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote + 1, 5)); // Posição 009-013: Nº Sequencial Registro no Lote (NOTA 9)
+        $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote, 5)); // Posição 009-013: Nº Sequencial Registro no Lote (NOTA 9)
         $this->add(14, 14, self::CODIGO_SEGMENTO_B); // Posição 014-014: Código Segmento Reg. Detalhe (B)
         $this->add(15, 17, self::CAMPO_BRANCO); // Posição 015-017: Brancos
         $this->add(18, 18, $pagamento->getBeneficiario()->getTipoDocumento() == 'CPF' ? self::TIPO_DOCUMENTO_CPF : self::TIPO_DOCUMENTO_CNPJ); // Posição 018-018: Tipo Inscrição do Favorecido (1=CPF, 2=CNPJ)
@@ -544,7 +688,6 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(228, 230, self::CAMPO_BRANCO); // Posição 228-230: Brancos
         $this->add(231, 240, self::CAMPO_BRANCO); // Posição 231-240: Ocorrências (NOTA 8)
 
-        $this->iRegistrosLote++;
         return $this;
     }
 
@@ -559,13 +702,13 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
         $this->iniciaDetalhe();
 
         $this->add(1, 3, self::BANCO); // Posição 001-003: Código do Banco na Compensação (341)
-        $this->add(4, 7, self::LOTE_SERVICO_HEADER); // Posição 004-007: Código do Lote (NOTA 3)
+        $this->add(4, 7, Util::formatCnab('9L', $this->loteAtualNumero, 4)); // Posição 004-007: Código do Lote (NOTA 3)
         $this->add(8, 8, self::TIPO_REGISTRO_DETALHE); // Posição 008-008: Tipo de Registro (3)
-        $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote + 1, 5)); // Posição 009-013: Nº Sequencial Registro no Lote (NOTA 9)
+        $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote, 5)); // Posição 009-013: Nº Sequencial Registro no Lote (NOTA 9)
         $this->add(14, 14, self::CODIGO_SEGMENTO_B); // Posição 014-014: Código Segmento Reg. Detalhe (B)
 
-        // Tipo de Chave PIX (NOTA 37)
-        $tipoChave = $pagamento->getFormaIniciacao() ?? '01'; // Default: 01 = CPF/CNPJ
+        // Tipo de Chave PIX (NOTA 37) — 01 Telefone | 02 E-mail | 03 CPF/CNPJ | 04 Aleatória
+        $tipoChave = $pagamento->getFormaIniciacao() ?? '03'; // Default: 03 = CPF/CNPJ
         $this->add(15, 16, Util::formatCnab('X', $tipoChave, 2)); // Posição 015-016: Tipo Identificação da Chave (NOTA 37)
 
         $this->add(17, 17, self::CAMPO_BRANCO); // Posição 017-017: Brancos
@@ -584,7 +727,6 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(228, 230, self::CAMPO_BRANCO); // Posição 228-230: Brancos
         $this->add(231, 240, self::CAMPO_BRANCO); // Posição 231-240: Ocorrências (NOTA 8)
 
-        $this->iRegistrosLote++;
         return $this;
     }
 
@@ -605,7 +747,7 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
         $codigoBarras = Util::onlyNumbers($pagamento->getCodigoBarras());
 
         $this->add(1, 3, self::BANCO); // 001-003: Código do Banco na Compensação (341)
-        $this->add(4, 7, Util::formatCnab('9L', self::LOTE_SERVICO_HEADER, 4)); // 004-007: Código do Lote (NOTA 3)
+        $this->add(4, 7, Util::formatCnab('9L', $this->loteAtualNumero, 4)); // 004-007: Código do Lote (NOTA 3)
         $this->add(8, 8, self::TIPO_REGISTRO_DETALHE); // 008-008: Tipo de Registro (3)
         $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote, 5)); // 009-013: Nº Sequencial Registro no Lote (NOTA 9)
         $this->add(14, 14, self::CODIGO_SEGMENTO_J); // 014-014: Código Segmento (J)
@@ -689,7 +831,7 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
             : null;
 
         $this->add(1, 3, self::BANCO); // 001-003: Código do Banco
-        $this->add(4, 7, Util::formatCnab('9L', self::LOTE_SERVICO_HEADER, 4)); // 004-007: Código do Lote
+        $this->add(4, 7, Util::formatCnab('9L', $this->loteAtualNumero, 4)); // 004-007: Código do Lote
         $this->add(8, 8, self::TIPO_REGISTRO_DETALHE); // 008-008: Tipo de Registro (3)
         $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote, 5)); // 009-013: Nº Sequencial
         $this->add(14, 14, self::CODIGO_SEGMENTO_J); // 014-014: Segmento (J)
@@ -735,6 +877,10 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     protected function headerLoteMulti(array $lote)
     {
         $this->iniciaHeaderLote();
+
+        // Memoriza o número do lote para que os segmentos (A/B/J/J-52)
+        // gravem o mesmo valor nas posições 4-7 — antes ficavam todos em "0001".
+        $this->loteAtualNumero = (int) $lote['numero'];
 
         $isBoleto = $lote['tipo'] === self::TIPO_PAGAMENTO_BOLETO;
         $versaoLayoutLote = $isBoleto ? self::VERSAO_LAYOUT_LOTE_BOLETO : '040';
