@@ -5,6 +5,7 @@ namespace Eduardokum\LaravelBoleto\Cnab\Pagamento\Retorno\Cnab240\Banco;
 use Illuminate\Support\Arr;
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Cnab\Pagamento\Retorno\Cnab240\Detalhe;
 use Eduardokum\LaravelBoleto\Cnab\Pagamento\Retorno\Cnab240\AbstractRetorno;
 
 /**
@@ -70,139 +71,81 @@ class Itau extends AbstractRetorno
     ];
 
     /**
-     * Array com as ocorrências do banco
+     * Mapa de código de ocorrência → descrição, conforme NOTA 8 do manual
+     * SISPAG Itaú. O campo de ocorrências (posições 231-240) é X(10) e pode
+     * conter até 5 códigos de 2 caracteres concatenados.
+     *
      * @var array
      */
     private $ocorrencias = [
-        // Ocorrências gerais
-        '00' => 'Crédito ou Débito Efetivado',
-        '01' => 'Insuficiência de Fundos - Débito Não Efetuado',
-        '02' => 'Crédito ou Débito Cancelado pelo Pagador/Credor',
-        '03' => 'Débito Autorizado pela Agência - Efetuado',
-        'BD' => 'Inclusão Efetuada com Sucesso',
-        'BE' => 'Alteração Efetuada com Sucesso',
-        'BF' => 'Exclusão Efetuada com Sucesso',
-        'BI' => 'Transferência Efetuada com Sucesso',
-        'BJ' => 'Pagamento Efetuado com Sucesso',
-
-        // Ocorrências de erro/rejeição
-        'AA' => 'Controle Inválido',
-        'AB' => 'Tipo de Operação Inválido',
-        'AC' => 'Tipo de Serviço Inválido',
-        'AD' => 'Forma de Lançamento Inválida',
-        'AE' => 'Tipo/Número de Inscrição Inválido',
-        'AG' => 'Agência/Conta Corrente/DV Inválido',
-        'AH' => 'Número Sequencial do Registro no Lote Inválido',
-        'AI' => 'Código de Segmento de Detalhe Inválido',
-        'AJ' => 'Tipo de Movimento Inválido',
-        'AL' => 'Código do Banco Favorecido, Instituição de Pagamento ou Depositário Inválido',
-        'AM' => 'Agência Mantenedora da Conta Corrente do Favorecido Inválida',
-        'AN' => 'Conta Corrente/DV/Conta de Pagamento do Favorecido Inválido',
-        'AO' => 'Nome do Favorecido Não Informado',
-        'AP' => 'Data de Lançamento Inválida',
-        'AQ' => 'Tipo/Quantidade da Moeda Inválido',
-        'AR' => 'Valor do Lançamento Inválido',
-        'AS' => 'Aviso ao Favorecido - Identificação Inválida',
-        'AT' => 'Tipo/Número de Inscrição do Favorecido Inválido',
-        'AV' => 'Número do Local do Favorecido Não Informado',
-        'AW' => 'Cidade do Favorecido Não Informada',
-        'AX' => 'CEP/Complemento do Favorecido Inválido',
-        'AY' => 'Sigla do Estado do Favorecido Inválida',
-        'BB' => 'Seu Número Inválido',
-        'BC' => 'Nosso Número Inválido',
-        'HA' => 'Lote Não Aceito',
-        'HB' => 'Inscrição da Empresa Inválida para o Contrato',
-        'HC' => 'Convênio com a Empresa Inexistente/Inválido para o Contrato',
-        'HD' => 'Agência/Conta Corrente da Empresa Inexistente/Inválido para o Contrato',
-        'HE' => 'Tipo de Serviço Inválido para o Contrato',
-        'HF' => 'Conta Corrente da Empresa com Saldo Insuficiente',
-        'HG' => 'Lote de Serviço Fora de Sequência',
-        'HH' => 'Lote de Serviço Inválido',
-        'HI' => 'Arquivo não aceito',
-        'HJ' => 'Tipo de Registro Inválido',
-        'HK' => 'Código Remessa/Retorno Inválido',
-        'HL' => 'Versão de Layout Inválida',
-        'IA' => 'Arquivo de Retorno sem Registros',
-        'ZA' => 'Registro Aceito',
-        'ZB' => 'Registro Aceito com Alteração',
-        'ZC' => 'Registro Rejeitado',
-        'ZI' => 'Beneficiário divergente',
-
-        // Ocorrências PIX específicas
-        'PA' => 'PIX não efetivado',
-        'PB' => 'Transação interrompida devido a erro no PSP do Recebedor',
-        'PC' => 'QR Code inválido/vencido',
-        'PD' => 'Tipo incorreto para a conta transacional especificada',
-        'PE' => 'Tipo de transação não é suportado/autorizado',
-        'PF' => 'CPF/CNPJ do usuário recebedor incorreto',
-        'PG' => 'Chave PIX não cadastrada',
-        'PH' => 'Chave PIX inválida',
-        'PI' => 'Chave PIX não informada',
-        'PJ' => 'Valor do PIX excede limite permitido',
-        'PK' => 'Conta do favorecido não permite PIX',
-        'PL' => 'Erro no processamento do PIX',
-
-        // Ocorrências adicionais da documentação Itaú (NOTA 8)
+        '00' => 'Pagamento Efetuado',
         'AE' => 'Data de Pagamento Alterada',
-        'AK' => 'Código da Câmara de Compensação do Banco Favorecido/Depositário Inválido',
-        'AU' => 'Logradouro do Favorecido Não Informado',
-        'AZ' => 'Código/Nome do Banco Depositário Inválido',
-        'BA' => 'Código/Nome da Agência Depositária Não Informado',
-        'BG' => 'Pagamento Agendado',
-        'BH' => 'Pagamento Efetuado com Sucesso',
-        'BK' => 'Tipo de Pagamento Incompatível',
-        'BL' => 'Pagamento Agendado',
-        'CA' => 'Código de Barras - Código do Banco Inválido',
-        'CB' => 'Código de Barras - Código da Moeda Inválido',
-        'CC' => 'Código de Barras - Dígito Verificador Geral Inválido',
-        'CD' => 'Código de Barras - Valor do Título Inválido',
-        'CE' => 'Código de Barras - Campo Livre Inválido',
-        'CF' => 'Valor do Documento Inválido',
+        'AG' => 'Número do Lote Inválido',
+        'AH' => 'Número Sequencial do Registro no Lote Inválido',
+        'AI' => 'Produto Demonstrativo de Pagamento Não Contratado',
+        'AJ' => 'Tipo de Movimento Inválido',
+        'AL' => 'Código do Banco Favorecido Inválido',
+        'AM' => 'Agência do Favorecido Inválida',
+        'AN' => 'Conta Corrente do Favorecido Inválida',
+        'AO' => 'Nome do Favorecido Inválido',
+        'AP' => 'Data de Pagamento / Validade / Hora de Lançamento / Arrecadação / Apuração Inválida',
+        'AQ' => 'Quantidade de Registros Maior que 999999',
+        'AR' => 'Valor Arrecadado / Lançamento Inválido',
+        'BC' => 'Nosso Número Inválido',
+        'BD' => 'Pagamento Agendado',
+        'BE' => 'Pagamento Agendado com Forma Alterada para OP',
+        'BI' => 'CNPJ/CPF do Favorecido no Segmento J-52 ou B Inválido / Documento Favorecido Inválido PIX',
+        'BL' => 'Valor da Parcela Inválido',
+        'CD' => 'CNPJ/CPF Informado Divergente do Cadastrado',
+        'CE' => 'Pagamento Cancelado',
+        'CF' => 'Valor do Documento Inválido / Valor Divergente do QR Code',
         'CG' => 'Valor do Abatimento Inválido',
         'CH' => 'Valor do Desconto Inválido',
-        'CI' => 'CNPJ / CPF / Identificador / Inscrição Estadual / Inscrição no CAD / ICMS Inválido',
+        'CI' => 'CNPJ/CPF/Identificador/Inscrição Estadual/CAD/ICMS Inválido',
         'CJ' => 'Valor da Multa Inválido',
         'CK' => 'Tipo de Inscrição Inválida',
         'CL' => 'Valor do INSS Inválido',
         'CM' => 'Valor do COFINS Inválido',
         'CN' => 'Conta Não Cadastrada',
         'CO' => 'Valor de Outras Entidades Inválido',
+        'CP' => 'Confirmação de OP Cumprida',
         'CQ' => 'Soma das Faturas Difere do Pagamento',
         'CR' => 'Valor do CSLL Inválido',
         'CS' => 'Data de Vencimento da Fatura Inválida',
-        'DA' => 'Número de Depend. Salário Família Inválido',
+        'DA' => 'Número de Dependentes Salário Família Inválido',
         'DB' => 'Número de Horas Semanais Inválido',
         'DC' => 'Salário de Contribuição INSS Inválido',
         'DD' => 'Salário de Contribuição FGTS Inválido',
         'DE' => 'Valor Total dos Proventos Inválido',
         'DF' => 'Valor Total dos Descontos Inválido',
         'DG' => 'Valor Líquido Não Numérico',
-        'DH' => 'Valor Líq. Informado Difere do Calculado',
+        'DH' => 'Valor Líquido Informado Difere do Calculado',
         'DI' => 'Valor do Salário-Base Inválido',
         'DJ' => 'Base de Cálculo IRRF Inválida',
         'DK' => 'Base de Cálculo FGTS Inválida',
         'DL' => 'Forma de Pagamento Incompatível com Holerite',
-        'DM' => 'E-Mail do Favorecido Inválido',
-        'DV' => 'DOC / TED Devolvido pelo Banco Favorecido',
-        'DU' => 'Finalidade de Holerite Inválida',
-        'D1' => 'Mês de Competência do Holerite Inválida',
-        'D2' => 'Dia da Competência do Holerite Inválida',
+        'DM' => 'E-mail do Favorecido Inválido',
+        'DV' => 'DOC/TED Devolvido pelo Banco Favorecido',
+        'D0' => 'Finalidade do Holerite Inválida',
+        'D1' => 'Mês de Competência do Holerite Inválido',
+        'D2' => 'Dia da Competência do Holerite Inválido',
         'D3' => 'Centro de Custo Inválido',
         'D4' => 'Campo Numérico da Funcional Inválido',
         'D5' => 'Data Início de Férias Não Numérica',
         'D6' => 'Data Início de Férias Inconsistente',
-        'D7' => 'Data Fim de Férias Não Numérico',
+        'D7' => 'Data Fim de Férias Não Numérica',
         'D8' => 'Data Fim de Férias Inconsistente',
         'D9' => 'Número de Dependentes IR Inválido',
         'EM' => 'Confirmação de OP Emitida',
         'EX' => 'Devolução de OP Não Sacada pelo Favorecido',
         'E0' => 'Tipo de Movimento Holerite Inválido',
-        'E1' => 'Valor 01 do Holerite / Informe Inválido',
-        'E2' => 'Valor 02 do Holerite / Informe Inválido',
-        'E3' => 'Valor 03 do Holerite / Informe Inválido',
-        'E4' => 'Valor 04 do Holerite / Informe Inválido',
+        'E1' => 'Valor 01 do Holerite/Informe Inválido',
+        'E2' => 'Valor 02 do Holerite/Informe Inválido',
+        'E3' => 'Valor 03 do Holerite/Informe Inválido',
+        'E4' => 'Valor 04 do Holerite/Informe Inválido',
         'FC' => 'Pagamento Efetuado Através de Financiamento Compror',
         'FD' => 'Pagamento Efetuado Através de Financiamento Descompror',
+        'HA' => 'Erro no Lote',
         'HM' => 'Erro no Registro Header de Arquivo',
         'IB' => 'Valor do Documento Inválido',
         'IC' => 'Valor do Abatimento Inválido',
@@ -211,37 +154,37 @@ class Itau extends AbstractRetorno
         'IF' => 'Valor da Multa Inválido',
         'IG' => 'Valor da Dedução Inválido',
         'IH' => 'Valor do Acréscimo Inválido',
-        'II' => 'Data de Pagamento Inválida / QR Code Expirado',
-        'IJ' => 'Competência / Período Referência / Parcela Inválida',
-        'IK' => 'Tributo Não Liquidado na SISPAG ou Não Conveniado com Itaú',
-        'IL' => 'Código de Pagamento / Empresa /Receita Inválido',
-        'IM' => 'Tipo x Forma Não Compatível',
+        'II' => 'Data de Vencimento Inválida / QR Code Expirado',
+        'IJ' => 'Competência/Período Referência/Parcela Inválida',
+        'IK' => 'Tributo Não Liquidável via SISPAG ou Não Conveniado com Itaú',
+        'IL' => 'Código de Pagamento/Empresa/Receita Inválido',
+        'IM' => 'Tipo X Forma Não Compatível',
         'IN' => 'Banco/Agência Não Cadastrados',
-        'IO' => 'DAC / Valor / Competência / Identificador do Lacre Inválido / Identificador QR Code Inválido',
+        'IO' => 'DAC/Valor/Competência/Identificador do Lacre / QR Code Inválido',
         'IP' => 'DAC do Código de Barras Inválido / Erro na Validação do QR Code',
         'IQ' => 'Dívida Ativa ou Número de Etiqueta Inválido',
         'IR' => 'Pagamento Alterado',
         'IS' => 'Concessionária Não Conveniada com Itaú',
         'IT' => 'Valor do Tributo Inválido',
         'IU' => 'Valor da Receita Bruta Acumulada Inválido',
-        'IV' => 'Número do Documento Origem / Referência Inválido',
+        'IV' => 'Número do Documento Origem/Referência Inválido',
         'IX' => 'Código do Produto Inválido',
         'LA' => 'Data de Pagamento de um Lote Alterada',
         'LC' => 'Lote de Pagamentos Cancelado',
         'NA' => 'Pagamento Cancelado por Falta de Autorização',
         'NB' => 'Identificação do Tributo Inválida',
         'NC' => 'Exercício (Ano Base) Inválido',
-        'ND' => 'Código Renavam Não Encontrado/Inválido',
+        'ND' => 'Código RENAVAM Não Encontrado/Inválido',
         'NE' => 'UF Inválida',
         'NF' => 'Código do Município Inválido',
         'NG' => 'Placa Inválida',
-        'NH' => 'Opção Parcela de Pagamento Inválida',
+        'NH' => 'Opção/Parcela de Pagamento Inválida',
         'NI' => 'Tributo Já Foi Pago ou Está Vencido',
         'NR' => 'Operação Não Realizada',
-        'PD' => 'Aquisição Confirmada (Equivale a Ocorrência 02 no Layout de Risco Sacado)',
+        'PD' => 'Aquisição Confirmada (Risco Sacado)',
         'RJ' => 'Registro Rejeitado',
-        'RS' => 'Pagamento Disponível para Antecipação no Risco Sacado - Modalidade Risco Sacado Pós Autorizado',
-        'SS' => 'Pagamento Cancelado por Insuficiência de Saldo / Limite Diário de Pagto Excedido',
+        'RS' => 'Pagamento Disponível para Antecipação no Risco Sacado',
+        'SS' => 'Pagamento Cancelado por Insuficiência de Saldo / Limite Diário Excedido',
         'TA' => 'Lote Não Aceito - Totais do Lote com Diferença',
         'TI' => 'Titularidade Inválida',
         'X1' => 'Forma Incompatível com Layout 010',
@@ -251,133 +194,44 @@ class Itau extends AbstractRetorno
     ];
 
     /**
-     * Array com as possíveis rejeições do banco (espelhamento das ocorrências de erro)
+     * Mapeia código de ocorrência (NOTA 8) para status conceitual do Detalhe.
+     * Códigos ausentes deste mapa são interpretados como rejeição.
+     *
      * @var array
      */
-    private $rejeicoes = [
-        '01' => 'Insuficiência de Fundos',
-        '02' => 'Crédito ou Débito Cancelado',
-        'AA' => 'Controle Inválido',
-        'AB' => 'Tipo de Operação Inválido',
-        'AC' => 'Tipo de Serviço Inválido',
-        'AD' => 'Forma de Lançamento Inválida',
-        'AE' => 'Tipo/Número de Inscrição Inválido',
-        'AG' => 'Agência/Conta Corrente/DV Inválido',
-        'AH' => 'Número Sequencial do Registro no Lote Inválido',
-        'AI' => 'Código de Segmento de Detalhe Inválido',
-        'AJ' => 'Tipo de Movimento Inválido',
-        'AK' => 'Código da Câmara de Compensação Inválido',
-        'AL' => 'Código do Banco Favorecido Inválido',
-        'AM' => 'Agência do Favorecido Inválida',
-        'AN' => 'Conta Corrente do Favorecido Inválida',
-        'AO' => 'Nome do Favorecido Não Informado',
-        'AP' => 'Data de Lançamento Inválida',
-        'AQ' => 'Tipo/Quantidade da Moeda Inválido',
-        'AR' => 'Valor do Lançamento Inválido',
-        'AS' => 'Aviso ao Favorecido - Identificação Inválida',
-        'AT' => 'Tipo/Número de Inscrição do Favorecido Inválido',
-        'AU' => 'Logradouro do Favorecido Não Informado',
-        'AV' => 'Número do Local do Favorecido Não Informado',
-        'AW' => 'Cidade do Favorecido Não Informada',
-        'AX' => 'CEP/Complemento do Favorecido Inválido',
-        'AY' => 'Sigla do Estado do Favorecido Inválida',
-        'AZ' => 'Código/Nome do Banco Depositário Inválido',
-        'BA' => 'Código/Nome da Agência Depositária Não Informado',
-        'BB' => 'Seu Número Inválido',
-        'BC' => 'Nosso Número Inválido',
-        'BK' => 'Tipo de Pagamento Incompatível',
-        'CA' => 'Código de Barras - Código do Banco Inválido',
-        'CB' => 'Código de Barras - Código da Moeda Inválido',
-        'CC' => 'Código de Barras - DV Geral Inválido',
-        'CD' => 'Código de Barras - Valor do Título Inválido',
-        'CE' => 'Código de Barras - Campo Livre Inválido',
-        'CF' => 'Valor do Documento Inválido',
-        'CG' => 'Valor do Abatimento Inválido',
-        'CH' => 'Valor do Desconto Inválido',
-        'CI' => 'CNPJ/CPF/Identificador Inválido',
-        'CJ' => 'Valor da Multa Inválido',
-        'CK' => 'Tipo de Inscrição Inválida',
-        'CL' => 'Valor do INSS Inválido',
-        'CM' => 'Valor do COFINS Inválido',
-        'CN' => 'Conta Não Cadastrada',
-        'CO' => 'Valor de Outras Entidades Inválido',
-        'CQ' => 'Soma das Faturas Difere do Pagamento',
-        'CR' => 'Valor do CSLL Inválido',
-        'CS' => 'Data de Vencimento da Fatura Inválida',
-        'DL' => 'Forma de Pagamento Incompatível com Holerite',
-        'DM' => 'E-Mail do Favorecido Inválido',
-        'DV' => 'DOC/TED Devolvido pelo Banco Favorecido',
-        'HA' => 'Lote Não Aceito',
-        'HB' => 'Inscrição da Empresa Inválida',
-        'HC' => 'Convênio Inexistente/Inválido',
-        'HD' => 'Agência/Conta Corrente da Empresa Inválida',
-        'HE' => 'Tipo de Serviço Inválido para o Contrato',
-        'HF' => 'Saldo Insuficiente',
-        'HG' => 'Lote Fora de Sequência',
-        'HH' => 'Lote Inválido',
-        'HI' => 'Arquivo não aceito',
-        'HJ' => 'Tipo de Registro Inválido',
-        'HK' => 'Código Remessa/Retorno Inválido',
-        'HL' => 'Versão de Layout Inválida',
-        'HM' => 'Erro no Registro Header de Arquivo',
-        'IB' => 'Valor do Documento Inválido',
-        'IC' => 'Valor do Abatimento Inválido',
-        'ID' => 'Valor do Desconto Inválido',
-        'IE' => 'Valor da Mora Inválido',
-        'IF' => 'Valor da Multa Inválido',
-        'IG' => 'Valor da Dedução Inválido',
-        'IH' => 'Valor do Acréscimo Inválido',
-        'II' => 'Data de Pagamento Inválida/QR Code Expirado',
-        'IJ' => 'Competência/Período/Parcela Inválida',
-        'IK' => 'Tributo Não Conveniado com Itaú',
-        'IL' => 'Código de Pagamento/Empresa/Receita Inválido',
-        'IM' => 'Tipo x Forma Não Compatível',
-        'IN' => 'Banco/Agência Não Cadastrados',
-        'IO' => 'DAC/Valor/Competência/Lacre/QR Code Inválido',
-        'IP' => 'DAC Código de Barras/QR Code Inválido',
-        'IQ' => 'Dívida Ativa/Etiqueta Inválido',
-        'IR' => 'Pagamento Alterado',
-        'IS' => 'Concessionária Não Conveniada',
-        'IT' => 'Valor do Tributo Inválido',
-        'IU' => 'Valor Receita Bruta Acumulada Inválido',
-        'IV' => 'Número Documento Origem/Referência Inválido',
-        'IX' => 'Código do Produto Inválido',
-        'LA' => 'Data de Pagamento de um Lote Alterada',
-        'LC' => 'Lote de Pagamentos Cancelado',
-        'NA' => 'Pagamento Cancelado por Falta de Autorização',
-        'NB' => 'Identificação do Tributo Inválida',
-        'NC' => 'Exercício (Ano Base) Inválido',
-        'ND' => 'Código Renavam Inválido',
-        'NE' => 'UF Inválida',
-        'NF' => 'Código do Município Inválido',
-        'NG' => 'Placa Inválida',
-        'NH' => 'Opção Parcela de Pagamento Inválida',
-        'NI' => 'Tributo Já Pago ou Vencido',
-        'NR' => 'Operação Não Realizada',
-        'RJ' => 'Registro Rejeitado',
-        'SS' => 'Pagamento Cancelado por Insuficiência de Saldo',
-        'TA' => 'Lote Não Aceito - Totais com Diferença',
-        'TI' => 'Titularidade Inválida',
-        'X1' => 'Forma Incompatível com Layout 010',
-        'X2' => 'Número da Nota Fiscal Inválido',
-        'X3' => 'Identificador de NF/CNPJ Inválido',
-        'X4' => 'Forma 32 Inválida',
-        'ZC' => 'Registro Rejeitado',
-        'ZI' => 'Beneficiário divergente',
-        // PIX
-        'PA' => 'PIX não efetivado',
-        'PB' => 'Erro no PSP do Recebedor',
-        'PC' => 'QR Code inválido/vencido',
-        'PD' => 'Tipo de conta incorreto',
-        'PE' => 'Transação não suportada',
-        'PF' => 'CPF/CNPJ incorreto',
-        'PG' => 'Chave PIX não cadastrada',
-        'PH' => 'Chave PIX inválida',
-        'PI' => 'Chave PIX não informada',
-        'PJ' => 'Valor excede limite',
-        'PK' => 'Conta não permite PIX',
-        'PL' => 'Erro no processamento PIX',
+    private $statusOcorrencias = [
+        // Pagos
+        '00' => Detalhe::OCORRENCIA_PAGO,
+        'CP' => Detalhe::OCORRENCIA_PAGO, // Confirmação de OP cumprida
+        'EM' => Detalhe::OCORRENCIA_PAGO, // Confirmação de OP emitida
+        'FC' => Detalhe::OCORRENCIA_PAGO, // Financiamento Compror
+        'FD' => Detalhe::OCORRENCIA_PAGO, // Financiamento Descompror
+        'PD' => Detalhe::OCORRENCIA_PAGO, // Aquisição confirmada (risco sacado)
+
+        // Pendentes (agendados / alterados aguardando execução)
+        'BD' => Detalhe::OCORRENCIA_PENDENTE, // Pagamento agendado
+        'BE' => Detalhe::OCORRENCIA_PENDENTE, // Agendado com forma alterada para OP
+        'AE' => Detalhe::OCORRENCIA_PENDENTE, // Data de pagamento alterada
+        'LA' => Detalhe::OCORRENCIA_PENDENTE, // Data de pag. de um lote alterada
+        'IR' => Detalhe::OCORRENCIA_PENDENTE, // Pagamento alterado
+        'RS' => Detalhe::OCORRENCIA_PENDENTE, // Antecipação risco sacado
+
+        // Cancelados / devolvidos
+        'CE' => Detalhe::OCORRENCIA_CANCELADO, // Pagamento cancelado
+        'LC' => Detalhe::OCORRENCIA_CANCELADO, // Lote cancelado
+        'NA' => Detalhe::OCORRENCIA_CANCELADO, // Cancelado por falta de autorização
+        'SS' => Detalhe::OCORRENCIA_CANCELADO, // Cancelado por insuficiência de saldo
+        'EX' => Detalhe::OCORRENCIA_CANCELADO, // Devolução de OP não sacada
+        'DV' => Detalhe::OCORRENCIA_CANCELADO, // DOC/TED devolvido pelo banco favorecido
     ];
+
+    /**
+     * Snapshot de $this->increment ao entrar em cada lote, para calcular a
+     * quantidade real de pagamentos (A/J/N/O) no trailer do lote.
+     *
+     * @var int
+     */
+    private $incrementoInicioLote = 0;
 
     /**
      * Roda antes dos métodos de processar
@@ -428,6 +282,11 @@ class Itau extends AbstractRetorno
      */
     protected function processarHeaderLote(array $headerLote)
     {
+        // Marca o início do lote para permitir contagem correta de
+        // pagamentos no trailer (independente de quantos segmentos por
+        // pagamento o layout contenha: A/B, J/J-52, etc.).
+        $this->incrementoInicioLote = (int) $this->increment;
+
         $this->getHeaderLote()
             ->setCodBanco($this->rem(1, 3, $headerLote))
             ->setNumeroLoteRetorno($this->rem(4, 7, $headerLote))
@@ -514,77 +373,120 @@ class Itau extends AbstractRetorno
 
         if ($segmentType == 'A') {
             // Segmento A - Dados principais do pagamento
-            $ocorrencias = trim($this->rem(231, 240, $detalhe));
+            $codigos = $this->parseCodigosOcorrencia($this->rem(231, 240, $detalhe));
+            $primary = $codigos[0] ?? '';
 
-            $d->setOcorrencia($ocorrencias)
-                ->setOcorrenciaDescricao(Arr::get($this->ocorrencias, $ocorrencias, 'Desconhecida'))
-                ->setCodigoBancoFavorecido($this->rem(21, 23, $detalhe))
-                ->setAgenciaFavorecido($this->rem(24, 28, $detalhe))
-                ->setContaFavorecido($this->rem(30, 41, $detalhe))
+            $bancoFavorecido = $this->rem(21, 23, $detalhe);
+            $identTransferencia = trim($this->rem(113, 114, $detalhe));
+            $conta = $this->parseContaFavorecido($detalhe, $bancoFavorecido, $identTransferencia);
+
+            $nomeFavorecido = trim($this->rem(44, 73, $detalhe));
+            $documentoFavorecido = ltrim(trim($this->rem(204, 217, $detalhe)), '0');
+
+            $d->setOcorrencia($primary)
+                ->setOcorrenciaDescricao(Arr::get($this->ocorrencias, $primary, 'Desconhecida'))
+                ->setTipoMovimento(trim($this->rem(15, 17, $detalhe)))
+                ->setCamara(trim($this->rem(18, 20, $detalhe)))
+                ->setCodigoBancoFavorecido($bancoFavorecido)
+                ->setAgenciaFavorecido($conta['agencia'])
+                ->setContaFavorecido($conta['conta'])
+                ->setContaFavorecidoDv($conta['dv'])
+                ->setNomeFavorecido($nomeFavorecido)
+                ->setDocumentoFavorecido($documentoFavorecido)
                 ->setSeuNumero($this->rem(74, 93, $detalhe))
                 ->setNumeroDocumento(explode('-', trim($this->rem(74, 93, $detalhe)))[0] ?? '')
                 ->setNumeroControle(explode('-', trim($this->rem(74, 93, $detalhe)))[1] ?? '')
                 ->setDataPagamento($this->rem(94, 101, $detalhe))
+                ->setCodigoIspb(trim($this->rem(105, 112, $detalhe)))
+                ->setIdentificacaoTransferencia($identTransferencia)
                 ->setValor(Util::nFloat($this->rem(120, 134, $detalhe) / 100, 2, false))
-                ->setNossoNumero($this->rem(135, 149, $detalhe))
+                ->setNossoNumero(trim($this->rem(135, 149, $detalhe)))
                 ->setDataEfetivacao($this->rem(155, 162, $detalhe))
-                ->setValorRealEfetivado(Util::nFloat($this->rem(163, 177, $detalhe) / 100, 2, false));
+                ->setValorRealEfetivado(Util::nFloat($this->rem(163, 177, $detalhe) / 100, 2, false))
+                ->setNumeroDocumentoBancario(ltrim(trim($this->rem(198, 203, $detalhe)), '0'))
+                ->setFinalidadeTed(trim($this->rem(220, 224, $detalhe)));
 
             // Determina o tipo de pagamento pela forma de lançamento do lote
             $d->setTipoPagamento($this->resolveTipoPagamento($this->getHeaderLote()->getFormaLancamento()));
 
-            // Processa ocorrências
-            $this->classificarOcorrencia($d, $ocorrencias);
+            // Processa ocorrências (código primário + secundários como metadados)
+            $this->classificarOcorrencia($d, $codigos);
         }
 
         if ($segmentType == 'B') {
-            // Segmento B - Dados complementares
-            // Verifica se é PIX ou TED/DOC pelo campo de tipo de chave (posição 15-16)
-            $tipoChave = trim($this->rem(15, 16, $detalhe));
+            // Segmento B - Dados complementares.
+            // Detecção PIX via forma de lançamento do lote (45 = Transferência,
+            // 47 = QR-Code). O campo "tipo chave" no próprio B pode vir em
+            // branco em retornos de rejeição, portanto não serve como fonte.
+            $formaLancamento = $this->getHeaderLote()->getFormaLancamento();
+            $isPix = in_array($formaLancamento, ['45', '47'], true);
 
-            if (!empty($tipoChave) && in_array($tipoChave, ['01', '02', '03', '04', '05'])) {
-                // É PIX - Segmento B específico para PIX
-                $d->setFavorecido([
-                    'documento' => $this->rem(19, 32, $detalhe),
-                    'tipo_chave_pix' => $tipoChave,
-                    'chave_pix' => trim($this->rem(128, 227, $detalhe)),
-                    'info_entre_usuarios' => trim($this->rem(63, 127, $detalhe)),
-                ]);
+            // NOTA 15: se B traz CPF/CNPJ válido, ele vence; caso contrário,
+            // mantém o que foi lido em A.
+            $documentoB = ltrim(trim($this->rem(19, 32, $detalhe)), '0');
+            $documento = $documentoB !== '' ? $documentoB : (string) $d->getDocumentoFavorecido();
+
+            $pessoa = [
+                'nome'      => $d->getNomeFavorecido(),
+                'documento' => $documento,
+            ];
+
+            if ($isPix) {
+                $tipoChave   = trim($this->rem(15, 16, $detalhe));
+                $chavePix    = trim($this->rem(128, 227, $detalhe));
+                $infoUsuario = trim($this->rem(63, 127, $detalhe));
+
+                $d->addInformacaoAdicional('tipo_chave_pix', $tipoChave);
+                $d->addInformacaoAdicional('chave_pix', $chavePix);
+                if ($infoUsuario !== '') {
+                    $d->addInformacaoAdicional('info_entre_usuarios', $infoUsuario);
+                }
             } else {
-                // É TED/DOC - Segmento B com endereço completo
-                $d->setFavorecido([
-                    'documento' => $this->rem(19, 32, $detalhe),
-                    'endereco' => $this->rem(33, 62, $detalhe),
-                    'numero' => $this->rem(63, 67, $detalhe),
-                    'complemento' => $this->rem(68, 82, $detalhe),
-                    'bairro' => $this->rem(83, 97, $detalhe),
-                    'cidade' => $this->rem(98, 117, $detalhe),
-                    'cep' => $this->rem(118, 125, $detalhe),
-                    'uf' => $this->rem(126, 127, $detalhe),
-                    'email' => trim($this->rem(128, 227, $detalhe)),
+                $pessoa = array_merge($pessoa, [
+                    'endereco' => trim($this->rem(33, 62, $detalhe)),
+                    'bairro'   => trim($this->rem(83, 97, $detalhe)),
+                    'cidade'   => trim($this->rem(98, 117, $detalhe)),
+                    'cep'      => trim($this->rem(118, 125, $detalhe)),
+                    'uf'       => trim($this->rem(126, 127, $detalhe)),
+                    'email'    => trim($this->rem(128, 227, $detalhe)),
                 ]);
-            }
 
-            // Verifica códigos de ocorrência/rejeição no Segmento B
-            $codigosOcorrencia = trim($this->rem(231, 240, $detalhe));
-            if (!empty($codigosOcorrencia) && !in_array($codigosOcorrencia, ['00', 'BD', 'BI', 'BJ', ''])) {
-                // Processa múltiplos códigos (se houver)
-                $codigos = str_split($codigosOcorrencia, 2);
-                foreach ($codigos as $codigo) {
-                    $codigo = trim($codigo);
-                    if (!empty($codigo) && !in_array($codigo, ['00', ''])) {
-                        $descricao = Arr::get($this->rejeicoes, $codigo, Arr::get($this->ocorrencias, $codigo, 'Código Desconhecido'));
-                        $d->addRejeicao($codigo, $descricao);
-                    }
+                // Campos não aceitos pela Pessoa viram informações adicionais.
+                $numero      = trim($this->rem(63, 67, $detalhe));
+                $complemento = trim($this->rem(68, 82, $detalhe));
+                if (ltrim($numero, '0') !== '') {
+                    $d->addInformacaoAdicional('numero_endereco', ltrim($numero, '0'));
+                }
+                if ($complemento !== '') {
+                    $d->addInformacaoAdicional('complemento_endereco', $complemento);
                 }
             }
 
-            // Se tem rejeições E não foi marcado como pago, marca como erro
-            if (count($d->getRejeicoes()) > 0 && $d->getOcorrenciaTipo() != $d::OCORRENCIA_PAGO) {
+            $d->setFavorecido($pessoa);
+
+            // Códigos de ocorrência no Segmento B: adiciona como rejeições
+            // apenas os não mapeados (i.e., códigos de erro da NOTA 8).
+            foreach ($this->parseCodigosOcorrencia($this->rem(231, 240, $detalhe)) as $codigo) {
+                if (! isset($this->statusOcorrencias[$codigo])) {
+                    $descricao = Arr::get($this->ocorrencias, $codigo, 'Código Desconhecido');
+                    $d->addRejeicao($codigo, $descricao);
+                }
+            }
+
+            // Se surgiram rejeições adicionais no B e o status principal
+            // não é terminal (pago / cancelado / pendente), promove para ERRO.
+            $statusTerminais = [
+                $d::OCORRENCIA_PAGO,
+                $d::OCORRENCIA_CANCELADO,
+                $d::OCORRENCIA_PENDENTE,
+            ];
+            if (count($d->getRejeicoes()) > 0 && ! in_array($d->getOcorrenciaTipo(), $statusTerminais)) {
+                // Evita double-count: se já estava em rejeitados, recategoriza como erro.
+                if ($d->getOcorrenciaTipo() === $d::OCORRENCIA_REJEITADO) {
+                    $this->totais['rejeitados']--;
+                }
                 $this->totais['erros']++;
-                $error = implode('; ', $d->getRejeicoes());
-                $d->setError($error);
-                $d->setOcorrenciaTipo($d::OCORRENCIA_ERRO);
+                $d->setError(implode('; ', $d->getRejeicoes()));
             }
         }
 
@@ -601,7 +503,8 @@ class Itau extends AbstractRetorno
      */
     protected function processarSegmentoJ(array $detalhe, $d)
     {
-        $ocorrencias = trim($this->rem(231, 240, $detalhe));
+        $codigos = $this->parseCodigosOcorrencia($this->rem(231, 240, $detalhe));
+        $primary = $codigos[0] ?? '';
 
         // Reconstrói o código de barras (44 dígitos) a partir das posições 018-061.
         $codigoBarras = $this->rem(18, 20, $detalhe)   // Banco favorecido
@@ -613,9 +516,11 @@ class Itau extends AbstractRetorno
 
         $d->setCodigoBarras($codigoBarras)
             ->setCodigoBancoFavorecido(substr($codigoBarras, 0, 3))
-            ->setOcorrencia($ocorrencias)
-            ->setOcorrenciaDescricao(Arr::get($this->ocorrencias, $ocorrencias, 'Desconhecida'))
+            ->setOcorrencia($primary)
+            ->setOcorrenciaDescricao(Arr::get($this->ocorrencias, $primary, 'Desconhecida'))
+            ->setTipoMovimento(trim($this->rem(15, 17, $detalhe)))
             ->setTipoPagamento($this->resolveTipoPagamento($this->getHeaderLote()->getFormaLancamento()))
+            ->setNomeFavorecido(trim($this->rem(62, 91, $detalhe)))
             ->setSeuNumero(trim($this->rem(183, 202, $detalhe)))
             ->setNossoNumero(trim($this->rem(216, 230, $detalhe)))
             ->setDataVencimento($this->rem(92, 99, $detalhe))
@@ -626,7 +531,7 @@ class Itau extends AbstractRetorno
             ->setValor(Util::nFloat($this->rem(153, 167, $detalhe) / 100, 2, false))
             ->setValorRealEfetivado(Util::nFloat($this->rem(153, 167, $detalhe) / 100, 2, false));
 
-        $this->classificarOcorrencia($d, $ocorrencias);
+        $this->classificarOcorrencia($d, $codigos);
 
         return true;
     }
@@ -691,39 +596,112 @@ class Itau extends AbstractRetorno
     }
 
     /**
-     * Classifica a ocorrência em pago / cancelado / rejeitado / outros, além
-     * de alimentar os totalizadores.
+     * Extrai agência / conta / DAC do segmento A conforme NOTA 11 do manual.
+     *
+     * - Banco favorecido 341 ou 409: agência 25-28 (4), conta 36-41 (6), DAC 43.
+     * - Outros bancos: agência 24-28 (5), conta 30-41 (12), DAC 42-43.
+     * - Conta pagamento (identificação "PG"): conta ocupa 24-43 (20 dígitos),
+     *   agência e DAC ficam vazios.
+     *
+     * @param array  $detalhe
+     * @param string $bancoFavorecido
+     * @param string $identTransferencia
+     * @return array{agencia:string, conta:string, dv:string}
+     */
+    protected function parseContaFavorecido(array $detalhe, $bancoFavorecido, $identTransferencia = '')
+    {
+        if ($identTransferencia === 'PG') {
+            return [
+                'agencia' => '',
+                'conta'   => ltrim($this->rem(24, 43, $detalhe), '0'),
+                'dv'      => '',
+            ];
+        }
+
+        if (in_array($bancoFavorecido, ['341', '409'], true)) {
+            return [
+                'agencia' => $this->rem(25, 28, $detalhe),
+                'conta'   => $this->rem(36, 41, $detalhe),
+                'dv'      => trim($this->rem(43, 43, $detalhe)),
+            ];
+        }
+
+        return [
+            'agencia' => $this->rem(24, 28, $detalhe),
+            'conta'   => $this->rem(30, 41, $detalhe),
+            'dv'      => trim($this->rem(42, 43, $detalhe)),
+        ];
+    }
+
+    /**
+     * Extrai os códigos de ocorrência (2 caracteres) do campo X(10) de
+     * ocorrências. O manual permite até 5 códigos concatenados, em ordem de
+     * precedência — o primeiro define o status principal do registro.
+     *
+     * @param string $raw
+     * @return string[]
+     */
+    protected function parseCodigosOcorrencia($raw)
+    {
+        $padded = str_pad(substr((string) $raw, 0, 10), 10, ' ', STR_PAD_RIGHT);
+        $codes = [];
+        for ($i = 0; $i < 10; $i += 2) {
+            $code = trim(substr($padded, $i, 2));
+            if ($code !== '') {
+                $codes[] = $code;
+            }
+        }
+
+        return $codes;
+    }
+
+    /**
+     * Classifica a ocorrência conforme a NOTA 8 do manual SISPAG:
+     * o código primário determina o status (pago / pendente / cancelado /
+     * rejeitado) e alimenta o totalizador correspondente. Códigos secundários
+     * que representem rejeição são acumulados em $rejeicoes como metadados.
      *
      * @param \Eduardokum\LaravelBoleto\Cnab\Pagamento\Retorno\Cnab240\Detalhe $d
-     * @param string $ocorrencias
+     * @param string[] $codigos
      * @return void
      */
-    protected function classificarOcorrencia($d, $ocorrencias)
+    protected function classificarOcorrencia($d, array $codigos)
     {
-        if (in_array($ocorrencias, ['00', 'BD', 'BI', 'BJ'])) {
-            $this->totais['pagos']++;
-            $this->totais['valor_total'] += $d->getValor();
-            $d->setOcorrenciaTipo($d::OCORRENCIA_PAGO);
+        $primary = $codigos[0] ?? '';
+
+        if ($primary === '') {
+            $d->setOcorrenciaTipo($d::OCORRENCIA_OUTROS);
 
             return;
         }
 
-        if (in_array($ocorrencias, ['02', 'CE'])) {
-            $this->totais['cancelados']++;
-            $d->setOcorrenciaTipo($d::OCORRENCIA_CANCELADO);
+        // Códigos ausentes no mapa são tratados como rejeição por default.
+        $status = Arr::get($this->statusOcorrencias, $primary, $d::OCORRENCIA_REJEITADO);
+        $d->setOcorrenciaTipo($status);
 
-            return;
+        switch ($status) {
+            case $d::OCORRENCIA_PAGO:
+                $this->totais['pagos']++;
+                $this->totais['valor_total'] += $d->getValor();
+                break;
+            case $d::OCORRENCIA_PENDENTE:
+                $this->totais['pendentes']++;
+                break;
+            case $d::OCORRENCIA_CANCELADO:
+                $this->totais['cancelados']++;
+                break;
+            case $d::OCORRENCIA_REJEITADO:
+                $this->totais['rejeitados']++;
+                break;
         }
 
-        $firstChar = substr($ocorrencias, 0, 1);
-        if (in_array($firstChar, ['A', 'H', 'P']) || in_array($ocorrencias, ['ZC', 'ZI', '01', 'RJ', 'SS'])) {
-            $this->totais['rejeitados']++;
-            $d->setOcorrenciaTipo($d::OCORRENCIA_REJEITADO);
-
-            return;
+        // Códigos secundários de rejeição viram anotações no registro.
+        foreach (array_slice($codigos, 1) as $codigo) {
+            if (! isset($this->statusOcorrencias[$codigo])) {
+                $descricao = Arr::get($this->ocorrencias, $codigo, 'Código Desconhecido');
+                $d->addRejeicao($codigo, $descricao);
+            }
         }
-
-        $d->setOcorrenciaTipo($d::OCORRENCIA_OUTROS);
     }
 
     /**
@@ -733,13 +711,19 @@ class Itau extends AbstractRetorno
      */
     protected function processarTrailerLote(array $trailerLote)
     {
+        // Quantidade real de pagamentos no lote = detalhes iniciados
+        // (segmentos A/J/N/O) desde o header deste lote. O campo 18-23 no
+        // trailer conta TODOS os registros (tipos 1, 3, 5), incluindo os
+        // segmentos complementares B, J-52, C, D, E, F, W e Z.
+        $qtdPagamentos = (int) $this->increment - (int) $this->incrementoInicioLote;
+
         $this->getTrailerLote()
             ->setCodBanco($this->rem(1, 3, $trailerLote))
             ->setLoteServico($this->rem(4, 7, $trailerLote))
             ->setTipoRegistro($this->rem(8, 8, $trailerLote))
             ->setQtdRegistroLote((int) $this->rem(18, 23, $trailerLote))
             ->setValorTotalPagamentos(Util::nFloat($this->rem(24, 41, $trailerLote) / 100, 2, false))
-            ->setQtdPagamentos((int) $this->rem(18, 23, $trailerLote) - 2); // Subtrai header e trailer
+            ->setQtdPagamentos($qtdPagamentos);
 
         return true;
     }

@@ -5,6 +5,8 @@ namespace Eduardokum\LaravelBoleto\Cnab\Pagamento\Cnab240\Banco;
 use Eduardokum\LaravelBoleto\Cnab\Pagamento\Cnab240\AbstractPagamento;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Pagamento as PagamentoRemessaContract;
 use Eduardokum\LaravelBoleto\Contracts\Pagamento\Pagamento as PagamentoContract;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Pagamento\AbstractPagamento as PagamentoBase;
 use Eduardokum\LaravelBoleto\Pagamento\Banco\Banco;
 use Eduardokum\LaravelBoleto\Util;
 
@@ -67,12 +69,23 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     const QUANTIDADE_MOEDA = '000000000000000'; // Quantidade da moeda (15 zeros)
     const AVISO_FAVORECIDO = '0'; // Aviso ao favorecido
 
-    // Constantes para tipos de chave PIX (NOTA 37)
-    const TIPO_CHAVE_PIX_CPF_CNPJ = '01'; // CPF/CNPJ
+    // Constantes para tipos de chave PIX (NOTA 37 - segmento B PIX, posições 15-16).
+    // Aplicável apenas quando o tipo de transferência é "04" (Chave Pix).
+    const TIPO_CHAVE_PIX_CELULAR = '01'; // Celular
     const TIPO_CHAVE_PIX_EMAIL = '02'; // E-mail
-    const TIPO_CHAVE_PIX_CELULAR = '03'; // Celular
+    const TIPO_CHAVE_PIX_CPF_CNPJ = '03'; // CPF/CNPJ
     const TIPO_CHAVE_PIX_ALEATORIA = '04'; // Chave Aleatória
-    const TIPO_CHAVE_PIX_DADOS_BANCARIOS = '05'; // Dados Bancários
+
+    // Identificação do Tipo de Transferência PIX (NOTA 36 - segmento A, posições 113-114).
+    // Define se o PIX é por dados bancários (CC/Pagamento/Poupança) ou por chave.
+    const TIPO_TRANSFER_PIX_CC = '01';        // Conta Corrente
+    const TIPO_TRANSFER_PIX_PAGAMENTO = 'PG'; // Conta Pagamento
+    const TIPO_TRANSFER_PIX_POUPANCA = '03';  // Conta Poupança
+    const TIPO_TRANSFER_PIX_CHAVE = '04';     // Chave Pix
+
+    // Câmara centralizadora (NOTA 35)
+    const CAMARA_PIX = '009'; // PIX (SPI)
+    const CAMARA_TED_CORRETORA = '888'; // TED para corretora (STR)
 
     /**
      * Itau constructor.
@@ -398,9 +411,16 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
 
         $this->segmentoA($pagamento);
 
-        // Verifica se é PIX ou TED/DOC para chamar o segmento B correto
+        // Para PIX: o layout do segmento B depende da Identificação do Tipo de
+        // Transferência (NOTA 36). Apenas o modelo "Chave" (04) usa o segmento
+        // B PIX (com chave de endereçamento). Para 01/PG/03 (dados bancários),
+        // o layout é o segmento B padrão — opcional, usado para aviso/email.
         if ($this->isPix($pagamento)) {
-            $this->segmentoBPix($pagamento);
+            if ($this->resolveTipoTransferenciaPix($pagamento) === self::TIPO_TRANSFER_PIX_CHAVE) {
+                $this->segmentoBPix($pagamento);
+            } else {
+                $this->segmentoB($pagamento);
+            }
         } else {
             $this->segmentoB($pagamento);
         }
@@ -430,7 +450,51 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
             return self::TIPO_PAGAMENTO_BOLETO;
         }
 
+        if ($this->isPix($pagamento)) {
+            return self::TIPO_PAGAMENTO_PIX;
+        }
+
         return parent::getTipoPagamentoDoPagamento($pagamento);
+    }
+
+    /**
+     * Sobrescrevemos o agrupamento para validar a regra do manual SISPAG
+     * (página 7): "Os lotes de serviços de pagamentos na forma de PIX devem
+     * ser enviados obrigatoriamente em arquivo separado das demais formas de
+     * pagamento". Multi-lote é permitido para combinações que NÃO incluam PIX
+     * (ex.: TED + BOLETO no mesmo arquivo). Se PIX aparecer junto com qualquer
+     * outro tipo, a geração é abortada.
+     *
+     * @return void
+     * @throws ValidationException
+     */
+    protected function agruparPagamentosPorTipo()
+    {
+        parent::agruparPagamentosPorTipo();
+        $this->validarSeparacaoPix();
+    }
+
+    /**
+     * Bloqueia a geração do arquivo se houver lote PIX misturado com outros
+     * tipos de pagamento (TED, BOLETO, etc.).
+     *
+     * @return void
+     * @throws ValidationException
+     */
+    protected function validarSeparacaoPix()
+    {
+        if (! isset($this->lotes[self::TIPO_PAGAMENTO_PIX])) {
+            return;
+        }
+
+        $outrosTipos = array_diff(array_keys($this->lotes), [self::TIPO_PAGAMENTO_PIX]);
+        if (! empty($outrosTipos)) {
+            throw new ValidationException(sprintf(
+                'Lotes PIX devem ser enviados em arquivo separado das demais formas de pagamento '
+                . '(manual SISPAG Itaú). Detectados no mesmo arquivo: PIX + %s.',
+                implode(', ', $outrosTipos)
+            ));
+        }
     }
 
     /**
@@ -455,6 +519,98 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     }
 
     /**
+     * Resolve a Identificação do Tipo de Transferência PIX (NOTA 36) — código
+     * que vai nas posições 113-114 do segmento A.
+     *
+     * Ordem de precedência:
+     *   1. Se o pagamento expõe getTipoTransferenciaPix() retornando 01/PG/03/04, usa.
+     *   2. Se há chave PIX configurada (getPixChave) → "04" (Chave).
+     *   3. Se getTipoConta() indica poupança (POUPANCA/POUP/03) → "03".
+     *   4. Se getTipoConta() indica conta pagamento (PAGAMENTO/PG) → "PG".
+     *   5. Default → "01" (Conta Corrente).
+     *
+     * @param \Eduardokum\LaravelBoleto\Pagamento\Banco\Banco $pagamento
+     * @return string
+     */
+    protected function resolveTipoTransferenciaPix($pagamento)
+    {
+        $valoresValidos = [
+            self::TIPO_TRANSFER_PIX_CC,
+            self::TIPO_TRANSFER_PIX_PAGAMENTO,
+            self::TIPO_TRANSFER_PIX_POUPANCA,
+            self::TIPO_TRANSFER_PIX_CHAVE,
+        ];
+
+        if (method_exists($pagamento, 'getTipoTransferenciaPix')) {
+            $tipo = $pagamento->getTipoTransferenciaPix();
+            if (in_array($tipo, $valoresValidos, true)) {
+                return $tipo;
+            }
+        }
+
+        if (method_exists($pagamento, 'getPixChave') && ! empty($pagamento->getPixChave())) {
+            return self::TIPO_TRANSFER_PIX_CHAVE;
+        }
+
+        if (method_exists($pagamento, 'getTipoConta')) {
+            $tipoConta = strtoupper((string) $pagamento->getTipoConta());
+            if (in_array($tipoConta, ['POUPANCA', 'POUP', '03'], true)) {
+                return self::TIPO_TRANSFER_PIX_POUPANCA;
+            }
+            if (in_array($tipoConta, ['PAGAMENTO', 'PG'], true)) {
+                return self::TIPO_TRANSFER_PIX_PAGAMENTO;
+            }
+        }
+
+        return self::TIPO_TRANSFER_PIX_CC;
+    }
+
+    /**
+     * Resolve o Tipo de Chave PIX (NOTA 37) — código de 2 dígitos que vai nas
+     * posições 15-16 do segmento B PIX.
+     *
+     * Ordem de precedência:
+     *   1. getPixChaveTipo() (constantes TIPO_CHAVEPIX_* do AbstractPagamento)
+     *      mapeado para o código numérico da NOTA 37.
+     *   2. getFormaIniciacao() já no formato "01"/"02"/"03"/"04" (compat).
+     *   3. Default "03" (CPF/CNPJ).
+     *
+     * @param \Eduardokum\LaravelBoleto\Pagamento\Banco\Banco $pagamento
+     * @return string
+     */
+    protected function resolveTipoChavePix($pagamento)
+    {
+        if (method_exists($pagamento, 'getPixChaveTipo')) {
+            $mapa = [
+                PagamentoBase::TIPO_CHAVEPIX_CELULAR   => self::TIPO_CHAVE_PIX_CELULAR,   // 01
+                PagamentoBase::TIPO_CHAVEPIX_EMAIL     => self::TIPO_CHAVE_PIX_EMAIL,     // 02
+                PagamentoBase::TIPO_CHAVEPIX_CPF       => self::TIPO_CHAVE_PIX_CPF_CNPJ,  // 03
+                PagamentoBase::TIPO_CHAVEPIX_CNPJ      => self::TIPO_CHAVE_PIX_CPF_CNPJ,  // 03
+                PagamentoBase::TIPO_CHAVEPIX_ALEATORIA => self::TIPO_CHAVE_PIX_ALEATORIA, // 04
+            ];
+            $tipo = $pagamento->getPixChaveTipo();
+            if ($tipo !== null && isset($mapa[$tipo])) {
+                return $mapa[$tipo];
+            }
+        }
+
+        if (method_exists($pagamento, 'getFormaIniciacao')) {
+            $formaIniciacao = $pagamento->getFormaIniciacao();
+            $valoresValidos = [
+                self::TIPO_CHAVE_PIX_CELULAR,
+                self::TIPO_CHAVE_PIX_EMAIL,
+                self::TIPO_CHAVE_PIX_CPF_CNPJ,
+                self::TIPO_CHAVE_PIX_ALEATORIA,
+            ];
+            if (in_array($formaIniciacao, $valoresValidos, true)) {
+                return $formaIniciacao;
+            }
+        }
+
+        return self::TIPO_CHAVE_PIX_CPF_CNPJ;
+    }
+
+    /**
      * Cria o segmento A CNAB 240 conforme especificação do Itaú
      * @param Banco $pagamento
      * @return Itau
@@ -464,13 +620,26 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     {
         $this->iniciaDetalhe();
 
+        $isPix = $this->isPix($pagamento);
+        $tipoTransferenciaPix = $isPix ? $this->resolveTipoTransferenciaPix($pagamento) : null;
+
+        // Câmara centralizadora (NOTA 35): "009" para PIX, "000" caso contrário.
+        $camara = $isPix ? self::CAMARA_PIX : '000';
+
+        // Código ISPB do banco favorecido (NOTA 35) — opcional, depende do
+        // pagamento expor o método. Caso contrário fica em branco.
+        $codigoIspb = '';
+        if (method_exists($pagamento, 'getCodigoIspb')) {
+            $codigoIspb = (string) $pagamento->getCodigoIspb();
+        }
+
         $this->add(1, 3, Util::formatCnab('9L', self::BANCO, 3)); // Posição 001-003: Código do Banco na Compensação (341)
         $this->add(4, 7, Util::formatCnab('9L', self::LOTE_SERVICO_HEADER, 4)); // Posição 004-007: Código do Lote (NOTA 3)
         $this->add(8, 8, Util::formatCnab('9L', self::TIPO_REGISTRO_DETALHE, 1)); // Posição 008-008: Tipo de Registro (3)
         $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote + 1, 5)); // Posição 009-013: Nº Sequencial Registro no Lote (NOTA 9)
         $this->add(14, 14, Util::formatCnab('X', self::CODIGO_SEGMENTO_A, 1)); // Posição 014-014: Código Segmento Reg. Detalhe (A)
         $this->add(15, 17, Util::formatCnab('9L', '000', 3)); // Posição 015-017: Tipo de Movimento (NOTA 10)
-        $this->add(18, 20, Util::formatCnab('9L', '000', 3)); // Posição 018-020: Código da Câmara Centralizadora (NOTA 35)
+        $this->add(18, 20, Util::formatCnab('X', $camara, 3)); // Posição 018-020: Código da Câmara Centralizadora (NOTA 35) — "009" para PIX
         $this->add(21, 23, Util::formatCnab('9L', $pagamento->getCodigoBanco(), 3)); // Posição 021-023: Código Banco Favorecido
 
         // Posição 024-043: Agência/Conta Favorecido (NOTA 11) - Campo único X(20)
@@ -489,7 +658,15 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(94, 101, Util::formatCnab('9L', $dataPagamento, 8)); // Posição 094-101: Data Prevista para Pagto (DDMMAAAA)
 
         $this->add(102, 104, Util::formatCnab('X', 'REA', 3)); // Posição 102-104: Tipo da Moeda (REA ou 009)
-        $this->add(105, 119, Util::formatCnab('9L', '0', 5)); // Posição 115-119: Zeros
+        $this->add(105, 112, Util::formatCnab('X', $codigoIspb, 8)); // Posição 105-112: Código ISPB da instituição favorecida (NOTA 35)
+
+        // Posição 113-114: Identificação do Tipo de Transferência (NOTA 36)
+        // PIX: "01" CC | "PG" Conta Pagamento | "03" Poupança | "04" Chave Pix.
+        // Demais formas: brancos (preserva layout TED/DOC inalterado).
+        $identTransferencia = $isPix ? $tipoTransferenciaPix : '';
+        $this->add(113, 114, Util::formatCnab('X', $identTransferencia, 2));
+
+        $this->add(115, 119, Util::formatCnab('9', '0', 5)); // Posição 115-119: Zeros (complemento)
 
         // Valor do Pagamento - 9(13)V9(02) = 15 dígitos com vírgula decimal assumida
         $valor = $pagamento->getValor() ? $pagamento->getValor() * 100 : 0;
@@ -564,8 +741,9 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote + 1, 5)); // Posição 009-013: Nº Sequencial Registro no Lote (NOTA 9)
         $this->add(14, 14, self::CODIGO_SEGMENTO_B); // Posição 014-014: Código Segmento Reg. Detalhe (B)
 
-        // Tipo de Chave PIX (NOTA 37)
-        $tipoChave = $pagamento->getFormaIniciacao() ?? '01'; // Default: 01 = CPF/CNPJ
+        // Tipo de Chave PIX (NOTA 37) — 01=Telefone, 02=E-mail, 03=CPF/CNPJ, 04=Chave Aleatória.
+        // Prioridade: pixChaveTipo (mapeado) > formaIniciacao (compat) > default '03' (CPF/CNPJ).
+        $tipoChave = $this->resolveTipoChavePix($pagamento);
         $this->add(15, 16, Util::formatCnab('X', $tipoChave, 2)); // Posição 015-016: Tipo Identificação da Chave (NOTA 37)
 
         $this->add(17, 17, self::CAMPO_BRANCO); // Posição 017-017: Brancos
