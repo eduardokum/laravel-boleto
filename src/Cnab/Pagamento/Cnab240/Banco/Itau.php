@@ -5,6 +5,8 @@ namespace Eduardokum\LaravelBoleto\Cnab\Pagamento\Cnab240\Banco;
 use Eduardokum\LaravelBoleto\Cnab\Pagamento\Cnab240\AbstractPagamento;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Pagamento as PagamentoRemessaContract;
 use Eduardokum\LaravelBoleto\Contracts\Pagamento\Pagamento as PagamentoContract;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\Pagamento\AbstractPagamento as PagamentoBase;
 use Eduardokum\LaravelBoleto\Pagamento\Banco\Banco;
 use Eduardokum\LaravelBoleto\Util;
 
@@ -67,12 +69,23 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     const QUANTIDADE_MOEDA = '000000000000000'; // Quantidade da moeda (15 zeros)
     const AVISO_FAVORECIDO = '0'; // Aviso ao favorecido
 
-    // Constantes para tipos de chave PIX (NOTA 37)
-    const TIPO_CHAVE_PIX_CPF_CNPJ = '01'; // CPF/CNPJ
+    // Constantes para tipos de chave PIX (NOTA 37 - segmento B PIX, posições 15-16).
+    // Aplicável apenas quando o tipo de transferência é "04" (Chave Pix).
+    const TIPO_CHAVE_PIX_CELULAR = '01'; // Celular
     const TIPO_CHAVE_PIX_EMAIL = '02'; // E-mail
-    const TIPO_CHAVE_PIX_CELULAR = '03'; // Celular
+    const TIPO_CHAVE_PIX_CPF_CNPJ = '03'; // CPF/CNPJ
     const TIPO_CHAVE_PIX_ALEATORIA = '04'; // Chave Aleatória
-    const TIPO_CHAVE_PIX_DADOS_BANCARIOS = '05'; // Dados Bancários
+
+    // Identificação do Tipo de Transferência PIX (NOTA 36 - segmento A, posições 113-114).
+    // Define se o PIX é por dados bancários (CC/Pagamento/Poupança) ou por chave.
+    const TIPO_TRANSFER_PIX_CC = '01';        // Conta Corrente
+    const TIPO_TRANSFER_PIX_PAGAMENTO = 'PG'; // Conta Pagamento
+    const TIPO_TRANSFER_PIX_POUPANCA = '03';  // Conta Poupança
+    const TIPO_TRANSFER_PIX_CHAVE = '04';     // Chave Pix
+
+    // Câmara centralizadora (NOTA 35)
+    const CAMARA_PIX = '009'; // PIX (SPI)
+    const CAMARA_TED_CORRETORA = '888'; // TED para corretora (STR)
 
     /**
      * Itau constructor.
@@ -446,7 +459,51 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
             return self::TIPO_PAGAMENTO_BOLETO;
         }
 
+        if ($this->isPix($pagamento)) {
+            return self::TIPO_PAGAMENTO_PIX;
+        }
+
         return parent::getTipoPagamentoDoPagamento($pagamento);
+    }
+
+    /**
+     * Sobrescrevemos o agrupamento para validar a regra do manual SISPAG
+     * (página 7): "Os lotes de serviços de pagamentos na forma de PIX devem
+     * ser enviados obrigatoriamente em arquivo separado das demais formas de
+     * pagamento". Multi-lote é permitido para combinações que NÃO incluam PIX
+     * (ex.: TED + BOLETO no mesmo arquivo). Se PIX aparecer junto com qualquer
+     * outro tipo, a geração é abortada.
+     *
+     * @return void
+     * @throws ValidationException
+     */
+    protected function agruparPagamentosPorTipo()
+    {
+        parent::agruparPagamentosPorTipo();
+        $this->validarSeparacaoPix();
+    }
+
+    /**
+     * Bloqueia a geração do arquivo se houver lote PIX misturado com outros
+     * tipos de pagamento (TED, BOLETO, etc.).
+     *
+     * @return void
+     * @throws ValidationException
+     */
+    protected function validarSeparacaoPix()
+    {
+        if (! isset($this->lotes[self::TIPO_PAGAMENTO_PIX])) {
+            return;
+        }
+
+        $outrosTipos = array_diff(array_keys($this->lotes), [self::TIPO_PAGAMENTO_PIX]);
+        if (! empty($outrosTipos)) {
+            throw new ValidationException(sprintf(
+                'Lotes PIX devem ser enviados em arquivo separado das demais formas de pagamento '
+                . '(manual SISPAG Itaú). Detectados no mesmo arquivo: PIX + %s.',
+                implode(', ', $outrosTipos)
+            ));
+        }
     }
 
     /**
