@@ -130,6 +130,20 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     protected $loteAtualNumero = 1;
 
     /**
+     * Sequencial do pagamento dentro do lote (NOTA 9). Conta pagamentos —
+     * não segmentos. O segmento principal (A ou J) incrementa e grava nas
+     * posições 9-13; os complementares (B, B-PIX, J-52) reutilizam o mesmo
+     * número, conforme: "Para o Segmento 'J-52', 'B', 'C', 'D', 'E', 'F',
+     * 'W' e 'Z', por se tratar de complemento de informações, conterá o
+     * mesmo número atribuído no Segmento 'A', 'J' e 'N' correspondente."
+     *
+     * Resetado no início de cada lote (headerLote / headerLoteMulti).
+     *
+     * @var int
+     */
+    protected $iSequencialPagamento = 0;
+
+    /**
      * Caracter de fim de linha
      * @var string
      */
@@ -254,6 +268,7 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     protected function headerLote()
     {
         $this->iniciaHeaderLote();
+        $this->iSequencialPagamento = 0; // NOTA 9: reseta sequencial de pagamento ao abrir lote
 
         $this->add(1, 3, self::BANCO); // Posição 001-003: Código do Banco na Compensação (341)
         $this->add(4, 7, self::LOTE_SERVICO_HEADER); // Posição 004-007: Código do Lote (NOTA 3)
@@ -656,6 +671,7 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     public function segmentoA($pagamento)
     {
         $this->iniciaDetalhe();
+        $this->iSequencialPagamento++; // NOTA 9: novo pagamento → novo sequencial
 
         // Para PIX, a câmara centralizadora vai como "009" (SPI) — NOTA 35.
         $isPix = $this->isPix($pagamento);
@@ -665,7 +681,7 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(1, 3, Util::formatCnab('9L', self::BANCO, 3)); // Posição 001-003: Código do Banco na Compensação (341)
         $this->add(4, 7, Util::formatCnab('9L', $this->loteAtualNumero, 4)); // Posição 004-007: Código do Lote (NOTA 3)
         $this->add(8, 8, Util::formatCnab('9L', self::TIPO_REGISTRO_DETALHE, 1)); // Posição 008-008: Tipo de Registro (3)
-        $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote, 5)); // Posição 009-013: Nº Sequencial Registro no Lote (NOTA 9)
+        $this->add(9, 13, Util::formatCnab('9L', $this->iSequencialPagamento, 5)); // Posição 009-013: Nº Sequencial Registro no Lote (NOTA 9)
         $this->add(14, 14, Util::formatCnab('X', self::CODIGO_SEGMENTO_A, 1)); // Posição 014-014: Código Segmento Reg. Detalhe (A)
         $this->add(15, 17, Util::formatCnab('9L', '000', 3)); // Posição 015-017: Tipo de Movimento (NOTA 10)
         $this->add(18, 20, Util::formatCnab('X', $camara, 3)); // Posição 018-020: Código da Câmara Centralizadora (NOTA 35) — "009" para PIX
@@ -726,7 +742,7 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(1, 3, self::BANCO); // Posição 001-003: Código do Banco na Compensação (341)
         $this->add(4, 7, Util::formatCnab('9L', $this->loteAtualNumero, 4)); // Posição 004-007: Código do Lote (NOTA 3)
         $this->add(8, 8, self::TIPO_REGISTRO_DETALHE); // Posição 008-008: Tipo de Registro (3)
-        $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote, 5)); // Posição 009-013: Nº Sequencial Registro no Lote (NOTA 9)
+        $this->add(9, 13, Util::formatCnab('9L', $this->iSequencialPagamento, 5)); // Posição 009-013: Nº Sequencial — complemento de A, repete o número (NOTA 9)
         $this->add(14, 14, self::CODIGO_SEGMENTO_B); // Posição 014-014: Código Segmento Reg. Detalhe (B)
         $this->add(15, 17, self::CAMPO_BRANCO); // Posição 015-017: Brancos
         $this->add(18, 18, $pagamento->getBeneficiario()->getTipoDocumento() == 'CPF' ? self::TIPO_DOCUMENTO_CPF : self::TIPO_DOCUMENTO_CNPJ); // Posição 018-018: Tipo Inscrição do Favorecido (1=CPF, 2=CNPJ)
@@ -761,7 +777,7 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(1, 3, self::BANCO); // Posição 001-003: Código do Banco na Compensação (341)
         $this->add(4, 7, Util::formatCnab('9L', $this->loteAtualNumero, 4)); // Posição 004-007: Código do Lote (NOTA 3)
         $this->add(8, 8, self::TIPO_REGISTRO_DETALHE); // Posição 008-008: Tipo de Registro (3)
-        $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote, 5)); // Posição 009-013: Nº Sequencial Registro no Lote (NOTA 9)
+        $this->add(9, 13, Util::formatCnab('9L', $this->iSequencialPagamento, 5)); // Posição 009-013: Nº Sequencial — complemento de A, repete o número (NOTA 9)
         $this->add(14, 14, self::CODIGO_SEGMENTO_B); // Posição 014-014: Código Segmento Reg. Detalhe (B)
 
         // Tipo de Chave PIX (NOTA 37) — 01 Telefone | 02 E-mail | 03 CPF/CNPJ | 04 Aleatória
@@ -800,13 +816,14 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     public function segmentoJ($pagamento)
     {
         $this->iniciaDetalhe();
+        $this->iSequencialPagamento++; // NOTA 9: novo pagamento → novo sequencial
 
         $codigoBarras = Util::onlyNumbers($pagamento->getCodigoBarras());
 
         $this->add(1, 3, self::BANCO); // 001-003: Código do Banco na Compensação (341)
         $this->add(4, 7, Util::formatCnab('9L', $this->loteAtualNumero, 4)); // 004-007: Código do Lote (NOTA 3)
         $this->add(8, 8, self::TIPO_REGISTRO_DETALHE); // 008-008: Tipo de Registro (3)
-        $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote, 5)); // 009-013: Nº Sequencial Registro no Lote (NOTA 9)
+        $this->add(9, 13, Util::formatCnab('9L', $this->iSequencialPagamento, 5)); // 009-013: Nº Sequencial Registro no Lote (NOTA 9)
         $this->add(14, 14, self::CODIGO_SEGMENTO_J); // 014-014: Código Segmento (J)
         $this->add(15, 17, Util::formatCnab('9L', '000', 3)); // 015-017: Tipo de Movimento (NOTA 10)
 
@@ -890,7 +907,7 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(1, 3, self::BANCO); // 001-003: Código do Banco
         $this->add(4, 7, Util::formatCnab('9L', $this->loteAtualNumero, 4)); // 004-007: Código do Lote
         $this->add(8, 8, self::TIPO_REGISTRO_DETALHE); // 008-008: Tipo de Registro (3)
-        $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote, 5)); // 009-013: Nº Sequencial
+        $this->add(9, 13, Util::formatCnab('9L', $this->iSequencialPagamento, 5)); // 009-013: Nº Sequencial — complemento de J, repete o número (NOTA 9)
         $this->add(14, 14, self::CODIGO_SEGMENTO_J); // 014-014: Segmento (J)
         $this->add(15, 17, Util::formatCnab('9L', '000', 3)); // 015-017: Tipo de Movimento
         $this->add(18, 19, self::CODIGO_REGISTRO_OPCIONAL_J52); // 018-019: Identificação do Registro Opcional (52)
@@ -934,6 +951,7 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     protected function headerLoteMulti(array $lote)
     {
         $this->iniciaHeaderLote();
+        $this->iSequencialPagamento = 0; // NOTA 9: reseta sequencial de pagamento ao abrir lote
 
         // Memoriza o número do lote para que os segmentos (A/B/J/J-52)
         // gravem o mesmo valor nas posições 4-7 — antes ficavam todos em "0001".
