@@ -39,6 +39,25 @@ interface Boleto
     const STATUS_CUSTOM = 99;
 
     /**
+     * Tipos canônicos de desconto, alinhados ao padrão Febraban CNAB 240.
+     *
+     * A aplicação consumidora informa um destes códigos via setDescontoCodigo();
+     * cada banco/layout traduz para o código nativo do seu manual através do
+     * mapa $tiposDescontoSuportados na respectiva classe de remessa.
+     *
+     * Caso o banco não suporte o tipo informado, uma ValidationException é
+     * lançada na geração da remessa.
+     */
+    const TIPO_DESCONTO_NENHUM = '0';
+    const TIPO_DESCONTO_VALOR_FIXO = '1';                       // Valor fixo até a data informada
+    const TIPO_DESCONTO_PERCENTUAL = '2';                       // Percentual até a data informada
+    const TIPO_DESCONTO_VALOR_ANTECIPACAO_DIA_CORRIDO = '3';
+    const TIPO_DESCONTO_VALOR_ANTECIPACAO_DIA_UTIL = '4';
+    const TIPO_DESCONTO_PERCENTUAL_DIA_CORRIDO = '5';
+    const TIPO_DESCONTO_PERCENTUAL_DIA_UTIL = '6';
+    const TIPO_DESCONTO_CANCELAMENTO = '7';
+
+    /**
      * Render PDF.
      *
      * @param bool $print
@@ -150,6 +169,22 @@ interface Boleto
      * @return mixed
      */
     public function getDesconto();
+
+    /**
+     * Retorna o tipo de desconto canônico.
+     *
+     * Deve retornar uma das constantes Boleto::TIPO_DESCONTO_*.
+     *
+     * @return string
+     */
+    public function getDescontoCodigo();
+
+    /**
+     * Retorna o percentual de desconto (utilizado quando o tipo é percentual).
+     *
+     * @return float
+     */
+    public function getDescontoPercentual();
 
     /**
      * @return mixed

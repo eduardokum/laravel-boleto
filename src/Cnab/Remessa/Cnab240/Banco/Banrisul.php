@@ -134,6 +134,26 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     protected $carteiras = ['1', '2', '3', '4'];
 
     /**
+     * Tipos de desconto suportados pelo Banrisul CNAB 240 (campo C021).
+     *
+     * O manual não diferencia "dia útil" de "dia corrido" para os tipos
+     * fixo/antecipação e percentual sobre valor: as variantes canônicas
+     * "dia útil" (4 e 6) são mapeadas para os equivalentes "dia corrido"
+     * (3 e 5) já tratados pelo banco.
+     *
+     * @var array<string, string>
+     */
+    protected $tiposDescontoSuportados = [
+        BoletoContract::TIPO_DESCONTO_VALOR_FIXO                      => self::DESCONTO_VALOR_FIXO,
+        BoletoContract::TIPO_DESCONTO_PERCENTUAL                      => self::DESCONTO_PERCENTUAL,
+        BoletoContract::TIPO_DESCONTO_VALOR_ANTECIPACAO_DIA_CORRIDO   => self::DESCONTO_VALOR_ANTECIPACAO_DIA_CORRIDO,
+        BoletoContract::TIPO_DESCONTO_VALOR_ANTECIPACAO_DIA_UTIL      => self::DESCONTO_VALOR_ANTECIPACAO_DIA_CORRIDO,
+        BoletoContract::TIPO_DESCONTO_PERCENTUAL_DIA_CORRIDO          => self::DESCONTO_PERCENTUAL_DIA_CORRIDO,
+        BoletoContract::TIPO_DESCONTO_PERCENTUAL_DIA_UTIL             => self::DESCONTO_PERCENTUAL_DIA_CORRIDO,
+        BoletoContract::TIPO_DESCONTO_CANCELAMENTO                    => self::DESCONTO_CANCELAMENTO,
+    ];
+
+    /**
      * Código do beneficiário no Banrisul (13 dígitos, fornecido pelo banco).
      *
      * @var string
@@ -410,15 +430,17 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     /**
      * Preenche desconto 1 conforme regras do manual (campos C021, C022, C023).
      *
+     * Para a carteira 4 (Cobrança Descontada) o manual obriga zerar todos os
+     * campos de desconto, independentemente do que foi configurado no boleto.
+     * Nas demais carteiras delega à implementação padrão CNAB 240, que
+     * aplica o mapa $tiposDescontoSuportados.
+     *
      * @param BoletoContract $boleto
      * @throws ValidationException
      */
     protected function preencheDesconto(BoletoContract $boleto)
     {
-        $codigo = $this->resolveCodigoDesconto($boleto);
-
-        // Carteira de desconto: campos zerados (manual C021/C022/C023).
-        if ((string) $this->getCarteira() === '4' || $codigo === '0' || $boleto->getDesconto() <= 0) {
+        if ((string) $this->getCarteira() === '4') {
             $this->add(142, 142, '0');
             $this->add(143, 150, '00000000');
             $this->add(151, 165, Util::formatCnab('9', 0, 15, 2));
@@ -426,43 +448,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
             return;
         }
 
-        $valor = $codigo === self::DESCONTO_PERCENTUAL || $codigo === self::DESCONTO_PERCENTUAL_DIA_CORRIDO
-            ? $boleto->getDescontoPercentual()
-            : $boleto->getDesconto();
-
-        $dataDesconto = $boleto->getDataDesconto()
-            ? $boleto->getDataDesconto()->format('dmY')
-            : '00000000';
-
-        $this->add(142, 142, $codigo);
-        $this->add(143, 150, $dataDesconto);
-        $this->add(151, 165, Util::formatCnab('9', $valor, 15, 2));
-    }
-
-    /**
-     * Resolve o código de desconto (C021) a partir do desconto configurado no
-     * boleto. Aceita os códigos do AbstractBoleto (1, 2, 3, 4, 5, 6, 7).
-     *
-     * @param BoletoContract $boleto
-     * @return string
-     */
-    protected function resolveCodigoDesconto(BoletoContract $boleto)
-    {
-        // Códigos não tratados (4, 6) são convertidos para os equivalentes
-        // tratados pelo banco (3 - dia corrido / 5 - percentual dia corrido).
-        $mapa = [
-            '1' => self::DESCONTO_VALOR_FIXO,
-            '2' => self::DESCONTO_PERCENTUAL,
-            '3' => self::DESCONTO_VALOR_ANTECIPACAO_DIA_CORRIDO,
-            '4' => self::DESCONTO_VALOR_ANTECIPACAO_DIA_CORRIDO,
-            '5' => self::DESCONTO_PERCENTUAL_DIA_CORRIDO,
-            '6' => self::DESCONTO_PERCENTUAL_DIA_CORRIDO,
-            '7' => self::DESCONTO_CANCELAMENTO,
-        ];
-
-        $codigo = (string) $boleto->getDescontoCodigo();
-
-        return $mapa[$codigo] ?? '0';
+        $this->preencheDescontoSegmentoP($boleto);
     }
 
     /**

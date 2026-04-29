@@ -77,6 +77,17 @@ class Bradesco extends AbstractRemessa implements RemessaContract
     protected $carteiras = ['04', '09', '28'];
 
     /**
+     * Tipos de desconto suportados pelo Bradesco CNAB 240 (segmento P, pos 142).
+     * Manual: 0 = Sem desconto | 1 = Valor fixo | 2 = Percentual.
+     *
+     * @var array<string, string>
+     */
+    protected $tiposDescontoSuportados = [
+        BoletoContract::TIPO_DESCONTO_VALOR_FIXO => '1',
+        BoletoContract::TIPO_DESCONTO_PERCENTUAL => '2',
+    ];
+
+    /**
      * Codigo do cliente junto ao banco.
      *
      * @var string
@@ -180,9 +191,7 @@ class Bradesco extends AbstractRemessa implements RemessaContract
         $this->add(118, 118, $boleto->getJuros() ? '2' : '3'); //'2' = Taxa Mensal, '3' = Isento
         $this->add(119, 126, $boleto->getDataVencimento()->format('dmY'));
         $this->add(127, 141, Util::formatCnab('9', $boleto->getJuros(), 15, 2)); //Taxa de Juros Mensal
-        $this->add(142, 142, $boleto->getDesconto() > 0 ? '1' : '0'); //0 = SEM DESCONTO | 1 = VALOR FIXO | 2 = PERCENTUAL
-        $this->add(143, 150, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmY') : '00000000');
-        $this->add(151, 165, Util::formatCnab('9', $boleto->getDesconto(), 15, 2));
+        $this->preencheDescontoSegmentoP($boleto);
         $this->add(166, 180, Util::formatCnab('9', 0, 15, 2));
         $this->add(181, 195, Util::formatCnab('9', 0, 15, 2));
         $this->add(196, 220, Util::formatCnab('X', $boleto->getNumeroControle(), 25));

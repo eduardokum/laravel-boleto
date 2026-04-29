@@ -157,6 +157,20 @@ abstract class AbstractRemessa
     protected $beneficiario;
 
     /**
+     * Mapa dos tipos de desconto canônicos suportados por este banco/layout.
+     *
+     * Chave: constante BoletoContract::TIPO_DESCONTO_* (código canônico que a
+     *        aplicação consumidora informa via setDescontoCodigo()).
+     * Valor: código nativo que o banco/layout escreve no arquivo de remessa.
+     *
+     * Bancos filhos sobrescrevem este array com os tipos que efetivamente
+     * suportam. Quando vazio, apenas TIPO_DESCONTO_NENHUM é aceito.
+     *
+     * @var array<string, string>
+     */
+    protected $tiposDescontoSuportados = [];
+
+    /**
      * Construtor
      *
      * @param array $params Parâmetros iniciais para construção do objeto
@@ -447,6 +461,137 @@ abstract class AbstractRemessa
         }
 
         return true;
+    }
+
+    /**
+     * Resolve o tipo de desconto canônico do boleto para o código nativo
+     * esperado pelo banco/layout.
+     *
+     * Regras:
+     *  - Se o boleto não tem tipo definido (TIPO_DESCONTO_NENHUM) mas possui
+     *    valor de desconto > 0, assume TIPO_DESCONTO_VALOR_FIXO (back-compat
+     *    com aplicações que usavam apenas setDesconto()).
+     *  - Se o tipo informado não está em $tiposDescontoSuportados, lança
+     *    ValidationException (fail-loud).
+     *
+     * @param BoletoContract $boleto
+     *
+     * @return string
+     * @throws ValidationException
+     */
+    protected function resolveCodigoDesconto(BoletoContract $boleto)
+    {
+        $codigo = (string) $boleto->getDescontoCodigo();
+
+        if ($codigo === BoletoContract::TIPO_DESCONTO_NENHUM && $boleto->getDesconto() > 0) {
+            $codigo = BoletoContract::TIPO_DESCONTO_VALOR_FIXO;
+        }
+
+        if ($codigo === BoletoContract::TIPO_DESCONTO_NENHUM) {
+            return BoletoContract::TIPO_DESCONTO_NENHUM;
+        }
+
+        if (! array_key_exists($codigo, $this->tiposDescontoSuportados)) {
+            $suportados = array_keys($this->tiposDescontoSuportados);
+            throw new ValidationException(sprintf(
+                'Tipo de desconto "%s" não é suportado pelo banco %s. Tipos canônicos suportados: %s',
+                $codigo,
+                $this->getCodigoBanco(),
+                $suportados ? implode(', ', $suportados) : 'nenhum'
+            ));
+        }
+
+        return $this->tiposDescontoSuportados[$codigo];
+    }
+
+    /**
+     * Retorna o valor de desconto a ser escrito no arquivo, considerando o
+     * tipo canônico informado: percentuais lêem de getDescontoPercentual();
+     * demais (valor fixo / antecipação) lêem de getDesconto().
+     *
+     * @param BoletoContract $boleto
+     *
+     * @return float
+     */
+    protected function resolveValorDesconto(BoletoContract $boleto)
+    {
+        return $this->isDescontoPercentual($boleto)
+            ? (float) $boleto->getDescontoPercentual()
+            : (float) $boleto->getDesconto();
+    }
+
+    /**
+     * Indica se o tipo canônico do desconto representa uma modalidade
+     * percentual (incluindo variantes por dia corrido / dia útil).
+     *
+     * @param BoletoContract $boleto
+     *
+     * @return bool
+     */
+    protected function isDescontoPercentual(BoletoContract $boleto)
+    {
+        return in_array((string) $boleto->getDescontoCodigo(), [
+            BoletoContract::TIPO_DESCONTO_PERCENTUAL,
+            BoletoContract::TIPO_DESCONTO_PERCENTUAL_DIA_CORRIDO,
+            BoletoContract::TIPO_DESCONTO_PERCENTUAL_DIA_UTIL,
+        ], true);
+    }
+
+    /**
+     * Retorna o valor de desconto SEMPRE em R$ absolutos, convertendo o
+     * percentual em monetário quando necessário.
+     *
+     * Útil para layouts que não possuem campo de "tipo de desconto" e só
+     * aceitam um valor monetário no campo de desconto. A app informa o tipo
+     * canônico e a lib se encarrega de produzir o valor que o arquivo de
+     * remessa exige.
+     *
+     * Conversões aplicadas:
+     *   - TIPO_DESCONTO_NENHUM         -> 0 (com back-compat: setDesconto()
+     *                                       sem setDescontoCodigo() é tratado
+     *                                       como VALOR_FIXO)
+     *   - TIPO_DESCONTO_VALOR_FIXO     -> getDesconto()
+     *   - TIPO_DESCONTO_PERCENTUAL     -> getValor() * getDescontoPercentual() / 100
+     *
+     * Tipos por dia (3-6) e cancelamento (7) dependem da existência do campo
+     * de tipo no layout — sem ele não há conversão sem perder semântica, e
+     * portanto lançam ValidationException.
+     *
+     * @param BoletoContract $boleto
+     *
+     * @return float
+     * @throws ValidationException
+     */
+    protected function resolveValorDescontoAbsoluto(BoletoContract $boleto)
+    {
+        $codigo = (string) $boleto->getDescontoCodigo();
+
+        if ($codigo === BoletoContract::TIPO_DESCONTO_NENHUM && $boleto->getDesconto() > 0) {
+            $codigo = BoletoContract::TIPO_DESCONTO_VALOR_FIXO;
+        }
+
+        if ($codigo === BoletoContract::TIPO_DESCONTO_NENHUM) {
+            return 0.0;
+        }
+
+        if ($codigo === BoletoContract::TIPO_DESCONTO_VALOR_FIXO) {
+            return (float) $boleto->getDesconto();
+        }
+
+        if ($codigo === BoletoContract::TIPO_DESCONTO_PERCENTUAL) {
+            $valorTitulo = (float) $boleto->getValor();
+            $percentual = (float) $boleto->getDescontoPercentual();
+
+            return round($valorTitulo * $percentual / 100, 2);
+        }
+
+        throw new ValidationException(sprintf(
+            'Tipo de desconto "%s" não pode ser representado pelo layout do banco %s '
+            . '(layout sem campo de tipo de desconto). Tipos suportados nesta modalidade: '
+            . 'TIPO_DESCONTO_VALOR_FIXO, TIPO_DESCONTO_PERCENTUAL.',
+            $codigo,
+            $this->getCodigoBanco()
+        ));
     }
 
     /**
