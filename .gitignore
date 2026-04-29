@@ -9,3 +9,4 @@
 .vs/
 exemplos/arquivos/*.txt
 exemplos/teste.php
+.claude/settings.local.json
