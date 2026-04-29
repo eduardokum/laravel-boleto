@@ -51,6 +51,16 @@ class Btg extends AbstractRemessa implements RemessaContract
     protected $carteiras = [1, 2, 3, 4, 5, 6];
 
     /**
+     * Tipos de desconto suportados pelo BTG CNAB 240 (segmento P, pos 142).
+     * Layout aceita apenas modalidade percentual neste campo.
+     *
+     * @var array<string, string>
+     */
+    protected $tiposDescontoSuportados = [
+        BoletoContract::TIPO_DESCONTO_PERCENTUAL => '2',
+    ];
+
+    /**
      * Codigo do cliente junto ao banco.
      *
      * @var string
@@ -142,9 +152,7 @@ class Btg extends AbstractRemessa implements RemessaContract
         $this->add(119, 126, $boleto->getJurosApos() == 0 ? '00000000' :
             $boleto->getDataVencimentoApos()->format('dmY'));
         $this->add(127, 141, Util::formatCnab('9', $boleto->getMoraDia(), 15, 2)); //Valor da mora/dia ou Taxa mensal
-        $this->add(142, 142, $boleto->getDesconto() > 0 ? 2 : 0); // '2' = Percentual Até a Data Informada
-        $this->add(143, 150, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmY') : '00000000');
-        $this->add(151, 165, Util::formatCnab('9', $boleto->getDesconto(), 15, 2));
+        $this->preencheDescontoSegmentoP($boleto);
         $this->add(166, 180, Util::formatCnab('9', 0, 15, 2));
         $this->add(181, 195, Util::formatCnab('9', 0, 15, 2));
         $this->add(196, 220, Util::formatCnab('X', $boleto->getNumeroControle(), 25));

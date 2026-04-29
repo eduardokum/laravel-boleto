@@ -57,6 +57,16 @@ class Unicred extends AbstractRemessa implements RemessaContract
     protected $carteiras = ['21'];
 
     /**
+     * Tipos de desconto suportados pela Unicred CNAB 400 (posição 150).
+     * Manual: 0 = Isento | 1 = Valor fixo.
+     *
+     * @var array<string, string>
+     */
+    protected $tiposDescontoSuportados = [
+        BoletoContract::TIPO_DESCONTO_VALOR_FIXO => '1',
+    ];
+
+    /**
      * Caracter de fim de linha
      *
      * @var string
@@ -210,7 +220,7 @@ class Unicred extends AbstractRemessa implements RemessaContract
         // Domínio:
         // 0 = Isento
         // 1 = Valor Fixo
-        $this->add(150, 150, $boleto->getDesconto() > 0 ? '1' : '0'); //Código do desconto
+        $this->add(150, 150, $this->resolveCodigoDesconto($boleto)); //Código do desconto
         $this->add(151, 156, $boleto->getDataDocumento()->format('dmy'));
         $this->add(157, 157, '0');
         // $this->add(158, 158, self::INSTRUCAO_SEM);
@@ -228,8 +238,9 @@ class Unicred extends AbstractRemessa implements RemessaContract
         }
 
         $this->add(161, 173, Util::formatCnab('9', $boleto->getMoraDia(), 13, 2));
-        $this->add(174, 179, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmy') : '000000');
-        $this->add(180, 192, Util::formatCnab('9', $boleto->getDesconto() > 0 ? $boleto->getDesconto() : '0', 13, 2));
+        $valorDesconto = $this->resolveValorDesconto($boleto);
+        $this->add(174, 179, $valorDesconto > 0 && $boleto->getDataDesconto() ? $boleto->getDataDesconto()->format('dmy') : '000000');
+        $this->add(180, 192, Util::formatCnab('9', $valorDesconto, 13, 2));
         $this->add(193, 203, Util::formatCnab('9', $boleto->getNossoNumero(), 11)); //Nosso Número na UNICRED
         $this->add(204, 205, '00'); //Valor do Abatimento a ser concedido
         $this->add(206, 218, Util::formatCnab('9', 0, 13)); //Valor do Abatimento a ser concedido

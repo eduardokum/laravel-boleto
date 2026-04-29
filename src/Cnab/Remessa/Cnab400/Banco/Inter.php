@@ -37,6 +37,17 @@ class Inter extends AbstractRemessa implements RemessaContract
     protected $carteiras = ['112'];
 
     /**
+     * Tipos de desconto suportados pelo Inter CNAB 400 (posição 184).
+     * Códigos nativos: '1' = Valor fixo | '4' = Percentual.
+     *
+     * @var array<string, string>
+     */
+    protected $tiposDescontoSuportados = [
+        BoletoContract::TIPO_DESCONTO_VALOR_FIXO => '1',
+        BoletoContract::TIPO_DESCONTO_PERCENTUAL => '4',
+    ];
+
+    /**
      * Caracter de fim de linha
      *
      * @var string
@@ -129,26 +140,22 @@ class Inter extends AbstractRemessa implements RemessaContract
         $this->add(161, 173, Util::formatCnab('9', 0, 13, 2));
         $this->add(174, 177, Util::formatCnab('9', $boleto->getJuros(), 4, 2));
         $this->add(178, 183, $boleto->getJuros() > 0 ? ($boleto->getDataVencimento()->copy())->addDays($boleto->getJurosApos() > 0 ? $boleto->getJurosApos() : 1)->format('dmy') : '000000');
-        $descontoCodigo = $boleto->getDescontoCodigo() ?: '0';
-        $descontoValor = $descontoCodigo === '1' ? $boleto->getDesconto() : 0;
-        $descontoPercentual = $descontoCodigo === '4' ? $boleto->getDescontoPercentual() : 0;
+        $descontoCodigo = $this->resolveCodigoDesconto($boleto);
+        $isPercentual = $this->isDescontoPercentual($boleto);
+        $descontoValor = ! $isPercentual ? (float) $boleto->getDesconto() : 0;
+        $descontoPercentual = $isPercentual ? (float) $boleto->getDescontoPercentual() : 0;
 
-        if ($descontoCodigo === '1' && $descontoValor <= 0) {
+        // Layout exige zerar tudo quando não há valor efetivo a aplicar.
+        if ($descontoCodigo === BoletoContract::TIPO_DESCONTO_NENHUM
+            || ($descontoValor <= 0 && $descontoPercentual <= 0)) {
             $descontoCodigo = '0';
-        }
-        if ($descontoCodigo === '4' && $descontoPercentual <= 0) {
-            $descontoCodigo = '0';
-        }
-
-        if ($descontoCodigo === '0') {
             $descontoValor = 0;
             $descontoPercentual = 0;
-        }
-
-        $descontoData = '000000';
-
-        if ($descontoCodigo !== '0' && $boleto->getDataDesconto()) {
-            $descontoData = $boleto->getDataDesconto()->format('dmy');
+            $descontoData = '000000';
+        } else {
+            $descontoData = $boleto->getDataDesconto()
+                ? $boleto->getDataDesconto()->format('dmy')
+                : '000000';
         }
 
         $this->add(184, 184, $descontoCodigo);

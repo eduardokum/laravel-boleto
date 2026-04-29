@@ -52,6 +52,16 @@ class Sicredi extends AbstractRemessa implements RemessaContract
     protected $carteiras = ['A'];
 
     /**
+     * Tipos de desconto suportados pelo Sicredi CNAB 240 (segmento P, pos 142).
+     * Manual: somente "1 = Valor fixo até a data informada".
+     *
+     * @var array<string, string>
+     */
+    protected $tiposDescontoSuportados = [
+        BoletoContract::TIPO_DESCONTO_VALOR_FIXO => '1',
+    ];
+
+    /**
      * Define o código da carteira (Com ou sem registro)
      *
      * @param string $carteira
@@ -129,9 +139,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(119, 126, $boleto->getJurosApos() == 0 ? '00000000' :
             $boleto->getDataVencimentoApos()->format('dmY'));
         $this->add(127, 141, Util::formatCnab('9', $boleto->getMoraDia(), 15, 2)); //Valor da mora/dia ou Taxa mensal
-        $this->add(142, 142, $boleto->getDesconto() > 0 ? '1' : '0');
-        $this->add(143, 150, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmY') : '00000000');
-        $this->add(151, 165, Util::formatCnab('9', $boleto->getDesconto(), 15, 2));
+        $this->preencheDescontoSegmentoP($boleto);
         $this->add(166, 180, Util::formatCnab('9', 0, 15, 2));
         $this->add(181, 195, Util::formatCnab('9', 0, 15, 2));
         $this->add(196, 220, Util::formatCnab('X', $boleto->getNumeroControle(), 25));

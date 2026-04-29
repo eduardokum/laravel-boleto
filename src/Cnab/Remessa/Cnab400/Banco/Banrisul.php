@@ -291,9 +291,10 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(162, 173, Util::formatCnab('9', $boleto->getMoraDia(), 12, 2));
         $this->add(174, 192, '');
 
-        if ($boleto->getDesconto() > 0) {
+        $valorDescontoAbs = $this->resolveValorDescontoAbsoluto($boleto);
+        if ($valorDescontoAbs > 0 && $boleto->getDataDesconto()) {
             $this->add(174, 179, $boleto->getDataDesconto()->format('dmy'));
-            $this->add(180, 192, Util::formatCnab('9', $boleto->getDesconto(), 13, 2));
+            $this->add(180, 192, Util::formatCnab('9', $valorDescontoAbs, 13, 2));
         }
 
         $this->add(193, 205, Util::formatCnab('9', 0, 13, 2));

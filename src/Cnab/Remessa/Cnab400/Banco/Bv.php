@@ -61,6 +61,17 @@ class Bv extends AbstractRemessa implements RemessaContract
     protected $carteiras = [1, 200, 300, 400, 500];
 
     /**
+     * Tipos de desconto suportados pelo BV CNAB 400 (posição 170).
+     * Códigos nativos do layout: '0' = Percentual | '1' = Valor.
+     *
+     * @var array<string, string>
+     */
+    protected $tiposDescontoSuportados = [
+        BoletoContract::TIPO_DESCONTO_PERCENTUAL => '0',
+        BoletoContract::TIPO_DESCONTO_VALOR_FIXO => '1',
+    ];
+
+    /**
      * Caracter de fim de linha
      *
      * @var string
@@ -186,9 +197,12 @@ class Bv extends AbstractRemessa implements RemessaContract
         $this->add(128, 136, '');
         $this->add(137, 137, ''); // Branco Percentual por dia ou Acatar parâmetro do convênio, 0 Acatar parâmetro do convênio, 1 Percentual por dia, 2 Percentual Mensal, 3 Isento, 4 Valor ao Dia, 5 Valor ao Mês
         $this->add(138, 150, Util::formatCnab('9', $boleto->getMoraDia(), 13, 2));
-        $this->add(151, 156, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmy') : '000000');
-        $this->add(157, 169, Util::formatCnab('9', $boleto->getDesconto(), 13, 2));
-        $this->add(170, 170, '0'); // Desconto -  0 Percentual, 1 Valor
+        $codigoDesconto = $this->resolveCodigoDesconto($boleto);
+        $valorDesconto = $this->resolveValorDesconto($boleto);
+        $temDesconto = $codigoDesconto !== BoletoContract::TIPO_DESCONTO_NENHUM && $valorDesconto > 0;
+        $this->add(151, 156, $temDesconto ? $boleto->getDataDesconto()->format('dmy') : '000000');
+        $this->add(157, 169, Util::formatCnab('9', $temDesconto ? $valorDesconto : 0, 13, 2));
+        $this->add(170, 170, $temDesconto ? $codigoDesconto : '0'); // Desconto -  0 Percentual, 1 Valor
         $this->add(171, 182, Util::formatCnab('9', 0, 12, 2));
         $this->add(183, 195, Util::formatCnab('9', 0, 13, 2));
         $this->add(196, 197, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? '02' : '01');

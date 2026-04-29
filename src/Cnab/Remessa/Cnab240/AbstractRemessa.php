@@ -3,8 +3,10 @@
 namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab240;
 
 use ForceUTF8\Encoding;
+use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\AbstractRemessa as AbstractRemessaGeneric;
+use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
 abstract class AbstractRemessa extends AbstractRemessaGeneric
 {
@@ -119,6 +121,42 @@ abstract class AbstractRemessa extends AbstractRemessaGeneric
         $this->tamanhos_linha[self::TRAILER] = $this->tamanho_linha;
         $this->atual = &$this->aRegistros[self::TRAILER];
         $this->tamanho_atual = &$this->tamanhos_linha[self::TRAILER];
+    }
+
+    /**
+     * Preenche o bloco padrão de desconto 1 do segmento P (Febraban CNAB 240),
+     * posições 142-165:
+     *   - 142     Código do tipo de desconto (1 byte)
+     *   - 143-150 Data limite do desconto (DDMMAAAA)
+     *   - 151-165 Valor/percentual do desconto (15,2)
+     *
+     * Bancos com regras particulares (ex.: Banrisul carteira 4) podem
+     * sobrescrever este método ou validar antes de chamá-lo.
+     *
+     * @param BoletoContract $boleto
+     *
+     * @throws ValidationException
+     */
+    protected function preencheDescontoSegmentoP(BoletoContract $boleto)
+    {
+        $codigo = $this->resolveCodigoDesconto($boleto);
+        $valor = $this->resolveValorDesconto($boleto);
+
+        if ($codigo === BoletoContract::TIPO_DESCONTO_NENHUM || $valor <= 0) {
+            $this->add(142, 142, '0');
+            $this->add(143, 150, '00000000');
+            $this->add(151, 165, Util::formatCnab('9', 0, 15, 2));
+
+            return;
+        }
+
+        $dataDesconto = $boleto->getDataDesconto()
+            ? $boleto->getDataDesconto()->format('dmY')
+            : '00000000';
+
+        $this->add(142, 142, $codigo);
+        $this->add(143, 150, $dataDesconto);
+        $this->add(151, 165, Util::formatCnab('9', $valor, 15, 2));
     }
 
     /**
