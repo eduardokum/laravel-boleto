@@ -339,7 +339,8 @@ class Banrisul extends AbstractRetorno implements RetornoCnab240
             ->setTipoRegistro($this->rem(8, 8, $header))
             ->setTipoInscricao($this->rem(18, 18, $header))
             ->setNumeroInscricao($this->rem(19, 32, $header))
-            ->setCodigoCedente($this->rem(33, 52, $header))
+            // Manual Banrisul CNAB 240, campo 07.0: numérico, usar as 13 primeiras posições do campo (20 chars).
+            ->setCodigoCedente($this->rem(33, 45, $header))
             ->setAgencia($this->rem(53, 57, $header))
             ->setAgenciaDv($this->rem(58, 58, $header))
             ->setConta($this->rem(59, 70, $header))
@@ -371,7 +372,8 @@ class Banrisul extends AbstractRetorno implements RetornoCnab240
             ->setVersaoLayoutLote($this->rem(14, 16, $headerLote))
             ->setTipoInscricao($this->rem(18, 18, $headerLote))
             ->setNumeroInscricao($this->rem(19, 33, $headerLote))
-            ->setCodigoCedente($this->rem(34, 53, $headerLote))
+            // Manual Banrisul CNAB 240, campo 11.1: numérico, usar as 13 primeiras posições do campo (20 chars).
+            ->setCodigoCedente($this->rem(34, 46, $headerLote))
             ->setAgencia($this->rem(54, 58, $headerLote))
             ->setAgenciaDv($this->rem(59, 59, $headerLote))
             ->setConta($this->rem(60, 71, $headerLote))
