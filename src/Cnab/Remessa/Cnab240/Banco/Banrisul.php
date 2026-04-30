@@ -510,6 +510,21 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     }
 
     /**
+     * Manual seção 2.3, item 4: em campos alfanuméricos não utilizar
+     * acentuação gráfica, pontuação, parênteses, tabulações ou caracteres
+     * especiais — podem rejeitar a remessa. Substitui por espaço para
+     * preservar separação entre palavras (ex.: "AV.DESEMBARGADOR" → "AV DESEMBARGADOR").
+     *
+     * @param string|null $value
+     *
+     * @return string
+     */
+    protected function sanitizeAlfa($value)
+    {
+        return preg_replace('/[^A-Za-z0-9 \-]/', ' ', (string) $value);
+    }
+
+    /**
      * @param BoletoContract $boleto
      *
      * @return $this
@@ -532,12 +547,12 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         // Dados do pagador (18-153)
         $this->add(18, 18, $this->getTipoInscricao($pagador->getDocumento()));
         $this->add(19, 33, Util::formatCnab('9', Util::onlyNumbers($pagador->getDocumento()), 15));
-        $this->add(34, 73, Util::formatCnab('X', $pagador->getNome(), 40));
-        $this->add(74, 113, Util::formatCnab('X', $pagador->getEndereco(), 40));
-        $this->add(114, 128, Util::formatCnab('X', $pagador->getBairro(), 15));
+        $this->add(34, 73, Util::formatCnab('X', $this->sanitizeAlfa($pagador->getNome()), 40));
+        $this->add(74, 113, Util::formatCnab('X', $this->sanitizeAlfa($pagador->getEndereco()), 40));
+        $this->add(114, 128, Util::formatCnab('X', $this->sanitizeAlfa($pagador->getBairro()), 15));
         $this->add(129, 133, Util::formatCnab('9', Util::onlyNumbers($pagador->getCep()), 5));
         $this->add(134, 136, Util::formatCnab('9', Util::onlyNumbers(substr($pagador->getCep(), 6, 9)), 3));
-        $this->add(137, 151, Util::formatCnab('X', $pagador->getCidade(), 15));
+        $this->add(137, 151, Util::formatCnab('X', $this->sanitizeAlfa($pagador->getCidade()), 15));
         $this->add(152, 153, Util::formatCnab('X', $pagador->getUf(), 2));
 
         // Sacador / Avalista (154-209) - Banrisul: NÃO informar aqui.
@@ -662,16 +677,16 @@ class Banrisul extends AbstractRemessa implements RemessaContract
 
         $this->add(20, 20, $this->getTipoInscricao($sacador->getDocumento()));
         $this->add(21, 35, Util::formatCnab('9', Util::onlyNumbers($sacador->getDocumento()), 15));
-        $this->add(36, 75, Util::formatCnab('X', $sacador->getNome(), 40));
-        $this->add(76, 115, Util::formatCnab('X', $sacador->getEndereco(), 40));
-        $this->add(116, 130, Util::formatCnab('X', $sacador->getBairro(), 15));
+        $this->add(36, 75, Util::formatCnab('X', $this->sanitizeAlfa($sacador->getNome()), 40));
+        $this->add(76, 115, Util::formatCnab('X', $this->sanitizeAlfa($sacador->getEndereco()), 40));
+        $this->add(116, 130, Util::formatCnab('X', $this->sanitizeAlfa($sacador->getBairro()), 15));
 
         // Manual (3.7): CEP (5 num) + Sufixo CEP (3 num) - separados.
         $cep = Util::onlyNumbers($sacador->getCep());
         $this->add(131, 135, Util::formatCnab('9', substr($cep, 0, 5), 5));
         $this->add(136, 138, Util::formatCnab('9', substr($cep, 5, 3), 3));
 
-        $this->add(139, 153, Util::formatCnab('X', $sacador->getCidade(), 15));
+        $this->add(139, 153, Util::formatCnab('X', $this->sanitizeAlfa($sacador->getCidade()), 15));
         $this->add(154, 155, Util::formatCnab('X', $sacador->getUf(), 2));
 
         // CNAB final (156-240) - Brancos
@@ -699,12 +714,14 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(19, 32, Util::formatCnab('9', Util::onlyNumbers($this->getBeneficiario()->getDocumento()), 14));
         // Manual G007: informar à esquerda e deixar espaços em branco à direita.
         $this->add(33, 52, Util::formatCnab('X', $this->getCodigoCliente(), 20));
-        // Conta corrente (53-72) - Manual: Brancos* (campo não considerado)
-        $this->add(53, 57, '');
-        $this->add(58, 58, '');
-        $this->add(59, 70, '');
-        $this->add(71, 71, '');
-        $this->add(72, 72, '');
+        // Conta corrente (53-72) - Banrisul: campo "Brancos*" (não considerado),
+        // mas a regra geral 2.3 item 1 do manual exige zeros para Num não utilizado;
+        // validadores estritos rejeitam Num preenchido com espaços.
+        $this->add(53, 57, Util::formatCnab('9', 0, 5));
+        $this->add(58, 58, ''); // DV agência (Alfa)
+        $this->add(59, 70, Util::formatCnab('9', 0, 12));
+        $this->add(71, 71, ''); // DV conta (Alfa)
+        $this->add(72, 72, ''); // DV ag/conta (Alfa)
 
         // Nome do beneficiário (73-102) e nome do banco (103-132)
         $this->add(73, 102, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
@@ -753,12 +770,13 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(19, 33, Util::formatCnab('9', Util::onlyNumbers($this->getBeneficiario()->getDocumento()), 15));
         // Manual G007: informar à esquerda e deixar espaços em branco à direita.
         $this->add(34, 53, Util::formatCnab('X', $this->getCodigoCliente(), 20));
-        // Conta corrente (54-73) - Manual: Brancos*
-        $this->add(54, 58, '');
-        $this->add(59, 59, '');
-        $this->add(60, 71, '');
-        $this->add(72, 72, '');
-        $this->add(73, 73, '');
+        // Conta corrente (54-73) - Banrisul: campo "Brancos*" (não considerado),
+        // mas Num não utilizado exige zeros pela regra geral 2.3 item 1 do manual.
+        $this->add(54, 58, Util::formatCnab('9', 0, 5));
+        $this->add(59, 59, ''); // DV agência (Alfa)
+        $this->add(60, 71, Util::formatCnab('9', 0, 12));
+        $this->add(72, 72, ''); // DV conta (Alfa)
+        $this->add(73, 73, ''); // DV ag/conta (Alfa)
 
         $this->add(74, 103, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
 
