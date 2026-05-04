@@ -24,6 +24,22 @@ use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
 class Banrisul extends AbstractRemessa implements RemessaContract
 {
     /**
+     * Manual (240 posições): convênio é numérico (20) mas o Banrisul considera
+     * as 13 primeiras posições. Para não deixar espaços (que invalidam campo
+     * numérico), preenchemos 13 dígitos + 7 zeros.
+     *
+     * @return string
+     */
+    protected function getConvenioCnab20()
+    {
+        $c = Util::onlyNumbers($this->getCodigoCliente());
+        $c13 = substr($c, 0, 13);
+        $c13 = str_pad($c13, 13, '0', STR_PAD_LEFT);
+
+        return $c13 . '0000000';
+    }
+
+    /**
      * Códigos de movimento (campo C004 do manual)
      */
     const OCORRENCIA_REMESSA = '01';
@@ -235,7 +251,12 @@ class Banrisul extends AbstractRemessa implements RemessaContract
             $this->segmentoR($boleto);
         }
 
-        if ($boleto->getSacadorAvalista()) {
+        $especie = (string) $boleto->getEspecieDocCodigo(99, 240);
+        if ($especie === 'AD' && ! $boleto->getSacadorAvalista()) {
+            throw new ValidationException('Banrisul CNAB240: Espécie "AD" (título de terceiros) exige Sacador/Avalista e inclusão do Segmento Y-01, conforme manual.');
+        }
+
+        if ($boleto->getSacadorAvalista() || $especie === 'AD') {
             $this->segmentoY01($boleto);
         }
 
@@ -301,6 +322,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     {
         $this->iniciaDetalhe();
         $movimento = $this->getCodigoMovimento($boleto);
+        $moeda = (string) $boleto->getMoeda();
 
         // Controle (1-15)
         $this->add(1, 3, Util::onlyNumbers($this->getCodigoBanco()));
@@ -335,18 +357,22 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(76, 77, '');
 
         $this->add(78, 85, $boleto->getDataVencimento()->format('dmY'));
-        $this->add(86, 100, Util::formatCnab('9', $boleto->getValor(), 15, 2));
+        // Valor do título (86-100)
+        // Manual: moeda 02 (dólar) usa 4 casas decimais; demais, 2 casas.
+        $dec = $moeda === '02' ? 4 : 2;
+        $this->add(86, 100, Util::formatCnab('9', $boleto->getValor(), 15, $dec));
 
         // Agência cobradora (101-106) - Brancos*/zeros
         $this->add(101, 105, '00000');
         $this->add(106, 106, '');
 
-        $this->add(107, 108, Util::formatCnab('9', $boleto->getEspecieDocCodigo(), 2));
+        // Espécie do título (107-108) é alfanumérica no Banrisul (ex.: AA, AB, AC, AD)
+        $this->add(107, 108, Util::formatCnab('X', $boleto->getEspecieDocCodigo(99, 240), 2));
         $this->add(109, 109, Util::formatCnab('A', $boleto->getAceite(), 1));
         $this->add(110, 117, $boleto->getDataDocumento()->format('dmY'));
 
         // Juros de mora (118-141) - C018, C019, C020
-        $this->preencheJuros($boleto);
+        $this->preencheJuros($boleto, $dec);
 
         // Desconto 1 (142-165) - C021, C022, C023
         $this->preencheDesconto($boleto);
@@ -365,13 +391,18 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->preencheBaixa($boleto);
 
         // Código da moeda (228-229) - G065. Default 09 = Real.
-        $this->add(228, 229, Util::formatCnab('9', $boleto->getMoeda(), 2));
+        // Manual: códigos numéricos devem ocupar 2 posições (ex.: 09). Se vier "9",
+        // precisa virar "09" para não gerar "9 " (com espaço) e rejeitar o arquivo.
+        if (ctype_digit($moeda) && strlen($moeda) === 1) {
+            $moeda = '0' . $moeda;
+        }
+        $this->add(228, 229, Util::formatCnab('X', $moeda, 2));
 
-        // Código de espécie de cobrança (230-239) - C030
-        $this->add(230, 239, $this->getCodigoEspecieCobranca());
+        // Número do contrato (230-239) - manual: contrato da operação de crédito
+        $this->add(230, 239, Util::formatCnab('9', 0, 10));
 
-        // Autorização de pagamento parcial (240) - C077
-        $this->add(240, 240, self::PAGAMENTO_PARCIAL_NAO);
+        // CNAB final (240) - branco
+        $this->add(240, 240, '');
 
         return $this;
     }
@@ -404,7 +435,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
      * @param BoletoContract $boleto
      * @throws ValidationException
      */
-    protected function preencheJuros(BoletoContract $boleto)
+    protected function preencheJuros(BoletoContract $boleto, $decValorTitulo = 2)
     {
         // Carteira de desconto: obrigatoriamente isento (manual C018)
         if ((string) $this->getCarteira() === '4' || $boleto->getJuros() <= 0) {
@@ -415,14 +446,28 @@ class Banrisul extends AbstractRemessa implements RemessaContract
             return;
         }
 
-        // Data de juros: deve ser maior que a data de vencimento (manual C019).
-        // Se ausente, banco assume dia imediatamente após o vencimento.
-        $diasApos = max(1, (int) $boleto->getJurosApos());
+        // Manual:
+        // - Cód. 1 = valor ao dia; cód. 2 = taxa mensal
+        // - Se data não informada, assume vencimento
+        $diasApos = max(0, (int) $boleto->getJurosApos());
         $dataJuros = $boleto->getDataVencimento()->copy()->addDays($diasApos);
+
+        $moeda = (string) $boleto->getMoeda();
+        if ($moeda === '02') {
+            // Para moeda 02 o manual restringe o código a "1" (valor ao dia).
+            $this->add(118, 118, self::JUROS_VALOR_DIA);
+            $this->add(119, 126, $dataJuros->format('dmY'));
+
+            // Converte taxa mensal (%) em valor/dia (aproximação 30 dias), para manter o contrato
+            // do SDK (getJuros() retorna percentual).
+            $valorDia = ((float) $boleto->getValor()) * (min((float) $boleto->getJuros(), 99.99) / 100) / 30;
+            $this->add(127, 141, Util::formatCnab('9', $valorDia, 15, 2));
+
+            return;
+        }
 
         $this->add(118, 118, self::JUROS_TAXA_MENSAL);
         $this->add(119, 126, $dataJuros->format('dmY'));
-        // Percentual mensal não pode ser maior que 99,99% (manual C020).
         $juros = min((float) $boleto->getJuros(), 99.99);
         $this->add(127, 141, Util::formatCnab('9', $juros, 15, 2));
     }
@@ -535,6 +580,7 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->iniciaDetalhe();
         $movimento = $this->getCodigoMovimento($boleto);
         $pagador = $boleto->getPagador();
+        $especie = (string) $boleto->getEspecieDocCodigo(99, 240);
 
         $this->add(1, 3, Util::onlyNumbers($this->getCodigoBanco()));
         $this->add(4, 7, '0001');
@@ -555,13 +601,22 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(137, 151, Util::formatCnab('X', $this->sanitizeAlfa($pagador->getCidade()), 15));
         $this->add(152, 153, Util::formatCnab('X', $pagador->getUf(), 2));
 
-        // Sacador / Avalista (154-209) - Banrisul: NÃO informar aqui.
-        // Manual (3.4): "Quando o beneficiário não for o original do título,
-        // informar dados do sacador no segmento Y-01.
-        // Se informados no segmento Q, título será rejeitado."
-        $this->add(154, 154, '0');
-        $this->add(155, 169, '000000000000000');
-        $this->add(170, 209, '');
+        // Sacador / Avalista (154-209)
+        // Manual (3.4): para títulos de terceiros (espécie AD) o preenchimento do nome
+        // do sacador/avalista (170-209) é obrigatório, bem como a inclusão do segmento Y.
+        if ($especie === 'AD' && $boleto->getSacadorAvalista()) {
+            $sacador = $boleto->getSacadorAvalista();
+            $this->add(154, 154, $this->getTipoInscricao($sacador->getDocumento()));
+            $this->add(155, 169, Util::formatCnab('9', Util::onlyNumbers($sacador->getDocumento()), 15));
+
+            $nome = $this->sanitizeAlfa($sacador->getNome());
+            $nomeEditado = ' ' . ltrim($nome);
+            $this->add(170, 209, Util::formatCnab('X', $nomeEditado, 40));
+        } else {
+            $this->add(154, 154, '0');
+            $this->add(155, 169, '000000000000000');
+            $this->add(170, 209, '');
+        }
 
         // Banco correspondente (210-232) - Brancos*
         $this->add(210, 212, '000');
@@ -661,7 +716,6 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     public function segmentoY01(BoletoContract $boleto)
     {
         $this->iniciaDetalhe();
-        $movimento = $this->getCodigoMovimento($boleto);
         $sacador = $boleto->getSacadorAvalista();
 
         $this->add(1, 3, Util::onlyNumbers($this->getCodigoBanco()));
@@ -670,10 +724,11 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(9, 13, Util::formatCnab('9', $this->iRegistrosLote, 5));
         $this->add(14, 14, 'Y');
         $this->add(15, 15, '');
-        $this->add(16, 17, $movimento);
+        // Manual (3.7): movimento do segmento Y-01 é 01 (entrada de títulos)
+        $this->add(16, 17, self::OCORRENCIA_REMESSA);
 
-        // Identificação do registro opcional (18-19) - 01 = Sacador/Avalista
-        $this->add(18, 19, '01');
+        // Manual (3.7): Identificação registro opcional = 03
+        $this->add(18, 19, '03');
 
         $this->add(20, 20, $this->getTipoInscricao($sacador->getDocumento()));
         $this->add(21, 35, Util::formatCnab('9', Util::onlyNumbers($sacador->getDocumento()), 15));
@@ -713,14 +768,16 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(18, 18, $this->getTipoInscricao($this->getBeneficiario()->getDocumento()));
         $this->add(19, 32, Util::formatCnab('9', Util::onlyNumbers($this->getBeneficiario()->getDocumento()), 14));
         // Manual G007: informar à esquerda e deixar espaços em branco à direita.
-        $this->add(33, 52, Util::formatCnab('X', $this->getCodigoCliente(), 20));
+        $this->add(33, 52, $this->getConvenioCnab20());
         // Conta corrente (53-72) - Banrisul: campo "Brancos*" (não considerado),
         // mas a regra geral 2.3 item 1 do manual exige zeros para Num não utilizado;
         // validadores estritos rejeitam Num preenchido com espaços.
         $this->add(53, 57, Util::formatCnab('9', 0, 5));
         $this->add(58, 58, ''); // DV agência (Alfa)
         $this->add(59, 70, Util::formatCnab('9', 0, 12));
-        $this->add(71, 71, ''); // DV conta (Alfa)
+        // Manual 240 posições: DV da conta é numérico (1).
+        // Como o bloco é "não considerado" pelo banco, mantemos 0 para respeitar tipo numérico.
+        $this->add(71, 71, '0');
         $this->add(72, 72, ''); // DV ag/conta (Alfa)
 
         // Nome do beneficiário (73-102) e nome do banco (103-132)
@@ -735,11 +792,14 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(144, 151, $this->getDataRemessa('dmY'));
         $this->add(152, 157, date('His'));
         $this->add(158, 163, Util::formatCnab('9', $this->getIdremessa(), 6));
-        $this->add(164, 166, '103'); // Layout do arquivo (G019) - v10.3
+        $this->add(164, 166, '040'); // Layout do arquivo - manual 240 posições
         $this->add(167, 171, '00000'); // Densidade (G020) - zeros/brancos
 
-        // Reservados e CNAB final (172-240) - Brancos*
-        $this->add(172, 191, '');
+        // Reservados (172-191)
+        // Manual: 180-181 = "BE" (uso reservado do Banco – remessa).
+        $this->add(172, 179, '');
+        $this->add(180, 181, 'BE');
+        $this->add(182, 191, '');
         $this->add(192, 211, '');
         $this->add(212, 240, '');
 
@@ -758,18 +818,18 @@ class Banrisul extends AbstractRemessa implements RemessaContract
         $this->add(4, 7, '0001');
         $this->add(8, 8, '1');
 
-        // Serviço (9-16)
+        // Serviço (9-16) - manual 240 posições
         $this->add(9, 9, 'R'); // G028 = Remessa
         $this->add(10, 11, '01'); // G025 = Cobrança
-        $this->add(12, 13, ''); // CNAB
-        $this->add(14, 16, '060'); // Layout do lote (G030) - v10.3
+        $this->add(12, 13, '00'); // Forma de lançamento (manual: 00)
+        $this->add(14, 16, '020'); // Layout do lote (manual)
         $this->add(17, 17, '');
 
         // Empresa (18-73)
         $this->add(18, 18, $this->getTipoInscricao($this->getBeneficiario()->getDocumento()));
         $this->add(19, 33, Util::formatCnab('9', Util::onlyNumbers($this->getBeneficiario()->getDocumento()), 15));
         // Manual G007: informar à esquerda e deixar espaços em branco à direita.
-        $this->add(34, 53, Util::formatCnab('X', $this->getCodigoCliente(), 20));
+        $this->add(34, 53, $this->getConvenioCnab20());
         // Conta corrente (54-73) - Banrisul: campo "Brancos*" (não considerado),
         // mas Num não utilizado exige zeros pela regra geral 2.3 item 1 do manual.
         $this->add(54, 58, Util::formatCnab('9', 0, 5));
