@@ -1108,6 +1108,18 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     }
 
     /**
+     * Retorna o nome sugerido para o arquivo de remessa de pagamento.
+     * O Itaú aceita apenas 8 caracteres no nome do arquivo.
+     *
+     * @return string
+     */
+    public function nomeSugerido()
+    {
+        $idremessa = $this->getIdremessa() ?: 0;
+        return sprintf('%08d.REM', $idremessa);
+    }
+
+    /**
      * Retorna o valor total de um lote específico (para múltiplos lotes)
      *
      * @param array $lote
