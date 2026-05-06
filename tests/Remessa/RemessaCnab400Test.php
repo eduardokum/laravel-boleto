@@ -539,6 +539,40 @@ class RemessaCnab400Test extends TestCase
         $this->assertEquals($file, $file2);
     }
 
+    public function testRemessaItauCnab400AlterarValor()
+    {
+        $boleto = new Boleto\Itau([
+            'logo'                => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '341.png',
+            'dataVencimento'      => $this->vencimento(),
+            'valor'               => 250.00,
+            'numero'              => 1,
+            'numeroDocumento'     => 1,
+            'pagador'             => self::$pagador,
+            'beneficiario'        => self::$beneficiario,
+            'carteira'            => 112,
+            'agencia'             => 1111,
+            'conta'               => 99999,
+            'especieDoc'          => 'DM',
+        ]);
+        $boleto->alterarValor();
+
+        $remessa = new Remessa\Itau([
+            'agencia'      => 1111,
+            'conta'        => 99999,
+            'contaDv'      => 9,
+            'carteira'     => 112,
+            'beneficiario' => self::$beneficiario,
+        ]);
+        $remessa->addBoleto($boleto);
+
+        $content = $remessa->gerar();
+        $lines = explode("\r\n", trim($content));
+        // linha de detalhe é a segunda linha (índice 1)
+        $detalhe = $lines[1];
+        // posições 109-110 (1-based) = substr offset 108, length 2
+        $this->assertEquals('31', substr($detalhe, 108, 2));
+    }
+
     public function testRemessaSantanderCnab400()
     {
         $boleto = new Boleto\Santander([

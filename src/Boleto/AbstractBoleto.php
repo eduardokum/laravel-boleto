@@ -1710,6 +1710,18 @@ abstract class AbstractBoleto implements BoletoContract
     }
 
     /**
+     * Marca o boleto para alterar valor no banco
+     *
+     * @return AbstractBoleto
+     */
+    public function alterarValor()
+    {
+        $this->status = BoletoContract::STATUS_ALTERACAO_VALOR;
+
+        return $this;
+    }
+
+    /**
      * Comandar instrução custom
      *
      * @param $instrucao
