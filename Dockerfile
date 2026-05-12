@@ -1,4 +1,4 @@
-FROM php:7.3.25-fpm-alpine3.11
+FROM php:8.3-fpm-alpine
 
 RUN apk add --no-cache \
   openssl \
@@ -10,7 +10,9 @@ RUN apk add --no-cache \
   zlib-dev \
   libsodium-dev \
   icu-dev \
-  libpng-dev
+  icu-data-full \
+  libpng-dev \
+  linux-headers
 
 RUN docker-php-ext-configure intl
 RUN docker-php-ext-install zip sodium intl gd
