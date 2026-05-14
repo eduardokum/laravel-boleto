@@ -44,7 +44,9 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     // Tipos de pagamento (agrupamento interno)
     const TIPO_PAGAMENTO_TED = 'TED';
     const TIPO_PAGAMENTO_PIX = 'PIX';
-    const TIPO_PAGAMENTO_BOLETO = 'BOLETO';
+    const TIPO_PAGAMENTO_BOLETO = 'BOLETO';         // legado — não mais usado como agrupador
+    const TIPO_PAGAMENTO_BOLETO_ITAU = 'BOLETO_ITAU';    // boletos banco 341 → Form 30
+    const TIPO_PAGAMENTO_BOLETO_OUTROS = 'BOLETO_OUTROS'; // boletos outros bancos → Form 31
 
     // Tipo de serviço para fornecedores (NOTA 4)
     const TIPO_SERVICO_FORNECEDOR = '20';
@@ -461,6 +463,11 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
         return method_exists($pagamento, 'isBoleto') && $pagamento->isBoleto();
     }
 
+    protected function isBoletoTipo(string $tipo): bool
+    {
+        return in_array($tipo, [self::TIPO_PAGAMENTO_BOLETO_ITAU, self::TIPO_PAGAMENTO_BOLETO_OUTROS, self::TIPO_PAGAMENTO_BOLETO], true);
+    }
+
     /**
      * Resolve o agrupador de lote do pagamento - boletos ficam em lote próprio,
      * demais casos seguem a detecção do parent (TED/PIX).
@@ -471,7 +478,10 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     protected function getTipoPagamentoDoPagamento(\Eduardokum\LaravelBoleto\Pagamento\Banco\Banco $pagamento)
     {
         if ($this->isBoleto($pagamento)) {
-            return self::TIPO_PAGAMENTO_BOLETO;
+            $bancoFavorecido = substr(Util::onlyNumbers($pagamento->getCodigoBarras()), 0, 3);
+            return $bancoFavorecido === self::BANCO
+                ? self::TIPO_PAGAMENTO_BOLETO_ITAU
+                : self::TIPO_PAGAMENTO_BOLETO_OUTROS;
         }
 
         if ($this->isPix($pagamento)) {
@@ -511,7 +521,9 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
             return;
         }
 
-        $outrosTipos = array_diff(array_keys($this->lotes), [self::TIPO_PAGAMENTO_PIX]);
+        $outrosTipos = array_diff(array_keys($this->lotes), [
+            self::TIPO_PAGAMENTO_PIX,
+        ]);
         if (! empty($outrosTipos)) {
             throw new ValidationException(sprintf(
                 'Lotes PIX devem ser enviados em arquivo separado das demais formas de pagamento '
@@ -957,7 +969,7 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
         // gravem o mesmo valor nas posições 4-7 — antes ficavam todos em "0001".
         $this->loteAtualNumero = (int) $lote['numero'];
 
-        $isBoleto = $lote['tipo'] === self::TIPO_PAGAMENTO_BOLETO;
+        $isBoleto = $this->isBoletoTipo($lote['tipo']);
         $versaoLayoutLote = $isBoleto ? self::VERSAO_LAYOUT_LOTE_BOLETO : '040';
         $tipoServico = $isBoleto ? self::TIPO_SERVICO_FORNECEDOR : $this->getTipoServico();
 
@@ -1063,7 +1075,12 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
                 return self::FORMA_LANCAMENTO_TED;
             case self::TIPO_PAGAMENTO_PIX:
                 return self::FORMA_LANCAMENTO_PIX;
+            case self::TIPO_PAGAMENTO_BOLETO_ITAU:
+                return self::FORMA_LANCAMENTO_BOLETO_ITAU;
+            case self::TIPO_PAGAMENTO_BOLETO_OUTROS:
+                return self::FORMA_LANCAMENTO_BOLETO_OUTROS;
             case self::TIPO_PAGAMENTO_BOLETO:
+                // legado: se ainda chegarem pagamentos com tipo genérico, resolve pelo banco do barcode
                 return $lote !== null
                     ? $this->getFormaLancamentoBoleto($lote)
                     : self::FORMA_LANCAMENTO_BOLETO_OUTROS;
@@ -1105,18 +1122,6 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
         }
         $totalRegistros += 2; // Header + Trailer do arquivo
         return $totalRegistros;
-    }
-
-    /**
-     * Retorna o nome sugerido para o arquivo de remessa de pagamento.
-     * O Itaú aceita apenas 8 caracteres no nome do arquivo.
-     *
-     * @return string
-     */
-    public function nomeSugerido()
-    {
-        $idremessa = $this->getIdremessa() ?: 0;
-        return sprintf('%08d.REM', $idremessa);
     }
 
     /**
