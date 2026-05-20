@@ -28,7 +28,6 @@ class Ailos extends AbstractRemessa implements RemessaContract
     const PROTESTO_SEM = '3';
     const PROTESTO_DIAS_CORRIDOS = '1';
     const PROTESTO_NAO_PROTESTAR = '3';
-    const PROTESTO_AUTOMATICO = '9';
 
     public function __construct(array $params = [])
     {
@@ -239,7 +238,7 @@ class Ailos extends AbstractRemessa implements RemessaContract
         }
         $this->add(222, 223, Util::formatCnab('9', $boleto->getDiasProtesto(), 2));
         $this->add(224, 224, '2'); // Deverá ser informado o código ‘2’, visto que o sistema respeita o decurso de prazo cadastrado no convênio do cooperado..
-        $this->add(225, 227, ''); // Utilizar sempre, nesse campo, 60 dias para baixa/devolução.
+        $this->add(225, 227, '000'); // Manual exige "000" — sistema respeita o decurso de prazo cadastrado no convênio do cooperado.
         $this->add(228, 229, Util::formatCnab('9', $boleto->getMoeda(), 2));
         $this->add(230, 239, '0000000000');
         $this->add(240, 240, '');
@@ -255,7 +254,8 @@ class Ailos extends AbstractRemessa implements RemessaContract
      */
     protected function segmentoR(BoletoContract $boleto)
     {
-        if (!$boleto->getMulta() > 0 && !$boleto->getDesconto() > 0) {
+        // Manual Ailos CNAB 240 (seção 4.2.2.6): segmento R é exclusivo para multa.
+        if (!($boleto->getMulta() > 0)) {
             return $this;
         }
 
@@ -280,18 +280,13 @@ class Ailos extends AbstractRemessa implements RemessaContract
             $this->add(16, 17, sprintf('%2.02s', $boleto->getComando()));
         }
 
+        // Desconto 2 e Desconto 3 não são utilizados pela Ailos — zerar conforme manual.
         $this->add(18, 18, '0');
         $this->add(19, 26, '00000000');
         $this->add(27, 41, Util::formatCnab('9', 0, 15, 2));
-        if ($boleto->getDesconto() > 0) {
-            $this->add(18, 18, '1'); // '1' = Valor fixo até a data informada
-            $this->add(19, 26, $boleto->getDataDesconto() ? $boleto->getDataDesconto()->format('dmY') : $boleto->getDataVencimento()->format('dmY'));
-            $this->add(27, 41, Util::formatCnab('9', $boleto->getMulta(), 15, 2));
-        }
-
         $this->add(42, 42, '0');
-        $this->add(43, 50, Util::formatCnab('9', 0, 8));
-        $this->add(51, 65, Util::formatCnab('9', 0, 15));
+        $this->add(43, 50, '00000000');
+        $this->add(51, 65, Util::formatCnab('9', 0, 15, 2));
         $this->add(66, 66, '0');
         $this->add(67, 74, '00000000');
         $this->add(75, 89, Util::formatCnab('9', 0, 15, 2));
