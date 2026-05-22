@@ -55,6 +55,22 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     const CODIGO_SEGMENTO_J = 'J';
     const CODIGO_REGISTRO_OPCIONAL_J52 = '52';
 
+    // Segmento O (arrecadação - concessionárias e tributos com código de barras)
+    const CODIGO_SEGMENTO_O = 'O';
+    const TIPO_SERVICO_TRIBUTOS = '22';                  // NOTA 4: Tipo de Pagamento = Tributos
+    const VERSAO_LAYOUT_LOTE_TRIBUTO = '030';            // Layout do lote para tributos com barras
+    const FORMA_LANCAMENTO_CONCESSIONARIA = '13';        // NOTA 5: Saneamento/Energia/Telecom (barcode segmento 2/3/4)
+    const FORMA_LANCAMENTO_IPTU = '19';                  // NOTA 5: IPTU/ISS/outros tributos municipais (barcode segmento 1)
+    const FORMA_LANCAMENTO_GNRE = '91';                  // NOTA 5: GNRE e tributos com código de barras (barcode segmento 9)
+    const MOEDA_REAL_SEGMENTO_O = 'REA';                 // pos 104-106 do segmento O
+
+    // Tipos de pagamento (agrupador interno) — arrecadação. Cada tipo vira um
+    // lote separado (manual SISPAG pág 7: "Um lote de serviço só pode conter
+    // pagamentos de um único tipo e uma única forma").
+    const TIPO_PAGAMENTO_ARRECADACAO_IPTU = 'ARRECADACAO_IPTU';
+    const TIPO_PAGAMENTO_ARRECADACAO_CONCESSIONARIA = 'ARRECADACAO_CONCESSIONARIA';
+    const TIPO_PAGAMENTO_ARRECADACAO_GNRE = 'ARRECADACAO_GNRE';
+
     // Constantes para trailer do lote
     const LOTE_SERVICO_TRAILER_LOTE = '0001'; // Lote de serviço (trailer do lote)
     const TIPO_REGISTRO_TRAILER_LOTE = '5'; // Tipo de registro (trailer do lote)
@@ -428,6 +444,16 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
      */
     protected function gerarSegmentos(\Eduardokum\LaravelBoleto\Pagamento\Banco\Banco $pagamento)
     {
+        // Arrecadação (tributos/concessionárias com código de barras de 44 dig
+        // iniciado em "8") — Segmento O obrigatório, sem complemento. Manual
+        // SISPAG pág 34. Detecção antes de isBoleto porque boleto comum também
+        // tem código de barras, mas o produto = "8" identifica arrecadação.
+        if ($this->isArrecadacao($pagamento)) {
+            $this->segmentoO($pagamento);
+
+            return;
+        }
+
         if ($this->isBoleto($pagamento)) {
             $this->segmentoJ($pagamento);
             $this->segmentoJ52($pagamento);
@@ -469,6 +495,88 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     }
 
     /**
+     * Verifica se o pagamento é arrecadação (tributo/concessionária com código
+     * de barras). Identificação pelo Produto = "8" na primeira posição do
+     * barcode de 44 dígitos (manual SISPAG Anexo B).
+     *
+     * @param \Eduardokum\LaravelBoleto\Pagamento\Banco\Banco $pagamento
+     * @return bool
+     */
+    protected function isArrecadacao(\Eduardokum\LaravelBoleto\Pagamento\Banco\Banco $pagamento)
+    {
+        if (! method_exists($pagamento, 'getCodigoBarras')) {
+            return false;
+        }
+        $barcode = Util::onlyNumbers((string) $pagamento->getCodigoBarras());
+
+        return strlen($barcode) === 44 && $barcode[0] === '8';
+    }
+
+    /**
+     * Retorna o segmento de arrecadação (2ª posição do barcode):
+     *   1=Prefeituras  2=Saneamento  3=Energia/Gás  4=Telecom
+     *   5=Tribunais    6=Carnês      7=Multas       9=Demais
+     *
+     * @param string $barcode
+     * @return int
+     */
+    protected function getArrecadacaoSegmento($barcode)
+    {
+        return (int) substr(Util::onlyNumbers((string) $barcode), 1, 1);
+    }
+
+    /**
+     * Retorna o tipo do valor (3ª posição do barcode):
+     *   6=Reais módulo 10   7=MoedaVar módulo 10
+     *   8=Reais módulo 11   9=MoedaVar módulo 11
+     *
+     * @param string $barcode
+     * @return int
+     */
+    protected function getArrecadacaoTipoValor($barcode)
+    {
+        return (int) substr(Util::onlyNumbers((string) $barcode), 2, 1);
+    }
+
+    /**
+     * Mapeia o segmento do barcode de arrecadação para a chave de tipo de
+     * pagamento (agrupador de lote). Manual SISPAG Nota 5.
+     *
+     * @param \Eduardokum\LaravelBoleto\Pagamento\Banco\Banco $pagamento
+     * @return string
+     */
+    protected function getTipoArrecadacao(\Eduardokum\LaravelBoleto\Pagamento\Banco\Banco $pagamento)
+    {
+        $segmento = $this->getArrecadacaoSegmento($pagamento->getCodigoBarras());
+        switch ($segmento) {
+            case 1:
+                return self::TIPO_PAGAMENTO_ARRECADACAO_IPTU;          // Prefeituras → IPTU
+            case 2:
+            case 3:
+            case 4:
+                return self::TIPO_PAGAMENTO_ARRECADACAO_CONCESSIONARIA; // Saneamento/Energia/Telecom
+            case 9:
+            default:
+                return self::TIPO_PAGAMENTO_ARRECADACAO_GNRE;          // Demais (GNRE/Tributos)
+        }
+    }
+
+    /**
+     * Verifica se o tipo (agrupador de lote) é de arrecadação.
+     *
+     * @param string $tipo
+     * @return bool
+     */
+    protected function isArrecadacaoTipo(string $tipo): bool
+    {
+        return in_array($tipo, [
+            self::TIPO_PAGAMENTO_ARRECADACAO_IPTU,
+            self::TIPO_PAGAMENTO_ARRECADACAO_CONCESSIONARIA,
+            self::TIPO_PAGAMENTO_ARRECADACAO_GNRE,
+        ], true);
+    }
+
+    /**
      * Resolve o agrupador de lote do pagamento - boletos ficam em lote próprio,
      * demais casos seguem a detecção do parent (TED/PIX).
      *
@@ -477,6 +585,14 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
      */
     protected function getTipoPagamentoDoPagamento(\Eduardokum\LaravelBoleto\Pagamento\Banco\Banco $pagamento)
     {
+        // Arrecadação tem barcode iniciado em "8" — precisa vir antes de
+        // isBoleto, que também é true para barcodes (44 dig). Cada segmento
+        // do barcode mapeia para uma forma SISPAG distinta (Nota 5), e cada
+        // forma exige lote separado (manual pág 7).
+        if ($this->isArrecadacao($pagamento)) {
+            return $this->getTipoArrecadacao($pagamento);
+        }
+
         if ($this->isBoleto($pagamento)) {
             $bancoFavorecido = substr(Util::onlyNumbers($pagamento->getCodigoBarras()), 0, 3);
             return $bancoFavorecido === self::BANCO
@@ -954,6 +1070,106 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     }
 
     /**
+     * Segmento O - Pagamento de Contas de Concessionárias e Tributos com
+     * código de barras (manual SISPAG Itaú v085 página 34).
+     *
+     * Identificação do barcode (44 dígitos, NOTA 18 / Anexo B):
+     *   pos 1   = "8" (produto = arrecadação)
+     *   pos 2   = segmento (1=Prefeituras, 2=Saneamento, 3=Energia/Gás,
+     *             4=Telecom, 9=Demais/Tributos)
+     *   pos 3   = identificação do valor (6/7 mod10, 8/9 mod11)
+     *   pos 4   = DV do código de barras
+     *   pos 5-15  = valor (R$ 9(09)V9(02))
+     *   pos 16-19 = empresa/órgão
+     *   pos 20-44 = campo livre
+     *
+     * @param \Eduardokum\LaravelBoleto\Pagamento\Banco\Banco $pagamento
+     * @return Itau
+     * @throws \Exception
+     */
+    public function segmentoO($pagamento)
+    {
+        $this->iniciaDetalhe();
+        $this->iSequencialPagamento++; // NOTA 9: novo pagamento → novo sequencial
+
+        $barcode = Util::onlyNumbers((string) $pagamento->getCodigoBarras());
+
+        // Nome da Concessionária / Contribuinte — favorecido do barcode. Usa
+        // o beneficiário do pagamento; fallback para o pagador (contribuinte).
+        $nomeFavorecido = '';
+        if (method_exists($pagamento, 'getBeneficiario') && $pagamento->getBeneficiario()) {
+            $nomeFavorecido = (string) $pagamento->getBeneficiario()->getNome();
+        }
+        if ($nomeFavorecido === '') {
+            $nomeFavorecido = (string) $this->getPagador()->getNome();
+        }
+
+        $dataVencimento = $pagamento->getDataVencimento()
+            ? $pagamento->getDataVencimento()->format('dmY')
+            : date('dmY');
+        $dataPagamento = $pagamento->getDataPagamento()
+            ? $pagamento->getDataPagamento()->format('dmY')
+            : date('dmY');
+
+        // Valor a pagar (centavos). Em arrecadações tipo valor 7/9 (moeda
+        // variável) o valor não vai aqui — vai em "Quantidade Moeda".
+        $tipoValor = $this->getArrecadacaoTipoValor($barcode);
+        $moedaVariavel = in_array($tipoValor, [7, 9], true);
+        $valorPagamento = (int) round($pagamento->getValor() * 100);
+
+        // Nota Fiscal — obrigatória apenas para GNRE-SP código de receita 10009.9
+        // (Substituição Tributária por Operação). Demais: zeros. NOTA 33.
+        $notaFiscal = 0;
+        if (method_exists($pagamento, 'getNumeroNotaFiscal') && $pagamento->getNumeroNotaFiscal()) {
+            $notaFiscal = (int) Util::onlyNumbers((string) $pagamento->getNumeroNotaFiscal());
+        }
+
+        $seuNumero = '';
+        if (method_exists($pagamento, 'getNumeroControle') && $pagamento->getNumeroControle()) {
+            $seuNumero = (string) $pagamento->getNumeroControle();
+        }
+
+        $this->add(1, 3, self::BANCO);                                                     // 001-003: Código do Banco (341)
+        $this->add(4, 7, Util::formatCnab('9L', $this->loteAtualNumero, 4));               // 004-007: Código do Lote (NOTA 3)
+        $this->add(8, 8, self::TIPO_REGISTRO_DETALHE);                                     // 008-008: Tipo de Registro (3)
+        $this->add(9, 13, Util::formatCnab('9L', $this->iSequencialPagamento, 5));         // 009-013: Nº Sequencial Registro no Lote (NOTA 9)
+        $this->add(14, 14, self::CODIGO_SEGMENTO_O);                                       // 014-014: Código Segmento (O)
+        $this->add(15, 17, Util::formatCnab('9L', '000', 3));                              // 015-017: Tipo de Movimento (NOTA 10)
+
+        // 018-065: Código de Barras X(48). Barcode tem 44 dígitos; preenche
+        // alfanumérico alinhado à esquerda com brancos à direita.
+        $this->add(18, 65, Util::formatCnab('X', $barcode, 48));
+
+        $this->add(66, 95, Util::formatCnab('X', $nomeFavorecido, 30));                    // 066-095: Nome Concessionária / Contribuinte
+        $this->add(96, 103, Util::formatCnab('9L', $dataVencimento, 8));                   // 096-103: Data Vencimento (DDMMAAAA)
+        $this->add(104, 106, self::MOEDA_REAL_SEGMENTO_O);                                 // 104-106: Tipo de Moeda (REA)
+
+        // 107-121: Quantidade de Moeda 9(07)V9(08). Zeros quando moeda = REA
+        // (valor real); quando moeda variável (tipo 7/9) deveria conter a
+        // quantidade em unidades. Implementação MVP usa zeros (caso comum).
+        $this->add(107, 121, Util::formatCnab('9', '0', 15));
+
+        // 122-136: Valor previsto do pagamento 9(13)V9(02). Para moeda variável,
+        // manual diz que o valor a pagar é obtido pela quantidade × cotação;
+        // este campo pode receber o valor calculado para auditoria.
+        $this->add(122, 136, Util::formatCnab('9L', $valorPagamento, 15));
+
+        $this->add(137, 144, Util::formatCnab('9L', $dataPagamento, 8));                   // 137-144: Data do Pagamento
+        $this->add(145, 159, Util::formatCnab('9', '0', 15));                              // 145-159: Valor Pago (retorno) — zeros na remessa
+        $this->add(160, 162, self::CAMPO_BRANCO);                                          // 160-162: Brancos
+        $this->add(163, 171, Util::formatCnab('9L', $notaFiscal, 9));                      // 163-171: Número da Nota Fiscal (NOTA 33)
+        $this->add(172, 174, self::CAMPO_BRANCO);                                          // 172-174: Brancos
+        $this->add(175, 194, Util::formatCnab('X', $seuNumero, 20));                       // 175-194: Seu Número
+        $this->add(195, 215, self::CAMPO_BRANCO);                                          // 195-215: Brancos
+        $this->add(216, 230, self::CAMPO_BRANCO);                                          // 216-230: Nosso Número (retorno)
+        $this->add(231, 240, self::CAMPO_BRANCO);                                          // 231-240: Ocorrências (retorno)
+
+        unset($moedaVariavel); // reservado para futura validação DV módulo 10/11
+
+        return $this;
+    }
+
+    /**
      * Header do lote para múltiplos lotes
      *
      * @param array $lote
@@ -970,8 +1186,19 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
         $this->loteAtualNumero = (int) $lote['numero'];
 
         $isBoleto = $this->isBoletoTipo($lote['tipo']);
-        $versaoLayoutLote = $isBoleto ? self::VERSAO_LAYOUT_LOTE_BOLETO : '040';
-        $tipoServico = $isBoleto ? self::TIPO_SERVICO_FORNECEDOR : $this->getTipoServico();
+        $isArrecadacao = $this->isArrecadacaoTipo($lote['tipo']);
+
+        if ($isArrecadacao) {
+            // Tributos (manual pág 33): layout 030, tipo de pagamento 22.
+            $versaoLayoutLote = self::VERSAO_LAYOUT_LOTE_TRIBUTO;
+            $tipoServico = self::TIPO_SERVICO_TRIBUTOS;
+        } elseif ($isBoleto) {
+            $versaoLayoutLote = self::VERSAO_LAYOUT_LOTE_BOLETO;
+            $tipoServico = self::TIPO_SERVICO_FORNECEDOR;
+        } else {
+            $versaoLayoutLote = '040';
+            $tipoServico = $this->getTipoServico();
+        }
 
         $this->add(1, 3, self::BANCO); // Posição 001-003: Código do Banco na Compensação (341)
         $this->add(4, 7, Util::formatCnab('9L', $lote['numero'], 4)); // Posição 004-007: Código do Lote (NOTA 3)
@@ -1019,8 +1246,12 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     {
         $this->iniciaTrailerLote();
 
-        // Todos os tipos suportados geram 2 segmentos por pagamento (A+B, A+BPix ou J+J52)
-        $qtdRegistrosLote = (count($lote['pagamentos']) * 2) + 2; // + header e trailer do lote
+        $isArrecadacao = $this->isArrecadacaoTipo($lote['tipo']);
+
+        // Arrecadação (Segmento O) = 1 segmento por pagamento. Demais
+        // (TED A+B, boleto J+J52) = 2 segmentos por pagamento.
+        $segmentosPorPagamento = $isArrecadacao ? 1 : 2;
+        $qtdRegistrosLote = (count($lote['pagamentos']) * $segmentosPorPagamento) + 2; // + header e trailer
 
         $this->add(1, 3, self::BANCO); // Posição 001-003: Código do Banco na Compensação (341)
         $this->add(4, 7, Util::formatCnab('9L', $lote['numero'], 4)); // Posição 004-007: Lote de Serviço (NOTA 3)
@@ -1028,8 +1259,22 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(9, 17, self::CAMPO_BRANCO); // Posição 009-017: Brancos
         $this->add(18, 23, Util::formatCnab('9L', $qtdRegistrosLote, 6)); // Posição 018-023: Qtde Registros do Lote (NOTA 17)
         $this->add(24, 41, Util::formatCnab('9L', $this->getValorTotalLoteMulti($lote), 18)); // Posição 024-041: Soma Valor dos Pgtos do Lote (NOTA 17)
-        $this->add(42, 59, Util::formatCnab('9', '0', 18)); // Posição 042-059: Zeros
-        $this->add(60, 230, self::CAMPO_BRANCO); // Posição 060-230: Brancos
+
+        if ($isArrecadacao) {
+            // Trailer de lote arrecadação (manual pág 36):
+            //   042-056: TOTAL QTDE MOEDA 9(07)V9(08) — soma das quantidades de
+            //            moeda dos pagamentos do lote (zeros quando moeda REA).
+            //   057-230: Brancos
+            $this->add(42, 56, Util::formatCnab('9', '0', 15));
+            $this->add(57, 230, self::CAMPO_BRANCO);
+        } else {
+            // Trailer de lote padrão (TED/PIX/Boleto):
+            //   042-059: Zeros
+            //   060-230: Brancos
+            $this->add(42, 59, Util::formatCnab('9', '0', 18));
+            $this->add(60, 230, self::CAMPO_BRANCO);
+        }
+
         $this->add(231, 240, self::CAMPO_BRANCO); // Posição 231-240: Código Ocorrências P/Retorno (NOTA 8)
 
         return $this;
@@ -1084,6 +1329,12 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
                 return $lote !== null
                     ? $this->getFormaLancamentoBoleto($lote)
                     : self::FORMA_LANCAMENTO_BOLETO_OUTROS;
+            case self::TIPO_PAGAMENTO_ARRECADACAO_IPTU:
+                return self::FORMA_LANCAMENTO_IPTU;            // 19
+            case self::TIPO_PAGAMENTO_ARRECADACAO_CONCESSIONARIA:
+                return self::FORMA_LANCAMENTO_CONCESSIONARIA;  // 13
+            case self::TIPO_PAGAMENTO_ARRECADACAO_GNRE:
+                return self::FORMA_LANCAMENTO_GNRE;            // 91
             default:
                 return self::FORMA_LANCAMENTO_TED;
         }
@@ -1117,7 +1368,10 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     {
         $totalRegistros = 0;
         foreach ($this->lotes as $lote) {
-            $totalRegistros += count($lote['pagamentos']) * 2; // Segmento A + B para cada pagamento
+            // Arrecadação (Segmento O) = 1 segmento por pagamento.
+            // Demais (A+B, J+J52) = 2 segmentos por pagamento.
+            $segmentosPorPagamento = $this->isArrecadacaoTipo($lote['tipo']) ? 1 : 2;
+            $totalRegistros += count($lote['pagamentos']) * $segmentosPorPagamento;
             $totalRegistros += 2; // Header + Trailer do lote
         }
         $totalRegistros += 2; // Header + Trailer do arquivo
