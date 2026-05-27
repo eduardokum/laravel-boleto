@@ -130,7 +130,7 @@ class Ailos extends AbstractPagamento implements PagamentoRemessaContract
         $primeiroPagamento = $pagamentos[0] ?? null;
 
         if ($primeiroPagamento && method_exists($primeiroPagamento, 'getCodigoBarras')) {
-            return $this->ehBoletoAilos($primeiroPagamento)
+            return $this->isBoletoAilos($primeiroPagamento)
                 ? self::FORMA_LANCAMENTO_BOLETO_AILOS
                 : self::FORMA_LANCAMENTO_BOLETO_OUTROS;
         }
@@ -143,7 +143,7 @@ class Ailos extends AbstractPagamento implements PagamentoRemessaContract
      * posições do código de barras) ou de outro banco. Usado pelo agrupador
      * de lotes e pela escolha de forma de lançamento.
      */
-    protected function ehBoletoAilos($pagamento): bool
+    protected function isBoletoAilos($pagamento): bool
     {
         if (!method_exists($pagamento, 'getCodigoBarras')) {
             return false;
@@ -161,7 +161,7 @@ class Ailos extends AbstractPagamento implements PagamentoRemessaContract
      */
     protected function getTipoPagamentoDoPagamento(\Eduardokum\LaravelBoleto\Pagamento\Banco\Banco $pagamento)
     {
-        return $this->ehBoletoAilos($pagamento)
+        return $this->isBoletoAilos($pagamento)
             ? self::TIPO_PAGAMENTO_BOLETO_AILOS
             : self::TIPO_PAGAMENTO_BOLETO_OUTROS;
     }
