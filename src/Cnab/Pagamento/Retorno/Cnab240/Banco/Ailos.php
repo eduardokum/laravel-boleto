@@ -185,7 +185,7 @@ class Ailos extends AbstractRetorno
             ->setSeuNumero($seuNumero)
             ->setNumeroDocumento($partes[0] ?? '')
             ->setNumeroControle($partes[1] ?? '')
-            ->setNossoNumero(trim($this->rem(216, 230, $detalhe)))
+            ->setNossoNumero(trim($this->rem(203, 222, $detalhe)))
             ->setDataVencimento($this->rem(92, 99, $detalhe))
             ->setValorTitulo(Util::nFloat($this->rem(100, 114, $detalhe) / 100, 2, false))
             ->setDesconto(Util::nFloat($this->rem(115, 129, $detalhe) / 100, 2, false))
@@ -205,9 +205,7 @@ class Ailos extends AbstractRetorno
     protected function processarSegmentoJ52(array $detalhe, $d)
     {
         $tipoInscSacado = $this->rem(20, 20, $detalhe);
-        // NÃO usa ltrim('0') — CNPJs/CPFs que começam com zero ficariam com menos
-        // de 14/11 dígitos e Pessoa::setDocumento rejeita. trim() basta (espaços).
-        $docSacado      = trim($this->rem(21, 35, $detalhe));
+        $docSacado      = $this->extrairDocumentoJ52($this->rem(21, 35, $detalhe), $tipoInscSacado);
         $nomeSacado     = trim($this->rem(36, 75, $detalhe));
 
         if ($docSacado !== '' || $nomeSacado !== '') {
@@ -219,7 +217,7 @@ class Ailos extends AbstractRetorno
         }
 
         $tipoInscCedente = $this->rem(76, 76, $detalhe);
-        $docCedente      = trim($this->rem(77, 91, $detalhe));
+        $docCedente      = $this->extrairDocumentoJ52($this->rem(77, 91, $detalhe), $tipoInscCedente);
         $nomeCedente     = trim($this->rem(92, 131, $detalhe));
 
         if ($docCedente !== '' || $nomeCedente !== '') {
@@ -239,7 +237,7 @@ class Ailos extends AbstractRetorno
         }
 
         $tipoInscSacador = $this->rem(132, 132, $detalhe);
-        $docSacador      = trim($this->rem(133, 147, $detalhe));
+        $docSacador      = $this->extrairDocumentoJ52($this->rem(133, 147, $detalhe), $tipoInscSacador);
         $nomeSacador     = trim($this->rem(148, 187, $detalhe));
 
         if ($docSacador !== '' || $nomeSacador !== '') {
@@ -272,6 +270,30 @@ class Ailos extends AbstractRetorno
         }
 
         return true;
+    }
+
+    /**
+     * Documento do J-52 vem pad-zerado em 15 chars. Recorta pelo tipo de inscrição
+     * (1=CPF=11 dígitos, 2=CNPJ=14) preservando zeros legítimos. Tipo inválido ou
+     * documento todo zerado retorna '' — sinaliza ausência de Pessoa no segmento.
+     */
+    protected function extrairDocumentoJ52($raw, $tipoInsc)
+    {
+        $digitos = preg_replace('/\D/', '', (string) $raw);
+
+        if ($digitos === '' || ltrim($digitos, '0') === '') {
+            return '';
+        }
+
+        if ((string) $tipoInsc === '1') {
+            return substr($digitos, -11);
+        }
+
+        if ((string) $tipoInsc === '2') {
+            return substr($digitos, -14);
+        }
+
+        return '';
     }
 
     /**

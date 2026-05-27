@@ -54,10 +54,15 @@ class Ailos extends AbstractRemessa implements RemessaContract
      * Tipos de desconto suportados pela Ailos CNAB 240 (segmento P, pos 142).
      * Manual: somente "1 = Valor fixo até a data informada".
      *
+     * TIPO_DESCONTO_PERCENTUAL é aceito como atalho — a lib converte o
+     * percentual em R$ via resolveValorDescontoAbsoluto() antes de gravar
+     * o segmento P (tipo nativo continua sendo '1').
+     *
      * @var array<string, string>
      */
     protected $tiposDescontoSuportados = [
-        BoletoContract::TIPO_DESCONTO_VALOR_FIXO => '1',
+        BoletoContract::TIPO_DESCONTO_VALOR_FIXO   => '1',
+        BoletoContract::TIPO_DESCONTO_PERCENTUAL   => '1',
     ];
 
     /**
@@ -459,8 +464,8 @@ class Ailos extends AbstractRemessa implements RemessaContract
         $this->add(8, 8, '5');
         $this->add(9, 17, '');
         $this->add(18, 23, Util::formatCnab('9', $this->getCountDetalhes() + 2, 6));
-        $this->add(24, 29, Util::formatCnab('9', 0, 6));
-        $this->add(30, 46, Util::formatCnab('9', 0, 17, 2));
+        $this->add(24, 29, Util::formatCnab('9', count($this->boletos), 6));
+        $this->add(30, 46, Util::formatCnab('9', $valor, 17, 2));
         $this->add(47, 52, Util::formatCnab('9', 0, 6));
         $this->add(53, 69, Util::formatCnab('9', 0, 17, 2));
         $this->add(70, 75, Util::formatCnab('9', 0, 6));
@@ -491,5 +496,42 @@ class Ailos extends AbstractRemessa implements RemessaContract
         $this->add(36, 240, '');
 
         return $this;
+    }
+
+    /**
+     * Sobrescreve o preenchimento padrão do desconto (segmento P, pos 142-165).
+     * Ailos só aceita "1 = Valor fixo" no tipo nativo — quando o boleto vem
+     * com TIPO_DESCONTO_PERCENTUAL, a lib converte o percentual em R$ via
+     * resolveValorDescontoAbsoluto() para que o consumidor passe apenas o
+     * código canônico e a lib produza o valor exigido pelo layout.
+     *
+     * @param BoletoContract $boleto
+     * @throws ValidationException
+     */
+    protected function preencheDescontoSegmentoP(BoletoContract $boleto)
+    {
+        $codigoCanonico = (string) $boleto->getDescontoCodigo();
+
+        if ($codigoCanonico === BoletoContract::TIPO_DESCONTO_NENHUM && $boleto->getDesconto() > 0) {
+            $codigoCanonico = BoletoContract::TIPO_DESCONTO_VALOR_FIXO;
+        }
+
+        $valor = $this->resolveValorDescontoAbsoluto($boleto);
+
+        if ($codigoCanonico === BoletoContract::TIPO_DESCONTO_NENHUM || $valor <= 0) {
+            $this->add(142, 142, '0');
+            $this->add(143, 150, '00000000');
+            $this->add(151, 165, Util::formatCnab('9', 0, 15, 2));
+
+            return;
+        }
+
+        $dataDesconto = $boleto->getDataDesconto()
+            ? $boleto->getDataDesconto()->format('dmY')
+            : '00000000';
+
+        $this->add(142, 142, '1');
+        $this->add(143, 150, $dataDesconto);
+        $this->add(151, 165, Util::formatCnab('9', $valor, 15, 2));
     }
 }
