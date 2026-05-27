@@ -358,6 +358,12 @@ class Itau extends AbstractRetorno
                 : $this->processarSegmentoJ($detalhe, $d);
         }
 
+        // Segmento O - pagamento de concessionárias/tributos com código de
+        // barras (manual SISPAG pág 34).
+        if ($segmentType == 'O') {
+            return $this->processarSegmentoO($detalhe, $d);
+        }
+
         // Segmento Z (autenticação eletrônica do pagamento - opcional)
         if ($segmentType == 'Z') {
             $d->setAutenticacao(trim($this->rem(15, 78, $detalhe)));
@@ -591,6 +597,78 @@ class Itau extends AbstractRetorno
                 'tipoDocumento' => $tipoInscSacador === '1' ? 'CPF' : 'CNPJ',
             ]);
         }
+
+        return true;
+    }
+
+    /**
+     * Processa o segmento O - pagamento de contas de concessionárias e
+     * tributos com código de barras (manual SISPAG Itaú v085 pág 34).
+     *
+     * Layout (retorno):
+     *   018-065 Código de Barras X(48)        (44 dígitos significativos)
+     *   066-095 Nome concessionária/contribuinte X(30)
+     *   096-103 Data de vencimento (nominal) DDMMAAAA
+     *   104-106 Tipo de moeda (REA)
+     *   107-121 Quantidade de moeda 9(07)V9(08)
+     *   122-136 Valor previsto do pagamento 9(13)V9(02)
+     *   137-144 Data do pagamento DDMMAAAA
+     *   145-159 Valor efetivado do pagamento 9(13)V9(02)  (somente retorno)
+     *   163-171 Número da Nota Fiscal 9(09)               (GNRE-SP)
+     *   175-194 Seu Número X(20)
+     *   216-230 Nosso Número X(15)                        (somente retorno)
+     *   231-240 Ocorrências X(10)                         (somente retorno)
+     *
+     * @param array    $detalhe
+     * @param \Eduardokum\LaravelBoleto\Cnab\Pagamento\Retorno\Cnab240\Detalhe $d
+     * @return bool
+     * @throws ValidationException
+     */
+    protected function processarSegmentoO(array $detalhe, $d)
+    {
+        $codigos = $this->parseCodigosOcorrencia($this->rem(231, 240, $detalhe));
+        $primary = $codigos[0] ?? '';
+
+        // Barcode tem 44 dígitos no campo X(48); o restante são brancos à direita.
+        $codigoBarras = trim($this->rem(18, 65, $detalhe));
+
+        $nomeFavorecido = trim($this->rem(66, 95, $detalhe));
+        $notaFiscal     = ltrim(trim($this->rem(163, 171, $detalhe)), '0');
+        $seuNumero      = trim($this->rem(175, 194, $detalhe));
+        $nossoNumero    = trim($this->rem(216, 230, $detalhe));
+
+        // Quantidade de Moeda 9(07)V9(08) — usada quando moeda variável (tipo
+        // valor 7/9 no barcode); zero para REA.
+        $quantidadeMoeda = Util::nFloat($this->rem(107, 121, $detalhe) / 100000000, 8, false);
+
+        $d->setCodigoBarras($codigoBarras)
+            ->setOcorrencia($primary)
+            ->setOcorrenciaDescricao(Arr::get($this->ocorrencias, $primary, 'Desconhecida'))
+            ->setTipoMovimento(trim($this->rem(15, 17, $detalhe)))
+            ->setTipoPagamento($this->resolveTipoPagamento($this->getHeaderLote()->getFormaLancamento()))
+            ->setNomeFavorecido($nomeFavorecido)
+            ->setSeuNumero($seuNumero)
+            ->setNossoNumero($nossoNumero)
+            ->setDataVencimento($this->rem(96, 103, $detalhe))
+            ->setDataPagamento($this->rem(137, 144, $detalhe))
+            ->setValor(Util::nFloat($this->rem(122, 136, $detalhe) / 100, 2, false))
+            ->setValorRealEfetivado(Util::nFloat($this->rem(145, 159, $detalhe) / 100, 2, false));
+
+        if ($notaFiscal !== '') {
+            $d->addInformacaoAdicional('numero_nota_fiscal', $notaFiscal);
+        }
+        if ($quantidadeMoeda > 0) {
+            $d->addInformacaoAdicional('quantidade_moeda', $quantidadeMoeda);
+        }
+
+        // Favorecido do segmento O — não há segmento B/J-52 vinculado, então
+        // o próprio nome do contribuinte/concessionária é a única informação
+        // disponível para compor a Pessoa.
+        if ($nomeFavorecido !== '' && ! $d->getFavorecido()) {
+            $d->setFavorecido(['nome' => $nomeFavorecido]);
+        }
+
+        $this->classificarOcorrencia($d, $codigos);
 
         return true;
     }
