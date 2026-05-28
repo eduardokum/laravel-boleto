@@ -28,7 +28,6 @@ class Ailos extends AbstractRemessa implements RemessaContract
     const PROTESTO_SEM = '3';
     const PROTESTO_DIAS_CORRIDOS = '1';
     const PROTESTO_NAO_PROTESTAR = '3';
-    const PROTESTO_AUTOMATICO = '9';
 
     public function __construct(array $params = [])
     {
@@ -55,10 +54,15 @@ class Ailos extends AbstractRemessa implements RemessaContract
      * Tipos de desconto suportados pela Ailos CNAB 240 (segmento P, pos 142).
      * Manual: somente "1 = Valor fixo até a data informada".
      *
+     * TIPO_DESCONTO_PERCENTUAL é aceito como atalho — a lib converte o
+     * percentual em R$ via resolveValorDescontoAbsoluto() antes de gravar
+     * o segmento P (tipo nativo continua sendo '1').
+     *
      * @var array<string, string>
      */
     protected $tiposDescontoSuportados = [
-        BoletoContract::TIPO_DESCONTO_VALOR_FIXO => '1',
+        BoletoContract::TIPO_DESCONTO_VALOR_FIXO   => '1',
+        BoletoContract::TIPO_DESCONTO_PERCENTUAL   => '1',
     ];
 
     /**
@@ -239,7 +243,7 @@ class Ailos extends AbstractRemessa implements RemessaContract
         }
         $this->add(222, 223, Util::formatCnab('9', $boleto->getDiasProtesto(), 2));
         $this->add(224, 224, '2'); // Deverá ser informado o código ‘2’, visto que o sistema respeita o decurso de prazo cadastrado no convênio do cooperado..
-        $this->add(225, 227, ''); // Utilizar sempre, nesse campo, 60 dias para baixa/devolução.
+        $this->add(225, 227, '000'); // Manual exige "000" — sistema respeita o decurso de prazo cadastrado no convênio do cooperado.
         $this->add(228, 229, Util::formatCnab('9', $boleto->getMoeda(), 2));
         $this->add(230, 239, '0000000000');
         $this->add(240, 240, '');
@@ -255,7 +259,8 @@ class Ailos extends AbstractRemessa implements RemessaContract
      */
     protected function segmentoR(BoletoContract $boleto)
     {
-        if (!$boleto->getMulta() > 0 && !$boleto->getDesconto() > 0) {
+        // Manual Ailos CNAB 240 (seção 4.2.2.6): segmento R é exclusivo para multa.
+        if (!($boleto->getMulta() > 0)) {
             return $this;
         }
 
@@ -280,18 +285,13 @@ class Ailos extends AbstractRemessa implements RemessaContract
             $this->add(16, 17, sprintf('%2.02s', $boleto->getComando()));
         }
 
+        // Desconto 2 e Desconto 3 não são utilizados pela Ailos — zerar conforme manual.
         $this->add(18, 18, '0');
         $this->add(19, 26, '00000000');
         $this->add(27, 41, Util::formatCnab('9', 0, 15, 2));
-        if ($boleto->getDesconto() > 0) {
-            $this->add(18, 18, '1'); // '1' = Valor fixo até a data informada
-            $this->add(19, 26, $boleto->getDataDesconto() ? $boleto->getDataDesconto()->format('dmY') : $boleto->getDataVencimento()->format('dmY'));
-            $this->add(27, 41, Util::formatCnab('9', $boleto->getMulta(), 15, 2));
-        }
-
         $this->add(42, 42, '0');
-        $this->add(43, 50, Util::formatCnab('9', 0, 8));
-        $this->add(51, 65, Util::formatCnab('9', 0, 15));
+        $this->add(43, 50, '00000000');
+        $this->add(51, 65, Util::formatCnab('9', 0, 15, 2));
         $this->add(66, 66, '0');
         $this->add(67, 74, '00000000');
         $this->add(75, 89, Util::formatCnab('9', 0, 15, 2));
@@ -464,8 +464,8 @@ class Ailos extends AbstractRemessa implements RemessaContract
         $this->add(8, 8, '5');
         $this->add(9, 17, '');
         $this->add(18, 23, Util::formatCnab('9', $this->getCountDetalhes() + 2, 6));
-        $this->add(24, 29, Util::formatCnab('9', 0, 6));
-        $this->add(30, 46, Util::formatCnab('9', 0, 17, 2));
+        $this->add(24, 29, Util::formatCnab('9', count($this->boletos), 6));
+        $this->add(30, 46, Util::formatCnab('9', $valor, 17, 2));
         $this->add(47, 52, Util::formatCnab('9', 0, 6));
         $this->add(53, 69, Util::formatCnab('9', 0, 17, 2));
         $this->add(70, 75, Util::formatCnab('9', 0, 6));
@@ -496,5 +496,42 @@ class Ailos extends AbstractRemessa implements RemessaContract
         $this->add(36, 240, '');
 
         return $this;
+    }
+
+    /**
+     * Sobrescreve o preenchimento padrão do desconto (segmento P, pos 142-165).
+     * Ailos só aceita "1 = Valor fixo" no tipo nativo — quando o boleto vem
+     * com TIPO_DESCONTO_PERCENTUAL, a lib converte o percentual em R$ via
+     * resolveValorDescontoAbsoluto() para que o consumidor passe apenas o
+     * código canônico e a lib produza o valor exigido pelo layout.
+     *
+     * @param BoletoContract $boleto
+     * @throws ValidationException
+     */
+    protected function preencheDescontoSegmentoP(BoletoContract $boleto)
+    {
+        $codigoCanonico = (string) $boleto->getDescontoCodigo();
+
+        if ($codigoCanonico === BoletoContract::TIPO_DESCONTO_NENHUM && $boleto->getDesconto() > 0) {
+            $codigoCanonico = BoletoContract::TIPO_DESCONTO_VALOR_FIXO;
+        }
+
+        $valor = $this->resolveValorDescontoAbsoluto($boleto);
+
+        if ($codigoCanonico === BoletoContract::TIPO_DESCONTO_NENHUM || $valor <= 0) {
+            $this->add(142, 142, '0');
+            $this->add(143, 150, '00000000');
+            $this->add(151, 165, Util::formatCnab('9', 0, 15, 2));
+
+            return;
+        }
+
+        $dataDesconto = $boleto->getDataDesconto()
+            ? $boleto->getDataDesconto()->format('dmY')
+            : '00000000';
+
+        $this->add(142, 142, '1');
+        $this->add(143, 150, $dataDesconto);
+        $this->add(151, 165, Util::formatCnab('9', $valor, 15, 2));
     }
 }

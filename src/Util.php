@@ -1124,20 +1124,29 @@ final class Util
      */
     public static function adiciona(&$line, $i, $f, $value)
     {
+        $iOriginal = $i;
         $i--;
 
         if (($i > 398 || $f > 400) && ($i != 401 && $f != 444)) {
-            throw new ValidationException('$ini ou $fim ultrapassam o limite máximo de 400');
+            throw new ValidationException(sprintf('Posições inválidas: $ini=%d e $fim=%d ultrapassam o limite máximo de 400', $iOriginal, $f));
         }
 
         if ($f < $i) {
-            throw new ValidationException('$ini é maior que o $fim');
+            throw new ValidationException(sprintf('Posições inválidas: $ini=%d é maior que $fim=%d', $iOriginal, $f));
         }
 
         $t = $f - $i;
 
         if (mb_strlen($value) > $t) {
-            throw new ValidationException(sprintf('String $valor maior que o tamanho definido em $ini e $fim: $valor=%s e tamanho é de: %s', mb_strlen($value), $t));
+            $valuePreview = mb_strlen($value) > 60 ? mb_substr($value, 0, 60) . '...' : $value;
+            throw new ValidationException(sprintf(
+                'Valor "%s" (%d caracteres) excede o tamanho do campo nas posições %d-%d (cabem %d caracteres). Verifique se o dado de entrada (agência, conta, DV, convênio, nome, etc.) está no formato esperado pelo banco.',
+                $valuePreview,
+                mb_strlen($value),
+                $iOriginal,
+                $f,
+                $t
+            ));
         }
 
         $value = sprintf("%{$t}s", $value);
