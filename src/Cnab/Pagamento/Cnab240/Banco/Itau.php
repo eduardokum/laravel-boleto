@@ -218,6 +218,21 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     }
 
     /**
+     * Retorna o nome sugerido para o arquivo de remessa.
+     *
+     * Itaú exige nome com no máximo 8 caracteres (sem a extensão). Usa o
+     * número da remessa zero-padded para 8 dígitos, igual à remessa de
+     * cobrança CNAB400.
+     *
+     * @return string
+     */
+    public function nomeSugerido()
+    {
+        $idremessa = $this->getIdremessa() ?: 0;
+        return sprintf('%08d.REM', $idremessa);
+    }
+
+    /**
      * Retorna o nome do banco
      * @return string
      */
@@ -643,7 +658,7 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
         if (! empty($outrosTipos)) {
             throw new ValidationException(sprintf(
                 'Lotes PIX devem ser enviados em arquivo separado das demais formas de pagamento '
-                . '(manual SISPAG Itaú). Detectados no mesmo arquivo: PIX + %s.',
+                    . '(manual SISPAG Itaú). Detectados no mesmo arquivo: PIX + %s.',
                 implode(', ', $outrosTipos)
             ));
         }
