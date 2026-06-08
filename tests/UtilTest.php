@@ -32,6 +32,8 @@ class UtilTest extends TestCase
         $this->assertEquals('123', Util::onlyNumbers('asd123'));
         $this->assertEquals('asd123', Util::alphanumberOnly('_*(asd123)*_'));
         $this->assertEquals('asd123', Util::onlyAlphanumber('_*(asd123)*_'));
+        $this->assertEquals('12ABC34501DE35', Util::onlyDocument('12.abc.345/01de-35'));
+        $this->assertEquals('012ABC34501DE35', Util::formatCnabDocumento('12.abc.345/01de-35', 15));
         $this->assertEquals('AaEeIiOoUu', Util::normalizeChars('ÁáÉéÍiÓóÚú'));
     }
 
@@ -40,6 +42,18 @@ class UtilTest extends TestCase
         $this->assertEquals(7, Util::modulo11('123456789', 2, 9));
         $this->assertEquals(4, Util::modulo11('123456789', 2, 9, 1));
         $this->assertEquals(7, Util::modulo10('123456789'));
+    }
+
+    public function testValidarCnpjAlfanumerico()
+    {
+        $this->assertTrue(Util::validarCnpj('12.ABC.345/01DE-35'));
+        $this->assertTrue(Util::validarCnpj('12abc34501de35'));
+        $this->assertTrue(Util::validarCnpjCpf('12.ABC.345/01DE-35'));
+        $this->assertEquals('CNPJ', Util::getTipoDocumento('12.ABC.345/01DE-35'));
+        $this->assertTrue(Util::isCnpj('12.ABC.345/01DE-35'));
+        $this->assertFalse(Util::validarCnpj('12.ABC.345/01DE-34'));
+        $this->assertFalse(Util::validarCnpj('12.ABC.345/01DE-AA'));
+        $this->assertFalse(Util::validarCnpjCpf('ABCDE123456'));
     }
 
     public function testAddRem()

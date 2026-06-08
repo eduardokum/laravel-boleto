@@ -346,8 +346,8 @@ class Unicred extends AbstractBoleto implements BoletoContract
             'nossoNumero'   => null,
             'pagador' => [
                 'nomeRazaoSocial' => substr($this->getPagador()->getNome(), 0, 40),
-                'tipoPessoa'      => strlen(Util::onlyNumbers($this->getPagador()->getDocumento())) == 14 ? 'J' : 'F',
-                'numeroDocumento' => Util::onlyNumbers($this->getPagador()->getDocumento()),
+                'tipoPessoa'      => Util::isCnpj($this->getPagador()->getDocumento()) ? 'J' : 'F',
+                'numeroDocumento' => Util::onlyDocument($this->getPagador()->getDocumento()),
                 'nomeFantasia'    => $this->getPagador()->getNomeFantasia(),
                 'email'           => $this->getPagador()->getEmail(),
                 'endereco' => [

@@ -139,13 +139,13 @@ class Bv extends AbstractRemessa implements RemessaContract
 
         $this->add(1, 1, 1);
         if ($this->getBeneficiario()->getTipo() == Pessoa::TIPO_BENEFICIARIO) {
-            $this->add(2, 3, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? '02' : '01');
+            $this->add(2, 3, Util::isCnpj($this->getBeneficiario()->getDocumento()) ? '02' : '01');
         } elseif ($this->getBeneficiario()->getTipo() == Pessoa::TIPO_SACADOR) {
-            $this->add(2, 3, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? '04' : '03');
+            $this->add(2, 3, Util::isCnpj($this->getBeneficiario()->getDocumento()) ? '04' : '03');
         } else {
             throw new ValidationException('Tipo de beneficiário inválido');
         }
-        $this->add(4, 17, Util::formatCnab('9L', $this->getBeneficiario()->getDocumento(), 14));
+        $this->add(4, 17, Util::formatCnabDocumento($this->getBeneficiario()->getDocumento(), 14));
         $this->add(18, 19, '00');
         $this->add(20, 29, Util::formatCnab('9', $this->getConvenio(), 10));
         $this->add(30, 37, ''); // Número do Contrato Externo
@@ -191,8 +191,8 @@ class Bv extends AbstractRemessa implements RemessaContract
         $this->add(170, 170, '0'); // Desconto -  0 Percentual, 1 Valor
         $this->add(171, 182, Util::formatCnab('9', 0, 12, 2));
         $this->add(183, 195, Util::formatCnab('9', 0, 13, 2));
-        $this->add(196, 197, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? '02' : '01');
-        $this->add(198, 211, Util::formatCnab('9L', $boleto->getPagador()->getDocumento(), 14));
+        $this->add(196, 197, Util::isCnpj($boleto->getPagador()->getDocumento()) ? '02' : '01');
+        $this->add(198, 211, Util::formatCnabDocumento($boleto->getPagador()->getDocumento(), 14));
         $this->add(212, 251, Util::formatCnab('X', $boleto->getPagador()->getNome(), 40));
         $this->add(252, 288, Util::formatCnab('X', $boleto->getPagador()->getEndereco(), 37));
         $this->add(289, 291, '');

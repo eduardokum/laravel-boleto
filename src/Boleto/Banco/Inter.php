@@ -244,7 +244,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
 
         return array_filter([
             'seuNumero'           => $this->getNumero(),
-            'cnpjCPFBeneficiario' => sprintf('%014s', Util::onlyNumbers($this->getBeneficiario()->getDocumento())),
+            'cnpjCPFBeneficiario' => Util::formatCnabDocumento($this->getBeneficiario()->getDocumento(), 14),
             'valorNominal'        => Util::nFloat($this->getValor(), 2, false),
             'dataEmissao'         => $this->getDataDocumento()->format('Y-m-d'),
             'dataVencimento'      => $this->getDataVencimento()->format('Y-m-d'),
@@ -257,7 +257,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
             'multa'               => $multa,
             'mora'                => $mora,
             'pagador'             => [
-                'tipoPessoa' => strlen(Util::onlyNumbers($this->getPagador()->getDocumento())) == 14 ? 'JURIDICA' : 'FISICA',
+                'tipoPessoa' => Util::isCnpj($this->getPagador()->getDocumento()) ? 'JURIDICA' : 'FISICA',
                 'nome'       => $this->getPagador()->getNome(),
                 'endereco'   => $enderecoSplit($this->getPagador()->getEndereco())['endereco'],
                 'numero'     => $enderecoSplit($this->getPagador()->getEndereco())['numero'],
@@ -265,7 +265,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
                 'cep'        => Util::onlyNumbers($this->getPagador()->getCep()),
                 'uf'         => $this->getPagador()->getUf(),
                 'cidade'     => $this->getPagador()->getCidade(),
-                'cnpjCpf'    => Util::onlyNumbers($this->getPagador()->getDocumento()),
+                'cnpjCpf'    => Util::onlyDocument($this->getPagador()->getDocumento()),
             ],
         ]);
     }

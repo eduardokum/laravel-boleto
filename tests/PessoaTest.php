@@ -132,6 +132,14 @@ class PessoaTest extends TestCase
         $this->assertEquals('CNPJ', $pessoa->getTipoDocumento());
         $this->assertEquals('99.999.999/9999-99', $pessoa->getDocumento());
 
+        $pessoa->setDocumento('12.ABC.345/01DE-35');
+        $this->assertEquals('CNPJ', $pessoa->getTipoDocumento());
+        $this->assertEquals('12.ABC.345/01DE-35', $pessoa->getDocumento());
+
+        $pessoa->setDocumento('12abc34501de35');
+        $this->assertEquals('CNPJ', $pessoa->getTipoDocumento());
+        $this->assertEquals('12.ABC.345/01DE-35', $pessoa->getDocumento());
+
         $pessoa->setDocumento('999.999.999-99');
         $this->assertEquals('CPF', $pessoa->getTipoDocumento());
         $this->assertEquals('999.999.999-99', $pessoa->getDocumento());
@@ -146,5 +154,13 @@ class PessoaTest extends TestCase
         $this->assertEquals('CEI', $pessoa->getTipoDocumento());
         $this->assertEquals('99.99999.9-99', $pessoa->getDocumento());
 
+    }
+
+    public function testPessoaDocumentoCpfAlfanumericoErrado()
+    {
+        $this->expectException(Exception::class);
+
+        $pessoa = new Pessoa;
+        $pessoa->setDocumento('ABCDE123456');
     }
 }
