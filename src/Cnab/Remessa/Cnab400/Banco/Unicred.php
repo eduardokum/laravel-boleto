@@ -236,7 +236,7 @@ class Unicred extends AbstractRemessa implements RemessaContract
         // Tipo de inscrição do Pagador
         // 01 – CPF
         // 02 - CNPJ
-        $this->add(219, 220, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? '02' : '01'); //Identificação do Tipo de Inscrição do Pagador
+        $this->add(219, 220, Util::isCnpj($boleto->getPagador()->getDocumento()) ? '02' : '01'); //Identificação do Tipo de Inscrição do Pagador
         /** Quando se tratar de CNPJ, adotar o critério de preenchimento da direita para a esquerda,utilizando:
          * - 2 posições para o controle;
          * - 4 posições para a filial;
@@ -246,7 +246,7 @@ class Unicred extends AbstractRemessa implements RemessaContract
          * - 9 posições para o CPF;
          * - 3 posições a esquerda zeradas.
          **/
-        $this->add(221, 234, Util::formatCnab('9', Util::onlyNumbers($boleto->getPagador()->getDocumento()), 14));
+        $this->add(221, 234, Util::formatCnabDocumento($boleto->getPagador()->getDocumento(), 14));
         $this->add(235, 274, Util::formatCnab('X', $boleto->getPagador()->getNome(), 40));
         $this->add(275, 314, Util::formatCnab('X', $boleto->getPagador()->getEndereco(), 40));
         $this->add(315, 326, Util::formatCnab('X', $boleto->getPagador()->getBairro(), 12));

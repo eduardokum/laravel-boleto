@@ -314,6 +314,55 @@ final class Util
     }
 
     /**
+     * Retorna somente caracteres validos para documentos CPF/CNPJ/CEI.
+     *
+     * @param string $string
+     *
+     * @return string
+     */
+    public static function onlyDocument($string)
+    {
+        return preg_replace('/[^0-9A-Z]/', '', self::upper(self::normalizeChars((string) $string)));
+    }
+
+    /**
+     * @param string $documento
+     * @return string|null
+     */
+    public static function getTipoDocumento($documento)
+    {
+        $documento = self::onlyDocument($documento);
+        if (strlen($documento) == 11 && ctype_digit($documento)) {
+            return 'CPF';
+        } elseif (strlen($documento) == 10 && ctype_digit($documento)) {
+            return 'CEI';
+        } elseif (strlen($documento) == 14 && preg_match('/^[A-Z0-9]{12}[0-9]{2}$/', $documento)) {
+            return 'CNPJ';
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $documento
+     * @return bool
+     */
+    public static function isCnpj($documento)
+    {
+        return self::getTipoDocumento($documento) == 'CNPJ';
+    }
+
+    /**
+     * @param string $documento
+     * @param int $tamanho
+     * @return string
+     */
+    public static function formatCnabDocumento($documento, $tamanho = 14)
+    {
+        return self::formatCnab('9', self::onlyDocument($documento), $tamanho);
+    }
+
+    /**
      * Função para limpar acentos de uma string
      *
      * @param string $string
@@ -1218,16 +1267,16 @@ final class Util
      */
     public static function validarCnpj($cnpj)
     {
-        $c = self::onlyNumbers($cnpj);
+        $c = self::onlyDocument($cnpj);
         $b = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
-        if (mb_strlen($c) != 14 || preg_match("/^{$c[0]}{14}$/", $c)) {
+        if (mb_strlen($c) != 14 || ! preg_match('/^[A-Z0-9]{12}[0-9]{2}$/', $c) || preg_match("/^{$c[0]}{14}$/", $c)) {
             return false;
         }
-        for ($i = 0, $n = 0; $i < 12; $n += $c[$i] * $b[++$i]);
+        for ($i = 0, $n = 0; $i < 12; $n += self::cnpjCharValue($c[$i]) * $b[++$i]);
         if ($c[12] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
             return false;
         }
-        for ($i = 0, $n = 0; $i <= 12; $n += $c[$i] * $b[$i++]);
+        for ($i = 0, $n = 0; $i <= 12; $n += self::cnpjCharValue($c[$i]) * $b[$i++]);
         if ($c[13] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
             return false;
         }
@@ -1236,13 +1285,22 @@ final class Util
     }
 
     /**
+     * @param string $char
+     * @return int
+     */
+    private static function cnpjCharValue($char)
+    {
+        return ord($char) - 48;
+    }
+
+    /**
      * @param $documento
      * @return bool
      */
     public static function validarCnpjCpf($documento)
     {
-        $documento = Util::onlyNumbers($documento);
-        if (strlen($documento) == 11) {
+        $documento = Util::onlyDocument($documento);
+        if (strlen($documento) == 11 && ctype_digit($documento)) {
             return self::validarCpf($documento);
         } elseif (strlen($documento) == 14) {
             return self::validarCnpj($documento);

@@ -216,8 +216,8 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
             'dataVencimento' => $this->getDataVencimento()->format('Y-m-d'),
             'numDiasAgenda'  => min(60, $this->getDiasBaixaAutomatica()),
             'pagador'        => [
-                'cpfCnpj'    => Util::onlyNumbers($this->getPagador()->getDocumento()),
-                'tipoPessoa' => strlen(Util::onlyNumbers($this->getPagador()->getDocumento())) == 14 ? 'JURIDICA' : 'FISICA',
+                'cpfCnpj'    => Util::onlyDocument($this->getPagador()->getDocumento()),
+                'tipoPessoa' => Util::isCnpj($this->getPagador()->getDocumento()) ? 'JURIDICA' : 'FISICA',
                 'nome'       => $this->getPagador()->getNome(),
                 'endereco'   => $this->getPagador()->getEndereco(),
                 'cidade'     => $this->getPagador()->getCidade(),
