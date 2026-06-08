@@ -212,6 +212,16 @@ abstract class AbstractPagamento implements PagamentoContract
     protected $codigoBarras = null;
 
     /**
+     * Linha digitável (representação numérica) original do documento, exatamente
+     * como capturada (47 díg boleto / 48 díg arrecadação). Preservada para que o
+     * Segmento O grave a linha original sem recalcular DVs. Quando ausente, o
+     * banco gerador a reconstrói a partir do código de barras.
+     *
+     * @var string|null
+     */
+    protected $linhaDigitavel = null;
+
+    /**
      * Valor nominal do título (antes de descontos/acréscimos).
      * Quando não informado, assume o mesmo de getValor().
      *
@@ -909,7 +919,13 @@ abstract class AbstractPagamento implements PagamentoContract
 
         $codigoBarras = Util::onlyNumbers($codigoBarras);
 
-        if (strlen($codigoBarras) === 47 || strlen($codigoBarras) === 48) {
+        if (strlen($codigoBarras) === 48 && isset($codigoBarras[0]) && $codigoBarras[0] === '8') {
+            // Arrecadação/concessionária: linha digitável de 48 díg = código de
+            // barras (44) com 4 DVs mód.10 (1 por bloco de 12). Remove os DVs.
+            // (SISPAG Itaú, Anexo B.) NÃO usa IPTE2CodigoBarras (layout de boleto).
+            $codigoBarras = substr($codigoBarras, 0, 11) . substr($codigoBarras, 12, 11)
+                . substr($codigoBarras, 24, 11) . substr($codigoBarras, 36, 11);
+        } elseif (strlen($codigoBarras) === 47 || strlen($codigoBarras) === 48) {
             $codigoBarras = Util::IPTE2CodigoBarras($codigoBarras);
         }
 
@@ -939,7 +955,32 @@ abstract class AbstractPagamento implements PagamentoContract
      */
     public function setLinhaDigitavel($linhaDigitavel)
     {
-        return $this->setCodigoBarras($linhaDigitavel);
+        if ($linhaDigitavel === null || $linhaDigitavel === '') {
+            $this->linhaDigitavel = null;
+
+            return $this;
+        }
+
+        $this->linhaDigitavel = Util::onlyNumbers($linhaDigitavel);
+
+        // Deriva o código de barras (44) — usado para segmento, tipo de valor,
+        // DAC e agrupamento de lote — APENAS se ainda não houver um definido.
+        // Assim o chamador pode setar os dois (setCodigoBarras + setLinhaDigitavel)
+        // que o código de barras explícito tem prioridade; a linha digitável
+        // original fica preservada para gravação direta no Segmento O.
+        if (empty($this->codigoBarras)) {
+            $this->setCodigoBarras($linhaDigitavel);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLinhaDigitavel()
+    {
+        return $this->linhaDigitavel;
     }
 
     /**
