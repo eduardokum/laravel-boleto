@@ -554,6 +554,32 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
     }
 
     /**
+     * Monta a representação numérica (linha digitável de 48 dígitos) a partir do
+     * código de barras de arrecadação (44 dígitos), conforme Anexo B do manual
+     * SISPAG. O campo "Código de Barras" do Segmento O é X(48), posições 18-65,
+     * e recebe a linha digitável — 4 campos de 12 dígitos (11 de dados + 1 DV
+     * mód.10) — e não os 44 dígitos do código de barras.
+     *
+     * @param string $barcode Código de barras de arrecadação (44 dígitos)
+     * @return string Linha digitável de 48 dígitos (ou o valor original se != 44)
+     */
+    protected function getArrecadacaoLinhaDigitavel($barcode)
+    {
+        $barcode = Util::onlyNumbers((string) $barcode);
+        if (strlen($barcode) !== 44) {
+            return $barcode;
+        }
+
+        $linha = '';
+        foreach ([0, 11, 22, 33] as $inicio) {
+            $bloco = substr($barcode, $inicio, 11);
+            $linha .= $bloco . Util::modulo10($bloco);
+        }
+
+        return $linha;
+    }
+
+    /**
      * Mapeia o segmento do barcode de arrecadação para a chave de tipo de
      * pagamento (agrupador de lote). Manual SISPAG Nota 5.
      *
@@ -1151,9 +1177,19 @@ class Itau extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(14, 14, self::CODIGO_SEGMENTO_O);                                       // 014-014: Código Segmento (O)
         $this->add(15, 17, Util::formatCnab('9L', '000', 3));                              // 015-017: Tipo de Movimento (NOTA 10)
 
-        // 018-065: Código de Barras X(48). Barcode tem 44 dígitos; preenche
-        // alfanumérico alinhado à esquerda com brancos à direita.
-        $this->add(18, 65, Util::formatCnab('X', $barcode, 48));
+        // 018-065: Código de Barras X(48). Recebe a representação numérica
+        // (linha digitável de 48 dígitos = 4 campos de 11 dados + DV mód.10),
+        // conforme Anexo B / NOTA 18 do manual SISPAG Itaú. O DAC geral do
+        // código de barras (pos 4) é validado pelo banco a partir destes dados.
+        // Prioriza a linha digitável ORIGINAL capturada (preserva os DVs do
+        // documento); só reconstrói via mód.10 quando ela não foi informada.
+        $linhaDigitavel = method_exists($pagamento, 'getLinhaDigitavel')
+            ? Util::onlyNumbers((string) $pagamento->getLinhaDigitavel())
+            : '';
+        if (strlen($linhaDigitavel) !== 48) {
+            $linhaDigitavel = $this->getArrecadacaoLinhaDigitavel($barcode);
+        }
+        $this->add(18, 65, Util::formatCnab('X', $linhaDigitavel, 48));
 
         $this->add(66, 95, Util::formatCnab('X', $nomeFavorecido, 30));                    // 066-095: Nome Concessionária / Contribuinte
         $this->add(96, 103, Util::formatCnab('9L', $dataVencimento, 8));                   // 096-103: Data Vencimento (DDMMAAAA)
