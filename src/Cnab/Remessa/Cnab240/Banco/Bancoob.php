@@ -200,8 +200,8 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
             $this->add(16, 17, self::OCORRENCIA_ALT_OUTROS_DADOS);
         }
-        $this->add(18, 18, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? 2 : 1);
-        $this->add(19, 33, Util::formatCnab('9', Util::onlyNumbers($boleto->getPagador()->getDocumento()), 15));
+        $this->add(18, 18, Util::isCnpj($boleto->getPagador()->getDocumento()) ? 2 : 1);
+        $this->add(19, 33, Util::formatCnabDocumento($boleto->getPagador()->getDocumento(), 15));
         $this->add(34, 73, Util::formatCnab('X', $boleto->getPagador()->getNome(), 40));
         $this->add(74, 113, Util::formatCnab('X', $boleto->getPagador()->getEndereco(), 40));
         $this->add(114, 128, Util::formatCnab('X', $boleto->getPagador()->getBairro(), 15));
@@ -216,8 +216,8 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(213, 240, Util::formatCnab('X', '', 28));
 
         if ($boleto->getSacadorAvalista()) {
-            $this->add(154, 154, strlen(Util::onlyNumbers($boleto->getSacadorAvalista()->getDocumento())) == 14 ? 2 : 1);
-            $this->add(155, 169, Util::formatCnab('9', Util::onlyNumbers($boleto->getSacadorAvalista()->getDocumento()), 15));
+            $this->add(154, 154, Util::isCnpj($boleto->getSacadorAvalista()->getDocumento()) ? 2 : 1);
+            $this->add(155, 169, Util::formatCnabDocumento($boleto->getSacadorAvalista()->getDocumento(), 15));
             $this->add(170, 209, Util::formatCnab('X', $boleto->getSacadorAvalista()->getNome(), 40));
         }
 
@@ -283,8 +283,8 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(4, 7, '0000');
         $this->add(8, 8, '0');
         $this->add(9, 17, '');
-        $this->add(18, 18, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? 2 : 1);
-        $this->add(19, 32, Util::formatCnab('9', Util::onlyNumbers($this->getBeneficiario()->getDocumento()), 14));
+        $this->add(18, 18, Util::isCnpj($this->getBeneficiario()->getDocumento()) ? 2 : 1);
+        $this->add(19, 32, Util::formatCnabDocumento($this->getBeneficiario()->getDocumento(), 14));
         $this->add(33, 52, '');
         $this->add(53, 57, Util::formatCnab('9', $this->getAgencia(), 5));
         $this->add(58, 58, ! is_null($this->getAgenciaDv()) ? $this->getAgenciaDv() : CalculoDV::bancoobAgencia($this->getAgencia()));
@@ -326,8 +326,8 @@ class Bancoob extends AbstractRemessa implements RemessaContract
         $this->add(12, 13, '');
         $this->add(14, 16, '040');
         $this->add(17, 17, '');
-        $this->add(18, 18, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? 2 : 1);
-        $this->add(19, 33, Util::formatCnab('9', Util::onlyNumbers($this->getBeneficiario()->getDocumento()), 15));
+        $this->add(18, 18, Util::isCnpj($this->getBeneficiario()->getDocumento()) ? 2 : 1);
+        $this->add(19, 33, Util::formatCnabDocumento($this->getBeneficiario()->getDocumento(), 15));
         $this->add(34, 53, '');
         $this->add(54, 58, Util::formatCnab('9', $this->getAgencia(), 5));
         $this->add(59, 59, ! is_null($this->getAgenciaDv()) ? $this->getAgenciaDv() : CalculoDV::bancoobAgencia($this->getAgencia()));

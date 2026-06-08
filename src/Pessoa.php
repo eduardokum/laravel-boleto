@@ -194,8 +194,15 @@ class Pessoa implements PessoaContract
      */
     public function setDocumento($documento)
     {
-        $documento = substr(Util::onlyNumbers($documento), -14);
-        if (! in_array(strlen($documento), [10, 11, 14, 0])) {
+        $documento = substr(Util::onlyDocument($documento), -14);
+        $length = strlen($documento);
+        if (! in_array($length, [10, 11, 14, 0])) {
+            throw new ValidationException('Documento inválido');
+        }
+        if (in_array($length, [10, 11]) && ! ctype_digit($documento)) {
+            throw new ValidationException('Documento inválido');
+        }
+        if ($length == 14 && ! preg_match('/^[A-Z0-9]{12}[0-9]{2}$/', $documento)) {
             throw new ValidationException('Documento inválido');
         }
         $this->documento = $documento;
@@ -216,7 +223,7 @@ class Pessoa implements PessoaContract
             return Util::maskString(Util::onlyNumbers($this->documento), '##.#####.#-##');
         }
 
-        return Util::maskString(Util::onlyNumbers($this->documento), '##.###.###/####-##');
+        return Util::maskString(Util::onlyDocument($this->documento), '##.###.###/####-##');
     }
 
     /**
@@ -360,15 +367,7 @@ class Pessoa implements PessoaContract
      */
     public function getTipoDocumento()
     {
-        $cpf_cnpj_cei = Util::onlyNumbers($this->documento);
-
-        if (strlen($cpf_cnpj_cei) == 11) {
-            return 'CPF';
-        } elseif (strlen($cpf_cnpj_cei) == 10) {
-            return 'CEI';
-        }
-
-        return 'CNPJ';
+        return Util::getTipoDocumento($this->documento) ?: 'CNPJ';
     }
 
     /**

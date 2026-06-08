@@ -147,8 +147,8 @@ class C6 extends AbstractRemessa implements RemessaContract
         $this->iniciaDetalhe();
 
         $this->add(1, 1, '1');
-        $this->add(2, 3, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? '02' : '01');
-        $this->add(4, 17, Util::formatCnab('9L', $this->getBeneficiario()->getDocumento(), 14));
+        $this->add(2, 3, Util::isCnpj($this->getBeneficiario()->getDocumento()) ? '02' : '01');
+        $this->add(4, 17, Util::formatCnabDocumento($this->getBeneficiario()->getDocumento(), 14));
         $this->add(18, 29, Util::formatCnab('9', $this->getCodigoCliente(), 12));
         $this->add(30, 37, '');
         $this->add(38, 62, Util::formatCnab('X', $boleto->getNumeroControle(), 25)); // numero de controle
@@ -185,8 +185,8 @@ class C6 extends AbstractRemessa implements RemessaContract
         $this->add(193, 198, $boleto->getMulta() > 0 ? $boleto->getDataVencimento()->format('dmy') : '000000');
         $this->add(199, 205, '');
         $this->add(206, 218, Util::formatCnab('9', 0, 13, 2));
-        $this->add(219, 220, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? '02' : '01');
-        $this->add(221, 234, Util::formatCnab('9', Util::onlyNumbers($boleto->getPagador()->getDocumento()), 14));
+        $this->add(219, 220, Util::isCnpj($boleto->getPagador()->getDocumento()) ? '02' : '01');
+        $this->add(221, 234, Util::formatCnabDocumento($boleto->getPagador()->getDocumento(), 14));
         $this->add(235, 274, Util::formatCnab('X', $boleto->getPagador()->getNome(), 40));
         $this->add(275, 314, Util::formatCnab('X', $boleto->getPagador()->getEndereco(), 40));
         $this->add(315, 326, Util::formatCnab('X', $boleto->getPagador()->getBairro(), 12));
