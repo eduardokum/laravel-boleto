@@ -116,8 +116,8 @@ class Inter extends AbstractRemessa implements RemessaContract
         $this->add(198, 201, '0000');
         $this->add(202, 207, $boleto->getDesconto() > 0 ? $boleto->getDataDesconto()->format('dmy') : '000000');
         $this->add(208, 220, Util::formatCnab('9', 0, 13, 2));
-        $this->add(221, 222, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? '02' : '01');
-        $this->add(223, 236, Util::formatCnab('9', Util::onlyNumbers($boleto->getPagador()->getDocumento()), 14));
+        $this->add(221, 222, strlen(Util::onlyAlphanumber($boleto->getPagador()->getDocumento())) == 14 ? '02' : '01');
+        $this->add(223, 236, Util::formatCnab('9', Util::onlyAlphanumber($boleto->getPagador()->getDocumento()), 14));
         $this->add(237, 276, Util::formatCnab('X', $boleto->getPagador()->getNome(), 40));
         $this->add(277, 316, Util::formatCnab('X', $boleto->getPagador()->getEndereco(), 40));
         $this->add(317, 324, Util::formatCnab('9', Util::onlyNumbers($boleto->getPagador()->getCep()), 8));

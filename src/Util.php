@@ -1213,21 +1213,29 @@ final class Util
     }
 
     /**
+     * Valida um CNPJ, aceitando tanto o formato numérico tradicional quanto o
+     * novo formato alfanumérico da Receita Federal (12 caracteres alfanuméricos
+     * + 2 dígitos verificadores numéricos).
+     *
      * @param $cnpj
      * @return bool
      */
     public static function validarCnpj($cnpj)
     {
-        $c = self::onlyNumbers($cnpj);
+        $c = self::upper(self::onlyAlphanumber($cnpj));
         $b = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
-        if (mb_strlen($c) != 14 || preg_match("/^{$c[0]}{14}$/", $c)) {
+
+        if (mb_strlen($c) != 14 || ! preg_match('/^[0-9A-Z]{12}[0-9]{2}$/', $c) || preg_match("/^{$c[0]}{14}$/", $c)) {
             return false;
         }
-        for ($i = 0, $n = 0; $i < 12; $n += $c[$i] * $b[++$i]);
+
+        // Cada caractere é convertido para seu valor numérico (código ASCII - 48),
+        // de forma que '0'-'9' correspondem a 0-9 e 'A'-'Z' a 17-42
+        for ($i = 0, $n = 0; $i < 12; $n += (ord($c[$i]) - 48) * $b[++$i]);
         if ($c[12] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
             return false;
         }
-        for ($i = 0, $n = 0; $i <= 12; $n += $c[$i] * $b[$i++]);
+        for ($i = 0, $n = 0; $i <= 12; $n += (ord($c[$i]) - 48) * $b[$i++]);
         if ($c[13] != ((($n %= 11) < 2) ? 0 : 11 - $n)) {
             return false;
         }
@@ -1241,7 +1249,7 @@ final class Util
      */
     public static function validarCnpjCpf($documento)
     {
-        $documento = Util::onlyNumbers($documento);
+        $documento = Util::onlyAlphanumber($documento);
         if (strlen($documento) == 11) {
             return self::validarCpf($documento);
         } elseif (strlen($documento) == 14) {

@@ -262,8 +262,8 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->iniciaDetalhe(($chaveNfe = $boleto->getChaveNfe()) ? 44 : 0);
 
         $this->add(1, 1, 7);
-        $this->add(2, 3, strlen(Util::onlyNumbers($this->getBeneficiario()->getDocumento())) == 14 ? '02' : '01');
-        $this->add(4, 17, Util::formatCnab('9L', $this->getBeneficiario()->getDocumento(), 14));
+        $this->add(2, 3, strlen(Util::onlyAlphanumber($this->getBeneficiario()->getDocumento())) == 14 ? '02' : '01');
+        $this->add(4, 17, Util::formatCnab('9', Util::onlyAlphanumber($this->getBeneficiario()->getDocumento()), 14));
         $this->add(18, 21, Util::formatCnab('9', $this->getAgencia(), 4));
         $this->add(22, 22, ! is_null($this->getAgenciaDv()) ? $this->getAgenciaDv() : CalculoDV::bbAgencia($this->getAgencia()));
         $this->add(23, 30, Util::formatCnab('9', $this->getConta(), 8));
@@ -320,8 +320,8 @@ class Bb extends AbstractRemessa implements RemessaContract
         $this->add(180, 192, Util::formatCnab('9', $boleto->getDesconto(), 13, 2));
         $this->add(193, 205, Util::formatCnab('9', 0, 13, 2));
         $this->add(206, 218, Util::formatCnab('9', 0, 13, 2));
-        $this->add(219, 220, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? '02' : '01');
-        $this->add(221, 234, Util::formatCnab('9L', $boleto->getPagador()->getDocumento(), 14));
+        $this->add(219, 220, strlen(Util::onlyAlphanumber($boleto->getPagador()->getDocumento())) == 14 ? '02' : '01');
+        $this->add(221, 234, Util::formatCnab('9', Util::onlyAlphanumber($boleto->getPagador()->getDocumento()), 14));
         $this->add(235, 271, Util::formatCnab('X', $boleto->getPagador()->getNome(), 37));
         $this->add(272, 274, '');
         $this->add(275, 314, Util::formatCnab('X', $boleto->getPagador()->getEndereco(), 40));
