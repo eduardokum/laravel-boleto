@@ -50,13 +50,13 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     const JUROS_TAXA_MENSAL = '2';
 
     /**
-     * Códigos de desconto 1 (campo 30.3P do manual).
-     * 4 e 6 são reservados/não tratados pelo banco.
+     * Códigos de desconto 1 (campo 30.3P do manual). Neste leiaute SOMENTE os
+     * códigos 1 e 3 são válidos: os percentuais (2 e 5) e as variantes "dia
+     * útil" (4 e 6) foram excluídos do campo 30.3P (atualização Jan/2019).
+     * Descontos percentuais são convertidos para valor fixo em R$.
      */
-    const DESCONTO_VALOR_FIXO = '1';                       // Valor fixo até a data informada
-    const DESCONTO_PERCENTUAL = '2';                       // Percentual até a data informada
-    const DESCONTO_VALOR_ANTECIPACAO_DIA_CORRIDO = '3';    // Valor por antecipação dia corrido
-    const DESCONTO_PERCENTUAL_DIA_CORRIDO = '5';           // Percentual sobre o valor nominal dia corrido
+    const DESCONTO_VALOR_FIXO = '1';                    // Valor fixo até a data informada
+    const DESCONTO_VALOR_ANTECIPACAO_DIA_CORRIDO = '3'; // Valor por antecipação dia corrido
 
     /**
      * Códigos de protesto (campo 37.3P do manual).
@@ -93,18 +93,21 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     /**
      * Tipos de desconto canônicos suportados por este leiaute (campo 30.3P).
      *
-     * As variantes "dia útil" (códigos 4 e 6) são reservadas/não tratadas pelo
-     * banco e por isso são mapeadas para os equivalentes "dia corrido" (3 e 5).
+     * O campo 30.3P só aceita 1 (valor fixo até a data) e 3 (valor por
+     * antecipação dia corrido). Por isso:
+     *  - percentual "até a data" (2) -> 1, convertido para valor fixo em R$;
+     *  - percentual/valor "dia corrido/dia útil" (3,4,5,6) -> 3 (antecipação
+     *    dia corrido), percentuais convertidos para valor em R$.
      *
      * @var array<string, string>
      */
     protected $tiposDescontoSuportados = [
         BoletoContract::TIPO_DESCONTO_VALOR_FIXO                    => self::DESCONTO_VALOR_FIXO,
-        BoletoContract::TIPO_DESCONTO_PERCENTUAL                    => self::DESCONTO_PERCENTUAL,
+        BoletoContract::TIPO_DESCONTO_PERCENTUAL                    => self::DESCONTO_VALOR_FIXO,
         BoletoContract::TIPO_DESCONTO_VALOR_ANTECIPACAO_DIA_CORRIDO => self::DESCONTO_VALOR_ANTECIPACAO_DIA_CORRIDO,
         BoletoContract::TIPO_DESCONTO_VALOR_ANTECIPACAO_DIA_UTIL    => self::DESCONTO_VALOR_ANTECIPACAO_DIA_CORRIDO,
-        BoletoContract::TIPO_DESCONTO_PERCENTUAL_DIA_CORRIDO        => self::DESCONTO_PERCENTUAL_DIA_CORRIDO,
-        BoletoContract::TIPO_DESCONTO_PERCENTUAL_DIA_UTIL           => self::DESCONTO_PERCENTUAL_DIA_CORRIDO,
+        BoletoContract::TIPO_DESCONTO_PERCENTUAL_DIA_CORRIDO        => self::DESCONTO_VALOR_ANTECIPACAO_DIA_CORRIDO,
+        BoletoContract::TIPO_DESCONTO_PERCENTUAL_DIA_UTIL           => self::DESCONTO_VALOR_ANTECIPACAO_DIA_CORRIDO,
     ];
 
     /**
@@ -537,9 +540,12 @@ class Banrisul extends AbstractRemessa implements RemessaContract
     /**
      * Desconto 1 (campos 30/31/32.3P do manual).
      *
-     * Grava o código real do tipo de desconto (1=valor fixo, 2=percentual,
-     * 3=valor antecipação dia corrido, 5=percentual dia corrido). Percentual
-     * usa 1 casa decimal; valor usa 2 casas (manual 32.3P).
+     * O campo 30.3P deste leiaute aceita SOMENTE os códigos 1 (valor fixo até a
+     * data) e 3 (valor por antecipação dia corrido) — ambos monetários. Os
+     * códigos percentuais (2/5) e "dia útil" (4/6) foram excluídos (atualização
+     * Jan/2019) e causam rejeição motivo 30 ("Desconto a Conceder Não Confere").
+     * Por isso o tipo é mapeado para 1/3 e o percentual é convertido para R$.
+     * Valor sempre com 2 casas decimais (manual 32.3P).
      *
      * @param BoletoContract $boleto
      * @throws ValidationException
@@ -555,8 +561,9 @@ class Banrisul extends AbstractRemessa implements RemessaContract
             return;
         }
 
+        // resolveCodigoDesconto devolve sempre 1 ou 3 (ver $tiposDescontoSuportados).
         $codigo = $this->resolveCodigoDesconto($boleto);
-        $valor = $this->resolveValorDesconto($boleto);
+        $valor = $this->resolveValorDescontoMonetario($boleto);
 
         if ($codigo === BoletoContract::TIPO_DESCONTO_NENHUM || $valor <= 0) {
             $this->add(142, 142, '0');
@@ -566,18 +573,47 @@ class Banrisul extends AbstractRemessa implements RemessaContract
             return;
         }
 
-        // Manual 31.3P: para os códigos 1 e 2, se a data não for informada,
-        // assume a data do vencimento.
+        // Manual 31.3P: para o código 1, se a data não for informada, assume a
+        // data do vencimento.
         $dataDesconto = $boleto->getDataDesconto()
             ? $boleto->getDataDesconto()->format('dmY')
             : $boleto->getDataVencimento()->format('dmY');
 
-        // Manual 32.3P: percentual = 1 casa decimal; valor = 2 casas decimais.
-        $dec = $this->isDescontoPercentual($boleto) ? 1 : 2;
-
+        // Manual 32.3P: valor monetário com 2 casas decimais (códigos 1 e 3 não
+        // são percentuais neste leiaute).
         $this->add(142, 142, $codigo);
         $this->add(143, 150, $dataDesconto);
-        $this->add(151, 165, Util::formatCnab('9', $valor, 15, $dec));
+        $this->add(151, 165, Util::formatCnab('9', $valor, 15, 2));
+    }
+
+    /**
+     * Valor do desconto SEMPRE em R$ (campo 32.3P). O leiaute Banrisul não tem
+     * código percentual no campo 30.3P, então qualquer tipo percentual canônico
+     * é convertido para valor monetário: valorTitulo * percentual / 100.
+     *
+     * @param BoletoContract $boleto
+     * @return float
+     */
+    protected function resolveValorDescontoMonetario(BoletoContract $boleto)
+    {
+        $codigo = (string) $boleto->getDescontoCodigo();
+
+        // Back-compat: setDesconto() sem setDescontoCodigo() = valor fixo.
+        if ($codigo === BoletoContract::TIPO_DESCONTO_NENHUM && $boleto->getDesconto() > 0) {
+            $codigo = BoletoContract::TIPO_DESCONTO_VALOR_FIXO;
+        }
+
+        $percentuais = [
+            BoletoContract::TIPO_DESCONTO_PERCENTUAL,
+            BoletoContract::TIPO_DESCONTO_PERCENTUAL_DIA_CORRIDO,
+            BoletoContract::TIPO_DESCONTO_PERCENTUAL_DIA_UTIL,
+        ];
+
+        if (in_array($codigo, $percentuais, true)) {
+            return round((float) $boleto->getValor() * (float) $boleto->getDescontoPercentual() / 100, 2);
+        }
+
+        return (float) $boleto->getDesconto();
     }
 
     /**
