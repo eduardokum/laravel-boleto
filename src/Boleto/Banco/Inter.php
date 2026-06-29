@@ -75,6 +75,20 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
     }
 
     /**
+     * O Inter ATRIBUI o nosso número (não o emissor). A remessa CNAB400 não carrega nosso número — o título
+     * é identificado por numeroControle/numeroDocumento e o banco devolve o nosso número no retorno. O campo
+     * de 11 dígitos do código de barras é preenchido com esse número devolvido. Logo, não há limite a respeitar
+     * na geração da remessa: retorna null para sinalizar "banco atribui" e impedir que o emissor aloque um
+     * nosso número próprio.
+     *
+     * @return int|null
+     */
+    public function getNossoNumeroMaxLength()
+    {
+        return null;
+    }
+
+    /**
      * Gera o Nosso Número.
      *
      * @return null

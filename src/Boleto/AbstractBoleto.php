@@ -1784,6 +1784,18 @@ abstract class AbstractBoleto implements BoletoContract
     public function getNossoNumero()
     {
         if (empty($this->campoNossoNumero)) {
+            // Garantia de aceitação pelo banco: o número não pode exceder o limite do banco/convênio
+            // (getNossoNumeroMaxLength — fonte única do limite). Acima disso, Util::numberFormatGeral
+            // truncaria em silêncio e geraria um nosso número errado; aqui falha alto em vez de mandar lixo.
+            $max = $this->getNossoNumeroMaxLength();
+            if ($max !== null && strlen(Util::onlyNumbers((string) $this->getNumero())) > $max) {
+                throw new ValidationException(sprintf(
+                    'O nosso número (%s) excede o limite de %d dígitos deste banco/convênio.',
+                    $this->getNumero(),
+                    $max
+                ));
+            }
+
             return $this->campoNossoNumero = $this->gerarNossoNumero();
         }
 
@@ -1798,6 +1810,19 @@ abstract class AbstractBoleto implements BoletoContract
     public function getNossoNumeroBoleto()
     {
         return $this->getNossoNumero();
+    }
+
+    /**
+     * Retorna a quantidade máxima de dígitos da porção numérica (numero) do nosso número aceita pelo banco.
+     * A partir desse limite, Util::numberFormatGeral() trunca o número silenciosamente. O consumidor deve
+     * garantir que o numero cabe neste limite antes de gerar a remessa. null = banco atribui o número
+     * (ex.: integração via API) ou limite não definido para este banco.
+     *
+     * @return int|null
+     */
+    public function getNossoNumeroMaxLength()
+    {
+        return null;
     }
 
     /**

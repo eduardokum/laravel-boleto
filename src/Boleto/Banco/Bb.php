@@ -152,23 +152,37 @@ class Bb extends AbstractBoleto implements BoletoContract
      * @return string
      * @throws ValidationException
      */
+    public function getNossoNumeroMaxLength()
+    {
+        switch (strlen((string) $this->getConvenio())) {
+            case 4:
+                return 7;
+            case 6:
+                return (in_array($this->getCarteira(), ['16', '18']) && $this->getVariacaoCarteira() == 17) ? 17 : 5;
+            case 7:
+                return 10;
+            default:
+                return 10;
+        }
+    }
+
     protected function gerarNossoNumero()
     {
         $convenio = $this->getConvenio();
         $numero_boleto = $this->getNumero();
         switch (strlen($convenio)) {
             case 4:
-                $numero = Util::numberFormatGeral($convenio, 4) . Util::numberFormatGeral($numero_boleto, 7);
+                $numero = Util::numberFormatGeral($convenio, 4) . Util::numberFormatGeral($numero_boleto, $this->getNossoNumeroMaxLength());
                 break;
             case 6:
                 if (in_array($this->getCarteira(), ['16', '18']) && $this->getVariacaoCarteira() == 17) {
-                    $numero = Util::numberFormatGeral($numero_boleto, 17);
+                    $numero = Util::numberFormatGeral($numero_boleto, $this->getNossoNumeroMaxLength());
                 } else {
-                    $numero = Util::numberFormatGeral($convenio, 6) . Util::numberFormatGeral($numero_boleto, 5);
+                    $numero = Util::numberFormatGeral($convenio, 6) . Util::numberFormatGeral($numero_boleto, $this->getNossoNumeroMaxLength());
                 }
                 break;
             case 7:
-                $numero = Util::numberFormatGeral($convenio, 7) . Util::numberFormatGeral($numero_boleto, 10);
+                $numero = Util::numberFormatGeral($convenio, 7) . Util::numberFormatGeral($numero_boleto, $this->getNossoNumeroMaxLength());
                 break;
             default:
                 throw new ValidationException('O código do convênio precisa ter 4, 6 ou 7 dígitos!');
