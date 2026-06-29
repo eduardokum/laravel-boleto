@@ -105,9 +105,14 @@ class Bancoob extends AbstractBoleto implements BoletoContract
      *
      * @return string
      */
+    public function getNossoNumeroMaxLength()
+    {
+        return 7;
+    }
+
     protected function gerarNossoNumero()
     {
-        return Util::numberFormatGeral($this->getNumero(), 7)
+        return Util::numberFormatGeral($this->getNumero(), $this->getNossoNumeroMaxLength())
             . CalculoDV::bancoobNossoNumero($this->getAgencia(), $this->getConvenio(), $this->getNumero());
     }
 

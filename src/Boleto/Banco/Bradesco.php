@@ -94,9 +94,14 @@ class Bradesco extends AbstractBoleto implements BoletoContract
      *
      * @return string
      */
+    public function getNossoNumeroMaxLength()
+    {
+        return 11;
+    }
+
     protected function gerarNossoNumero()
     {
-        return Util::numberFormatGeral($this->getNumero(), 11)
+        return Util::numberFormatGeral($this->getNumero(), $this->getNossoNumeroMaxLength())
             . CalculoDV::bradescoNossoNumero($this->getCarteira(), $this->getNumero());
     }
 

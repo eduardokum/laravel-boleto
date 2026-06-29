@@ -121,10 +121,15 @@ class Ailos extends AbstractBoleto implements BoletoContract
      *
      * @return string
      */
+    public function getNossoNumeroMaxLength()
+    {
+        return 9;
+    }
+
     protected function gerarNossoNumero()
     {
         $conta = Util::numberFormatGeral($this->getConta() . $this->getContaDv(), 8);
-        $numero_boleto = Util::numberFormatGeral($this->getNumero(), 9);
+        $numero_boleto = Util::numberFormatGeral($this->getNumero(), $this->getNossoNumeroMaxLength());
         $nossoNumero = $conta . $numero_boleto;
         return $nossoNumero;
     }

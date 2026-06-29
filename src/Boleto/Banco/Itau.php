@@ -86,9 +86,14 @@ class Itau extends AbstractBoleto implements BoletoContract
      * @return string
      * @throws ValidationException
      */
+    public function getNossoNumeroMaxLength()
+    {
+        return 8;
+    }
+
     protected function gerarNossoNumero()
     {
-        $numero_boleto = Util::numberFormatGeral($this->getNumero(), 8);
+        $numero_boleto = Util::numberFormatGeral($this->getNumero(), $this->getNossoNumeroMaxLength());
         $carteira = Util::numberFormatGeral($this->getCarteira(), 3);
         $agencia = Util::numberFormatGeral($this->getAgencia(), 4);
         $conta = Util::numberFormatGeral($this->getConta(), 5);

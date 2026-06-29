@@ -91,9 +91,14 @@ class Caixa extends AbstractBoleto implements BoletoContract
      * @return string
      * @throws ValidationException
      */
+    public function getNossoNumeroMaxLength()
+    {
+        return 15;
+    }
+
     protected function gerarNossoNumero()
     {
-        $numero_boleto = Util::numberFormatGeral($this->getNumero(), 15);
+        $numero_boleto = Util::numberFormatGeral($this->getNumero(), $this->getNossoNumeroMaxLength());
         $composicao = '1';
         if ($this->getCarteira() == 'SR') {
             $composicao = '2';
@@ -102,7 +107,7 @@ class Caixa extends AbstractBoleto implements BoletoContract
         $carteira = $composicao . '4';
         // As 15 próximas posições no nosso número são a critério do beneficiário, utilizando o sequencial
         // Depois, calcula-se o código verificador por módulo 11
-        $numero = $carteira . Util::numberFormatGeral($numero_boleto, 15);
+        $numero = $carteira . Util::numberFormatGeral($numero_boleto, $this->getNossoNumeroMaxLength());
 
         return $numero;
     }

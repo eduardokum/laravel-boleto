@@ -232,9 +232,14 @@ class Santander extends AbstractBoleto implements BoletoContract
      *
      * @return string
      */
+    public function getNossoNumeroMaxLength()
+    {
+        return 12;
+    }
+
     protected function gerarNossoNumero()
     {
-        return Util::numberFormatGeral($this->getNumero(), 12)
+        return Util::numberFormatGeral($this->getNumero(), $this->getNossoNumeroMaxLength())
             . CalculoDV::santanderNossoNumero($this->getNumero());
     }
 

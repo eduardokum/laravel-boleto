@@ -96,11 +96,16 @@ class Banrisul extends AbstractBoleto implements BoletoContract
      *
      * @return string
      */
+    public function getNossoNumeroMaxLength()
+    {
+        return 8;
+    }
+
     protected function gerarNossoNumero()
     {
         $numero_boleto = $this->getNumero();
-        $nossoNumero = Util::numberFormatGeral($numero_boleto, 8)
-            . CalculoDV::banrisulNossoNumero(Util::numberFormatGeral($numero_boleto, 8));
+        $nossoNumero = Util::numberFormatGeral($numero_boleto, $this->getNossoNumeroMaxLength())
+            . CalculoDV::banrisulNossoNumero(Util::numberFormatGeral($numero_boleto, $this->getNossoNumeroMaxLength()));
 
         return $nossoNumero;
     }
