@@ -150,7 +150,7 @@ class Grafeno extends AbstractRemessa implements RemessaContract
         $this->add(38, 62, Util::formatCnab('X', $boleto->getNumeroControle(), 25)); // numero de controle
         $this->add(63, 65, $this->getCodigoBanco());
         $this->add(66, 66, $boleto->getMulta() > 0 ? '2' : '0');
-        $this->add(67, 70, Util::formatCnab('9', Util::nFloat($boleto->getMulta(), 4, 2)));
+        $this->add(67, 70, Util::formatCnab('9', Util::nFloat($boleto->getMulta()), 4, 2));
         $this->add(71, 82, Util::formatCnab('9', $boleto->getNossoNumero(), 12));
         $this->add(83, 92, Util::formatCnab('9', $boleto->getDesconto(), 10, 2));
         $this->add(93, 93, '');
