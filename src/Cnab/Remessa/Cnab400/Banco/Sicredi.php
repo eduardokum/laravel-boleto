@@ -261,4 +261,56 @@ class Sicredi extends AbstractRemessa implements RemessaContract
 
         return $this;
     }
+
+    /**
+     * Retorna o nome sugerido para o arquivo de remessa, conforme a nomenclatura
+     * exigida pelo Sicredi (Manual CNAB 400 - item 6.1): CCCCCMDD.XXX
+     *
+     *   CCCCC = Código do beneficiário/cedente (5 dígitos)
+     *   M     = Código do mês da geração: 1-9 (jan-set), O (out), N (nov), D (dez) - item 6.2
+     *   DD    = Dia da geração (2 dígitos)
+     *   XXX   = Extensão de uso livre; não pode se repetir durante o dia e não pode ser
+     *           CRT/R01/R02... (reservadas para arquivos de retorno). Sugestão do
+     *           manual: 001, 002, etc.
+     *
+     * A extensão é um hash de 3 dígitos gerado internamente a partir do instante da
+     * geração (alta entropia), sem depender de estado externo. Assim, se o mesmo
+     * arquivo for baixado mais de uma vez no dia (ex.: remessa rejeitada, ajustada e
+     * baixada novamente) cada download recebe uma extensão distinta, evitando a
+     * repetição no dia proibida pelo Sicredi.
+     *
+     * Observação: 3 dígitos = 1.000 valores possíveis (000-999); a unicidade não é
+     * matematicamente garantida, mas a probabilidade de colisão no volume real de
+     * arquivos por dia é desprezível.
+     *
+     * @return string
+     */
+    public function nomeSugerido()
+    {
+        $codigosMes = [
+            1 => '1',
+            2 => '2',
+            3 => '3',
+            4 => '4',
+            5 => '5',
+            6 => '6',
+            7 => '7',
+            8 => '8',
+            9 => '9',
+            10 => 'O',
+            11 => 'N',
+            12 => 'D',
+        ];
+
+        $codigoMes = $codigosMes[(int) $this->getDataRemessa('n')];
+        $extensao = str_pad((string) abs(crc32(uniqid('', true)) % 1000), 3, '0', STR_PAD_LEFT);
+
+        return sprintf(
+            '%s%s%s.%s',
+            str_pad((string) $this->getCodigoCliente(), 5, '0', STR_PAD_LEFT),
+            $codigoMes,
+            $this->getDataRemessa('d'),
+            $extensao
+        );
+    }
 }
