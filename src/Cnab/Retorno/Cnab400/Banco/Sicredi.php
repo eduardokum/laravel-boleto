@@ -249,6 +249,12 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
      */
     protected function processarDetalhe(array $detalhe)
     {
+        // Registro Híbrido (tipo 8): dados de PIX/QrCode do título (item 9.3 do Manual CNAB 400 Sicredi).
+        // A base trata toda linha que não seja header/trailer como detalhe; interceptamos o tipo 8, enriquecemos
+        // o detalhe do título correspondente e descartamos o registro vazio criado pela base (return false).
+        if ($this->rem(1, 1, $detalhe) == '8')
+            return $this->processarDetalheHibrido($detalhe);
+
         $d = $this->detalheAtual();
 
         $d->setNossoNumero($this->rem(48, 62, $detalhe))
@@ -268,7 +274,7 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
             ->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe) / 100, 2, false))
             ->setDataCredito($this->rem(329, 336, $detalhe), 'Ymd');
 
-        if ($d->hasOcorrencia('06', '15', '16')) {
+        if ($d->hasOcorrencia('06', '15', '17')) {
             $this->totais['valor_recebido'] += $d->getValorRecebido();
             $this->totais['liquidados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_LIQUIDADA);
@@ -281,7 +287,7 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
         } elseif ($d->hasOcorrencia('23')) {
             $this->totais['protestados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_PROTESTADA);
-        } elseif ($d->hasOcorrencia('33')) {
+        } elseif ($d->hasOcorrencia('14', '33')) {
             $this->totais['alterados']++;
             $d->setOcorrenciaTipo($d::OCORRENCIA_ALTERACAO);
         } elseif ($d->hasOcorrencia('03', '24', '27', '30', '32')) {
@@ -334,6 +340,36 @@ class Sicredi extends AbstractRetorno implements RetornoCnab400
         }
 
         return true;
+    }
+
+    /**
+     * Processa o registro Híbrido (tipo 8) do arquivo de retorno, contendo os dados do PIX/QrCode.
+     * O registro vem logo após o detalhe do seu título (item 9.3 do Manual CNAB 400 Sicredi):
+     *   002-016 Nosso número · 057-133 URL do QrCode (location) · 135-390 copia e cola (payload EMV)
+     * Enriquece o detalhe do título correspondente (casado pelo nosso número) e retorna false para
+     * que a base descarte o detalhe vazio criado para esta linha.
+     *
+     * @param array $detalhe
+     *
+     * @return bool
+     */
+    private function processarDetalheHibrido(array $detalhe)
+    {
+        $nossoNumero = ltrim($this->rem(2, 16, $detalhe), '0');
+        $location = $this->rem(57, 133, $detalhe);
+        $emv = $this->rem(135, 390, $detalhe);
+
+        if ($nossoNumero !== '') {
+            for ($i = $this->increment; $i >= 1; $i--) {
+                $titulo = $this->getDetalhe($i);
+                if ($titulo && ltrim((string) $titulo->getNossoNumero(), '0') === $nossoNumero) {
+                    $titulo->setPixLocation($location)->setPixQrCode($emv);
+                    break;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
