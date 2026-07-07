@@ -191,7 +191,8 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         if ($boleto->getStatus() == $boleto::STATUS_CUSTOM) {
             $this->add(109, 110, sprintf('%2.02s', $boleto->getComando()));
         }
-        $this->add(111, 120, Util::formatCnab('X', $boleto->getNumeroDocumento(), 10));
+        // Campo "Seu Número" (111-120): grava o numeroControle (control_number), pois é o campo que o banco devolve no retorno (posição 117-126) e que o parser lê como numeroControle para vincular a fatura. O ID da remessa segue no header (idremessa). Demais bancos gravam getNumeroControle() no campo de controle; o Sicredi era o único gravando getNumeroDocumento() aqui.
+        $this->add(111, 120, Util::formatCnab('X', $boleto->getNumeroControle(), 10));
         $this->add(121, 126, $boleto->getDataVencimento()->format('dmy'));
         $this->add(127, 139, Util::formatCnab('9', $boleto->getValor(), 13, 2));
         $this->add(140, 148, '');
