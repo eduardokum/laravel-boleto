@@ -1561,12 +1561,6 @@ abstract class AbstractBoleto implements BoletoContract
      */
     public function getDiasBaixaAutomatica($default = 0)
     {
-        //Caso não tenha valor definido de dias para protesto setar 60 dias como valor padrão para baixa automática.
-        //O valor padrão só será utilizado caso não haja nenhum valor definido para baixaAutomatica
-        if (empty($this->getDiasProtesto())) {
-            $default = (empty($default) ? 60 : $default);
-        }
-
         return $this->diasBaixaAutomatica > 0 ? $this->diasBaixaAutomatica : $default;
     }
 
