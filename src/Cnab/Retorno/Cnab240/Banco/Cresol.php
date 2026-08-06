@@ -23,6 +23,7 @@ class Cresol extends AbstractRetorno implements RetornoCnab240
      * @var array
      */
     private $ocorrencias = [
+        '00' => 'Ocorrência Desconhecida',
         '02' => 'Entrada Confirmada',
         '03' => 'Entrada Rejeitada',
         '04' => 'Transferência de carteira/entrada',
@@ -75,6 +76,7 @@ class Cresol extends AbstractRetorno implements RetornoCnab240
         '58' => 'Confirmação do Pedido de Alteração do Valor/Data de Desconto',
         '59' => 'Confirmação do Pedido de Alteração do Cedente do Título',
         '60' => 'Confirmação do Pedido de Dispensa de Juros de Mora',
+        '73' => 'Confirmação recebimento pedido de negativação',
     ];
 
     /**
@@ -83,15 +85,15 @@ class Cresol extends AbstractRetorno implements RetornoCnab240
      * @var array
      */
     private $rejeicoes = [
-        '1'  => 'Código do Banco Inválido',
-        '2'  => 'Código do Registro Detalhe Inválido',
-        '3'  => 'Código do Segmento Inválido',
-        '4'  => 'Código de Movimento Não Permitido para Carteira',
-        '5'  => 'Código de Movimento Inválido',
-        '6'  => 'Tipo/Número de Inscrição do Cedente Inválidos',
-        '7'  => 'Agência/Conta/DV Inválido',
-        '8'  => 'Nosso Número Inválido',
-        '9'  => 'Nosso Número Duplicado',
+        '01' => 'Código do Banco Inválido',
+        '02' => 'Código do Registro Detalhe Inválido',
+        '03' => 'Código do Segmento Inválido',
+        '04' => 'Código de Movimento Não Permitido para Carteira',
+        '05' => 'Código de Movimento Inválido',
+        '06' => 'Tipo/Número de Inscrição do Cedente Inválidos',
+        '07' => 'Agência/Conta/DV Inválido',
+        '08' => 'Nosso Número Inválido',
+        '09' => 'Nosso Número Duplicado',
         '10' => 'Carteira Inválida',
         '11' => 'Forma de Cadastramento do Título Inválido',
         '12' => 'Tipo de Documento Inválido',
@@ -327,7 +329,9 @@ class Cresol extends AbstractRetorno implements RetornoCnab240
             /**
              * ocorrencias
              */
-            $msgAdicional = str_split(sprintf('%08s', $this->rem(214, 223, $detalhe)), 2) + array_fill(0, 5, '');
+            // 214-223 (seção 5.1.3) são 5 motivos de 2 posições cada; com %08s o campo
+            // ficava com 8 posições e os pares saíam deslocados
+            $msgAdicional = str_split(sprintf('%010s', $this->rem(214, 223, $detalhe)), 2) + array_fill(0, 5, '');
             if ($d->hasOcorrencia('06', '17')) {
                 $this->totais['liquidados']++;
                 $ocorrencia = Util::appendStrings(
@@ -401,18 +405,26 @@ class Cresol extends AbstractRetorno implements RetornoCnab240
      */
     protected function processarTrailerLote(array $trailer)
     {
+        // Diferente do padrão FEBRABAN, o trailer de lote da Cresol declara as posições
+        // 024-115 como zeros (seção 5.1.5): não há totalizadores por modalidade de
+        // cobrança no layout. Ler aquelas posições devolveria sempre zero, então a
+        // quantidade e o valor da cobrança simples são apurados a partir dos detalhes.
+        $valorTitulos = $this->getDetalhes()->sum(function ($detalhe) {
+            return (float) $detalhe->getValor();
+        });
+
         $this->getTrailerLote()
             ->setLoteServico($this->rem(4, 7, $trailer))
             ->setTipoRegistro($this->rem(8, 8, $trailer))
             ->setQtdRegistroLote((int) $this->rem(18, 23, $trailer))
-            ->setQtdTitulosCobrancaSimples((int) $this->rem(24, 29, $trailer))
-            ->setValorTotalTitulosCobrancaSimples(Util::nFloat($this->rem(30, 46, $trailer) / 100, 2, false))
-            ->setQtdTitulosCobrancaVinculada((int) $this->rem(47, 52, $trailer))
-            ->setValorTotalTitulosCobrancaVinculada(Util::nFloat($this->rem(53, 69, $trailer) / 100, 2, false))
-            ->setQtdTitulosCobrancaCaucionada((int) $this->rem(70, 75, $trailer))
-            ->setValorTotalTitulosCobrancaCaucionada(Util::nFloat($this->rem(76, 92, $trailer) / 100, 2, false))
-            ->setQtdTitulosCobrancaDescontada((int) $this->rem(93, 98, $trailer))
-            ->setValorTotalTitulosCobrancaDescontada(Util::nFloat($this->rem(99, 115, $trailer) / 100, 2, false));
+            ->setQtdTitulosCobrancaSimples($this->count())
+            ->setValorTotalTitulosCobrancaSimples(Util::nFloat($valorTitulos, 2, false))
+            ->setQtdTitulosCobrancaVinculada(0)
+            ->setValorTotalTitulosCobrancaVinculada(Util::nFloat(0, 2, false))
+            ->setQtdTitulosCobrancaCaucionada(0)
+            ->setValorTotalTitulosCobrancaCaucionada(Util::nFloat(0, 2, false))
+            ->setQtdTitulosCobrancaDescontada(0)
+            ->setValorTotalTitulosCobrancaDescontada(Util::nFloat(0, 2, false));
 
         return true;
     }
