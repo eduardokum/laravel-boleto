@@ -44,23 +44,36 @@ class Cresol extends AbstractBoleto implements BoletoContract
     ];
 
     /**
-     * Espécie do documento, código para remessa
+     * Espécie do documento, código para remessa. A Cresol usa a mesma tabela no CNAB 240
+     * (segmento P, pos. 107-108) e no CNAB 400 (detalhe, pos. 148-149).
      *
-     * @var string
+     * @var array
      */
-    protected $especiesCodigo400 = [
-        'DM'  => '01', // Duplicata Mercantil
-        'NP'  => '02', // Nota Promissória
-        'NS'  => '03', // Nota de Seguro
-        'CS'  => '04', // Cobrança Seriada
-        'RC'  => '05', // Recibo
-        'LC'  => '10', // Letra de Câmbio
-        'ND'  => '11', // Nota de Débito
-        'DS'  => '12', // Duplicata de Serviço
-        'CC'  => '31', // Cartão de Crédito
-        'BDP' => '32', // Boleto de Proposta
+    protected $especiesCodigo = [
+        'CH'  => '01', // Cheque
+        'DM'  => '02', // Duplicata mercantil
+        'DS'  => '04', // Duplicata de serviço
+        'DR'  => '06', // Duplicata rural
+        'LC'  => '07', // Letra de câmbio
+        'NP'  => '12', // Nota promissória
+        'RC'  => '17', // Recibo
+        'ND'  => '19', // Nota de débito
+        'W'   => '26', // Warrant
+        'DAE' => '27', // Dívida ativa de estado
+        'DAM' => '28', // Dívida ativa de município
+        'DAU' => '29', // Dívida ativa da união
+        'EC'  => '30', // Encargos condominiais
         'O'   => '99', // Outros
     ];
+
+    /**
+     * Conta do cedente no sistema Cresol, usada no campo livre do código de barras
+     * (pos. 37-43). Não é necessariamente a conta corrente impressa no boleto, por isso
+     * é modelada como campo próprio; quando não informada, assume a conta corrente.
+     *
+     * @var string|null
+     */
+    protected $codigoCedente = null;
 
     /**
      * Mostrar o endereço do beneficiário abaixo da razão e CNPJ na ficha de compensação
@@ -123,7 +136,7 @@ class Cresol extends AbstractBoleto implements BoletoContract
         $campoLivre = Util::numberFormatGeral($this->getAgencia(), 4);
         $campoLivre .= Util::numberFormatGeral($this->getCarteira(), 2);
         $campoLivre .= Util::numberFormatGeral($this->getNumero(), 11);
-        $campoLivre .= Util::numberFormatGeral($this->getConta(), 7);
+        $campoLivre .= Util::numberFormatGeral($this->getCodigoCedente(), 7);
         $campoLivre .= '0';
 
         return $this->campoLivre = $campoLivre;
@@ -147,7 +160,54 @@ class Cresol extends AbstractBoleto implements BoletoContract
             'nossoNumeroDv'   => null,
             'nossoNumeroFull' => substr($campoLivre, 6, 11),
             'contaCorrente'   => substr($campoLivre, 17, 7),
+            'codigoCedente'   => substr($campoLivre, 17, 7),
         ];
+    }
+
+    /**
+     * Define a conta do cedente no sistema Cresol usada no campo livre
+     *
+     * @param  string $codigoCedente
+     * @return Cresol
+     */
+    public function setCodigoCedente($codigoCedente)
+    {
+        $this->codigoCedente = $codigoCedente;
+
+        return $this;
+    }
+
+    /**
+     * Retorna a conta do cedente no sistema Cresol, com fallback para a conta corrente
+     *
+     * @return string
+     */
+    public function getCodigoCedente()
+    {
+        return $this->codigoCedente !== null ? $this->codigoCedente : $this->getConta();
+    }
+
+    /**
+     * Retorna apenas o dígito verificador do nosso número. Pode ser a letra "P" quando o
+     * resto da divisão por 11 é 1, conforme item 3 das especificações técnicas Cresol.
+     *
+     * @return string
+     */
+    public function getNossoNumeroDv()
+    {
+        return substr($this->getNossoNumero(), -1);
+    }
+
+    /**
+     * Informa se o dígito do nosso número é a letra "P". O CNAB 400 aceita o valor por ser
+     * campo alfanumérico (pos. 82), mas o CNAB 240 declara o dígito como numérico
+     * (segmento P, pos. 57), então esses números devem ser pulados no gerador do 240.
+     *
+     * @return bool
+     */
+    public function nossoNumeroDvEhLetra()
+    {
+        return ! is_numeric($this->getNossoNumeroDv());
     }
 
     /**
