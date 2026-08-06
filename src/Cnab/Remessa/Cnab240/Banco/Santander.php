@@ -282,10 +282,15 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(14, 14, 'Y');
         $this->add(15, 15, '');
         $this->add(16, 17, self::OCORRENCIA_REMESSA);
+        $pixChave = $boleto->getPixChave();
+        if (in_array($boleto->getPixChaveTipo(), [$boleto::TIPO_CHAVEPIX_CPF, $boleto::TIPO_CHAVEPIX_CNPJ], true)) {
+            $pixChave = Util::onlyNumbers($pixChave);
+        }
+
         $this->add(18, 19, '03');
         $this->add(20, 80, '');
         $this->add(81, 81, Util::formatCnab('9', $tipoChave[$boleto->getPixChaveTipo()], 1));
-        $this->add(82, 158, Util::formatCnab('Z', $boleto->getPixChave(), 77));
+        $this->add(82, 158, Util::formatCnab('Z', $pixChave, 77));
         $this->add(159, 193, Util::formatCnab('X', $boleto->getID(), 35));
         $this->add(194, 240, '');
 
