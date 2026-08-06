@@ -4,12 +4,16 @@ namespace Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\Banco;
 
 use Eduardokum\LaravelBoleto\Util;
 use Eduardokum\LaravelBoleto\CalculoDV;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Cnab\Remessa\Cnab400\AbstractRemessa;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Remessa as RemessaContract;
+use Eduardokum\LaravelBoleto\Cnab\Remessa\Traits\ValidacoesCresol;
 
 class Cresol extends AbstractRemessa implements RemessaContract
 {
+    use ValidacoesCresol;
+
     const ESPECIE_DUPLICATA = '01';
     const ESPECIE_NOTA_PROMISSORIA = '02';
     const ESPECIE_NOTA_SEGURO = '03';
@@ -143,8 +147,7 @@ class Cresol extends AbstractRemessa implements RemessaContract
         $this->add(95, 100, '');
         $this->add(101, 108, '');
         $this->add(109, 110, '');
-        // $this->add(111, 117, Util::formatCnab('9', $this->getIdremessa(), 7));
-        $this->add(110, 117, '');
+        $this->add(111, 117, '');
         $this->add(118, 394, '');
         $this->add(395, 400, Util::formatCnab('9', 1, 6));
 
@@ -159,6 +162,15 @@ class Cresol extends AbstractRemessa implements RemessaContract
      */
     public function addBoleto(BoletoContract $boleto)
     {
+        // O CNAB 400 da Cresol não carrega instrução de protesto; ela só pode ser feita
+        // pela tela do portal. Falhar aqui evita que a instrução seja perdida em silêncio.
+        if ($boleto->getDiasProtesto() > 0) {
+            throw new ValidationException('O CNAB 400 da Cresol não suporta instrução de protesto. Use o CNAB 240 (segmento P) ou registre o protesto pela tela do portal.');
+        }
+
+        $this->validaFaixaNossoNumero($boleto);
+        $this->validaMultaPercentual($boleto);
+
         $this->boletos[] = $boleto;
         $this->iniciaDetalhe();
 
@@ -172,14 +184,14 @@ class Cresol extends AbstractRemessa implements RemessaContract
         $this->add(22, 24, Util::formatCnab('9', $this->getCarteira(), 3));
         $this->add(25, 29, Util::formatCnab('9', $this->getAgencia(), 5));
         $this->add(30, 36, Util::formatCnab('9', $this->getConta(), 7));
-        $this->add(37, 37, Util::formatCnab('9', $this->getContaDv(), 1));
+        $this->add(37, 37, Util::formatCnab('9', $this->getContaDv() ?: CalculoDV::cresolContaCorrente($this->getConta()), 1));
         $this->add(38, 62, Util::formatCnab('X', $boleto->getNumeroControle(), 25)); // numero de controle
         $this->add(63, 65, '');
         $this->add(66, 66, $boleto->getMulta() > 0 ? '2' : '0');
         $this->add(67, 70, Util::formatCnab('9', $boleto->getMulta() > 0 ? $boleto->getMulta() : '0', 4, 2));
-        $this->add(71, 82, Util::formatCnab('9', $boleto->getNossoNumero(), 12));
-        // 71 - 81 Identificação do Título no Banco  -> Número Bancário para Cobrança Com e Sem Registro.
-        // 82 Dígito de Auto Conferência do Número Bancário -> digito N/N
+        // 71-81 é numérico e 82 é alfanumérico, pois o dígito pode ser a letra "P"
+        $this->add(71, 81, Util::formatCnab('9', substr($boleto->getNossoNumero(), 0, 11), 11));
+        $this->add(82, 82, Util::formatCnab('X', substr($boleto->getNossoNumero(), -1), 1));
         $this->add(83, 92, '');
         $this->add(93, 93, '2'); // 1 = Banco emite e Processa o registro. 2 = Cliente emite e o Banco somente processa o registro
         $this->add(94, 94, ''); // N= Não registra na cobrança. Diferente de N registra e emite Boleto.
@@ -205,7 +217,7 @@ class Cresol extends AbstractRemessa implements RemessaContract
         $this->add(127, 139, Util::formatCnab('9', $boleto->getValor(), 13, 2));
         $this->add(140, 142, '');
         $this->add(143, 147, '');
-        $this->add(148, 149, $boleto->getEspecieDocCodigo());
+        $this->add(148, 149, $boleto->getEspecieDocCodigo('99', 400));
         $this->add(150, 150, '');
         $this->add(151, 156, $boleto->getDataDocumento()->format('dmy'));
         $this->add(157, 158, '');
