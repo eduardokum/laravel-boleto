@@ -23,6 +23,7 @@ class Cresol extends AbstractRetorno implements RetornoCnab400
      * @var array
      */
     private $ocorrencias = [
+        '00' => 'Ocorrência Desconhecida',
         '02' => 'Entrada Confirmada',
         '03' => 'Entrada Rejeitada',
         '04' => 'Transferência de carteira/entrada',
@@ -309,9 +310,15 @@ class Cresol extends AbstractRetorno implements RetornoCnab400
      */
     protected function processarTrailer(array $trailer)
     {
+        // O trailer do retorno Cresol carrega apenas registro, banco e sequencial: não há
+        // quantidade nem somatório de títulos no layout, então ambos são apurados aqui.
+        $valorTitulos = $this->getDetalhes()->sum(function ($detalhe) {
+            return (float) $detalhe->getValor();
+        });
+
         $this->getTrailer()
-            ->setQuantidadeTitulos($this->rem(18, 25, $trailer))
-            ->setValorTitulos(Util::nFloat($this->rem(26, 39, $trailer) / 100, 2, false))
+            ->setQuantidadeTitulos($this->count())
+            ->setValorTitulos(Util::nFloat($valorTitulos, 2, false))
             ->setQuantidadeErros((int) $this->totais['erros'])
             ->setQuantidadeEntradas((int) $this->totais['entradas'])
             ->setQuantidadeLiquidados((int) $this->totais['liquidados'])
