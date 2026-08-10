@@ -110,22 +110,34 @@ class Inter extends AbstractRemessa implements RemessaContract
         $this->add(67, 79, Util::formatCnab('9', 0, 13, 2));
         $this->add(80, 83, Util::formatCnab('9', $boleto->getMulta(), 4, 2));
         $this->add(84, 89, $boleto->getMulta() > 0 ? ($boleto->getDataVencimento()->copy())->addDay()->format('dmy') : '000000');
-        $this->add(90, 100, Util::formatCnab('9', '0', 11));
-        $this->add(101, 108, '');
-        $this->add(109, 110, self::OCORRENCIA_REMESSA); // REGISTRO
+        $ocorrencia = self::OCORRENCIA_REMESSA; // REGISTRO
 
         if ($boleto->getStatus() == $boleto::STATUS_BAIXA) {
-            $this->add(109, 110, self::OCORRENCIA_PEDIDO_BAIXA); // BAIXA
+            $ocorrencia = self::OCORRENCIA_PEDIDO_BAIXA; // BAIXA
         }
         if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO) {
-            $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO); // ALTERAR VENCIMENTO
+            $ocorrencia = self::OCORRENCIA_ALT_VENCIMENTO; // ALTERAR VENCIMENTO
         }
         if ($boleto->getStatus() == $boleto::STATUS_ALTERACAO_DATA) {
-            $this->add(109, 110, self::OCORRENCIA_ALT_VENCIMENTO);
+            $ocorrencia = self::OCORRENCIA_ALT_VENCIMENTO;
         }
         if ($boleto->getStatus() == $boleto::STATUS_CUSTOM) {
-            $this->add(109, 110, sprintf('%2.02s', $boleto->getComando()));
+            $ocorrencia = sprintf('%2.02s', $boleto->getComando());
         }
+
+        // Posições 90-100: no REGISTRO das carteiras 112/121 o Inter é quem atribui o Nosso Número, então o campo vai zerado (manual CNAB400, item 13 do registro tipo 1). Em instrução sobre título já existente o campo é o que identifica o título no banco (manual, seção 9) — com zeros o Inter recusa a instrução ou a aplica em outro título. A decisão acompanha a ocorrência efetivamente enviada, não o status: assim um status que ainda caia em "01" continua zerado, como o layout exige.
+        if ($ocorrencia === self::OCORRENCIA_REMESSA) {
+            $this->add(90, 100, Util::formatCnab('9', '0', 11));
+        } else {
+            if (! $boleto->getNossoNumero()) {
+                throw new ValidationException('Nosso número obrigatório para instruções sobre título já registrado (baixa/alteração). Informe o número devolvido pelo Inter no arquivo retorno.');
+            }
+
+            $this->add(90, 100, Util::formatCnab('9', $boleto->getNossoNumero(), 11));
+        }
+
+        $this->add(101, 108, '');
+        $this->add(109, 110, $ocorrencia);
 
         $this->add(111, 120, Util::formatCnab('X', $boleto->getNumeroDocumento(), 10));
         $this->add(121, 126, $boleto->getDataVencimento()->format('dmy'));
@@ -146,8 +158,10 @@ class Inter extends AbstractRemessa implements RemessaContract
         $descontoPercentual = $isPercentual ? (float) $boleto->getDescontoPercentual() : 0;
 
         // Layout exige zerar tudo quando não há valor efetivo a aplicar.
-        if ($descontoCodigo === BoletoContract::TIPO_DESCONTO_NENHUM
-            || ($descontoValor <= 0 && $descontoPercentual <= 0)) {
+        if (
+            $descontoCodigo === BoletoContract::TIPO_DESCONTO_NENHUM
+            || ($descontoValor <= 0 && $descontoPercentual <= 0)
+        ) {
             $descontoCodigo = '0';
             $descontoValor = 0;
             $descontoPercentual = 0;

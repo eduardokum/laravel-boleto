@@ -71,6 +71,11 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
     {
         $this->operacao = $operacao;
 
+        // A operação compõe o campo livre e, assim como o nosso número, só é conhecida pelo retorno do banco — invalida os caches derivados para não manter o valor anterior.
+        $this->campoLivre = null;
+        $this->campoCodigoBarras = null;
+        $this->campoLinhaDigitavel = null;
+
         return $this;
     }
 
@@ -409,6 +414,13 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
             $nnClean = str_replace('00019112', '', $nnClean);
         }
         $this->campoNossoNumero = $nnClean;
+
+        // O nosso número do Inter só é conhecido depois do retorno do banco, então este setter é chamado com o boleto já montado. Sem invalidar os caches derivados, campo livre/código de barras/linha digitável continuariam com o número anterior.
+        $this->campoLivre = null;
+        $this->campoCodigoBarras = null;
+        $this->campoLinhaDigitavel = null;
+
+        return $this;
     }
 
     /**
