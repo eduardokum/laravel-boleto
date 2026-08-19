@@ -83,13 +83,25 @@ class Cresol extends AbstractBoleto implements BoletoContract
     protected $mostrarEnderecoFichaCompensacao = true;
 
     /**
+     * Quantidade máxima de dígitos da porção numérica do nosso número. A Cresol reserva 11
+     * posições para o nosso número, tanto no campo livre do código de barras (pos. 31-41)
+     * quanto na remessa, ficando o 12º dígito reservado ao DV.
+     *
+     * @return int
+     */
+    public function getNossoNumeroMaxLength()
+    {
+        return 11;
+    }
+
+    /**
      * Gera o Nosso Número.
      *
      * @return string
      */
     protected function gerarNossoNumero()
     {
-        return Util::numberFormatGeral($this->getNumero(), 11)
+        return Util::numberFormatGeral($this->getNumero(), $this->getNossoNumeroMaxLength())
             . CalculoDV::cresolNossoNumero($this->getCarteira(), $this->getNumero());
     }
 
