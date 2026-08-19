@@ -34,7 +34,7 @@ class Cresol extends AbstractBoleto implements BoletoContract
     protected $cip = '000';
 
     /**
-     * Variaveis adicionais.
+     * Variaveis adicionais..
      *
      * @var array
      */
@@ -149,7 +149,8 @@ class Cresol extends AbstractBoleto implements BoletoContract
      *
      * @return array
      */
-    public static function parseCampoLivre($campoLivre) {
+    public static function parseCampoLivre($campoLivre)
+    {
         return [
             'convenio'        => null,
             'agenciaDv'       => null,
