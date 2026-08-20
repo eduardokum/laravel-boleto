@@ -50,6 +50,7 @@ final class Util
         '044' => 'Banco BVA S.A.',
         '263' => 'Banco Cacique S.A.',
         '473' => 'Banco Caixa Geral - Brasil S.A.',
+        '336' => 'Banco C6 S.A.',
         '040' => 'Banco Cargill S.A.',
         '233' => 'Banco Cifra S.A.',
         '745' => 'Banco Citibank S.A.',
@@ -1368,6 +1369,7 @@ final class Util
             BoletoContract::COD_BANCO_BANCOOB   => 'Banco\\Bancoob',
             BoletoContract::COD_BANCO_CRESOL    => 'Banco\\Cresol',
             BoletoContract::COD_BANCO_AILOS     => 'Banco\\Ailos',
+            BoletoContract::COD_BANCO_C6        => 'Banco\\C6',
         ];
 
         if (array_key_exists($banco, $aBancos)) {

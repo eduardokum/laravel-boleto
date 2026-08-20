@@ -19,57 +19,59 @@ class C6 extends AbstractRetorno implements RetornoCnab400
     protected $codigoBanco = BoletoContract::COD_BANCO_C6;
 
     /**
-     * Array com as ocorrencias do banco;
+     * Array com as ocorrencias do banco — texto literal do manual (Nota 12; 36 e 37 vêm da
+     * tabela de motivos de rejeição, Nota 13, que também os lista como Código de Ocorrência).
+     * Removidos os códigos 29, 38 e 65, que não constam em nenhuma tabela do manual do C6
+     * (aparentam ter sido copiados de outro banco deste fork).
      *
      * @var array
      */
     private $ocorrencias = [
-        '02' => 'Entrada confirmada',
+        '02' => 'Entrada Confirmada',
         '03' => 'Entrada Rejeitada',
         '04' => 'Alteração de Dados (Entrada)',
         '05' => 'Alteração de Dados (Baixa)',
-        '06' => 'Liquidação Normal',
-        '07' => 'Liquidação após Baixa',
-        '08' => 'Liquidação em Cartório',
-        '09' => 'Baixa Simples',
-        '10' => 'Baixa comandada do cliente arquivo',
-        '12' => 'Abatimento concedido',
-        '13' => 'Abatimento cancelado',
-        '14' => 'Vencimento alterado',
-        '15' => 'Baixa rejeitada',
-        '16' => 'Instrução rejeitada',
-        '17' => 'Alterações de dados rejeitados',
-        '19' => 'Confirma instrução de protesto',
-        '20' => 'Confirma instrução de sustação de protesto',
-        '21' => 'Confirma instrução de não protestar',
-        '23' => 'Protesto enviado a cartório',
-        '29' => 'Sacado nao retirou boleto eletronicamente,enviado para correio',
-        '32' => 'Baixa por ter sido protestado',
-        '35' => 'Alegações do sacado',
+        '06' => 'Liquidação do Título',
+        '07' => 'Liquidação do Título Após a Baixa',
+        '08' => 'Título Liquidado em Cartório',
+        '09' => 'Baixa do Título',
+        '10' => 'Baixa Realizada pelo Beneficiário via Arquivo',
+        '12' => 'Abatimento Concedido',
+        '13' => 'Abatimento Cancelado',
+        '14' => 'Vencimento Alterado',
+        '15' => 'Baixa Rejeitada',
+        '16' => 'Instrução Rejeitada',
+        '17' => 'Alterações de Dados Rejeitados',
+        '19' => 'Confirma Instrução de Protesto',
+        '20' => 'Confirma Instrução de Sustação de Protesto',
+        '21' => 'Confirma Instrução de Não Protestar',
+        '23' => 'Protesto Enviado a Cartório',
+        '32' => 'Baixa por ter Sido Protestado',
+        '35' => 'Alegações do Sacado',
         '36' => 'Custas de Edital',
-        '37' => 'Custas de sustação judicial',
-        '38' => 'Título sustado judicialmente',
-        '65' => 'Pagamento com Cheque - Aguardando compensação',
+        '37' => 'Custas de Sustação de Protesto',
         '69' => 'Cancelamento de Liquidação por Cheque Devolvido',
-        '71' => 'Protesto cancelado pelo Cartório',
+        '71' => 'Título Cancelado pelo Cartório',
         '72' => 'Baixa Operacional',
         '74' => 'Cancelamento da Baixa Operacional',
         '75' => 'Pagamento Parcial',
         '90' => 'Instrução de Protesto Rejeitada',
         '95' => 'Troca Uso Empresa',
-        '96' => 'Emissão Extrato Mov. Carteira',
-        '97' => 'Tarifa de sustação de protesto',
-        '98' => 'Tarifa de protesto',
-        '99' => 'Custas de protesto',
+        '96' => 'Emissão Extrato Movimentação da Carteira',
+        '97' => 'Tarifa de Sustação de Protesto',
+        '98' => 'Tarifa de Protesto',
+        '99' => 'Custas de Protesto',
     ];
 
     /**
-     * Array com as possiveis rejeicoes do banco.
+     * Array com as possiveis rejeicoes do banco (manual, Nota 13). Removidos os códigos que não
+     * constam em nenhuma tabela do manual do C6 (aparentam ter sido copiados de outro banco
+     * deste fork): 1818, 9019, 9020, 9022, 9023, 9081, 9087, 9089, 9100, 9101, 9104, 9105, 9107,
+     * 9109, 9232-9236, 9239, 9242-9245, 9266.
      *
      * @var array
      */
     private $rejeicoes = [
-        '1818' => 'boleto não retirado pelo sacado. reenviado pelo correio para carteiras com emissão pelo banco',
         '9000' => 'data vencimento menor que o prazo de aceitação do título',
         '9001' => 'sacado bloqueado por atraso',
         '9002' => 'registro opcional inválido',
@@ -89,11 +91,7 @@ class C6 extends AbstractRetorno implements RetornoCnab400
         '9016' => 'cnpj do sacado inválido',
         '9017' => 'o nome do sacado enviado não confere com o nome do sacado cadastrado no sistema para este cnpj/cpf',
         '9018' => 'tipo do sacado inválido',
-        '9019' => 'o sacado está bloqueado',
-        '9020' => 'o endereço do sacado esta com o  tamanho esta maior que o permitido',
         '9021' => 'digito do nosso numero inválido',
-        '9022' => 'não existe faixa cadastrada para o banco e a conta',
-        '9023' => 'o nosso numero esta fora da faixa cadastrada para o cedente',
         '9024' => 'identificação do título inválida',
         '9025' => 'ocorrência não permitida pois o título esta baixado',
         '9026' => 'ocorrência não permitida pois o título esta liquidado',
@@ -142,13 +140,10 @@ class C6 extends AbstractRetorno implements RetornoCnab400
         '9075' => 'não é permitida a entrada de títulos vencidos',
         '9078' => 'não existe endereço, uf e cidade para o título',
         '9079' => 'nosso número inválido',
-        '9081' => 'prazo insuficiente para cobrança do título neste cep',
         '9083' => 'o cedente não pode enviar esse tipo de título com esta carteira',
         '9084' => 'seu número do registro opcional diferente da linha do registro do título',
         '9085' => 'data de vencimento do registro opcional diferente da linha do registro do título.',
         '9086' => 'valor do título no vencimento do registro opcional diferente da linha do registro do título.',
-        '9087' => 'os títulos de carteira de cobrança direta só podem ser enviados para contas de cobrnaça direta. acao: confira a carteira e a conta cobrança que está sendo enviada/atribuida ao título.',
-        '9089' => 'código cmc7 invalido',
         '9090' => 'entrada - nosso número já está sendo utilizado para mesmo banco / conta',
         '9091' => 'cep do sacado não pertence ao estado da federação (uf) informado',
         '9092' => 'tipo de multa inválido',
@@ -156,26 +151,20 @@ class C6 extends AbstractRetorno implements RetornoCnab400
         '9097' => 'O campo Nosso Número não foi informado ou não foi possivel identificar o titulo.',
         '9098' => 'foi encontrado mais de um título para esse nosso número.',
         '9099' => 'preencha o campo de "conta de cobrança" no cadastro de carteira por cedente.',
-        '9100' => 'título possui registro opcional de emitente e a sua configuração não permite envio de títulos de terceiros.',
-        '9101' => 'título possui emitente, porém seus dados não foram informados.',
         '9103' => 'ja existe titulo em aberto cadastrado para este cedente/seu numero/data vencimento/valor e emitente',
-        '9104' => 'impedido pela legislação vigente',
-        '9105' => 'crédito retido',
         '9106' => 'nosso numero nao informado',
-        '9107' => 'tamanho máximo do nosso número para cobrança direta é 10 posições + digito(layout padrao matera/bradesco).',
         '9108' => 'título pertence a uma espécie que não pode ser protestada.',
-        '9109' => 'protesto não permitido para título com moeda diferente de real.',
         '9110' => 'cep do sacado não atendido pelos cartórios cadastrados.',
         '9113' => 'Não permitimos troca de carteira no evento de Alteração de Outros Dados.',
         '9114' => 'Não permitimos troca de tipo titulo no evento de Alteração de Outros Dados.',
         '9201' => 'liquidação em cartório',
-        '9202' => 'baixa decurso prazo - banco',
-        '9203' => 'baixa protestado',
+        '9202' => 'baixa por decurso de prazo (banco)',
+        '9203' => 'baixa de título protestado',
         '9204' => 'Tarifa de Sustacao de protesto',
         '9205' => 'tarifa de protesto',
         '9206' => 'custas de protesto',
         '9207' => 'custas de edital',
-        '9208' => 'custas de sustação de protesto título sustado judicialmente',
+        '9208' => 'custas de sustação de protesto',
         '9210' => 'liquidação em cheque',
         '9213' => 'tarifa de manutenção de título vencido',
         '9216' => 'liquidação no guichê de caixa em dinheiro',
@@ -186,19 +175,9 @@ class C6 extends AbstractRetorno implements RetornoCnab400
         '9223' => 'Liquidação por STR',
         '9224' => 'Carteira do Tipo G não pode inserir titulos.',
         '9230' => 'Valor desconto 2 inválido',
-        '9232' => 'Sacado pertence a empresa do grupo (coligada)',
-        '9233' => 'Por solicitação da diretoria de crédito/comercial',
-        '9234' => 'Inexistência de relação com o cedente',
-        '9235' => 'Outros',
-        '9236' => 'Recusado - Outros Motivos',
         '9237' => 'Baixa por Outros Motivos',
         '9238' => 'Pagador Rejeita Boleto',
-        '9239' => 'Pagador Aceita Boleto',
         '9240' => 'Data multa menor que data de vencimento do título',
-        '9242' => 'Baixa Integral Interbancária',
-        '9243' => 'Baixa Integral Intrabancária',
-        '9244' => 'Baixa Parcial Intrabancária',
-        '9245' => 'Baixa Parcial Interbancária',
         '9250' => 'Tipo de autorização para recebimento de valor divergente inválido',
         '9251' => 'Indicativo Tipo de valor ou percentual inválido',
         '9252' => 'Quantidade de pagamento parcial inválido',
@@ -208,13 +187,12 @@ class C6 extends AbstractRetorno implements RetornoCnab400
         '9258' => 'Data de desconto 3 inválida',
         '9259' => 'Valor desconto 3 inválido',
         '9260' => 'Mínimo é obrigatório quando informado o tipo valor ou percentual',
-        '9261' => 'Tipo de autorização de recebimento de valor divergente não permitio para tipo de título 31',
-        '9262' => 'Para especie de título diferente de fatura de cartão de crédito não é possível informar o tipo aceita qualquer valor com range mínimo e máximo  preenchido',
-        '9263' => 'Mínimo e Máximo tem que ser informado para o tipo de autorização de valor divergente igual a 2',
-        '9264' => 'Mínimo e Máximo não devem ser informados para o tipo de autorização de valor divergente igual a 3',
-        '9265' => 'Mínimo deve ser informado e Máximo não pode ser informado para o tipo de autorização de valor divergente igual a 4',
-        '9266' => 'Valor não permitido para tipo de título fatura de cartão de crédito',
-        '9267' => 'Não é permitido ter juros, multa, abatimento, desconto ou protesto tipo de título fatura de cartão de crédito',
+        '9261' => 'Tipo de autorização de recebimento de valor divergente não permitido para tipo de título = 31',
+        '9262' => 'Para espécie de título diferente de fatura de cartão de crédito não é possível informar o tipo aceita qualquer valor com range mínimo e máximo preenchido',
+        '9263' => 'Valor mínimo e valor máximo tem que ser informado para o tipo de autorização de valor divergente igual a 2',
+        '9264' => 'Valor mínimo e valor máximo não devem ser informados para o tipo de autorização de valor divergente igual a 3',
+        '9265' => 'Valor mínimo deve ser informado e valor máximo não pode ser informado para o tipo de autorização de valor divergente igual a 4',
+        '9267' => 'Não é permitido ter juros, multa, abatimento ou protesto para tipo de título fatura de cartão de crédito',
         '9999' => 'cep do sacado inválido',
     ];
 
@@ -316,7 +294,8 @@ class C6 extends AbstractRetorno implements RetornoCnab400
             ->setValorDesconto(Util::nFloat($this->rem(241, 253, $detalhe) / 100, 2, false))
             ->setValorRecebido(Util::nFloat($this->rem(254, 266, $detalhe) / 100, 2, false))
             ->setValorMora(Util::nFloat($this->rem(267, 279, $detalhe) / 100, 2, false))
-            ->setValorMulta(Util::nFloat($this->rem(280, 292, $detalhe) / 100, 2, false));
+            // Campo 137 do manual é "Valor de Outros Acréscimos", não "Valor da Multa" — sem campo de multa dedicado no retorno do C6.
+            ->setValorOutrasDespesas(Util::nFloat($this->rem(280, 292, $detalhe) / 100, 2, false));
 
         $codErro = str_split(sprintf('%016s', $this->rem(378, 393, $detalhe)), 4) + array_fill(0, 4, '');
 

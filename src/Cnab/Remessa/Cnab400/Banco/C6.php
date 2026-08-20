@@ -30,15 +30,15 @@ class C6 extends AbstractRemessa implements RemessaContract
     const ESPECIE_FATURA_CARTAO = '31';
     const ESPECIE_BOLETO_APORTE = '33';
     const ESPECIE_OUTROS = '99';
+    // Códigos de ocorrência de remessa válidos pro C6 (manual, Nota 1) — protesto (09/18/19) não existe nessa Nota e não é suportado.
     const OCORRENCIA_REMESSA = '01';
     const OCORRENCIA_PEDIDO_BAIXA = '02';
     const OCORRENCIA_CONCESSAO_ABATIMENTO = '04';
     const OCORRENCIA_CANC_ABATIMENTO_CONCEDIDO = '05';
     const OCORRENCIA_ALT_VENCIMENTO = '06';
-    const OCORRENCIA_PEDIDO_PROTESTO = '09';
-    const OCORRENCIA_SUSTAR_PROTESTO_BAIXAR_TITULO = '18';
-    const OCORRENCIA_SUSTAR_PROTESTO_MANTER_TITULO = '19';
+    const OCORRENCIA_TROCA_USO_EMPRESA = '07';
     const OCORRENCIA_ALT_OUTROS_DADOS = '31';
+    const OCORRENCIA_TROCA_EMITENTE = '90';
     const INSTRUCAO_SEM = '00';
 
     public function __construct(array $params = [])
@@ -118,8 +118,9 @@ class C6 extends AbstractRemessa implements RemessaContract
         $this->add(2, 2, '1');
         $this->add(3, 9, 'REMESSA');
         $this->add(10, 11, '01');
-        $this->add(12, 20, Util::formatCnab('X', 'COBRANCA', 8));
-        $this->add(21, 26, '');
+        // Campos 5 e 6 do manual (12-19 "COBRANCA", 20-26 "Uso do Banco") — width exato, nunca um campo só de 12-20 (deslocaria o literal).
+        $this->add(12, 19, Util::formatCnab('X', 'COBRANCA', 8));
+        $this->add(20, 26, '');
         $this->add(27, 38, Util::formatCnab('9', $this->getCodigoCliente(), 12));
         $this->add(39, 46, '');
         $this->add(47, 76, Util::formatCnab('X', $this->getBeneficiario()->getNome(), 30));
@@ -127,7 +128,8 @@ class C6 extends AbstractRemessa implements RemessaContract
         $this->add(80, 94, '');
         $this->add(95, 100, $this->getDataRemessa('dmy'));
         $this->add(101, 108, '');
-        $this->add(109, 120, Util::formatCnab('9', 0, 12));
+        // Campo 14 "Conta Cobrança" (manual, seção 5.1) — código informado pelo banco, zero à esquerda.
+        $this->add(109, 120, Util::formatCnab('9', $this->getConta(), 12));
         $this->add(121, 386, '');
         $this->add(387, 394, Util::formatCnab('9', $this->getIdremessa(), 8));
         $this->add(395, 400, Util::formatCnab('9', 1, 6));
@@ -202,8 +204,8 @@ class C6 extends AbstractRemessa implements RemessaContract
         $this->add(383, 384, Util::formatCnab('9', (int) ($boleto->getMulta() > 0 ? $boleto->getMulta() : 0), 2));
         $this->add(385, 385, '');
         $this->add(386, 391, $boleto->getDataVencimento()->copy()->addDays((int) $boleto->getJurosApos())->format('dmy'));
-        $this->add(392, 393, $boleto->getDiasProtesto('00'));
-        $this->add(394, 394, '');
+        // Campos 59-60 do manual (392-394) são "Uso do Banco" (brancos, fixo) — não existe campo de dias para protesto no layout do C6; protesto é tratado fora do CNAB (ver seção 11, Eventos de Alteração de Outros Dados).
+        $this->add(392, 394, '');
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
 
         $msgs = array_filter($boleto->getDescricaoDemonstrativo());
@@ -215,7 +217,8 @@ class C6 extends AbstractRemessa implements RemessaContract
             $this->add(162, 241, Util::formatCnab('X', Arr::get($msgs, 2), 80));
             $this->add(242, 321, Util::formatCnab('X', Arr::get($msgs, 3), 80));
             $this->add(322, 365, '');
-            $this->add(366, 375, Util::formatCnab('9', substr($boleto->getNossoNumero(), 1, 10), 10));
+            // Campos 86-88 devem repetir exatamente os campos 31-33 do detalhe principal (manual, Nota 13, rejeição 9084/9085/9086).
+            $this->add(366, 375, Util::formatCnab('X', $boleto->getNumeroDocumento(), 10));
             $this->add(376, 381, $boleto->getDataVencimento()->format('dmy'));
             $this->add(382, 394, Util::formatCnab('9', $boleto->getValor(), 13, 2));
             $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));

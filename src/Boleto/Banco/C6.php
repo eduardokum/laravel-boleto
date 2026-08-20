@@ -7,6 +7,7 @@ use Eduardokum\LaravelBoleto\CalculoDV;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
 use Eduardokum\LaravelBoleto\Contracts\Boleto\Boleto as BoletoContract;
 
+// C6 Bank — Layout CNAB 400 Cobrança Bancária, v2.7, jul/2025 (manuais/C6/)
 class C6 extends AbstractBoleto implements BoletoContract
 {
     public function __construct(array $params = [])
@@ -69,13 +70,71 @@ class C6 extends AbstractBoleto implements BoletoContract
     protected $codigoCliente;
 
     /**
+     * Carteira 10 (Emissão Banco): o C6 atribui o nosso número, campo fica em branco na remessa —
+     * sem limite de dígitos aqui para o consumidor.
+     * Carteira 20 (Emissão Cliente): o cliente atribui, 10 dígitos úteis nas posições 63-73 do
+     * detalhe de remessa, formato "0NNNNNNNNNN" (manual, seção 5.2 e "Cálculo do Dígito do Nosso Número").
+     * Demais carteiras (30/40/60) não documentadas no manual atual — tratadas como Carteira 20.
+     *
+     * @return int|null
+     */
+    public function getNossoNumeroMaxLength()
+    {
+        return $this->getCarteira() == '10' ? null : 10;
+    }
+
+    /**
      * Gera o Nosso Número.
+     *
+     * Carteira 10: o C6 atribui o nosso número — não temos como calculá-lo aqui, então o campo
+     * fica vazio até vir do retorno (ver setNossoNumero abaixo, espelhando o Inter). O manual (item
+     * 5.2, campo 24) diz para "deixar o campo em BRANCO" na remessa de registro; a remessa grava
+     * esse vazio como zeros (Util::formatCnab tipo "9"), igual ao Inter — assumido por analogia de
+     * formatação de campo numérico da lib, não confirmado com o C6. Repactuar se o C6 rejeitar.
      *
      * @return string
      */
     protected function gerarNossoNumero()
     {
+        if ($this->getCarteira() == '10') {
+            return '';
+        }
+
         return Util::numberFormatGeral($this->getNumero(), 11) . CalculoDV::c6NossoNumero($this->getCarteira(), $this->getNumero());
+    }
+
+    /**
+     * Só é preciso na Carteira 10 (banco atribui o nosso número): o valor devolvido pelo C6 no
+     * arquivo de retorno é gravado aqui para as remessas seguintes que instruem sobre o mesmo
+     * título (baixa, alteração de vencimento etc.), já que gerarNossoNumero() não tem como
+     * recalculá-lo. Trunca a 11 dígitos (posições 63-73 do retorno, campo "Nosso Número do
+     * Título") espelhando o padrão já usado pelo pipeline do admin para banco que atribui o
+     * número (Inter — TicketBatchImportService/TicketBatchService::applyBankAssignedNumber já
+     * chamam setNossoNumero() com o valor de 11 dígitos do retorno, sem o dígito verificador do
+     * campo 118, que hoje não é capturado pelo parser). Invalida os campos derivados (campo
+     * livre, código de barras, linha digitável), calculados a partir do nosso número anterior
+     * (vazio).
+     *
+     * ATENÇÃO: getCampoLivre()/getNossoNumeroBoleto() assumem o formato "0" + 10 dígitos usado
+     * na Carteira 20 (cliente emite). Não há confirmação de que o valor devolvido pelo C6 para a
+     * Carteira 10 (banco emite) siga essa mesma estrutura — nem confirmação de que precisamos
+     * renderizar boleto próprio nesse caso (o nome da carteira sugere que o C6 pode emitir o
+     * boleto). Validar contra um retorno real antes de confiar na impressão do boleto para
+     * títulos de Carteira 10.
+     *
+     * @param string $nossoNumero
+     *
+     * @return C6
+     */
+    public function setNossoNumero($nossoNumero)
+    {
+        $this->campoNossoNumero = substr(Util::onlyNumbers($nossoNumero), -11);
+
+        $this->campoLivre = null;
+        $this->campoCodigoBarras = null;
+        $this->campoLinhaDigitavel = null;
+
+        return $this;
     }
 
     /**
