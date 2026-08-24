@@ -41,7 +41,6 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
     const INDICATIVO_FORMA_PAGAMENTO = '01'; // Indicativo da forma de pagamento
 
     // Constantes para trailer do lote
-    const LOTE_SERVICO_TRAILER_LOTE = '0001'; // Lote de serviço (trailer do lote)
     const TIPO_REGISTRO_TRAILER_LOTE = '5'; // Tipo de registro (trailer do lote)
     const QUANTIDADE_MOEDA_ZERO = 0; // Quantidade de moeda (geralmente 0 para pagamentos)
     const NUMERO_AVISO_DEBITO_ZERO = 0; // Número do aviso de débito (preenchido pelo banco no retorno)
@@ -95,6 +94,16 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
      * @var array
      */
     protected $carteiras = [];
+
+    /**
+     * Número do lote que está sendo montado, no formato do campo G002 (4 dígitos).
+     *
+     * Os segmentos de detalhe precisam repetir esse número nas posições 4-7, mas recebem apenas
+     * o pagamento, não o lote. É gravado pelo header do lote e lido pelos segmentos e trailers.
+     *
+     * @var string
+     */
+    protected $loteAtual = self::LOTE_SERVICO_HEADER;
 
     /**
      * Caracter de fim de linha
@@ -259,9 +268,10 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
     protected function headerLote()
     {
         $this->iniciaHeaderLote();
+        $this->loteAtual = self::LOTE_SERVICO_HEADER;
 
         $this->add(1, 3, self::BANCO); // 01.1 Banco - Código do Banco na Compensação
-        $this->add(4, 7, self::LOTE_SERVICO_HEADER); // 02.1 Controle Lote - Lote de Serviço
+        $this->add(4, 7, $this->loteAtual); // 02.1 Controle Lote - Lote de Serviço
         $this->add(8, 8, self::TIPO_REGISTRO_HEADER_LOTE); // 03.1 Registro - Tipo de Registro
         $this->add(9, 9, self::TIPO_OPERACAO); // 04.1 Operação - Tipo da Operação
         $this->add(10, 11, self::TIPO_SERVICO); // 05.1 Serviço - Tipo do Serviço
@@ -308,7 +318,7 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
         $this->iniciaTrailerLote();
 
         $this->add(1, 3, self::BANCO); // 01.5 Banco - Código do Banco na Compensação
-        $this->add(4, 7, self::LOTE_SERVICO_TRAILER_LOTE); // 02.5 Controle Lote - Lote de Serviço
+        $this->add(4, 7, $this->loteAtual); // 02.5 Controle Lote - Lote de Serviço
         $this->add(8, 8, self::TIPO_REGISTRO_TRAILER_LOTE); // 03.5 Registro - Tipo de Registro
         $this->add(9, 17, self::CAMPO_BRANCO); // 04.5 CNAB - Uso Exclusivo FEBRABAN/CNAB
         $this->add(18, 23, Util::formatCnab('9L', $this->getCountRegistrosLote(), 6)); // 05.5 Qtde de Registros - Quantidade de Registros do Lote
@@ -352,14 +362,16 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
     }
 
     /**
-     * Retorna a quantidade total de registros do arquivo
+     * Retorna a quantidade total de registros do arquivo (campo 06.9).
+     *
+     * Delega para getCountMulti(), que é a contagem real. Existe porque trailer() faz parte do
+     * contrato do abstrato, mesmo que gerar() use sempre trailerMulti().
+     *
      * @return int
      */
     protected function getCountRegistros()
     {
-        // Header do arquivo (1) + Header do lote (1) + Registros de detalhe + Trailer do lote (1) + Trailer do arquivo (1)
-        $countDetalhes = $this->getCountDetalhes();
-        return 4 + $countDetalhes; // 4 registros fixos + registros de detalhe
+        return $this->getCountMulti();
     }
 
     /**
@@ -381,23 +393,24 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
     }
 
     /**
-     * Retorna a quantidade de registros de detalhe
-     * @return int
-     */
-    protected function getCountDetalhes()
-    {
-        // Cada pagamento gera registros de detalhe (segmentos A e B)
-        return count($this->pagamentos) * 2; // 2 segmentos por pagamento
-    }
-
-    /**
-     * Retorna a quantidade de registros no lote
+     * Retorna a quantidade de registros do lote corrente (campo 05.5).
+     *
+     * G057 (pág. 43): registros enviados NO LOTE — somatória dos tipos 1, 2, 3, 4 e 5.
+     *
+     * A contagem vem de $this->iRegistrosLote, que iniciaDetalhe() incrementa a cada segmento
+     * gerado e gerar() zera a cada novo lote. No instante em que o trailer do lote é montado,
+     * ele vale exatamente os detalhes daquele lote.
+     *
+     * A implementação anterior fazia count($this->pagamentos) * 2, o que tinha dois defeitos:
+     * $this->pagamentos é global do arquivo, então cada trailer de lote reportava o total do
+     * arquivo; e o fator 2 presumia que todo pagamento gera exatamente Segmento A + B, o que
+     * deixa de valer assim que outro tipo de lançamento entrar.
+     *
      * @return int
      */
     protected function getCountRegistrosLote()
     {
-        $countDetalhes = $this->getCountDetalhes();
-        return $countDetalhes + 2; // header do lote (1) + registros de detalhe + trailer do lote (1)
+        return $this->iRegistrosLote + 2; // header do lote + detalhes + trailer do lote
     }
 
     /**
@@ -427,9 +440,10 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
     protected function headerLoteMulti(array $lote)
     {
         $this->iniciaHeaderLote();
+        $this->loteAtual = Util::formatCnab('9L', $lote['numero'], 4);
 
         $this->add(1, 3, self::BANCO); // 01.1 Banco - Código do Banco na Compensação
-        $this->add(4, 7, Util::formatCnab('9L', $lote['numero'], 4)); // 02.1 Controle Lote - Lote de Serviço (número do lote)
+        $this->add(4, 7, $this->loteAtual); // 02.1 Controle Lote - Lote de Serviço (número do lote)
         $this->add(8, 8, self::TIPO_REGISTRO_HEADER_LOTE); // 03.1 Registro - Tipo de Registro
         $this->add(9, 9, self::TIPO_OPERACAO); // 04.1 Operação - Tipo da Operação
         $this->add(10, 11, self::TIPO_SERVICO); // 05.1 Serviço - Tipo do Serviço
@@ -475,10 +489,14 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
      */
     protected function trailerLoteMulti(array $lote)
     {
+        // Registra quantos detalhes este lote gerou, antes que gerar() zere o contador para o
+        // próximo lote. getCountMulti() soma esses valores para montar o campo 06.9 (G056).
+        $this->lotes[$lote['tipo']]['registrosDetalhe'] = $this->iRegistrosLote;
+
         $this->iniciaTrailerLote();
 
         $this->add(1, 3, self::BANCO); // 01.5 Banco - Código do Banco na Compensação
-        $this->add(4, 7, Util::formatCnab('9L', $lote['numero'], 4)); // 02.5 Controle Lote - Lote de Serviço (Número do lote)
+        $this->add(4, 7, $this->loteAtual); // 02.5 Controle Lote - Lote de Serviço (Número do lote)
         $this->add(8, 8, self::TIPO_REGISTRO_TRAILER_LOTE); // 03.5 Registro - Tipo de Registro
         $this->add(9, 17, self::CAMPO_BRANCO); // 04.5 CNAB - Uso Exclusivo FEBRABAN/CNAB
         $this->add(18, 23, Util::formatCnab('9L', $this->getCountRegistrosLote(), 6)); // 05.5 Qtde de Registros - Quantidade de Registros do Lote
@@ -514,18 +532,25 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
     }
 
     /**
-     * Retorna a quantidade total de registros para múltiplos lotes
+     * Retorna a quantidade total de registros do arquivo (campo 06.9).
+     *
+     * G056 (pág. 43): somatória dos registros de tipo 0, 1, 3, 5 e 9.
+     *
+     * Soma os detalhes que cada lote realmente gerou — anotados em 'registrosDetalhe' por
+     * trailerLoteMulti(), antes de gerar() zerar o contador — mais o header e o trailer de cada
+     * lote, mais o header e o trailer do arquivo. Nada aqui presume dois segmentos por pagamento.
      *
      * @return int
      */
     protected function getCountMulti()
     {
-        $totalRegistros = 0;
+        $totalRegistros = 2; // header e trailer do arquivo
+
         foreach ($this->lotes as $lote) {
-            $totalRegistros += count($lote['pagamentos']) * 2; // Segmento A + B para cada pagamento
-            $totalRegistros += 2; // Header + Trailer do lote
+            $totalRegistros += 2; // header e trailer do lote
+            $totalRegistros += isset($lote['registrosDetalhe']) ? $lote['registrosDetalhe'] : 0;
         }
-        $totalRegistros += 2; // Header + Trailer do arquivo
+
         return $totalRegistros;
     }
 
@@ -566,7 +591,7 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
 
         // Controle
         $this->add(1, 3, self::BANCO); // 01.3A Banco - Código do Banco na Compensação
-        $this->add(4, 7, self::LOTE_SERVICO_HEADER); // 02.3A Lote - Lote de Serviço
+        $this->add(4, 7, $this->loteAtual); // 02.3A Lote - Lote de Serviço
         $this->add(8, 8, self::TIPO_REGISTRO_DETALHE); // 03.3A Registro - Tipo de Registro
         $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote, 5)); // 04.3A N° do Registro - Nº Seqüencial do Registro no Lote
 
@@ -674,7 +699,7 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
 
         // Controle
         $this->add(1, 3, self::BANCO); // 01.3B Banco - Código do Banco na Compensação
-        $this->add(4, 7, self::LOTE_SERVICO_HEADER); // 02.3B Controle Lote - Lote de Serviço
+        $this->add(4, 7, $this->loteAtual); // 02.3B Controle Lote - Lote de Serviço
         $this->add(8, 8, self::TIPO_REGISTRO_DETALHE); // 03.3B Registro - Tipo do Registro
         $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote, 5)); // 04.3B N° do Registro - Nº Seqüencial do Registro no Lote
 
