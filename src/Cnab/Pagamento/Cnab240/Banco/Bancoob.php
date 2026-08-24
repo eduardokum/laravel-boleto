@@ -5,6 +5,7 @@ namespace Eduardokum\LaravelBoleto\Cnab\Pagamento\Cnab240\Banco;
 use Eduardokum\LaravelBoleto\Cnab\Pagamento\Cnab240\AbstractPagamento;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Pagamento as PagamentoRemessaContract;
 use Eduardokum\LaravelBoleto\Contracts\Pagamento\Pagamento as PagamentoContract;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Pagamento\Banco\Banco;
 use Eduardokum\LaravelBoleto\Util;
 
@@ -28,18 +29,33 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
     // Constantes para trailer do arquivo
     const LOTE_SERVICO_TRAILER = '9999'; // Lote de serviço (trailer do arquivo)
     const TIPO_REGISTRO_TRAILER = '9'; // Tipo de registro (trailer do arquivo)
+    const QUANTIDADE_CONTAS_CONCILIACAO = 0; // 07.9 Qtde de contas p/ conciliação (G037) - vide getCountContasConciliacao()
 
     // Constantes para header do lote
     const LOTE_SERVICO_HEADER = '0001'; // Lote de serviço (header do lote)
     const TIPO_REGISTRO_HEADER_LOTE = '1'; // Tipo de registro (header do lote)
     const TIPO_OPERACAO = 'C'; // Tipo da operação (Crédito)
-    const TIPO_SERVICO = '10'; // Tipo do serviço (Transferência entre contas)
-    const FORMA_LANCAMENTO = '41'; // Forma de lançamento (TED)
     const VERSAO_LAYOUT_LOTE = '045'; // Versão do layout do lote
     const INDICATIVO_FORMA_PAGAMENTO = '01'; // Indicativo da forma de pagamento
 
+    // Tipo de Serviço (G025, pág. 39-40). Domínio completo no manual; aqui ficam os valores
+    // que fazem sentido num lote de transferência.
+    const TIPO_SERVICO_PAGAMENTO_DIVIDENDOS = '10';
+    const TIPO_SERVICO_PAGAMENTO_FORNECEDOR = '20';
+    const TIPO_SERVICO_PAGAMENTO_SALARIOS = '30';
+    const TIPO_SERVICO_PAGAMENTOS_DIVERSOS = '98';
+    const TIPO_SERVICO = self::TIPO_SERVICO_PAGAMENTO_DIVIDENDOS; // default histórico da classe
+
+    // Forma de Lançamento (G029, pág. 40)
+    const FORMA_LANCAMENTO_CREDITO_CONTA_CORRENTE = '01';
+    const FORMA_LANCAMENTO_CREDITO_POUPANCA = '05';
+    const FORMA_LANCAMENTO_TED_OUTRA_TITULARIDADE = '41';
+    const FORMA_LANCAMENTO_TED_MESMA_TITULARIDADE = '43';
+    const FORMA_LANCAMENTO_PIX_TRANSFERENCIA = '45';
+    const FORMA_LANCAMENTO_PIX_QRCODE = '47';
+    const FORMA_LANCAMENTO = self::FORMA_LANCAMENTO_TED_OUTRA_TITULARIDADE; // default histórico
+
     // Constantes para trailer do lote
-    const LOTE_SERVICO_TRAILER_LOTE = '0001'; // Lote de serviço (trailer do lote)
     const TIPO_REGISTRO_TRAILER_LOTE = '5'; // Tipo de registro (trailer do lote)
     const QUANTIDADE_MOEDA_ZERO = 0; // Quantidade de moeda (geralmente 0 para pagamentos)
     const NUMERO_AVISO_DEBITO_ZERO = 0; // Número do aviso de débito (preenchido pelo banco no retorno)
@@ -50,13 +66,22 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
     const CODIGO_SEGMENTO_B = 'B'; // Código do segmento B
     const TIPO_MOVIMENTO = '0'; // Tipo de movimento
     const CODIGO_INSTRUCAO_MOVIMENTO = '00'; // Código da instrução para movimento
-    const CODIGO_CAMARA_CENTRALIZADORA = '018'; // Código da câmara centralizadora
+    // Câmara Centralizadora (P001, pág. 52). Domínio do manual: '018' = TED (STR/CIP),
+    // '009' = Pix (SPI). Transferência interna à rede Sicoob não transita por câmara.
+    const CAMARA_TED = '018';
+    const CAMARA_PIX = '009';
+    const CAMARA_NAO_APLICAVEL = '000';
+    const CODIGO_CAMARA_CENTRALIZADORA = self::CAMARA_TED; // default histórico
     const TIPO_MOEDA = 'BRL'; // Tipo da moeda (Real brasileiro)
     const QUANTIDADE_MOEDA = '000000000000000'; // Quantidade da moeda (15 zeros)
     const CODIGO_FINALIDADE_TED = '00010'; // Código finalidade da TED
     const AVISO_FAVORECIDO = '0'; // Aviso ao favorecido
-    const DATA_REAL_ZERO = 0; // Data real da efetivação (0 para remessa)
-    const VALOR_REAL_ZERO = 0; // Valor real da efetivação (0 para remessa)
+    // 22.3A (P003) e 23.3A (P004) são campos Num preenchidos apenas no retorno. Na remessa vão
+    // zerados — e precisam ir com a largura completa do campo: Util::adiciona() alinha à direita
+    // com ESPAÇOS, então um 0 inteiro viraria '       0' num campo numérico, o que o item 10 do
+    // guia (pág. 36) rejeita como "campo do tipo Numérico informado com caracteres especiais".
+    const DATA_REAL_ZERO = '00000000'; // 22.3A Data real da efetivação (8 zeros na remessa)
+    const VALOR_REAL_ZERO = '000000000000000'; // 23.3A Valor real da efetivação (15 zeros na remessa)
 
     /**
      * Bancoob constructor.
@@ -66,7 +91,16 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
     {
         parent::__construct($params);
         $this->codigoBanco = self::BANCO;
-        $this->setCamposObrigatorios('convenio');
+
+        // addCampoObrigatorio() acrescenta; setCamposObrigatorios() ZERA a lista antes de
+        // acrescentar. A chamada anterior era setCamposObrigatorios('convenio'), que descartava
+        // 'agencia', 'conta' e 'pagador' herdados do abstrato — uma remessa sem agência e sem
+        // conta passava por isValid() e saía com 00000/000000000000 no header.
+        //
+        // 'contaDv' entra na lista porque o campo 11.0 (G011, pág. 38) é Num e Obrigatório: sem
+        // o dígito, a posição 71 sairia em branco, violando o item 2.2 do guia (pág. 9). Preencher
+        // com zero não é alternativa — fabricaria o DV de uma conta que não é a da empresa.
+        $this->addCampoObrigatorio('convenio', 'contaDv');
     }
 
     /**
@@ -80,6 +114,46 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
      * @var array
      */
     protected $carteiras = [];
+
+    /**
+     * Número do lote que está sendo montado, no formato do campo G002 (4 dígitos).
+     *
+     * Os segmentos de detalhe precisam repetir esse número nas posições 4-7, mas recebem apenas
+     * o pagamento, não o lote. É gravado pelo header do lote e lido pelos segmentos e trailers.
+     *
+     * @var string
+     */
+    protected $loteAtual = self::LOTE_SERVICO_HEADER;
+
+    /**
+     * Tipo de Serviço do lote (campo 05.1, G025).
+     *
+     * O valor correto depende do que o convênio do cliente tem habilitado no Sicoob, então a
+     * classe não decide por conta própria: mantém o default histórico e expõe setTipoServico().
+     *
+     * Atenção: o default '10' é "Pagamento Dividendos" no domínio do G025 (pág. 40) — está no
+     * domínio, mas raramente é o que se quer num pagamento a terceiros. Para fornecedor use
+     * TIPO_SERVICO_PAGAMENTO_FORNECEDOR ('20'); para pagamentos avulsos, '98'.
+     *
+     * @var string
+     */
+    protected $tipoServico = self::TIPO_SERVICO;
+
+    /**
+     * Forma de Lançamento do lote (campo 06.1, G029).
+     *
+     * @var string
+     */
+    protected $formaLancamento = self::FORMA_LANCAMENTO;
+
+    /**
+     * Código de finalidade da TED (campo 26.3A, P011).
+     *
+     * Só se aplica quando a forma de lançamento é TED. Default '00010' = '10', Crédito em Conta.
+     *
+     * @var string
+     */
+    protected $codigoFinalidadeTed = self::CODIGO_FINALIDADE_TED;
 
     /**
      * Caracter de fim de linha
@@ -107,7 +181,7 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(8, 8, self::TIPO_REGISTRO); // 03.0 Registro - Tipo de Registro
         $this->add(9, 17, self::CAMPO_BRANCO); // 04.0 CNAB - Uso Exclusivo FEBRABAN / CNAB
         $this->add(18, 18, Util::formatCnab('9L', $this->getPagador()->getTipoDocumento() == 'CPF' ? self::TIPO_DOCUMENTO_CPF : self::TIPO_DOCUMENTO_CNPJ, 1)); // 05.0 Empresa Inscrição Tipo - Tipo de Inscrição da Empresa
-        $this->add(19, 32, Util::formatCnab('9L', $this->getPagador()->getDocumento(), 14)); // 06.0 Empresa Inscrição Número - Número de Inscrição da Empresa
+        $this->add(19, 32, $this->formatarNumeroInscricao($this->getPagador()->getDocumento())); // 06.0 Empresa Inscrição Número - Número de Inscrição da Empresa
 
         $convenio = $this->getConvenio() ?? '';
 
@@ -161,12 +235,290 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
     }
 
     /**
-     * Retorna o dígito verificador da agência/conta
+     * Retorna o dígito verificador da agência/conta DA EMPRESA PAGADORA (campos 12.0 e 16.1).
+     *
+     * G012 (pág. 39): este campo NÃO é uma cópia do DV da conta. É a 2ª posição do dígito
+     * verificador, e só existe para os bancos que usam duas posições no DV da conta corrente.
+     * Exemplo do manual: C/C 45981-36 → G011 (pos. 71) = 3 e G012 (pos. 72) = 6.
+     *
+     * Só é usado nas três posições 72 (header do arquivo e headers de lote), onde a conta é
+     * sempre a da empresa no Sicoob — DV de um dígito só. Logo o campo, Alfa e Opcional, fica
+     * em branco. A implementação anterior devolvia substr($this->getContaDv(), -1), repetindo o
+     * mesmo dígito nas posições 71 e 72 e fabricando um DV que a conta não tem.
+     *
+     * Um DV de duas posições sequer chega até aqui: Cnab\Pagamento\AbstractPagamento::setContaDv()
+     * aplica substr($contaDv, -1) e guarda apenas o último caractere. Se algum dia o Sicoob
+     * passar a usar DV de duas posições, é esse setter compartilhado que precisa mudar.
+     *
+     * Para o campo equivalente do favorecido (14.3A), vide getAgenciaContaDvFavorecido().
+     *
      * @return string
      */
     protected function getAgenciaContaDv()
     {
-        return substr($this->getContaDv(), -1);
+        return self::CAMPO_BRANCO;
+    }
+
+    /**
+     * Recusa DV de conta do favorecido que o par 13.3A / 14.3A não consegue transportar íntegro.
+     *
+     * O layout reserva duas posições para o dígito: 13.3A (G011, Num) recebe a 1ª e 14.3A (G012,
+     * Alfa) a 2ª. Duas situações fariam o dígito chegar adulterado ao banco, em silêncio:
+     *
+     * - Mais de duas posições: da terceira em diante não há onde caber, e o excedente sumiria.
+     * - Primeira posição não numérica: 13.3A é Num, e G011 (pág. 38) diz "somente serão aceitos
+     *   valores numéricos". Util::formatCnab('9L', 'X', 1) devolveria '0' — um dígito fabricado,
+     *   apontando para outra conta.
+     *
+     * Um DV como '3X' continua aceito: o '3' cabe no campo Num e o 'X' na 2ª posição, que é Alfa.
+     *
+     * @param Banco  $pagamento
+     * @param string $contaDv já sem pontuação
+     * @return void
+     * @throws ValidationException
+     */
+    protected function validaFormatoContaDvFavorecido($pagamento, $contaDv)
+    {
+        if ($contaDv === '') {
+            return;
+        }
+
+        $nome = $pagamento->getBeneficiario() ? $pagamento->getBeneficiario()->getNome() : '?';
+
+        if (mb_strlen($contaDv) > 2) {
+            throw new ValidationException(sprintf(
+                'Favorecido "%s": dígito verificador da conta "%s" tem %d posições. O Segmento A '
+                . 'transporta no máximo duas — 13.3A recebe a 1ª e 14.3A a 2ª. Informe apenas o '
+                . 'dígito, sem o número da conta.',
+                $nome,
+                $contaDv,
+                mb_strlen($contaDv)
+            ));
+        }
+
+        if (! preg_match('/^[0-9]/', $contaDv)) {
+            throw new ValidationException(sprintf(
+                'Favorecido "%s": dígito verificador da conta "%s" começa com caractere não '
+                . 'numérico. O campo 13.3A é Num e G011 (pág. 38) só aceita valores numéricos na '
+                . '1ª posição do dígito; caractere não numérico só é válido na 2ª (14.3A, Alfa).',
+                $nome,
+                $contaDv
+            ));
+        }
+    }
+
+    /**
+     * Retorna o dígito verificador da agência/conta DO FAVORECIDO (campo 14.3A).
+     *
+     * Ao contrário da posição 72, aqui a conta é a de destino e pode estar em qualquer banco —
+     * inclusive num que use duas posições no DV da conta corrente. Conforme G012 (pág. 39), o
+     * campo recebe a 2ª posição desse dígito; quando o DV tem uma posição só, fica em branco.
+     *
+     * O campo 13.3A (pos. 42), que é Num, já recebe a 1ª posição via Util::formatCnab, que
+     * trunca pelo início. G012 é Alfa, então aqui o valor vai sem passar por formatação
+     * numérica: um DV não numérico continua válido neste campo.
+     *
+     * O modelo de pagamento preserva o DV inteiro — Pagamento\AbstractPagamento::setContaDv()
+     * não trunca, diferente do setter homônimo do lado da remessa —, então o dígito informado
+     * pela aplicação chega até aqui.
+     *
+     * @param Banco $pagamento
+     * @return string
+     */
+    protected function getAgenciaContaDvFavorecido($pagamento)
+    {
+        $contaDv = (string) $pagamento->getContaDv();
+
+        return mb_strlen($contaDv) > 1 ? mb_substr($contaDv, 1, 1) : self::CAMPO_BRANCO;
+    }
+
+    /**
+     * Define o Tipo de Serviço do lote (campo 05.1, G025, pág. 39-40).
+     *
+     * @param string $tipoServico
+     * @return $this
+     * @throws ValidationException
+     */
+    public function setTipoServico($tipoServico)
+    {
+        $dominio = [
+            self::TIPO_SERVICO_PAGAMENTO_DIVIDENDOS,
+            self::TIPO_SERVICO_PAGAMENTO_FORNECEDOR,
+            self::TIPO_SERVICO_PAGAMENTO_SALARIOS,
+            self::TIPO_SERVICO_PAGAMENTOS_DIVERSOS,
+        ];
+
+        $tipoServico = Util::formatCnab('9L', $tipoServico, 2);
+
+        if (! in_array($tipoServico, $dominio, true)) {
+            throw new ValidationException(sprintf(
+                'Tipo de Serviço "%s" não suportado. O campo 05.1 (G025) aceita %s neste gerador. '
+                . 'Confirme com o Sicoob qual valor o convênio do cliente está habilitado a usar.',
+                $tipoServico,
+                implode(', ', $dominio)
+            ));
+        }
+
+        $this->tipoServico = $tipoServico;
+
+        return $this;
+    }
+
+    /**
+     * Retorna o Tipo de Serviço do lote (campo 05.1, G025).
+     *
+     * @return string
+     */
+    protected function getTipoServico()
+    {
+        return $this->tipoServico;
+    }
+
+    /**
+     * Define a Forma de Lançamento do lote (campo 06.1, G029, pág. 40).
+     *
+     * As formas Pix são recusadas de propósito: os segmentos A e B desta classe montam o layout
+     * de transferência comum, e o Pix exige a Forma de Iniciação (G100) na posição 15-17 do
+     * Segmento B, a chave na Informação 12 e o tipo da conta de destino em G031. Gerar um Pix
+     * sem esses campos produziria um arquivo aceito na estrutura e recusado no processamento.
+     *
+     * @param string $formaLancamento
+     * @return $this
+     * @throws ValidationException
+     */
+    public function setFormaLancamento($formaLancamento)
+    {
+        $suportadas = [
+            self::FORMA_LANCAMENTO_CREDITO_CONTA_CORRENTE,
+            self::FORMA_LANCAMENTO_CREDITO_POUPANCA,
+            self::FORMA_LANCAMENTO_TED_OUTRA_TITULARIDADE,
+            self::FORMA_LANCAMENTO_TED_MESMA_TITULARIDADE,
+        ];
+
+        $formaLancamento = Util::formatCnab('9L', $formaLancamento, 2);
+
+        if (in_array($formaLancamento, [self::FORMA_LANCAMENTO_PIX_TRANSFERENCIA, self::FORMA_LANCAMENTO_PIX_QRCODE], true)) {
+            throw new ValidationException(sprintf(
+                'Forma de Lançamento "%s" (Pix) ainda não é gerada por esta classe. O Segmento B '
+                . 'precisaria carregar a Forma de Iniciação (G100) e a chave Pix na Informação 12, '
+                . 'e o Pix QR Code exige os segmentos J e J-52-Pix, que não existem aqui. '
+                . 'Use %s ou %s.',
+                $formaLancamento,
+                self::FORMA_LANCAMENTO_TED_OUTRA_TITULARIDADE,
+                self::FORMA_LANCAMENTO_CREDITO_CONTA_CORRENTE
+            ));
+        }
+
+        if (! in_array($formaLancamento, $suportadas, true)) {
+            throw new ValidationException(sprintf(
+                'Forma de Lançamento "%s" não pertence ao domínio do campo 06.1 (G029) para '
+                . 'transferências. Valores aceitos: %s.',
+                $formaLancamento,
+                implode(', ', $suportadas)
+            ));
+        }
+
+        $this->formaLancamento = $formaLancamento;
+
+        return $this;
+    }
+
+    /**
+     * Retorna a Forma de Lançamento do lote (campo 06.1, G029).
+     *
+     * @return string
+     */
+    protected function getFormaLancamento()
+    {
+        return $this->formaLancamento;
+    }
+
+    /**
+     * Indica se a forma de lançamento corrente é uma TED.
+     *
+     * @return bool
+     */
+    protected function isTed()
+    {
+        return in_array($this->getFormaLancamento(), [
+            self::FORMA_LANCAMENTO_TED_OUTRA_TITULARIDADE,
+            self::FORMA_LANCAMENTO_TED_MESMA_TITULARIDADE,
+        ], true);
+    }
+
+    /**
+     * Retorna a Câmara Centralizadora do Segmento A (campo 08.3A, P001, pág. 52).
+     *
+     * Deriva da forma de lançamento em vez de ser fixa: só a TED transita por câmara ('018').
+     * Crédito em conta e poupança são internos à rede Sicoob e não transitam por nenhuma, então
+     * o campo — Num e Opcional — vai zerado.
+     *
+     * @return string
+     */
+    protected function getCodigoCamaraCentralizadora()
+    {
+        return $this->isTed() ? self::CAMARA_TED : self::CAMARA_NAO_APLICAVEL;
+    }
+
+    /**
+     * Define o código de finalidade da TED (campo 26.3A, P011, pág. 53).
+     *
+     * @param string $codigo
+     * @return $this
+     */
+    public function setCodigoFinalidadeTed($codigo)
+    {
+        $this->codigoFinalidadeTed = Util::formatCnab('9L', $codigo, 5);
+
+        return $this;
+    }
+
+    /**
+     * Retorna o código de finalidade da TED (campo 26.3A, P011).
+     *
+     * Só se aplica a TED; nas demais formas de lançamento o campo, Num e Opcional, vai zerado.
+     *
+     * @return string
+     */
+    protected function getCodigoFinalidadeTed()
+    {
+        return $this->isTed() ? $this->codigoFinalidadeTed : Util::formatCnab('9L', 0, 5);
+    }
+
+    /**
+     * Formata o Número de Inscrição (G006) nas 14 posições do campo.
+     *
+     * G006 é Alfa desde a versão 4.0 do guia (histórico, pág. 6): "em atendimento ao projeto do
+     * CNPJ alfanumérico, alteração do formato do campo G006 para alfanumérico".
+     *
+     * Util::formatCnab('9L', ...) não serve aqui: '9L' chama Util::onlyNumbers(), que APAGARIA
+     * as letras de um CNPJ alfanumérico e entregaria ao banco um documento mutilado, sem erro.
+     * Este método remove apenas a pontuação, preserva letras e dígitos e normaliza a caixa.
+     *
+     * O preenchimento continua com zeros à esquerda, e não com brancos à direita como o item 2.2
+     * pediria para um campo Alfa: um CNPJ, numérico ou alfanumérico, ocupa exatamente as 14
+     * posições e não precisa de preenchimento; quem precisa é o CPF, de 11 dígitos, que o CNAB
+     * sempre alinhou à direita com zeros.
+     *
+     * @param string $documento
+     * @return string
+     */
+    protected function formatarNumeroInscricao($documento)
+    {
+        $documento = self::upperNumeroInscricao($documento);
+
+        return str_pad(mb_substr($documento, 0, 14), 14, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Remove pontuação do número de inscrição e normaliza a caixa, preservando letras.
+     *
+     * @param string $documento
+     * @return string
+     */
+    protected static function upperNumeroInscricao($documento)
+    {
+        return Util::upper(preg_replace('/[^0-9A-Za-z]/', '', (string) $documento));
     }
 
     /**
@@ -203,17 +555,18 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
     protected function headerLote()
     {
         $this->iniciaHeaderLote();
+        $this->loteAtual = self::LOTE_SERVICO_HEADER;
 
         $this->add(1, 3, self::BANCO); // 01.1 Banco - Código do Banco na Compensação
-        $this->add(4, 7, self::LOTE_SERVICO_HEADER); // 02.1 Controle Lote - Lote de Serviço
+        $this->add(4, 7, $this->loteAtual); // 02.1 Controle Lote - Lote de Serviço
         $this->add(8, 8, self::TIPO_REGISTRO_HEADER_LOTE); // 03.1 Registro - Tipo de Registro
         $this->add(9, 9, self::TIPO_OPERACAO); // 04.1 Operação - Tipo da Operação
-        $this->add(10, 11, self::TIPO_SERVICO); // 05.1 Serviço - Tipo do Serviço
-        $this->add(12, 13, self::FORMA_LANCAMENTO); // 06.1 Serviço - Forma Lançamento
+        $this->add(10, 11, $this->getTipoServico()); // 05.1 Serviço - Tipo do Serviço
+        $this->add(12, 13, $this->getFormaLancamento()); // 06.1 Serviço - Forma Lançamento
         $this->add(14, 16, self::VERSAO_LAYOUT_LOTE); // 07.1 Layout do Lote - Nº da Versão do Layout do Lote
         $this->add(17, 17, self::CAMPO_BRANCO); // 08.1 CNAB - Uso Exclusivo da FEBRABAN/CNAB
         $this->add(18, 18, $this->getPagador()->getTipoDocumento() == 'CPF' ? self::TIPO_DOCUMENTO_CPF : self::TIPO_DOCUMENTO_CNPJ); // 09.1 Inscrição Tipo - Tipo de Inscrição da Empresa
-        $this->add(19, 32, Util::formatCnab('9L', $this->getPagador()->getDocumento(), 14)); // 10.1 Inscrição Número - Número de Inscrição da Empresa
+        $this->add(19, 32, $this->formatarNumeroInscricao($this->getPagador()->getDocumento())); // 10.1 Inscrição Número - Número de Inscrição da Empresa
 
         $convenio = $this->getConvenio() ?? '';
 
@@ -252,7 +605,7 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
         $this->iniciaTrailerLote();
 
         $this->add(1, 3, self::BANCO); // 01.5 Banco - Código do Banco na Compensação
-        $this->add(4, 7, self::LOTE_SERVICO_TRAILER_LOTE); // 02.5 Controle Lote - Lote de Serviço
+        $this->add(4, 7, $this->loteAtual); // 02.5 Controle Lote - Lote de Serviço
         $this->add(8, 8, self::TIPO_REGISTRO_TRAILER_LOTE); // 03.5 Registro - Tipo de Registro
         $this->add(9, 17, self::CAMPO_BRANCO); // 04.5 CNAB - Uso Exclusivo FEBRABAN/CNAB
         $this->add(18, 23, Util::formatCnab('9L', $this->getCountRegistrosLote(), 6)); // 05.5 Qtde de Registros - Quantidade de Registros do Lote
@@ -296,44 +649,55 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
     }
 
     /**
-     * Retorna a quantidade total de registros do arquivo
+     * Retorna a quantidade total de registros do arquivo (campo 06.9).
+     *
+     * Delega para getCountMulti(), que é a contagem real. Existe porque trailer() faz parte do
+     * contrato do abstrato, mesmo que gerar() use sempre trailerMulti().
+     *
      * @return int
      */
     protected function getCountRegistros()
     {
-        // Header do arquivo (1) + Header do lote (1) + Registros de detalhe + Trailer do lote (1) + Trailer do arquivo (1)
-        $countDetalhes = $this->getCountDetalhes();
-        return 4 + $countDetalhes; // 4 registros fixos + registros de detalhe
+        return $this->getCountMulti();
     }
 
     /**
-     * Retorna a quantidade de contas para conciliação
+     * Retorna a quantidade de lotes de conciliação bancária do arquivo (campo 07.9).
+     *
+     * G037 (pág. 42) não conta pagamentos: conta os lotes de Conciliação Bancária, ou seja,
+     * a somatória dos registros de tipo 1 cujo Tipo de Operação (G028) seja 'E'. É um campo
+     * específico do serviço de Conciliação Bancária.
+     *
+     * Esta classe emite exclusivamente lotes de crédito (self::TIPO_OPERACAO = 'C'), logo o
+     * arquivo nunca carrega lote de conciliação e o campo é sempre zero. Se um dia a classe
+     * passar a gerar lotes com Tipo de Operação 'E', este método precisa contá-los.
+     *
      * @return int
      */
     protected function getCountContasConciliacao()
     {
-        // Para pagamentos, geralmente é 0 ou pode ser baseado na quantidade de pagamentos
-        return count($this->pagamentos);
+        return self::QUANTIDADE_CONTAS_CONCILIACAO;
     }
 
     /**
-     * Retorna a quantidade de registros de detalhe
-     * @return int
-     */
-    protected function getCountDetalhes()
-    {
-        // Cada pagamento gera registros de detalhe (segmentos A e B)
-        return count($this->pagamentos) * 2; // 2 segmentos por pagamento
-    }
-
-    /**
-     * Retorna a quantidade de registros no lote
+     * Retorna a quantidade de registros do lote corrente (campo 05.5).
+     *
+     * G057 (pág. 43): registros enviados NO LOTE — somatória dos tipos 1, 2, 3, 4 e 5.
+     *
+     * A contagem vem de $this->iRegistrosLote, que iniciaDetalhe() incrementa a cada segmento
+     * gerado e gerar() zera a cada novo lote. No instante em que o trailer do lote é montado,
+     * ele vale exatamente os detalhes daquele lote.
+     *
+     * A implementação anterior fazia count($this->pagamentos) * 2, o que tinha dois defeitos:
+     * $this->pagamentos é global do arquivo, então cada trailer de lote reportava o total do
+     * arquivo; e o fator 2 presumia que todo pagamento gera exatamente Segmento A + B, o que
+     * deixa de valer assim que outro tipo de lançamento entrar.
+     *
      * @return int
      */
     protected function getCountRegistrosLote()
     {
-        $countDetalhes = $this->getCountDetalhes();
-        return $countDetalhes + 2; // header do lote (1) + registros de detalhe + trailer do lote (1)
+        return $this->iRegistrosLote + 2; // header do lote + detalhes + trailer do lote
     }
 
     /**
@@ -363,17 +727,18 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
     protected function headerLoteMulti(array $lote)
     {
         $this->iniciaHeaderLote();
+        $this->loteAtual = Util::formatCnab('9L', $lote['numero'], 4);
 
         $this->add(1, 3, self::BANCO); // 01.1 Banco - Código do Banco na Compensação
-        $this->add(4, 7, Util::formatCnab('9L', $lote['numero'], 4)); // 02.1 Controle Lote - Lote de Serviço (número do lote)
+        $this->add(4, 7, $this->loteAtual); // 02.1 Controle Lote - Lote de Serviço (número do lote)
         $this->add(8, 8, self::TIPO_REGISTRO_HEADER_LOTE); // 03.1 Registro - Tipo de Registro
         $this->add(9, 9, self::TIPO_OPERACAO); // 04.1 Operação - Tipo da Operação
-        $this->add(10, 11, self::TIPO_SERVICO); // 05.1 Serviço - Tipo do Serviço
-        $this->add(12, 13, self::FORMA_LANCAMENTO); // 06.1 Serviço - Forma Lançamento
+        $this->add(10, 11, $this->getTipoServico()); // 05.1 Serviço - Tipo do Serviço
+        $this->add(12, 13, $this->getFormaLancamento()); // 06.1 Serviço - Forma Lançamento
         $this->add(14, 16, self::VERSAO_LAYOUT_LOTE); // 07.1 Layout do Lote - Nº da Versão do Layout do Lote
         $this->add(17, 17, self::CAMPO_BRANCO); // 08.1 CNAB - Uso Exclusivo da FEBRABAN/CNAB
         $this->add(18, 18, $this->getPagador()->getTipoDocumento() == 'CPF' ? self::TIPO_DOCUMENTO_CPF : self::TIPO_DOCUMENTO_CNPJ); // 09.1 Inscrição Tipo - Tipo de Inscrição da Empresa
-        $this->add(19, 32, Util::formatCnab('9L', $this->getPagador()->getDocumento(), 14)); // 10.1 Inscrição Número - Número de Inscrição da Empresa
+        $this->add(19, 32, $this->formatarNumeroInscricao($this->getPagador()->getDocumento())); // 10.1 Inscrição Número - Número de Inscrição da Empresa
 
         $convenio = $this->getConvenio() ?? '';
 
@@ -411,10 +776,14 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
      */
     protected function trailerLoteMulti(array $lote)
     {
+        // Registra quantos detalhes este lote gerou, antes que gerar() zere o contador para o
+        // próximo lote. getCountMulti() soma esses valores para montar o campo 06.9 (G056).
+        $this->lotes[$lote['tipo']]['registrosDetalhe'] = $this->iRegistrosLote;
+
         $this->iniciaTrailerLote();
 
         $this->add(1, 3, self::BANCO); // 01.5 Banco - Código do Banco na Compensação
-        $this->add(4, 7, Util::formatCnab('9L', $lote['numero'], 4)); // 02.5 Controle Lote - Lote de Serviço (Número do lote)
+        $this->add(4, 7, $this->loteAtual); // 02.5 Controle Lote - Lote de Serviço (Número do lote)
         $this->add(8, 8, self::TIPO_REGISTRO_TRAILER_LOTE); // 03.5 Registro - Tipo de Registro
         $this->add(9, 17, self::CAMPO_BRANCO); // 04.5 CNAB - Uso Exclusivo FEBRABAN/CNAB
         $this->add(18, 23, Util::formatCnab('9L', $this->getCountRegistrosLote(), 6)); // 05.5 Qtde de Registros - Quantidade de Registros do Lote
@@ -450,18 +819,25 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
     }
 
     /**
-     * Retorna a quantidade total de registros para múltiplos lotes
+     * Retorna a quantidade total de registros do arquivo (campo 06.9).
+     *
+     * G056 (pág. 43): somatória dos registros de tipo 0, 1, 3, 5 e 9.
+     *
+     * Soma os detalhes que cada lote realmente gerou — anotados em 'registrosDetalhe' por
+     * trailerLoteMulti(), antes de gerar() zerar o contador — mais o header e o trailer de cada
+     * lote, mais o header e o trailer do arquivo. Nada aqui presume dois segmentos por pagamento.
      *
      * @return int
      */
     protected function getCountMulti()
     {
-        $totalRegistros = 0;
+        $totalRegistros = 2; // header e trailer do arquivo
+
         foreach ($this->lotes as $lote) {
-            $totalRegistros += count($lote['pagamentos']) * 2; // Segmento A + B para cada pagamento
-            $totalRegistros += 2; // Header + Trailer do lote
+            $totalRegistros += 2; // header e trailer do lote
+            $totalRegistros += isset($lote['registrosDetalhe']) ? $lote['registrosDetalhe'] : 0;
         }
-        $totalRegistros += 2; // Header + Trailer do arquivo
+
         return $totalRegistros;
     }
 
@@ -502,7 +878,7 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
 
         // Controle
         $this->add(1, 3, self::BANCO); // 01.3A Banco - Código do Banco na Compensação
-        $this->add(4, 7, self::LOTE_SERVICO_HEADER); // 02.3A Lote - Lote de Serviço
+        $this->add(4, 7, $this->loteAtual); // 02.3A Lote - Lote de Serviço
         $this->add(8, 8, self::TIPO_REGISTRO_DETALHE); // 03.3A Registro - Tipo de Registro
         $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote, 5)); // 04.3A N° do Registro - Nº Seqüencial do Registro no Lote
 
@@ -510,15 +886,20 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(14, 14, self::CODIGO_SEGMENTO_A); // 05.3A Segmento - Código de Segmento do Reg. Detalhe
         $this->add(15, 15, self::TIPO_MOVIMENTO); // 06.3A Movimento Tipo - Tipo de Movimento
         $this->add(16, 17, self::CODIGO_INSTRUCAO_MOVIMENTO); // 07.3A Movimento Código - Código da Instrução p/ Movimento
-        $this->add(18, 20, self::CODIGO_CAMARA_CENTRALIZADORA); // 08.3A Câmara - Código da Câmara Centralizadora
+        $this->add(18, 20, $this->getCodigoCamaraCentralizadora()); // 08.3A Câmara - Código da Câmara Centralizadora
         $this->add(21, 23, Util::formatCnab('9L', $pagamento->getCodigoBanco(), 3)); // 09.3A Banco - Código do Banco do Favorecido
 
-        // Favorecido - Usando dados do beneficiário (quem recebe o pagamento)
-        $this->add(24, 28, Util::formatCnab('9L', $this->getAgencia(), 5)); // 10.3A Agência Código - Ag. Mantenedora da Cta do Favor.
-        $this->add(29, 29, $this->getAgenciaDv()); // 11.3A Agência DV - Digito Verificador da Agência
-        $this->add(30, 41, Util::formatCnab('9L', $this->getConta(), 12)); // 12.3A Conta Corrente Número - Número da Conta Corrente
-        $this->add(42, 42, $this->getContaDv()); // 13.3A Conta Corrente DV - Digito Verificador da Conta
-        $this->add(43, 43, $this->getAgenciaContaDv()); // 14.3A DV - Digito Verificador da AG/Conta
+        // Favorecido - dados da conta de destino, informados pela aplicação no próprio pagamento.
+        // Guia Sicoob CNAB 240 v4.0, item 7.2 (pág. 16): 10.3A e 12.3A são a agência e a conta
+        // DO FAVORECIDO (G008/G010), ambas obrigatórias. Nunca a conta da empresa pagadora,
+        // que já consta no header do arquivo (53-70) e no header do lote (53-70).
+        $this->validaContaFavorecido($pagamento);
+
+        $this->add(24, 28, Util::formatCnab('9L', $pagamento->getAgencia(), 5)); // 10.3A Agência Código - Ag. Mantenedora da Cta do Favor.
+        $this->add(29, 29, Util::formatCnab('X', $pagamento->getAgenciaDv(), 1)); // 11.3A Agência DV - Digito Verificador da Agência
+        $this->add(30, 41, Util::formatCnab('9L', $pagamento->getConta(), 12)); // 12.3A Conta Corrente Número - Número da Conta Corrente
+        $this->add(42, 42, Util::formatCnab('9L', $pagamento->getContaDv(), 1)); // 13.3A Conta Corrente DV - Digito Verificador da Conta
+        $this->add(43, 43, $this->getAgenciaContaDvFavorecido($pagamento)); // 14.3A DV - Digito Verificador da AG/Conta
         $this->add(44, 73, Util::formatCnab('X', $pagamento->getBeneficiario()->getNome(), 30)); // 15.3A Nome - Nome do Favorecido
 
         // Crédito
@@ -535,13 +916,66 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(163, 177, self::VALOR_REAL_ZERO); // 23.3A Valor Real - Valor Real da Efetivação do Pagto
         $this->add(178, 217, Util::formatCnab('X', '', 40)); // 24.3A Informação 2 - Outras Informações
         $this->add(218, 219, self::CAMPO_BRANCO); // 25.3A Código Finalidade Doc - Compl. Tipo Serviço
-        $this->add(220, 224, self::CODIGO_FINALIDADE_TED); // 26.3A Código Finalidade TED - Codigo finalidade da TED
+        $this->add(220, 224, $this->getCodigoFinalidadeTed()); // 26.3A Código Finalidade TED - Codigo finalidade da TED
         $this->add(225, 226, self::CAMPO_BRANCO); // 27.3A Código Finalidade Complementar - Complemento de finalidade pagto.
         $this->add(227, 229, self::CAMPO_BRANCO); // 28.3A CNAB - Uso Exclusivo FEBRABAN/CNAB
         $this->add(230, 230, self::AVISO_FAVORECIDO); // 29.3A Aviso - Aviso ao Favorecido
         $this->add(231, 240, self::CAMPO_BRANCO); // 29.3A Ocorrências - Códigos das Ocorrências p/ Retorno
 
         return $this;
+    }
+
+    /**
+     * Garante que a conta de destino do Segmento A foi informada pela aplicação.
+     *
+     * Sem esta checagem, agência/conta vazias passariam por Util::formatCnab('9L', ...)
+     * e virariam '00000' / '000000000000' — um destino zerado que o layout aceita
+     * silenciosamente e o banco só recusa depois, no retorno.
+     *
+     * Guia Sicoob CNAB 240 v4.0, item 7.2 (pág. 16): campos 10.3A (G008), 12.3A (G010) e
+     * 13.3A (G011) são Obrigatórios.
+     *
+     * O DV da conta entra na checagem pelo mesmo motivo: o campo 13.3A é Num, e o item 2.2
+     * (pág. 9) manda preencher campo Num com zeros. Um DV ausente viraria '0' — um dígito
+     * fabricado, apontando para outra conta. Campo Num que carrega identidade e veio vazio
+     * deve falhar, não ser preenchido.
+     *
+     * O DV da agência (11.3A) fica de fora: é Alfa e Opcional, então brancos são o
+     * preenchimento correto quando não há dígito.
+     *
+     * @param Banco $pagamento
+     * @return void
+     * @throws ValidationException
+     */
+    protected function validaContaFavorecido($pagamento)
+    {
+        $faltando = [];
+
+        if (Util::onlyNumbers($pagamento->getAgencia()) === '') {
+            $faltando[] = 'agência (10.3A)';
+        }
+
+        if (Util::onlyNumbers($pagamento->getConta()) === '') {
+            $faltando[] = 'conta corrente (12.3A)';
+        }
+
+        $contaDv = preg_replace('/[^0-9A-Za-z]/', '', (string) $pagamento->getContaDv());
+
+        if ($contaDv === '') {
+            $faltando[] = 'dígito verificador da conta (13.3A)';
+        }
+
+        $this->validaFormatoContaDvFavorecido($pagamento, $contaDv);
+
+        if ($faltando) {
+            throw new ValidationException(sprintf(
+                'Favorecido "%s": não informado(s) %s. O Segmento A do Sicoob exige esses campos '
+                . 'para identificar a conta de destino. Informe-os no objeto de pagamento via '
+                . 'setAgencia() / setConta() / setContaDv().',
+                $pagamento->getBeneficiario() ? $pagamento->getBeneficiario()->getNome() : '?',
+                implode(', ', $faltando)
+            ));
+        }
     }
 
     /**
@@ -556,40 +990,52 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
 
         // Controle
         $this->add(1, 3, self::BANCO); // 01.3B Banco - Código do Banco na Compensação
-        $this->add(4, 7, self::LOTE_SERVICO_HEADER); // 02.3B Controle Lote - Lote de Serviço
+        $this->add(4, 7, $this->loteAtual); // 02.3B Controle Lote - Lote de Serviço
         $this->add(8, 8, self::TIPO_REGISTRO_DETALHE); // 03.3B Registro - Tipo do Registro
         $this->add(9, 13, Util::formatCnab('9L', $this->iRegistrosLote, 5)); // 04.3B N° do Registro - Nº Seqüencial do Registro no Lote
 
         // Serviço
         $this->add(14, 14, self::CODIGO_SEGMENTO_B); // 05.3B Segmento - Código de Segmento do Reg. Detalhe
-        $this->add(15, 17, self::CAMPO_BRANCO); // 06.3B CNAB - Uso Exclusivo FEBRABAN/CNAB
+        // 06.3B (G100, pág. 48): Forma de Iniciação. Obrigatório apenas quando a forma de
+        // lançamento for Pix Transferência (G029 = 45). Para TED (41) o campo é Opcional.
+        $this->add(15, 17, self::CAMPO_BRANCO); // 06.3B Identificação do favorecido - Forma de Iniciação
 
         // Favorecido
         $this->add(18, 18, $pagamento->getBeneficiario()->getTipoDocumento() == 'CPF' ? self::TIPO_DOCUMENTO_CPF : self::TIPO_DOCUMENTO_CNPJ); // 07.3B Inscrição Tipo - Tipo de Inscrição do Favorecido
-        $this->add(19, 32, Util::formatCnab('9L', $pagamento->getBeneficiario()->getDocumento(), 14)); // 08.3B Inscrição Número - N° de Inscrição do Favorecido
-        $this->add(33, 62, Util::formatCnab('X', $pagamento->getBeneficiario()->getEndereco(), 30)); // 09.3B Logradouro - Nome da Rua, Av, Pça, Etc
-        $this->add(63, 67, Util::formatCnab('9L', '', 5)); // 10.3B Número - Nº do Local
-        $this->add(68, 82, Util::formatCnab('X', '', 15)); // 11.3B Complemento - Casa, Apto, Etc
-        $this->add(83, 97, Util::formatCnab('X', $pagamento->getBeneficiario()->getBairro(), 15)); // 12.3B Bairro - Bairro
-        $this->add(98, 117, Util::formatCnab('X', $pagamento->getBeneficiario()->getCidade(), 20)); // 13.3B Cidade - Nome da Cidade
+        $this->add(19, 32, $this->formatarNumeroInscricao($pagamento->getBeneficiario()->getDocumento())); // 08.3B Inscrição Número - N° de Inscrição do Favorecido
+
+        // 09.3B Dados Complementares - Informação 10 (33-67).
+        // Guia Sicoob CNAB 240 v4.0, item 7.3 (pág. 18): o Segmento B não expõe campos de
+        // endereço avulsos; expõe três blocos (Informação 10, 11 e 12) cujo conteúdo interno
+        // é definido em G101 (pág. 48-49). Para lançamentos que não sejam Pix, a Informação 10
+        // é integralmente o logradouro do favorecido, ocupando as 35 posições do bloco.
+        $this->add(33, 67, Util::formatCnab('X', $pagamento->getBeneficiario()->getEndereco(), 35)); // Informação 10 - Logradouro do Favorecido
+
+        // 10.3B Dados Complementares - Informação 11 (68-127), subdividida conforme G101.
+        // O número do local é campo Num: sem separador de logradouro em Pessoa, vai zerado
+        // (o número, quando existe, já vem embutido no logradouro acima).
+        $this->add(68, 72, Util::formatCnab('9L', '', 5)); // Informação 11 - Número do Local
+        $this->add(73, 87, Util::formatCnab('X', '', 15)); // Informação 11 - Complemento (Casa, Apto, Etc)
+        $this->add(88, 102, Util::formatCnab('X', $pagamento->getBeneficiario()->getBairro(), 15)); // Informação 11 - Bairro
+        $this->add(103, 117, Util::formatCnab('X', $pagamento->getBeneficiario()->getCidade(), 15)); // Informação 11 - Cidade
 
         $cep = Util::formatCnab('9L', $pagamento->getBeneficiario()->getCep(), 8);
 
-        $this->add(118, 122, substr($cep, 0, 5)); // 14.3B CEP - CEP
-        $this->add(123, 125, substr($cep, 5, 3)); // 15.3B Complem. CEP - Complemento do CEP
-        $this->add(126, 127, Util::formatCnab('X', $pagamento->getBeneficiario()->getUf(), 2)); // 16.3B Estado - Sigla do Estado
+        $this->add(118, 122, substr($cep, 0, 5)); // Informação 11 - CEP
+        $this->add(123, 125, substr($cep, 5, 3)); // Informação 11 - Complemento do CEP
+        $this->add(126, 127, Util::formatCnab('X', $pagamento->getBeneficiario()->getUf(), 2)); // Informação 11 - Sigla do Estado
 
-        // Pagamento
-        $this->add(128, 135, $pagamento->getDataVencimento()->format('dmY')); // 17.3B Vencimento - Data do Vencimento (Nominal)
-        $this->add(136, 150, Util::formatCnab('9L', $pagamento->getValor(), 15)); // 18.3B Valor Docum. - Valor do Documento (Nominal)
-        $this->add(151, 165, Util::formatCnab('9L', 0, 15)); // 19.3B Abatimento - Valor do Abatimento
-        $this->add(166, 180, Util::formatCnab('9L', $pagamento->getDesconto() ?: 0, 15)); // 20.3B Desconto - Valor do Desconto
-        $this->add(181, 195, Util::formatCnab('9L', $pagamento->getJuros() ?: 0, 15)); // 21.3B Mora - Valor da Mora
-        $this->add(196, 210, Util::formatCnab('9L', $pagamento->getMulta() ?: 0, 15)); // 22.3B Multa - Valor da Multa
-        $this->add(211, 225, Util::formatCnab('X', $pagamento->getNumeroControle(), 15)); // 23.3B Cód/Doc. Favorec. - Código/Documento do Favorecido
-        $this->add(226, 226, self::AVISO_FAVORECIDO); // 24.3B Aviso - Aviso ao Favorecido
-        $this->add(227, 232, Util::formatCnab('9L', 0, 6)); // 25.3B Código UG Centralizadora - Uso Exclusivo para o SIAPE
-        $this->add(233, 240, self::CAMPO_BRANCO); // 26.3B CNAB - Uso Exclusivo FEBRABAN/CNAB
+        // 11.3B Dados Complementares - Informação 12 (128-226), subdividida conforme G101.
+        $this->add(128, 135, $pagamento->getDataVencimento()->format('dmY')); // Informação 12 - Data do Vencimento (Nominal)
+        $this->add(136, 150, Util::formatCnab('9L', $pagamento->getValor(), 15)); // Informação 12 - Valor do Documento (Nominal)
+        $this->add(151, 165, Util::formatCnab('9L', 0, 15)); // Informação 12 - Valor do Abatimento
+        $this->add(166, 180, Util::formatCnab('9L', $pagamento->getDesconto() ?: 0, 15)); // Informação 12 - Valor do Desconto
+        $this->add(181, 195, Util::formatCnab('9L', $pagamento->getJuros() ?: 0, 15)); // Informação 12 - Valor da Mora
+        $this->add(196, 210, Util::formatCnab('9L', $pagamento->getMulta() ?: 0, 15)); // Informação 12 - Valor da Multa
+        $this->add(211, 225, Util::formatCnab('X', $pagamento->getNumeroControle(), 15)); // Informação 12 - Código/Documento do Favorecido
+        $this->add(226, 226, self::AVISO_FAVORECIDO); // Informação 12 - Aviso ao Favorecido
+        $this->add(227, 232, Util::formatCnab('9L', 0, 6)); // 12.3B Código UG Centralizadora - Uso Exclusivo para o SIAPE
+        $this->add(233, 240, self::CAMPO_BRANCO); // 13.3B CNAB - Uso Exclusivo FEBRABAN/CNAB
 
         return $this;
     }
