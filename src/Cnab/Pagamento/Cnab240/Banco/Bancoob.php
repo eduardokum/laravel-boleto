@@ -181,7 +181,7 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(8, 8, self::TIPO_REGISTRO); // 03.0 Registro - Tipo de Registro
         $this->add(9, 17, self::CAMPO_BRANCO); // 04.0 CNAB - Uso Exclusivo FEBRABAN / CNAB
         $this->add(18, 18, Util::formatCnab('9L', $this->getPagador()->getTipoDocumento() == 'CPF' ? self::TIPO_DOCUMENTO_CPF : self::TIPO_DOCUMENTO_CNPJ, 1)); // 05.0 Empresa Inscrição Tipo - Tipo de Inscrição da Empresa
-        $this->add(19, 32, Util::formatCnab('9L', $this->getPagador()->getDocumento(), 14)); // 06.0 Empresa Inscrição Número - Número de Inscrição da Empresa
+        $this->add(19, 32, $this->formatarNumeroInscricao($this->getPagador()->getDocumento())); // 06.0 Empresa Inscrição Número - Número de Inscrição da Empresa
 
         $convenio = $this->getConvenio() ?? '';
 
@@ -438,6 +438,42 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
     }
 
     /**
+     * Formata o Número de Inscrição (G006) nas 14 posições do campo.
+     *
+     * G006 é Alfa desde a versão 4.0 do guia (histórico, pág. 6): "em atendimento ao projeto do
+     * CNPJ alfanumérico, alteração do formato do campo G006 para alfanumérico".
+     *
+     * Util::formatCnab('9L', ...) não serve aqui: '9L' chama Util::onlyNumbers(), que APAGARIA
+     * as letras de um CNPJ alfanumérico e entregaria ao banco um documento mutilado, sem erro.
+     * Este método remove apenas a pontuação, preserva letras e dígitos e normaliza a caixa.
+     *
+     * O preenchimento continua com zeros à esquerda, e não com brancos à direita como o item 2.2
+     * pediria para um campo Alfa: um CNPJ, numérico ou alfanumérico, ocupa exatamente as 14
+     * posições e não precisa de preenchimento; quem precisa é o CPF, de 11 dígitos, que o CNAB
+     * sempre alinhou à direita com zeros.
+     *
+     * @param string $documento
+     * @return string
+     */
+    protected function formatarNumeroInscricao($documento)
+    {
+        $documento = self::upperNumeroInscricao($documento);
+
+        return str_pad(mb_substr($documento, 0, 14), 14, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Remove pontuação do número de inscrição e normaliza a caixa, preservando letras.
+     *
+     * @param string $documento
+     * @return string
+     */
+    protected static function upperNumeroInscricao($documento)
+    {
+        return Util::upper(preg_replace('/[^0-9A-Za-z]/', '', (string) $documento));
+    }
+
+    /**
      * Retorna o código do convênio
      * @return string|null
      */
@@ -482,7 +518,7 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(14, 16, self::VERSAO_LAYOUT_LOTE); // 07.1 Layout do Lote - Nº da Versão do Layout do Lote
         $this->add(17, 17, self::CAMPO_BRANCO); // 08.1 CNAB - Uso Exclusivo da FEBRABAN/CNAB
         $this->add(18, 18, $this->getPagador()->getTipoDocumento() == 'CPF' ? self::TIPO_DOCUMENTO_CPF : self::TIPO_DOCUMENTO_CNPJ); // 09.1 Inscrição Tipo - Tipo de Inscrição da Empresa
-        $this->add(19, 32, Util::formatCnab('9L', $this->getPagador()->getDocumento(), 14)); // 10.1 Inscrição Número - Número de Inscrição da Empresa
+        $this->add(19, 32, $this->formatarNumeroInscricao($this->getPagador()->getDocumento())); // 10.1 Inscrição Número - Número de Inscrição da Empresa
 
         $convenio = $this->getConvenio() ?? '';
 
@@ -654,7 +690,7 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(14, 16, self::VERSAO_LAYOUT_LOTE); // 07.1 Layout do Lote - Nº da Versão do Layout do Lote
         $this->add(17, 17, self::CAMPO_BRANCO); // 08.1 CNAB - Uso Exclusivo da FEBRABAN/CNAB
         $this->add(18, 18, $this->getPagador()->getTipoDocumento() == 'CPF' ? self::TIPO_DOCUMENTO_CPF : self::TIPO_DOCUMENTO_CNPJ); // 09.1 Inscrição Tipo - Tipo de Inscrição da Empresa
-        $this->add(19, 32, Util::formatCnab('9L', $this->getPagador()->getDocumento(), 14)); // 10.1 Inscrição Número - Número de Inscrição da Empresa
+        $this->add(19, 32, $this->formatarNumeroInscricao($this->getPagador()->getDocumento())); // 10.1 Inscrição Número - Número de Inscrição da Empresa
 
         $convenio = $this->getConvenio() ?? '';
 
@@ -914,7 +950,7 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
 
         // Favorecido
         $this->add(18, 18, $pagamento->getBeneficiario()->getTipoDocumento() == 'CPF' ? self::TIPO_DOCUMENTO_CPF : self::TIPO_DOCUMENTO_CNPJ); // 07.3B Inscrição Tipo - Tipo de Inscrição do Favorecido
-        $this->add(19, 32, Util::formatCnab('9L', $pagamento->getBeneficiario()->getDocumento(), 14)); // 08.3B Inscrição Número - N° de Inscrição do Favorecido
+        $this->add(19, 32, $this->formatarNumeroInscricao($pagamento->getBeneficiario()->getDocumento())); // 08.3B Inscrição Número - N° de Inscrição do Favorecido
 
         // 09.3B Dados Complementares - Informação 10 (33-67).
         // Guia Sicoob CNAB 240 v4.0, item 7.3 (pág. 18): o Segmento B não expõe campos de
