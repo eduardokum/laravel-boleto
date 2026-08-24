@@ -35,10 +35,25 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
     const LOTE_SERVICO_HEADER = '0001'; // Lote de serviço (header do lote)
     const TIPO_REGISTRO_HEADER_LOTE = '1'; // Tipo de registro (header do lote)
     const TIPO_OPERACAO = 'C'; // Tipo da operação (Crédito)
-    const TIPO_SERVICO = '10'; // Tipo do serviço (Transferência entre contas)
-    const FORMA_LANCAMENTO = '41'; // Forma de lançamento (TED)
     const VERSAO_LAYOUT_LOTE = '045'; // Versão do layout do lote
     const INDICATIVO_FORMA_PAGAMENTO = '01'; // Indicativo da forma de pagamento
+
+    // Tipo de Serviço (G025, pág. 39-40). Domínio completo no manual; aqui ficam os valores
+    // que fazem sentido num lote de transferência.
+    const TIPO_SERVICO_PAGAMENTO_DIVIDENDOS = '10';
+    const TIPO_SERVICO_PAGAMENTO_FORNECEDOR = '20';
+    const TIPO_SERVICO_PAGAMENTO_SALARIOS = '30';
+    const TIPO_SERVICO_PAGAMENTOS_DIVERSOS = '98';
+    const TIPO_SERVICO = self::TIPO_SERVICO_PAGAMENTO_DIVIDENDOS; // default histórico da classe
+
+    // Forma de Lançamento (G029, pág. 40)
+    const FORMA_LANCAMENTO_CREDITO_CONTA_CORRENTE = '01';
+    const FORMA_LANCAMENTO_CREDITO_POUPANCA = '05';
+    const FORMA_LANCAMENTO_TED_OUTRA_TITULARIDADE = '41';
+    const FORMA_LANCAMENTO_TED_MESMA_TITULARIDADE = '43';
+    const FORMA_LANCAMENTO_PIX_TRANSFERENCIA = '45';
+    const FORMA_LANCAMENTO_PIX_QRCODE = '47';
+    const FORMA_LANCAMENTO = self::FORMA_LANCAMENTO_TED_OUTRA_TITULARIDADE; // default histórico
 
     // Constantes para trailer do lote
     const TIPO_REGISTRO_TRAILER_LOTE = '5'; // Tipo de registro (trailer do lote)
@@ -51,7 +66,12 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
     const CODIGO_SEGMENTO_B = 'B'; // Código do segmento B
     const TIPO_MOVIMENTO = '0'; // Tipo de movimento
     const CODIGO_INSTRUCAO_MOVIMENTO = '00'; // Código da instrução para movimento
-    const CODIGO_CAMARA_CENTRALIZADORA = '018'; // Código da câmara centralizadora
+    // Câmara Centralizadora (P001, pág. 52). Domínio do manual: '018' = TED (STR/CIP),
+    // '009' = Pix (SPI). Transferência interna à rede Sicoob não transita por câmara.
+    const CAMARA_TED = '018';
+    const CAMARA_PIX = '009';
+    const CAMARA_NAO_APLICAVEL = '000';
+    const CODIGO_CAMARA_CENTRALIZADORA = self::CAMARA_TED; // default histórico
     const TIPO_MOEDA = 'BRL'; // Tipo da moeda (Real brasileiro)
     const QUANTIDADE_MOEDA = '000000000000000'; // Quantidade da moeda (15 zeros)
     const CODIGO_FINALIDADE_TED = '00010'; // Código finalidade da TED
@@ -104,6 +124,36 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
      * @var string
      */
     protected $loteAtual = self::LOTE_SERVICO_HEADER;
+
+    /**
+     * Tipo de Serviço do lote (campo 05.1, G025).
+     *
+     * O valor correto depende do que o convênio do cliente tem habilitado no Sicoob, então a
+     * classe não decide por conta própria: mantém o default histórico e expõe setTipoServico().
+     *
+     * Atenção: o default '10' é "Pagamento Dividendos" no domínio do G025 (pág. 40) — está no
+     * domínio, mas raramente é o que se quer num pagamento a terceiros. Para fornecedor use
+     * TIPO_SERVICO_PAGAMENTO_FORNECEDOR ('20'); para pagamentos avulsos, '98'.
+     *
+     * @var string
+     */
+    protected $tipoServico = self::TIPO_SERVICO;
+
+    /**
+     * Forma de Lançamento do lote (campo 06.1, G029).
+     *
+     * @var string
+     */
+    protected $formaLancamento = self::FORMA_LANCAMENTO;
+
+    /**
+     * Código de finalidade da TED (campo 26.3A, P011).
+     *
+     * Só se aplica quando a forma de lançamento é TED. Default '00010' = '10', Crédito em Conta.
+     *
+     * @var string
+     */
+    protected $codigoFinalidadeTed = self::CODIGO_FINALIDADE_TED;
 
     /**
      * Caracter de fim de linha
@@ -235,6 +285,159 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
     }
 
     /**
+     * Define o Tipo de Serviço do lote (campo 05.1, G025, pág. 39-40).
+     *
+     * @param string $tipoServico
+     * @return $this
+     * @throws ValidationException
+     */
+    public function setTipoServico($tipoServico)
+    {
+        $dominio = [
+            self::TIPO_SERVICO_PAGAMENTO_DIVIDENDOS,
+            self::TIPO_SERVICO_PAGAMENTO_FORNECEDOR,
+            self::TIPO_SERVICO_PAGAMENTO_SALARIOS,
+            self::TIPO_SERVICO_PAGAMENTOS_DIVERSOS,
+        ];
+
+        $tipoServico = Util::formatCnab('9L', $tipoServico, 2);
+
+        if (! in_array($tipoServico, $dominio, true)) {
+            throw new ValidationException(sprintf(
+                'Tipo de Serviço "%s" não suportado. O campo 05.1 (G025) aceita %s neste gerador. '
+                . 'Confirme com o Sicoob qual valor o convênio do cliente está habilitado a usar.',
+                $tipoServico,
+                implode(', ', $dominio)
+            ));
+        }
+
+        $this->tipoServico = $tipoServico;
+
+        return $this;
+    }
+
+    /**
+     * Retorna o Tipo de Serviço do lote (campo 05.1, G025).
+     *
+     * @return string
+     */
+    protected function getTipoServico()
+    {
+        return $this->tipoServico;
+    }
+
+    /**
+     * Define a Forma de Lançamento do lote (campo 06.1, G029, pág. 40).
+     *
+     * As formas Pix são recusadas de propósito: os segmentos A e B desta classe montam o layout
+     * de transferência comum, e o Pix exige a Forma de Iniciação (G100) na posição 15-17 do
+     * Segmento B, a chave na Informação 12 e o tipo da conta de destino em G031. Gerar um Pix
+     * sem esses campos produziria um arquivo aceito na estrutura e recusado no processamento.
+     *
+     * @param string $formaLancamento
+     * @return $this
+     * @throws ValidationException
+     */
+    public function setFormaLancamento($formaLancamento)
+    {
+        $suportadas = [
+            self::FORMA_LANCAMENTO_CREDITO_CONTA_CORRENTE,
+            self::FORMA_LANCAMENTO_CREDITO_POUPANCA,
+            self::FORMA_LANCAMENTO_TED_OUTRA_TITULARIDADE,
+            self::FORMA_LANCAMENTO_TED_MESMA_TITULARIDADE,
+        ];
+
+        $formaLancamento = Util::formatCnab('9L', $formaLancamento, 2);
+
+        if (in_array($formaLancamento, [self::FORMA_LANCAMENTO_PIX_TRANSFERENCIA, self::FORMA_LANCAMENTO_PIX_QRCODE], true)) {
+            throw new ValidationException(sprintf(
+                'Forma de Lançamento "%s" (Pix) ainda não é gerada por esta classe. O Segmento B '
+                . 'precisaria carregar a Forma de Iniciação (G100) e a chave Pix na Informação 12, '
+                . 'e o Pix QR Code exige os segmentos J e J-52-Pix, que não existem aqui. '
+                . 'Use %s ou %s.',
+                $formaLancamento,
+                self::FORMA_LANCAMENTO_TED_OUTRA_TITULARIDADE,
+                self::FORMA_LANCAMENTO_CREDITO_CONTA_CORRENTE
+            ));
+        }
+
+        if (! in_array($formaLancamento, $suportadas, true)) {
+            throw new ValidationException(sprintf(
+                'Forma de Lançamento "%s" não pertence ao domínio do campo 06.1 (G029) para '
+                . 'transferências. Valores aceitos: %s.',
+                $formaLancamento,
+                implode(', ', $suportadas)
+            ));
+        }
+
+        $this->formaLancamento = $formaLancamento;
+
+        return $this;
+    }
+
+    /**
+     * Retorna a Forma de Lançamento do lote (campo 06.1, G029).
+     *
+     * @return string
+     */
+    protected function getFormaLancamento()
+    {
+        return $this->formaLancamento;
+    }
+
+    /**
+     * Indica se a forma de lançamento corrente é uma TED.
+     *
+     * @return bool
+     */
+    protected function isTed()
+    {
+        return in_array($this->getFormaLancamento(), [
+            self::FORMA_LANCAMENTO_TED_OUTRA_TITULARIDADE,
+            self::FORMA_LANCAMENTO_TED_MESMA_TITULARIDADE,
+        ], true);
+    }
+
+    /**
+     * Retorna a Câmara Centralizadora do Segmento A (campo 08.3A, P001, pág. 52).
+     *
+     * Deriva da forma de lançamento em vez de ser fixa: só a TED transita por câmara ('018').
+     * Crédito em conta e poupança são internos à rede Sicoob e não transitam por nenhuma, então
+     * o campo — Num e Opcional — vai zerado.
+     *
+     * @return string
+     */
+    protected function getCodigoCamaraCentralizadora()
+    {
+        return $this->isTed() ? self::CAMARA_TED : self::CAMARA_NAO_APLICAVEL;
+    }
+
+    /**
+     * Define o código de finalidade da TED (campo 26.3A, P011, pág. 53).
+     *
+     * @param string $codigo
+     * @return $this
+     */
+    public function setCodigoFinalidadeTed($codigo)
+    {
+        $this->codigoFinalidadeTed = Util::formatCnab('9L', $codigo, 5);
+
+        return $this;
+    }
+
+    /**
+     * Retorna o código de finalidade da TED (campo 26.3A, P011).
+     *
+     * Só se aplica a TED; nas demais formas de lançamento o campo, Num e Opcional, vai zerado.
+     *
+     * @return string
+     */
+    protected function getCodigoFinalidadeTed()
+    {
+        return $this->isTed() ? $this->codigoFinalidadeTed : Util::formatCnab('9L', 0, 5);
+    }
+
+    /**
      * Retorna o código do convênio
      * @return string|null
      */
@@ -274,8 +477,8 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(4, 7, $this->loteAtual); // 02.1 Controle Lote - Lote de Serviço
         $this->add(8, 8, self::TIPO_REGISTRO_HEADER_LOTE); // 03.1 Registro - Tipo de Registro
         $this->add(9, 9, self::TIPO_OPERACAO); // 04.1 Operação - Tipo da Operação
-        $this->add(10, 11, self::TIPO_SERVICO); // 05.1 Serviço - Tipo do Serviço
-        $this->add(12, 13, self::FORMA_LANCAMENTO); // 06.1 Serviço - Forma Lançamento
+        $this->add(10, 11, $this->getTipoServico()); // 05.1 Serviço - Tipo do Serviço
+        $this->add(12, 13, $this->getFormaLancamento()); // 06.1 Serviço - Forma Lançamento
         $this->add(14, 16, self::VERSAO_LAYOUT_LOTE); // 07.1 Layout do Lote - Nº da Versão do Layout do Lote
         $this->add(17, 17, self::CAMPO_BRANCO); // 08.1 CNAB - Uso Exclusivo da FEBRABAN/CNAB
         $this->add(18, 18, $this->getPagador()->getTipoDocumento() == 'CPF' ? self::TIPO_DOCUMENTO_CPF : self::TIPO_DOCUMENTO_CNPJ); // 09.1 Inscrição Tipo - Tipo de Inscrição da Empresa
@@ -446,8 +649,8 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(4, 7, $this->loteAtual); // 02.1 Controle Lote - Lote de Serviço (número do lote)
         $this->add(8, 8, self::TIPO_REGISTRO_HEADER_LOTE); // 03.1 Registro - Tipo de Registro
         $this->add(9, 9, self::TIPO_OPERACAO); // 04.1 Operação - Tipo da Operação
-        $this->add(10, 11, self::TIPO_SERVICO); // 05.1 Serviço - Tipo do Serviço
-        $this->add(12, 13, self::FORMA_LANCAMENTO); // 06.1 Serviço - Forma Lançamento
+        $this->add(10, 11, $this->getTipoServico()); // 05.1 Serviço - Tipo do Serviço
+        $this->add(12, 13, $this->getFormaLancamento()); // 06.1 Serviço - Forma Lançamento
         $this->add(14, 16, self::VERSAO_LAYOUT_LOTE); // 07.1 Layout do Lote - Nº da Versão do Layout do Lote
         $this->add(17, 17, self::CAMPO_BRANCO); // 08.1 CNAB - Uso Exclusivo da FEBRABAN/CNAB
         $this->add(18, 18, $this->getPagador()->getTipoDocumento() == 'CPF' ? self::TIPO_DOCUMENTO_CPF : self::TIPO_DOCUMENTO_CNPJ); // 09.1 Inscrição Tipo - Tipo de Inscrição da Empresa
@@ -599,7 +802,7 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(14, 14, self::CODIGO_SEGMENTO_A); // 05.3A Segmento - Código de Segmento do Reg. Detalhe
         $this->add(15, 15, self::TIPO_MOVIMENTO); // 06.3A Movimento Tipo - Tipo de Movimento
         $this->add(16, 17, self::CODIGO_INSTRUCAO_MOVIMENTO); // 07.3A Movimento Código - Código da Instrução p/ Movimento
-        $this->add(18, 20, self::CODIGO_CAMARA_CENTRALIZADORA); // 08.3A Câmara - Código da Câmara Centralizadora
+        $this->add(18, 20, $this->getCodigoCamaraCentralizadora()); // 08.3A Câmara - Código da Câmara Centralizadora
         $this->add(21, 23, Util::formatCnab('9L', $pagamento->getCodigoBanco(), 3)); // 09.3A Banco - Código do Banco do Favorecido
 
         // Favorecido - dados da conta de destino, informados pela aplicação no próprio pagamento.
@@ -629,7 +832,7 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(163, 177, self::VALOR_REAL_ZERO); // 23.3A Valor Real - Valor Real da Efetivação do Pagto
         $this->add(178, 217, Util::formatCnab('X', '', 40)); // 24.3A Informação 2 - Outras Informações
         $this->add(218, 219, self::CAMPO_BRANCO); // 25.3A Código Finalidade Doc - Compl. Tipo Serviço
-        $this->add(220, 224, self::CODIGO_FINALIDADE_TED); // 26.3A Código Finalidade TED - Codigo finalidade da TED
+        $this->add(220, 224, $this->getCodigoFinalidadeTed()); // 26.3A Código Finalidade TED - Codigo finalidade da TED
         $this->add(225, 226, self::CAMPO_BRANCO); // 27.3A Código Finalidade Complementar - Complemento de finalidade pagto.
         $this->add(227, 229, self::CAMPO_BRANCO); // 28.3A CNAB - Uso Exclusivo FEBRABAN/CNAB
         $this->add(230, 230, self::AVISO_FAVORECIDO); // 29.3A Aviso - Aviso ao Favorecido
