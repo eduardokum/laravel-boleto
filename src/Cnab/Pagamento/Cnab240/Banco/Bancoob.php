@@ -72,7 +72,16 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
     {
         parent::__construct($params);
         $this->codigoBanco = self::BANCO;
-        $this->setCamposObrigatorios('convenio');
+
+        // addCampoObrigatorio() acrescenta; setCamposObrigatorios() ZERA a lista antes de
+        // acrescentar. A chamada anterior era setCamposObrigatorios('convenio'), que descartava
+        // 'agencia', 'conta' e 'pagador' herdados do abstrato — uma remessa sem agência e sem
+        // conta passava por isValid() e saía com 00000/000000000000 no header.
+        //
+        // 'contaDv' entra na lista porque o campo 11.0 (G011, pág. 38) é Num e Obrigatório: sem
+        // o dígito, a posição 71 sairia em branco, violando o item 2.2 do guia (pág. 9). Preencher
+        // com zero não é alternativa — fabricaria o DV de uma conta que não é a da empresa.
+        $this->addCampoObrigatorio('convenio', 'contaDv');
     }
 
     /**
@@ -611,8 +620,16 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
      * e virariam '00000' / '000000000000' — um destino zerado que o layout aceita
      * silenciosamente e o banco só recusa depois, no retorno.
      *
-     * Guia Sicoob CNAB 240 v4.0, item 7.2 (pág. 16): campos 10.3A (G008) e 12.3A (G010)
-     * são Obrigatórios.
+     * Guia Sicoob CNAB 240 v4.0, item 7.2 (pág. 16): campos 10.3A (G008), 12.3A (G010) e
+     * 13.3A (G011) são Obrigatórios.
+     *
+     * O DV da conta entra na checagem pelo mesmo motivo: o campo 13.3A é Num, e o item 2.2
+     * (pág. 9) manda preencher campo Num com zeros. Um DV ausente viraria '0' — um dígito
+     * fabricado, apontando para outra conta. Campo Num que carrega identidade e veio vazio
+     * deve falhar, não ser preenchido.
+     *
+     * O DV da agência (11.3A) fica de fora: é Alfa e Opcional, então brancos são o
+     * preenchimento correto quando não há dígito.
      *
      * @param Banco $pagamento
      * @return void
@@ -623,20 +640,24 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
         $faltando = [];
 
         if (Util::onlyNumbers($pagamento->getAgencia()) === '') {
-            $faltando[] = 'agência';
+            $faltando[] = 'agência (10.3A)';
         }
 
         if (Util::onlyNumbers($pagamento->getConta()) === '') {
-            $faltando[] = 'conta corrente';
+            $faltando[] = 'conta corrente (12.3A)';
+        }
+
+        if ((string) $pagamento->getContaDv() === '') {
+            $faltando[] = 'dígito verificador da conta (13.3A)';
         }
 
         if ($faltando) {
             throw new ValidationException(sprintf(
-                'Favorecido "%s": %s do favorecido não informada(s). O Segmento A do Sicoob exige a '
-                . 'agência (10.3A) e a conta (12.3A) de destino. Informe-as no objeto de pagamento '
-                . 'via setAgencia()/setAgenciaDv()/setConta()/setContaDv().',
+                'Favorecido "%s": não informado(s) %s. O Segmento A do Sicoob exige esses campos '
+                . 'para identificar a conta de destino. Informe-os no objeto de pagamento via '
+                . 'setAgencia() / setConta() / setContaDv().',
                 $pagamento->getBeneficiario() ? $pagamento->getBeneficiario()->getNome() : '?',
-                implode(' e ', $faltando)
+                implode(', ', $faltando)
             ));
         }
     }
