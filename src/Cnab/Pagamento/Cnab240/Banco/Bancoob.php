@@ -167,12 +167,53 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
     }
 
     /**
-     * Retorna o dígito verificador da agência/conta
+     * Retorna o dígito verificador da agência/conta DA EMPRESA PAGADORA (campos 12.0 e 16.1).
+     *
+     * G012 (pág. 39): este campo NÃO é uma cópia do DV da conta. É a 2ª posição do dígito
+     * verificador, e só existe para os bancos que usam duas posições no DV da conta corrente.
+     * Exemplo do manual: C/C 45981-36 → G011 (pos. 71) = 3 e G012 (pos. 72) = 6.
+     *
+     * Só é usado nas três posições 72 (header do arquivo e headers de lote), onde a conta é
+     * sempre a da empresa no Sicoob — DV de um dígito só. Logo o campo, Alfa e Opcional, fica
+     * em branco. A implementação anterior devolvia substr($this->getContaDv(), -1), repetindo o
+     * mesmo dígito nas posições 71 e 72 e fabricando um DV que a conta não tem.
+     *
+     * Um DV de duas posições sequer chega até aqui: Cnab\Pagamento\AbstractPagamento::setContaDv()
+     * aplica substr($contaDv, -1) e guarda apenas o último caractere. Se algum dia o Sicoob
+     * passar a usar DV de duas posições, é esse setter compartilhado que precisa mudar.
+     *
+     * Para o campo equivalente do favorecido (14.3A), vide getAgenciaContaDvFavorecido().
+     *
      * @return string
      */
     protected function getAgenciaContaDv()
     {
-        return substr($this->getContaDv(), -1);
+        return self::CAMPO_BRANCO;
+    }
+
+    /**
+     * Retorna o dígito verificador da agência/conta DO FAVORECIDO (campo 14.3A).
+     *
+     * Ao contrário da posição 72, aqui a conta é a de destino e pode estar em qualquer banco —
+     * inclusive num que use duas posições no DV da conta corrente. Conforme G012 (pág. 39), o
+     * campo recebe a 2ª posição desse dígito; quando o DV tem uma posição só, fica em branco.
+     *
+     * O campo 13.3A (pos. 42), que é Num, já recebe a 1ª posição via Util::formatCnab, que
+     * trunca pelo início. G012 é Alfa, então aqui o valor vai sem passar por formatação
+     * numérica: um DV não numérico continua válido neste campo.
+     *
+     * O modelo de pagamento preserva o DV inteiro — Pagamento\AbstractPagamento::setContaDv()
+     * não trunca, diferente do setter homônimo do lado da remessa —, então o dígito informado
+     * pela aplicação chega até aqui.
+     *
+     * @param Banco $pagamento
+     * @return string
+     */
+    protected function getAgenciaContaDvFavorecido($pagamento)
+    {
+        $contaDv = (string) $pagamento->getContaDv();
+
+        return mb_strlen($contaDv) > 1 ? mb_substr($contaDv, 1, 1) : self::CAMPO_BRANCO;
     }
 
     /**
@@ -537,9 +578,7 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(29, 29, Util::formatCnab('X', $pagamento->getAgenciaDv(), 1)); // 11.3A Agência DV - Digito Verificador da Agência
         $this->add(30, 41, Util::formatCnab('9L', $pagamento->getConta(), 12)); // 12.3A Conta Corrente Número - Número da Conta Corrente
         $this->add(42, 42, Util::formatCnab('9L', $pagamento->getContaDv(), 1)); // 13.3A Conta Corrente DV - Digito Verificador da Conta
-        // 14.3A (G012, pág. 39): 2ª posição do DV da conta, apenas para bancos com DV de duas
-        // posições. O modelo de pagamento não carrega esse dígito, logo o campo (Opcional) fica em branco.
-        $this->add(43, 43, self::CAMPO_BRANCO); // 14.3A DV - Digito Verificador da AG/Conta
+        $this->add(43, 43, $this->getAgenciaContaDvFavorecido($pagamento)); // 14.3A DV - Digito Verificador da AG/Conta
         $this->add(44, 73, Util::formatCnab('X', $pagamento->getBeneficiario()->getNome(), 30)); // 15.3A Nome - Nome do Favorecido
 
         // Crédito
