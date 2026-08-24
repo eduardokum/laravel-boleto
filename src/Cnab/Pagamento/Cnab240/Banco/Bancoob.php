@@ -29,6 +29,7 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
     // Constantes para trailer do arquivo
     const LOTE_SERVICO_TRAILER = '9999'; // Lote de serviço (trailer do arquivo)
     const TIPO_REGISTRO_TRAILER = '9'; // Tipo de registro (trailer do arquivo)
+    const QUANTIDADE_CONTAS_CONCILIACAO = 0; // 07.9 Qtde de contas p/ conciliação (G037) - vide getCountContasConciliacao()
 
     // Constantes para header do lote
     const LOTE_SERVICO_HEADER = '0001'; // Lote de serviço (header do lote)
@@ -312,13 +313,21 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
     }
 
     /**
-     * Retorna a quantidade de contas para conciliação
+     * Retorna a quantidade de lotes de conciliação bancária do arquivo (campo 07.9).
+     *
+     * G037 (pág. 42) não conta pagamentos: conta os lotes de Conciliação Bancária, ou seja,
+     * a somatória dos registros de tipo 1 cujo Tipo de Operação (G028) seja 'E'. É um campo
+     * específico do serviço de Conciliação Bancária.
+     *
+     * Esta classe emite exclusivamente lotes de crédito (self::TIPO_OPERACAO = 'C'), logo o
+     * arquivo nunca carrega lote de conciliação e o campo é sempre zero. Se um dia a classe
+     * passar a gerar lotes com Tipo de Operação 'E', este método precisa contá-los.
+     *
      * @return int
      */
     protected function getCountContasConciliacao()
     {
-        // Para pagamentos, geralmente é 0 ou pode ser baseado na quantidade de pagamentos
-        return count($this->pagamentos);
+        return self::QUANTIDADE_CONTAS_CONCILIACAO;
     }
 
     /**
