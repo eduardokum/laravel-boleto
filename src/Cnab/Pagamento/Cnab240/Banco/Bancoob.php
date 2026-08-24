@@ -56,8 +56,12 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
     const QUANTIDADE_MOEDA = '000000000000000'; // Quantidade da moeda (15 zeros)
     const CODIGO_FINALIDADE_TED = '00010'; // Código finalidade da TED
     const AVISO_FAVORECIDO = '0'; // Aviso ao favorecido
-    const DATA_REAL_ZERO = 0; // Data real da efetivação (0 para remessa)
-    const VALOR_REAL_ZERO = 0; // Valor real da efetivação (0 para remessa)
+    // 22.3A (P003) e 23.3A (P004) são campos Num preenchidos apenas no retorno. Na remessa vão
+    // zerados — e precisam ir com a largura completa do campo: Util::adiciona() alinha à direita
+    // com ESPAÇOS, então um 0 inteiro viraria '       0' num campo numérico, o que o item 10 do
+    // guia (pág. 36) rejeita como "campo do tipo Numérico informado com caracteres especiais".
+    const DATA_REAL_ZERO = '00000000'; // 22.3A Data real da efetivação (8 zeros na remessa)
+    const VALOR_REAL_ZERO = '000000000000000'; // 23.3A Valor real da efetivação (15 zeros na remessa)
 
     /**
      * Bancoob constructor.
