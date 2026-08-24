@@ -5,6 +5,7 @@ namespace Eduardokum\LaravelBoleto\Cnab\Pagamento\Cnab240\Banco;
 use Eduardokum\LaravelBoleto\Cnab\Pagamento\Cnab240\AbstractPagamento;
 use Eduardokum\LaravelBoleto\Contracts\Cnab\Pagamento as PagamentoRemessaContract;
 use Eduardokum\LaravelBoleto\Contracts\Pagamento\Pagamento as PagamentoContract;
+use Eduardokum\LaravelBoleto\Exception\ValidationException;
 use Eduardokum\LaravelBoleto\Pagamento\Banco\Banco;
 use Eduardokum\LaravelBoleto\Util;
 
@@ -513,12 +514,19 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(18, 20, self::CODIGO_CAMARA_CENTRALIZADORA); // 08.3A Câmara - Código da Câmara Centralizadora
         $this->add(21, 23, Util::formatCnab('9L', $pagamento->getCodigoBanco(), 3)); // 09.3A Banco - Código do Banco do Favorecido
 
-        // Favorecido - Usando dados do beneficiário (quem recebe o pagamento)
-        $this->add(24, 28, Util::formatCnab('9L', $this->getAgencia(), 5)); // 10.3A Agência Código - Ag. Mantenedora da Cta do Favor.
-        $this->add(29, 29, $this->getAgenciaDv()); // 11.3A Agência DV - Digito Verificador da Agência
-        $this->add(30, 41, Util::formatCnab('9L', $this->getConta(), 12)); // 12.3A Conta Corrente Número - Número da Conta Corrente
-        $this->add(42, 42, $this->getContaDv()); // 13.3A Conta Corrente DV - Digito Verificador da Conta
-        $this->add(43, 43, $this->getAgenciaContaDv()); // 14.3A DV - Digito Verificador da AG/Conta
+        // Favorecido - dados da conta de destino, informados pela aplicação no próprio pagamento.
+        // Guia Sicoob CNAB 240 v4.0, item 7.2 (pág. 16): 10.3A e 12.3A são a agência e a conta
+        // DO FAVORECIDO (G008/G010), ambas obrigatórias. Nunca a conta da empresa pagadora,
+        // que já consta no header do arquivo (53-70) e no header do lote (53-70).
+        $this->validaContaFavorecido($pagamento);
+
+        $this->add(24, 28, Util::formatCnab('9L', $pagamento->getAgencia(), 5)); // 10.3A Agência Código - Ag. Mantenedora da Cta do Favor.
+        $this->add(29, 29, Util::formatCnab('X', $pagamento->getAgenciaDv(), 1)); // 11.3A Agência DV - Digito Verificador da Agência
+        $this->add(30, 41, Util::formatCnab('9L', $pagamento->getConta(), 12)); // 12.3A Conta Corrente Número - Número da Conta Corrente
+        $this->add(42, 42, Util::formatCnab('9L', $pagamento->getContaDv(), 1)); // 13.3A Conta Corrente DV - Digito Verificador da Conta
+        // 14.3A (G012, pág. 39): 2ª posição do DV da conta, apenas para bancos com DV de duas
+        // posições. O modelo de pagamento não carrega esse dígito, logo o campo (Opcional) fica em branco.
+        $this->add(43, 43, self::CAMPO_BRANCO); // 14.3A DV - Digito Verificador da AG/Conta
         $this->add(44, 73, Util::formatCnab('X', $pagamento->getBeneficiario()->getNome(), 30)); // 15.3A Nome - Nome do Favorecido
 
         // Crédito
@@ -542,6 +550,43 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
         $this->add(231, 240, self::CAMPO_BRANCO); // 29.3A Ocorrências - Códigos das Ocorrências p/ Retorno
 
         return $this;
+    }
+
+    /**
+     * Garante que a conta de destino do Segmento A foi informada pela aplicação.
+     *
+     * Sem esta checagem, agência/conta vazias passariam por Util::formatCnab('9L', ...)
+     * e virariam '00000' / '000000000000' — um destino zerado que o layout aceita
+     * silenciosamente e o banco só recusa depois, no retorno.
+     *
+     * Guia Sicoob CNAB 240 v4.0, item 7.2 (pág. 16): campos 10.3A (G008) e 12.3A (G010)
+     * são Obrigatórios.
+     *
+     * @param Banco $pagamento
+     * @return void
+     * @throws ValidationException
+     */
+    protected function validaContaFavorecido($pagamento)
+    {
+        $faltando = [];
+
+        if (Util::onlyNumbers($pagamento->getAgencia()) === '') {
+            $faltando[] = 'agência';
+        }
+
+        if (Util::onlyNumbers($pagamento->getConta()) === '') {
+            $faltando[] = 'conta corrente';
+        }
+
+        if ($faltando) {
+            throw new ValidationException(sprintf(
+                'Favorecido "%s": %s do favorecido não informada(s). O Segmento A do Sicoob exige a '
+                . 'agência (10.3A) e a conta (12.3A) de destino. Informe-as no objeto de pagamento '
+                . 'via setAgencia()/setAgenciaDv()/setConta()/setContaDv().',
+                $pagamento->getBeneficiario() ? $pagamento->getBeneficiario()->getNome() : '?',
+                implode(' e ', $faltando)
+            ));
+        }
     }
 
     /**
