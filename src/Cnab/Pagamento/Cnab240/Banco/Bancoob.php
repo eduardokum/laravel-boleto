@@ -260,6 +260,54 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
     }
 
     /**
+     * Recusa DV de conta do favorecido que o par 13.3A / 14.3A não consegue transportar íntegro.
+     *
+     * O layout reserva duas posições para o dígito: 13.3A (G011, Num) recebe a 1ª e 14.3A (G012,
+     * Alfa) a 2ª. Duas situações fariam o dígito chegar adulterado ao banco, em silêncio:
+     *
+     * - Mais de duas posições: da terceira em diante não há onde caber, e o excedente sumiria.
+     * - Primeira posição não numérica: 13.3A é Num, e G011 (pág. 38) diz "somente serão aceitos
+     *   valores numéricos". Util::formatCnab('9L', 'X', 1) devolveria '0' — um dígito fabricado,
+     *   apontando para outra conta.
+     *
+     * Um DV como '3X' continua aceito: o '3' cabe no campo Num e o 'X' na 2ª posição, que é Alfa.
+     *
+     * @param Banco  $pagamento
+     * @param string $contaDv já sem pontuação
+     * @return void
+     * @throws ValidationException
+     */
+    protected function validaFormatoContaDvFavorecido($pagamento, $contaDv)
+    {
+        if ($contaDv === '') {
+            return;
+        }
+
+        $nome = $pagamento->getBeneficiario() ? $pagamento->getBeneficiario()->getNome() : '?';
+
+        if (mb_strlen($contaDv) > 2) {
+            throw new ValidationException(sprintf(
+                'Favorecido "%s": dígito verificador da conta "%s" tem %d posições. O Segmento A '
+                . 'transporta no máximo duas — 13.3A recebe a 1ª e 14.3A a 2ª. Informe apenas o '
+                . 'dígito, sem o número da conta.',
+                $nome,
+                $contaDv,
+                mb_strlen($contaDv)
+            ));
+        }
+
+        if (! preg_match('/^[0-9]/', $contaDv)) {
+            throw new ValidationException(sprintf(
+                'Favorecido "%s": dígito verificador da conta "%s" começa com caractere não '
+                . 'numérico. O campo 13.3A é Num e G011 (pág. 38) só aceita valores numéricos na '
+                . '1ª posição do dígito; caractere não numérico só é válido na 2ª (14.3A, Alfa).',
+                $nome,
+                $contaDv
+            ));
+        }
+    }
+
+    /**
      * Retorna o dígito verificador da agência/conta DO FAVORECIDO (campo 14.3A).
      *
      * Ao contrário da posição 72, aqui a conta é a de destino e pode estar em qualquer banco —
@@ -911,9 +959,13 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
             $faltando[] = 'conta corrente (12.3A)';
         }
 
-        if ((string) $pagamento->getContaDv() === '') {
+        $contaDv = preg_replace('/[^0-9A-Za-z]/', '', (string) $pagamento->getContaDv());
+
+        if ($contaDv === '') {
             $faltando[] = 'dígito verificador da conta (13.3A)';
         }
+
+        $this->validaFormatoContaDvFavorecido($pagamento, $contaDv);
 
         if ($faltando) {
             throw new ValidationException(sprintf(
