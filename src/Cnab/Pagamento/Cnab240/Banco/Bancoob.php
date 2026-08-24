@@ -607,34 +607,46 @@ class Bancoob extends AbstractPagamento implements PagamentoRemessaContract
 
         // Serviço
         $this->add(14, 14, self::CODIGO_SEGMENTO_B); // 05.3B Segmento - Código de Segmento do Reg. Detalhe
-        $this->add(15, 17, self::CAMPO_BRANCO); // 06.3B CNAB - Uso Exclusivo FEBRABAN/CNAB
+        // 06.3B (G100, pág. 48): Forma de Iniciação. Obrigatório apenas quando a forma de
+        // lançamento for Pix Transferência (G029 = 45). Para TED (41) o campo é Opcional.
+        $this->add(15, 17, self::CAMPO_BRANCO); // 06.3B Identificação do favorecido - Forma de Iniciação
 
         // Favorecido
         $this->add(18, 18, $pagamento->getBeneficiario()->getTipoDocumento() == 'CPF' ? self::TIPO_DOCUMENTO_CPF : self::TIPO_DOCUMENTO_CNPJ); // 07.3B Inscrição Tipo - Tipo de Inscrição do Favorecido
         $this->add(19, 32, Util::formatCnab('9L', $pagamento->getBeneficiario()->getDocumento(), 14)); // 08.3B Inscrição Número - N° de Inscrição do Favorecido
-        $this->add(33, 62, Util::formatCnab('X', $pagamento->getBeneficiario()->getEndereco(), 30)); // 09.3B Logradouro - Nome da Rua, Av, Pça, Etc
-        $this->add(63, 67, Util::formatCnab('9L', '', 5)); // 10.3B Número - Nº do Local
-        $this->add(68, 82, Util::formatCnab('X', '', 15)); // 11.3B Complemento - Casa, Apto, Etc
-        $this->add(83, 97, Util::formatCnab('X', $pagamento->getBeneficiario()->getBairro(), 15)); // 12.3B Bairro - Bairro
-        $this->add(98, 117, Util::formatCnab('X', $pagamento->getBeneficiario()->getCidade(), 20)); // 13.3B Cidade - Nome da Cidade
+
+        // 09.3B Dados Complementares - Informação 10 (33-67).
+        // Guia Sicoob CNAB 240 v4.0, item 7.3 (pág. 18): o Segmento B não expõe campos de
+        // endereço avulsos; expõe três blocos (Informação 10, 11 e 12) cujo conteúdo interno
+        // é definido em G101 (pág. 48-49). Para lançamentos que não sejam Pix, a Informação 10
+        // é integralmente o logradouro do favorecido, ocupando as 35 posições do bloco.
+        $this->add(33, 67, Util::formatCnab('X', $pagamento->getBeneficiario()->getEndereco(), 35)); // Informação 10 - Logradouro do Favorecido
+
+        // 10.3B Dados Complementares - Informação 11 (68-127), subdividida conforme G101.
+        // O número do local é campo Num: sem separador de logradouro em Pessoa, vai zerado
+        // (o número, quando existe, já vem embutido no logradouro acima).
+        $this->add(68, 72, Util::formatCnab('9L', '', 5)); // Informação 11 - Número do Local
+        $this->add(73, 87, Util::formatCnab('X', '', 15)); // Informação 11 - Complemento (Casa, Apto, Etc)
+        $this->add(88, 102, Util::formatCnab('X', $pagamento->getBeneficiario()->getBairro(), 15)); // Informação 11 - Bairro
+        $this->add(103, 117, Util::formatCnab('X', $pagamento->getBeneficiario()->getCidade(), 15)); // Informação 11 - Cidade
 
         $cep = Util::formatCnab('9L', $pagamento->getBeneficiario()->getCep(), 8);
 
-        $this->add(118, 122, substr($cep, 0, 5)); // 14.3B CEP - CEP
-        $this->add(123, 125, substr($cep, 5, 3)); // 15.3B Complem. CEP - Complemento do CEP
-        $this->add(126, 127, Util::formatCnab('X', $pagamento->getBeneficiario()->getUf(), 2)); // 16.3B Estado - Sigla do Estado
+        $this->add(118, 122, substr($cep, 0, 5)); // Informação 11 - CEP
+        $this->add(123, 125, substr($cep, 5, 3)); // Informação 11 - Complemento do CEP
+        $this->add(126, 127, Util::formatCnab('X', $pagamento->getBeneficiario()->getUf(), 2)); // Informação 11 - Sigla do Estado
 
-        // Pagamento
-        $this->add(128, 135, $pagamento->getDataVencimento()->format('dmY')); // 17.3B Vencimento - Data do Vencimento (Nominal)
-        $this->add(136, 150, Util::formatCnab('9L', $pagamento->getValor(), 15)); // 18.3B Valor Docum. - Valor do Documento (Nominal)
-        $this->add(151, 165, Util::formatCnab('9L', 0, 15)); // 19.3B Abatimento - Valor do Abatimento
-        $this->add(166, 180, Util::formatCnab('9L', $pagamento->getDesconto() ?: 0, 15)); // 20.3B Desconto - Valor do Desconto
-        $this->add(181, 195, Util::formatCnab('9L', $pagamento->getJuros() ?: 0, 15)); // 21.3B Mora - Valor da Mora
-        $this->add(196, 210, Util::formatCnab('9L', $pagamento->getMulta() ?: 0, 15)); // 22.3B Multa - Valor da Multa
-        $this->add(211, 225, Util::formatCnab('X', $pagamento->getNumeroControle(), 15)); // 23.3B Cód/Doc. Favorec. - Código/Documento do Favorecido
-        $this->add(226, 226, self::AVISO_FAVORECIDO); // 24.3B Aviso - Aviso ao Favorecido
-        $this->add(227, 232, Util::formatCnab('9L', 0, 6)); // 25.3B Código UG Centralizadora - Uso Exclusivo para o SIAPE
-        $this->add(233, 240, self::CAMPO_BRANCO); // 26.3B CNAB - Uso Exclusivo FEBRABAN/CNAB
+        // 11.3B Dados Complementares - Informação 12 (128-226), subdividida conforme G101.
+        $this->add(128, 135, $pagamento->getDataVencimento()->format('dmY')); // Informação 12 - Data do Vencimento (Nominal)
+        $this->add(136, 150, Util::formatCnab('9L', $pagamento->getValor(), 15)); // Informação 12 - Valor do Documento (Nominal)
+        $this->add(151, 165, Util::formatCnab('9L', 0, 15)); // Informação 12 - Valor do Abatimento
+        $this->add(166, 180, Util::formatCnab('9L', $pagamento->getDesconto() ?: 0, 15)); // Informação 12 - Valor do Desconto
+        $this->add(181, 195, Util::formatCnab('9L', $pagamento->getJuros() ?: 0, 15)); // Informação 12 - Valor da Mora
+        $this->add(196, 210, Util::formatCnab('9L', $pagamento->getMulta() ?: 0, 15)); // Informação 12 - Valor da Multa
+        $this->add(211, 225, Util::formatCnab('X', $pagamento->getNumeroControle(), 15)); // Informação 12 - Código/Documento do Favorecido
+        $this->add(226, 226, self::AVISO_FAVORECIDO); // Informação 12 - Aviso ao Favorecido
+        $this->add(227, 232, Util::formatCnab('9L', 0, 6)); // 12.3B Código UG Centralizadora - Uso Exclusivo para o SIAPE
+        $this->add(233, 240, self::CAMPO_BRANCO); // 13.3B CNAB - Uso Exclusivo FEBRABAN/CNAB
 
         return $this;
     }
