@@ -276,8 +276,15 @@ class Santander extends AbstractRetorno implements RetornoCnab240
 
         if ($this->getSegmentType($detalhe) == 'Y') {
             if ($this->rem(18, 19, $detalhe) == '03') {
-                $d->setPixLocation(trim($this->rem(82, 158, $detalhe)));
-                $d->setId(trim($this->rem(159, 193, $detalhe)));
+                // Campo 082-158: "Chave Pix / URL do QR Code". Location só na confirmação de entrada (URL).
+                $chaveOuUrl = trim($this->rem(82, 158, $detalhe));
+                $txid = trim($this->rem(159, 193, $detalhe));
+                if ($txid !== '') {
+                    $d->setId($txid);
+                }
+                if (Util::isPixLocation($chaveOuUrl)) {
+                    $d->setPixLocation($chaveOuUrl);
+                }
             } else {
                 $d->setCheques([
                     '1' => $this->rem(20, 53, $detalhe),

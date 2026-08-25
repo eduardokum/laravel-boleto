@@ -61,6 +61,20 @@ class RetornoCnab240Test extends TestCase
         );
     }
 
+    public function testRetornoPixCnab240SantanderLiquidacaoComChaveNaoDefineLocation()
+    {
+        $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make(
+            __DIR__ . '/files/cnab240/santander_pix_liquidacao_chave.ret'
+        );
+        $retorno->processar();
+
+        $this->assertCount(1, $retorno->getDetalhes());
+
+        $detalhe = $retorno->getDetalhe(1);
+        $this->assertEquals('YKP000550547000000000003509062026', $detalhe->getId());
+        $this->assertNull($detalhe->getPixLocation());
+    }
+
     public function testRetornoSemPixCnab240Santander()
     {
         $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make(__DIR__ . '/files/cnab240/santander.ret');

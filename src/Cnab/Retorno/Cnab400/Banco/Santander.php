@@ -369,8 +369,15 @@ class Santander extends AbstractRetorno implements RetornoCnab400
     private function processarPix(array $detalhe)
     {
         $d = $this->getDetalhe($this->increment - 1);
-        $d->setPixLocation($this->rem(3, 79, $detalhe));
-        $d->setId($this->rem(80, 114, $detalhe));
+        // Campo 003-079: "Chave DICT / URL Gerada". Location só quando for URL do QR.
+        $chaveOuUrl = trim($this->rem(3, 79, $detalhe));
+        $txid = trim($this->rem(80, 114, $detalhe));
+        if ($txid !== '') {
+            $d->setId($txid);
+        }
+        if (Util::isPixLocation($chaveOuUrl)) {
+            $d->setPixLocation($chaveOuUrl);
+        }
 
         return false;
     }

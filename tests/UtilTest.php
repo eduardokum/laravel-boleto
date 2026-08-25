@@ -181,6 +181,16 @@ class UtilTest extends TestCase
         $this->assertEquals('00020101021226370014br.gov.bcb.pix0115teste@teste.com52040000530398654031005802BR5914NOME_DA_PESSOA6006CIDADE62160512id-transacao6304DA67', $pixCopiaECola);
     }
 
+    public function testFuncaoIsPixLocation()
+    {
+        $this->assertTrue(Util::isPixLocation('qr.santander.com.br/pix/v2/9d36b84f-c70b-478f-b95c-12729b90ca25'));
+        $this->assertTrue(Util::isPixLocation('https://qr.santander.com.br/pix/v2/9d36b84f-c70b-478f-b95c-12729b90ca25'));
+        $this->assertFalse(Util::isPixLocation('34711996000165'));
+        $this->assertFalse(Util::isPixLocation('39a1178e-db6b-4407-bc7b-b674390acf5f'));
+        $this->assertFalse(Util::isPixLocation(''));
+        $this->assertFalse(Util::isPixLocation(null));
+    }
+
     public function testFuncaoGerarPixCopiaEColaErro()
     {
         $this->expectException(Exception::class);
