@@ -56,6 +56,10 @@ class FakeRetorno
             return self::cnab240($profile, $lines, $spec);
         }
 
+        if ($profile['layout'] === '400' && $profile['bank'] === '077') {
+            return self::cnab400Inter($profile, $lines, $spec);
+        }
+
         // CNAB400 é específico por banco — implementar o transformador no profile correspondente.
         throw new ValidationException("FakeRetorno: transformador CNAB{$profile['layout']} não implementado para " . (self::BANKS[$bank] ?? "banco $bank") . '.');
     }
@@ -85,6 +89,24 @@ class FakeRetorno
                     'settlement' => ['06', '17'],       // códigos que preenchem valor recebido (segmento U)
                     'rejection'  => ['03', '26', '30'], // códigos que carregam motivo (pos T 214-223)
                     'defaultRejectionReason' => '63',
+                ],
+            ],
+            // Ocorrências direto de Cnab\Retorno\Cnab400\Banco\Inter::processarDetalhe() ($ocorrencias).
+            // Rejeição não usa código — o campo 241-380 é texto livre ("Entrada rejeitada" + motivo).
+            '077' => [
+                '400' => [
+                    'bank'   => '077',
+                    'layout' => '400',
+                    'occurrences' => [
+                        'confirm' => '02', // Em aberto
+                        'pay'     => '06', // Pago
+                        'cancel'  => '07', // Baixado
+                        'reject'  => '03', // Erro
+                        'change'  => '14', // Alteração de data de vencimento
+                    ],
+                    'settlement' => ['06'],
+                    'rejection'  => ['03'],
+                    'defaultRejectionReason' => 'Motivo fake de teste',
                 ],
             ],
         ];
@@ -196,6 +218,87 @@ class FakeRetorno
         $output[] = self::set(self::blank($bank, '5'), [[4, 7, '0001'], [18, 23, self::num($batchRecords, 6)]]);
         $fileRecords = $batchRecords + 2;
         $output[] = self::set(self::blank($bank, '9'), [[4, 7, '9999'], [18, 23, self::num(1, 6)], [24, 29, self::num($fileRecords, 6)]]);
+
+        return implode("\r\n", $output) . "\r\n";
+    }
+
+    /**
+     * Transforma a remessa CNAB400 do Banco Inter em retorno, segundo o profile do banco.
+     *
+     * Layout de remessa e de retorno usam faixas de posição DIFERENTES para o mesmo dado
+     * (confirmado em Cnab\Remessa\Cnab400\Banco\Inter::addBoleto() x
+     * Cnab\Retorno\Cnab400\Banco\Inter::processarDetalhe()) — os campos são lidos pela posição
+     * de remessa e regravados na posição de retorno, nunca copiados byte a byte. O nosso número
+     * é fabricado aqui: no Inter é o banco quem atribui esse número, então a remessa de registro
+     * sempre o envia zerado — só existe de verdade a partir do retorno.
+     */
+    private static function cnab400Inter(array $profile, array $lines, $spec)
+    {
+        $bank   = $profile['bank'];
+        $titles = [];
+
+        foreach ($lines as $line) {
+            $line = str_pad($line, 400, ' ');
+            if (self::field($line, 1, 1) !== '1') continue;
+
+            $titles[] = [
+                'control'        => self::field($line, 38, 62),
+                'documentNumber' => self::field($line, 111, 120),
+                'dueDate'        => self::field($line, 121, 126),
+                'value'          => self::field($line, 127, 139),
+            ];
+        }
+
+        if (empty($titles)) {
+            throw new ValidationException('Nenhum título (registro tipo 1) encontrado na remessa.');
+        }
+
+        $today  = date('dmy');
+        $output = [];
+
+        $output[] = self::set(str_repeat(' ', 400), [
+            [1, 1, '0'],
+            [2, 2, '2'],
+            [3, 9, 'RETORNO'],
+            [77, 79, $bank],
+            [95, 100, $today],
+            [395, 400, self::num(1, 6)],
+        ]);
+
+        $seq        = 1;
+        $totalValor = 0;
+        foreach ($titles as $i => $t) {
+            [$occurrence, $reason] = self::resolveOccurrence($profile, $spec, $i, $t['control']);
+            $isSettlement = in_array($occurrence, $profile['settlement'], true);
+            $isRejection  = in_array($occurrence, $profile['rejection'], true);
+
+            $seq++;
+            $output[] = self::set(str_repeat(' ', 400), [
+                [1, 1, '1'],
+                [21, 23, '112'], // carteira
+                [38, 62, str_pad(trim($t['control']), 25, ' ', STR_PAD_RIGHT)],
+                [71, 81, self::num(90000000000 + $i, 11)], // nosso número — atribuído pelo Inter, fabricado aqui
+                [90, 91, $occurrence],
+                [92, 97, $today],
+                [98, 107, str_pad(trim($t['documentNumber']), 10, ' ', STR_PAD_RIGHT)],
+                [119, 124, $t['dueDate'] ?: $today],
+                [125, 137, self::num($t['value'], 13)],
+                [160, 172, self::num($isSettlement ? $t['value'] : 0, 13)], // valor recebido
+                [173, 178, $isSettlement ? $today : '000000'],
+                [241, 380, $isRejection ? str_pad(substr('Entrada rejeitada' . $reason, 0, 140), 140, ' ', STR_PAD_RIGHT) : str_repeat(' ', 140)],
+                [395, 400, self::num($seq, 6)],
+            ]);
+
+            if ($isSettlement) $totalValor += (int) preg_replace('/\D/', '', $t['value']);
+        }
+
+        $seq++;
+        $output[] = self::set(str_repeat(' ', 400), [
+            [1, 1, '9'],
+            [18, 25, self::num(count($titles), 8)],
+            [121, 132, self::num($totalValor, 12)],
+            [395, 400, self::num($seq, 6)],
+        ]);
 
         return implode("\r\n", $output) . "\r\n";
     }
