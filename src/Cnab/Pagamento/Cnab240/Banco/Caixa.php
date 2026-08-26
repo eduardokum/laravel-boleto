@@ -147,7 +147,11 @@ class Caixa extends AbstractPagamento implements PagamentoRemessaContract
     public function __construct(array $params = [])
     {
         parent::__construct($params);
-        $this->setCamposObrigatorios('convenio');
+
+        // addCampoObrigatorio() acrescenta; setCamposObrigatorios() ZERA a lista antes de
+        // acrescentar. A chamada anterior descartava 'agencia', 'conta' e 'pagador' herdados do
+        // abstrato, e uma remessa sem agência e sem conta passava por isValid().
+        $this->addCampoObrigatorio('convenio');
 
         // Configurar tipo de serviço se fornecido
         if (isset($params['tipoServico']))

@@ -385,15 +385,38 @@ abstract class AbstractPagamento
     }
 
     /**
-     * Define o dígito verificador da conta
+     * Define o dígito verificador da conta.
      *
-     * @param int $contaDv
+     * A implementação anterior era substr($contaDv, -1): guardava apenas o último caractere e
+     * descartava o resto em silêncio. Um DV de duas posições virava um dígito só no momento em
+     * que a aplicação o informava, e a remessa saía apontando para outra conta sem erro nenhum.
      *
-     * @return AbstractRemessa
+     * Os oito geradores de pagamento CNAB 240 do pacote gravam este valor num campo de uma
+     * posição, então um DV maior que isso não tem como ser transportado. A pontuação continua
+     * sendo tolerada, para não quebrar quem informa o dígito já formatado; o que passa a falhar
+     * é a perda real de dado.
+     *
+     * @param string|int|null $contaDv
+     *
+     * @return $this
+     * @throws ValidationException
      */
     public function setContaDv($contaDv)
     {
-        $this->contaDv = substr($contaDv, -1);
+        $dv = preg_replace('/[^0-9A-Za-z]/', '', (string) $contaDv);
+
+        if (mb_strlen($dv) > 1) {
+            throw new ValidationException(sprintf(
+                'Dígito verificador da conta "%s" tem %d posições. O layout CNAB 240 de pagamentos '
+                . 'reserva uma única posição para o DV da conta, e a implementação anterior '
+                . 'descartava o excedente em silêncio. Informe apenas o dígito, sem o número da '
+                . 'conta — a conta vai em setConta().',
+                $contaDv,
+                mb_strlen($dv)
+            ));
+        }
+
+        $this->contaDv = $dv;
 
         return $this;
     }
