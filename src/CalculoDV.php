@@ -379,6 +379,18 @@ class CalculoDV
     |--------------------------------------------------------------------------
     */
 
+    /**
+     * Conferido contra o exemplo de cálculo do manual C6 (LAYOUT CNAB 400 - C6 BANK v2.7,
+     * "Cálculo do Dígito do Nosso Número", pág. 36): fixo "0" + carteira "20" + nosso número
+     * "0000000001" (soma ponderada 2..7 cíclico, da direita para a esquerda) dá soma=16 e
+     * DV=6 — bate com Util::modulo11($n, 2, 7, 0, ...) aqui, já que "soma×10 mod 11" (x10=0)
+     * é equivalente a "11 - (soma mod 11)" do manual.
+     *
+     * NÃO CONFIRMADO: o manual não documenta o que fazer quando o dígito calculado dá 10 —
+     * este código usa o fallback 'P' (convenção da lib usada em outros bancos, ex. Cresol),
+     * não confirmado especificamente para o C6. Confirmar com o banco antes de confiar nesse
+     * caso de borda em produção.
+     */
     public static function c6NossoNumero($carteira, $numero_boleto)
     {
         $n = '0' . Util::numberFormatGeral($carteira, 2) . Util::numberFormatGeral($numero_boleto, 10);

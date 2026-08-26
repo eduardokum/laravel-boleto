@@ -27,6 +27,7 @@ An item is ticked only when it was **verified in the generated or parsed file** 
 - [ ] Record types in the right order (0/1/9 on 400; 0/1/3/5/9 on 240)
 - [ ] File name follows the bank's required pattern (`nomeSugerido()`), where one exists
 - [ ] Encoding correct, and no accents or special characters where the manual forbids them
+- [ ] Every `add($i, $f, $value)` call has `$f - $i + 1` exactly equal to the width already baked into `$value` (e.g. `formatCnab(...)`'s own `$tamanho`) — `Util::adiciona()` re-pads any shorter value with a bare `sprintf("%{$t}s", ...)`, which right-justifies (pads on the left) regardless of the type's intended alignment, silently shifting a literal or fixed field by the size of the mismatch (C6: `add(12, 20, formatCnab('X', 'COBRANCA', 8))` put "COBRANCA" one position to the right of the manual's 12-19, bleeding the last char into what should have been blank position 20 — caught only because a positional assertion in the GATE 5 test checked the exact byte range, not because the code "looked right")
 
 ## D. Counters and sequences
 

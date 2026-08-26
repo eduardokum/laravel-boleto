@@ -354,6 +354,37 @@ class RetornoCnab400Test extends TestCase
         }
     }
 
+    /**
+     * Fixture construída a partir das posições do manual (LAYOUT CNAB 400 - C6 BANK v2.7,
+     * jul/2025, manuais/C6/), não de um arquivo real do banco — não há .RET real disponível
+     * ainda. Título Carteira 20, nosso número 1/dígito 6 (conferido contra o exemplo de cálculo
+     * do manual, pág. 36), ocorrência 06 = Liquidação do Título.
+     */
+    public function testRetornoC6Cnab400()
+    {
+        $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make(__DIR__ . '/files/cnab400/c6.ret');
+        $retorno->processar();
+
+        $this->assertNotNull($retorno->getHeader());
+        $this->assertNotNull($retorno->getDetalhes());
+        $this->assertNotNull($retorno->getTrailer());
+
+        $this->assertEquals('Banco C6 S.A.', $retorno->getBancoNome());
+        $this->assertEquals('336', $retorno->getCodigoBanco());
+
+        $this->assertInstanceOf(Collection::class, $retorno->getDetalhes());
+        $detalhe = $retorno->getDetalhe(1);
+        $this->assertInstanceOf(Detalhe::class, $detalhe);
+
+        $this->assertEquals('20', $detalhe->getCarteira());
+        $this->assertEquals('00000000001', $detalhe->getNossoNumero());
+        $this->assertEquals('CTRL0000000001', trim($detalhe->getNumeroControle()));
+        $this->assertEquals('06', $detalhe->getOcorrencia());
+        $this->assertEquals('Liquidação do Título', $detalhe->getOcorrenciaDescricao());
+        $this->assertEquals(100.00, $detalhe->getValor());
+        $this->assertTrue($detalhe->hasOcorrencia('06'));
+    }
+
     public function testRetornoPineCnab400()
     {
         $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make(__DIR__ . '/files/cnab400/pine.ret');

@@ -24,7 +24,7 @@ class FakeRetorno
     const DEFAULT_MIX = ['confirm', 'pay', 'reject', 'cancel'];
 
     /** Nomes amigáveis dos bancos (para mensagens). */
-    const BANKS = ['001' => 'Banco do Brasil', '341' => 'Itaú', '077' => 'Inter', '104' => 'Caixa', '033' => 'Santander', '748' => 'Sicredi', '756' => 'Bancoob', '041' => 'Banrisul', '085' => 'Ailos', '237' => 'Bradesco'];
+    const BANKS = ['001' => 'Banco do Brasil', '341' => 'Itaú', '077' => 'Inter', '104' => 'Caixa', '033' => 'Santander', '748' => 'Sicredi', '756' => 'Bancoob', '041' => 'Banrisul', '085' => 'Ailos', '237' => 'Bradesco', '336' => 'C6 Bank'];
 
     /**
      * @param string      $bankCode    Código do banco (ex.: '001')
@@ -54,6 +54,10 @@ class FakeRetorno
 
         if ($profile['layout'] === '240') {
             return self::cnab240($profile, $lines, $spec);
+        }
+
+        if ($profile['layout'] === '400' && $profile['bank'] === '336') {
+            return self::cnab400C6($profile, $lines, $spec);
         }
 
         if ($profile['layout'] === '400' && $profile['bank'] === '077') {
@@ -89,6 +93,24 @@ class FakeRetorno
                     'settlement' => ['06', '17'],       // códigos que preenchem valor recebido (segmento U)
                     'rejection'  => ['03', '26', '30'], // códigos que carregam motivo (pos T 214-223)
                     'defaultRejectionReason' => '63',
+                ],
+            ],
+            // Ocorrências e rejeições (manual C6, Nota 12/13 — mesma fonte usada em
+            // Cnab\Retorno\Cnab400\Banco\C6::processarDetalhe()).
+            '336' => [
+                '400' => [
+                    'bank'   => '336',
+                    'layout' => '400',
+                    'occurrences' => [
+                        'confirm' => '02', // Entrada Confirmada
+                        'pay'     => '06', // Liquidação do Título
+                        'cancel'  => '09', // Baixa do Título
+                        'reject'  => '03', // Entrada Rejeitada
+                        'change'  => '14', // Vencimento Alterado
+                    ],
+                    'settlement' => ['06', '08'],
+                    'rejection'  => ['03', '15', '16', '17', '90'],
+                    'defaultRejectionReason' => '9014', // Campo obrigatório não preenchido
                 ],
             ],
             // Ocorrências direto de Cnab\Retorno\Cnab400\Banco\Inter::processarDetalhe() ($ocorrencias).
@@ -218,6 +240,111 @@ class FakeRetorno
         $output[] = self::set(self::blank($bank, '5'), [[4, 7, '0001'], [18, 23, self::num($batchRecords, 6)]]);
         $fileRecords = $batchRecords + 2;
         $output[] = self::set(self::blank($bank, '9'), [[4, 7, '9999'], [18, 23, self::num(1, 6)], [24, 29, self::num($fileRecords, 6)]]);
+
+        return implode("\r\n", $output) . "\r\n";
+    }
+
+    /**
+     * Transforma a remessa CNAB400 do C6 Bank em retorno, segundo o profile do banco.
+     *
+     * Layout de remessa e de retorno do C6 usam faixas de posição DIFERENTES para o mesmo dado
+     * (confirmado em Cnab\Remessa\Cnab400\Banco\C6::addBoleto() x
+     * Cnab\Retorno\Cnab400\Banco\C6::processarDetalhe(), ambos já verificados contra o manual) —
+     * por isso os campos são lidos pela posição de remessa e regravados na posição de retorno,
+     * nunca copiados byte a byte.
+     */
+    private static function cnab400C6(array $profile, array $lines, $spec)
+    {
+        $bank          = $profile['bank'];
+        $conta         = '';
+        $codigoCliente = '';
+        $titles        = [];
+
+        foreach ($lines as $line) {
+            $line = str_pad($line, 400, ' ');
+            $type = self::field($line, 1, 1);
+
+            if ($type === '0') {
+                $codigoCliente = self::field($line, 27, 38);
+                $conta         = self::field($line, 109, 120);
+            } elseif ($type === '1') {
+                $titles[] = [
+                    'control'        => self::field($line, 38, 62),
+                    'nossoNumero'    => self::field($line, 63, 74),
+                    'wallet'         => self::field($line, 107, 108),
+                    'documentNumber' => self::field($line, 111, 120),
+                    'dueDate'        => self::field($line, 121, 126),
+                    'value'          => self::field($line, 127, 139),
+                ];
+            }
+        }
+
+        if (empty($titles)) {
+            throw new ValidationException('Nenhum título (registro tipo 1) encontrado na remessa.');
+        }
+
+        $today  = date('dmy');
+        $output = [];
+
+        $output[] = self::set(str_repeat(' ', 400), [
+            [1, 1, '0'],
+            [2, 2, '2'],
+            [3, 9, 'RETORNO'],
+            [10, 11, '01'],
+            [12, 19, 'COBRANCA'],
+            [27, 38, $conta],
+            [39, 50, $codigoCliente],
+            [77, 79, $bank],
+            [125, 130, $today],
+            [395, 400, self::num(1, 6)],
+        ]);
+
+        $seq        = 1;
+        $totalValor = 0;
+        $liquidados = 0;
+
+        foreach ($titles as $i => $t) {
+            [$occurrence, $reason] = self::resolveOccurrence($profile, $spec, $i, $t['control']);
+            $isSettlement = in_array($occurrence, $profile['settlement'], true);
+            $isRejection  = in_array($occurrence, $profile['rejection'], true);
+
+            $seq++;
+            $output[] = self::set(str_repeat(' ', 400), [
+                [1, 1, '1'],
+                [38, 62, str_pad($t['control'], 25, ' ', STR_PAD_RIGHT)],
+                [63, 73, self::num($t['nossoNumero'], 11)],
+                [107, 108, $t['wallet']],
+                [109, 110, $occurrence],
+                [111, 116, $today],
+                [117, 126, str_pad($t['documentNumber'], 10, ' ', STR_PAD_RIGHT)],
+                [147, 152, $t['dueDate'] ?: $today],
+                [153, 165, self::num($t['value'], 13)],
+                // Campos de valor (tarifa/abatimento/desconto/mora/multa) — sempre zero-filled,
+                // nunca em branco: o parser faz divisão aritmética direto sobre esses campos
+                // (C6.php:292 e adjacentes), então espaço quebra com TypeError.
+                [176, 188, self::num(0, 13)],
+                [228, 253, self::num(0, 26)],
+                [254, 266, self::num($isSettlement ? $t['value'] : 0, 13)], // valor recebido
+                [267, 292, self::num(0, 26)],
+                [296, 301, $isSettlement ? $today : '000000'],
+                [378, 393, $isRejection ? str_pad(substr($reason, 0, 4), 16, '0', STR_PAD_RIGHT) : self::num(0, 16)],
+                [395, 400, self::num($seq, 6)],
+            ]);
+
+            if ($isSettlement) {
+                $liquidados++;
+                $totalValor += (int) preg_replace('/\D/', '', $t['value']);
+            }
+        }
+
+        $seq++;
+        $output[] = self::set(str_repeat(' ', 400), [
+            [1, 1, '9'],
+            [3, 16, self::num($totalValor, 14)],
+            [17, 22, self::num(count($titles), 6)],
+            [37, 42, self::num($liquidados, 6)],
+            [395, 400, self::num($seq, 6)],
+        ]);
 
         return implode("\r\n", $output) . "\r\n";
     }
