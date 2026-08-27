@@ -14,44 +14,41 @@ class Cresol extends AbstractRemessa implements RemessaContract
 {
     use ValidacoesCresol;
 
-    const ESPECIE_DUPLICATA = '01';
-    const ESPECIE_NOTA_PROMISSORIA = '02';
-    const ESPECIE_NOTA_SEGURO = '03';
-    const ESPECIE_COBRANCA_SERIADA = '04';
-    const ESPECIE_RECIBO = '05';
-    const ESPECIE_LETRAS_CAMBIO = '10';
-    const ESPECIE_NOTA_DEBITO = '11';
-    const ESPECIE_DUPLICATA_SERVICO = '12';
+    /**
+     * Espécies de título aceitas no registro detalhe, pos. 148-149 do manual
+     * "Padrão Remessa CNAB400 Cresol 133".
+     */
+    const ESPECIE_CHEQUE = '01';
+    const ESPECIE_DUPLICATA_MERCANTIL = '02';
+    const ESPECIE_DUPLICATA_SERVICO = '04';
+    const ESPECIE_DUPLICATA_RURAL = '06';
+    const ESPECIE_LETRAS_CAMBIO = '07';
+    const ESPECIE_NOTA_PROMISSORIA = '12';
+    const ESPECIE_RECIBO = '17';
+    const ESPECIE_NOTA_DEBITO = '19';
+    const ESPECIE_WARRANT = '26';
+    const ESPECIE_DIVIDA_ATIVA_ESTADO = '27';
+    const ESPECIE_DIVIDA_ATIVA_MUNICIPIO = '28';
+    const ESPECIE_DIVIDA_ATIVA_UNIAO = '29';
+    const ESPECIE_ENCARGOS_CONDOMINIAIS = '30';
     const ESPECIE_OUTROS = '99';
+
+    /**
+     * Identificação da ocorrência, pos. 109-110 do mesmo manual. A Cresol não
+     * prevê os demais códigos do padrão FEBRABAN/Bradesco nesse layout.
+     */
     const OCORRENCIA_REMESSA = '01';
     const OCORRENCIA_PEDIDO_BAIXA = '02';
     const OCORRENCIA_CONCESSAO_ABATIMENTO = '04';
     const OCORRENCIA_CANC_ABATIMENTO_CONCEDIDO = '05';
     const OCORRENCIA_ALT_VENCIMENTO = '06';
-    const OCORRENCIA_ALT_CONTROLE_PARTICIPANTE = '07';
-    const OCORRENCIA_ALT_SEU_NUMERO = '08';
     const OCORRENCIA_PEDIDO_PROTESTO = '09';
-    const OCORRENCIA_SUSTAR_PROTESTO_BAIXAR_TITULO = '18';
-    const OCORRENCIA_SUSTAR_PROTESTO_MANTER_TITULO = '19';
-    const OCORRENCIA_TRANS_CESSAO_CREDITO_ID10 = '22';
-    const OCORRENCIA_TRANS_CARTEIRAS = '23';
-    const OCORRENCIA_DEVOLUCAO_TRANS_CARTEIRAS = '24';
+    const OCORRENCIA_SUSTAR_PROTESTO_BAIXAR_TITULO = '10';
+    const OCORRENCIA_SUSTAR_PROTESTO_MANTER_TITULO = '11';
     const OCORRENCIA_ALT_OUTROS_DADOS = '31';
-    const OCORRENCIA_DESAGENDAMENTO_DEBITO_AUT = '35';
-    const OCORRENCIA_ACERTO_RATEIO_CREDITO = '68';
-    const OCORRENCIA_CANC_RATEIO_CREDITO = '69';
-    const INSTRUCAO_SEM = '00';
-    const INSTRUCAO_PROTESTAR_FAMILIAR_XX = '05';
-    const INSTRUCAO_PROTESTAR_XX = '06';
-    const INSTRUCAO_NAO_COBRAR_JUROS = '08';
-    const INSTRUCAO_NAO_RECEBER_APOS_VENC = '09';
-    const INSTRUCAO_MULTA_10_APOS_VENC_4 = '10';
-    const INSTRUCAO_NAO_RECEBER_APOS_VENC_8 = '11';
-    const INSTRUCAO_COBRAR_ENCAR_APOS_5 = '12';
-    const INSTRUCAO_COBRAR_ENCAR_APOS_10 = '13';
-    const INSTRUCAO_COBRAR_ENCAR_APOS_15 = '14';
-    const INSTRUCAO_CENCEDER_DESC_APOS_VENC = '15';
-    const INSTRUCAO_DEVOLVER_XX = '18';
+
+    // As posições 157-158 e 159-160 (primeira e segunda instrução) são "Branco"
+    // no manual da Cresol, por isso não há constantes de instrução aqui.
 
     public function __construct(array $params = [])
     {
