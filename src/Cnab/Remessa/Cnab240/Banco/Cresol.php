@@ -220,7 +220,7 @@ class Cresol extends AbstractRemessa implements RemessaContract
         // levar o valor em reais por dia (getMoraDia), e não a taxa mensal (getJuros)
         $this->add(118, 118, '1');
         $this->add(119, 126, $boleto->getJuros() > 0
-            ? $boleto->getDataVencimentoApos()->copy()->addDays((int) $boleto->getJurosApos())->format('dmY')
+            ? $boleto->getDataVencimentoApos()->format('dmY')
             : '00000000');
         $this->add(127, 141, Util::formatCnab('9', $boleto->getMoraDia(), 15, 2));
         $this->preencheDescontoSegmentoP($boleto);
