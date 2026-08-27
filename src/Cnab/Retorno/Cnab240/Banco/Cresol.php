@@ -362,7 +362,7 @@ class Cresol extends AbstractRetorno implements RetornoCnab240
                 );
                 $d->setOcorrenciaDescricao($ocorrencia);
                 $d->setOcorrenciaTipo($d::OCORRENCIA_BAIXADA);
-            } elseif ($d->hasOcorrencia('25')) {
+            } elseif ($d->hasOcorrencia('23', '25')) {
                 $this->totais['protestados']++;
                 $d->setOcorrenciaTipo($d::OCORRENCIA_PROTESTADA);
             } elseif ($d->hasOcorrencia('33', '38', '40', '41', '42', '43', '49')) {
