@@ -187,6 +187,10 @@ class Pessoa implements PessoaContract
     /**
      * Define o documento (CPF, CNPJ ou CEI)
      *
+     * O CNPJ pode ser informado tanto no formato numérico tradicional quanto no
+     * novo formato alfanumérico da Receita Federal, por isso os caracteres
+     * alfanuméricos são preservados (e normalizados para maiúsculas).
+     *
      * @param string $documento
      *
      * @return Pessoa
@@ -194,7 +198,7 @@ class Pessoa implements PessoaContract
      */
     public function setDocumento($documento)
     {
-        $documento = substr(Util::onlyNumbers($documento), -14);
+        $documento = strtoupper(substr(Util::onlyAlphanumber($documento), -14));
         if (! in_array(strlen($documento), [10, 11, 14, 0])) {
             throw new ValidationException('Documento inválido');
         }
@@ -211,12 +215,12 @@ class Pessoa implements PessoaContract
     public function getDocumento()
     {
         if ($this->getTipoDocumento() == 'CPF') {
-            return Util::maskString(Util::onlyNumbers($this->documento), '###.###.###-##');
+            return Util::maskString(Util::onlyAlphanumber($this->documento), '###.###.###-##');
         } elseif ($this->getTipoDocumento() == 'CEI') {
-            return Util::maskString(Util::onlyNumbers($this->documento), '##.#####.#-##');
+            return Util::maskString(Util::onlyAlphanumber($this->documento), '##.#####.#-##');
         }
 
-        return Util::maskString(Util::onlyNumbers($this->documento), '##.###.###/####-##');
+        return Util::maskString(Util::onlyAlphanumber($this->documento), '##.###.###/####-##');
     }
 
     /**
@@ -360,7 +364,7 @@ class Pessoa implements PessoaContract
      */
     public function getTipoDocumento()
     {
-        $cpf_cnpj_cei = Util::onlyNumbers($this->documento);
+        $cpf_cnpj_cei = Util::onlyAlphanumber($this->documento);
 
         if (strlen($cpf_cnpj_cei) == 11) {
             return 'CPF';

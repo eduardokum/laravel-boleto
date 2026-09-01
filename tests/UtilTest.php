@@ -274,4 +274,41 @@ class UtilTest extends TestCase
         $this->assertNull(Util::tipoChavePix('000.000.001-00'));
         $this->assertNull(Util::tipoChavePix('texto-qualquer'));
     }
+
+    public function testFuncaoValidarCpfCnpj()
+    {
+        // CPF
+        $this->assertTrue(Util::validarCpf('390.533.447-05'));
+        $this->assertTrue(Util::validarCpf('39053344705'));
+        $this->assertFalse(Util::validarCpf('390.533.447-06'));
+        $this->assertFalse(Util::validarCpf('111.111.111-11'));
+
+        // CNPJ no formato numérico tradicional
+        $this->assertTrue(Util::validarCnpj('11.222.333/0001-81'));
+        $this->assertTrue(Util::validarCnpj('11222333000181'));
+        $this->assertFalse(Util::validarCnpj('11.222.333/0001-80'));
+        $this->assertFalse(Util::validarCnpj('00.000.000/0000-00'));
+
+        // CNPJ no novo formato alfanumérico da Receita Federal
+        // (12 caracteres alfanuméricos + 2 dígitos verificadores numéricos)
+        $this->assertTrue(Util::validarCnpj('12.ABC.345/0100-60'));
+        $this->assertTrue(Util::validarCnpj('12ABC345010060'));
+        $this->assertTrue(Util::validarCnpj('abcde123456090')); // minúsculas são normalizadas
+        $this->assertTrue(Util::validarCnpj('1A.2B3.C4D/5E6F-34'));
+        $this->assertTrue(Util::validarCnpj('A1B2C3D4E5F668'));
+
+        // dígitos verificadores incorretos invalidam o CNPJ alfanumérico
+        $this->assertFalse(Util::validarCnpj('12ABC345010061'));
+        $this->assertFalse(Util::validarCnpj('A1B2C3D4E5F669'));
+        // os 2 dígitos verificadores devem permanecer numéricos
+        $this->assertFalse(Util::validarCnpj('12ABC34501006A'));
+        // todos os caracteres iguais continuam inválidos
+        $this->assertFalse(Util::validarCnpj('AAAAAAAAAAAAAA'));
+
+        // validarCnpjCpf identifica corretamente pelo tamanho, mesmo com letras
+        $this->assertTrue(Util::validarCnpjCpf('390.533.447-05'));
+        $this->assertTrue(Util::validarCnpjCpf('11.222.333/0001-81'));
+        $this->assertTrue(Util::validarCnpjCpf('12.ABC.345/0100-60'));
+        $this->assertFalse(Util::validarCnpjCpf('123'));
+    }
 }

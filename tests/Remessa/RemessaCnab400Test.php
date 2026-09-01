@@ -933,4 +933,49 @@ class RemessaCnab400Test extends TestCase
 
         $this->assertFileExists($file2);
     }
+
+    public function testRemessaVortxCnab400()
+    {
+        $boleto = new Boleto\Vortx([
+            'logo'                   => realpath(__DIR__ . '/../logos/') . DIRECTORY_SEPARATOR . '310.png',
+            'dataVencimento'         => $this->vencimento(),
+            'valor'                  => $this->valor(),
+            'multa'                  => $this->multa(),
+            'juros'                  => $this->juros(),
+            'numero'                 => 1,
+            'numeroDocumento'        => 1,
+            'pagador'                => self::$pagador,
+            'beneficiario'           => self::$beneficiario,
+            'carteira'               => 1,
+            'agencia'                => '0001',
+            'conta'                  => '12345678',
+            'contaDv'                => '9',
+            'descricaoDemonstrativo' => ['demonstrativo 1', 'demonstrativo 2', 'demonstrativo 3'],
+            'instrucoes'             => ['instrucao 1', 'instrucao 2', 'instrucao 3'],
+            'aceite'                 => $this->aceite(),
+            'especieDoc'             => 'DM',
+        ]);
+
+        $remessa = new Remessa\Vortx([
+            'idRemessa'    => 1,
+            'agencia'      => '0001',
+            'carteira'     => 1,
+            'conta'        => '12345678',
+            'contaDv'      => '9',
+            'convenio'     => '12345678',
+            'beneficiario' => self::$beneficiario,
+        ]);
+        $remessa->addBoleto($boleto);
+
+        $file = implode(DIRECTORY_SEPARATOR, [
+            __DIR__,
+            'files',
+            'cnab400',
+            'vortx.txt',
+        ]);
+
+        $file2 = $remessa->save($file);
+
+        $this->assertFileExists($file2);
+    }
 }

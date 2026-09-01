@@ -127,7 +127,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(10, 11, '01');
         $this->add(12, 26, Util::formatCnab('X', 'COBRANCA', 15));
         $this->add(27, 31, Util::formatCnab('9', $this->getCodigoCliente(), 5));
-        $this->add(32, 45, Util::formatCnab('9L', $this->getBeneficiario()->getDocumento(), 14, 0, 0));
+        $this->add(32, 45, Util::formatCnab('9', Util::onlyAlphanumber($this->getBeneficiario()->getDocumento()), 14, 0, 0));
         $this->add(46, 76, '');
         $this->add(77, 79, $this->getCodigoBanco());
         $this->add(80, 94, Util::formatCnab('X', 'Sicredi', 15));
@@ -209,8 +209,8 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(180, 192, Util::formatCnab('9', $boleto->getDesconto(), 13, 2));
         $this->add(193, 205, Util::formatCnab('9', 0, 13, 2));
         $this->add(206, 218, Util::formatCnab('9', 0, 13, 2));
-        $this->add(219, 220, strlen(Util::onlyNumbers($boleto->getPagador()->getDocumento())) == 14 ? '20' : '10');
-        $this->add(221, 234, Util::formatCnab('9L', $boleto->getPagador()->getDocumento(), 14));
+        $this->add(219, 220, strlen(Util::onlyAlphanumber($boleto->getPagador()->getDocumento())) == 14 ? '20' : '10');
+        $this->add(221, 234, Util::formatCnab('9', Util::onlyAlphanumber($boleto->getPagador()->getDocumento()), 14));
         $this->add(235, 274, Util::formatCnab('X', $boleto->getPagador()->getNome(), 40));
         $this->add(275, 314, Util::formatCnab('X', $boleto->getPagador()->getEndereco(), 40));
         $this->add(315, 319, '00000');
@@ -218,7 +218,7 @@ class Sicredi extends AbstractRemessa implements RemessaContract
         $this->add(326, 326, ' ');
         $this->add(327, 334, Util::formatCnab('9L', $boleto->getPagador()->getCep(), 8));
         $this->add(335, 339, '00000');
-        $this->add(340, 353, $boleto->getSacadorAvalista() ? Util::formatCnab('9L', $boleto->getSacadorAvalista()->getDocumento(), 14) : Util::formatCnab('X', '', 14));
+        $this->add(340, 353, $boleto->getSacadorAvalista() ? Util::formatCnab('9', Util::onlyAlphanumber($boleto->getSacadorAvalista()->getDocumento()), 14) : Util::formatCnab('X', '', 14));
         $this->add(354, 394, Util::formatCnab('X', $boleto->getSacadorAvalista() ? $boleto->getSacadorAvalista()->getNome() : '', 41));
         $this->add(395, 400, Util::formatCnab('9', $this->iRegistros + 1, 6));
         if ($chaveNfe) {
