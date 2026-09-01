@@ -429,7 +429,22 @@ class RetornoCnab400Test extends TestCase
         $this->assertCount(1, $retorno->getDetalhes());
 
         $this->assertNotNull($retorno->current()->getId());
-        $this->assertNotNull($retorno->current()->getPixLocation());
+        $this->assertEquals(
+            'qr.santander.com.br/pix/v2/9d36b84f-c70b-478f-b95c-12729b90ca25',
+            $retorno->current()->getPixLocation()
+        );
+    }
+
+    public function testRetornoPixCnab400LiquidacaoComChaveNaoDefineLocation()
+    {
+        $retorno = \Eduardokum\LaravelBoleto\Cnab\Retorno\Factory::make(
+            __DIR__ . '/files/cnab400/santander_pix_liquidacao_chave.ret'
+        );
+        $retorno->processar();
+
+        $this->assertCount(1, $retorno->getDetalhes());
+        $this->assertEquals('YKP000550547000000000003509062026', $retorno->current()->getId());
+        $this->assertNull($retorno->current()->getPixLocation());
     }
 
     public function testRetornoSemPixCnab400()

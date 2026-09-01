@@ -91,6 +91,9 @@ class Santander extends AbstractRemessa implements RemessaContract
         if ($boleto->getStatus() == $boleto::STATUS_REGISTRO) {
             $this->segmentoQ($boleto);
             $this->segmentoR($boleto);
+            if ($boleto->validarPix()) {
+                $this->segmentoY03($boleto);
+            }
         }
 
         return $this;
@@ -244,11 +247,54 @@ class Santander extends AbstractRemessa implements RemessaContract
         $this->add(18, 18, '0');
         $this->add(19, 26, '00000000');
         $this->add(27, 41, '000000000000000');
-        $this->add(42, 65, '');
+        $this->add(42, 42, '0');
+        $this->add(43, 50, '00000000');
+        $this->add(51, 65, '000000000000000');
         $this->add(66, 66, '2'); //1 = VALOR FIXO | 2 = PERCENTUAL
         $this->add(67, 74, $boleto->getMulta() > 0 ?  $boleto->getDataVencimento()->copy()->addDays($boleto->getMultaApos())->format('dmY') : '00000000');
         $this->add(75, 89, Util::formatCnab('9', $boleto->getMulta(), 15, 2));  //2,20 = 0000000000220
         $this->add(90, 240, '');
+
+        return $this;
+    }
+
+    /**
+     * Segmento Y03 - Informação do QR Code Pix (Boleto SX)
+     *
+     * @param BoletoContract $boleto
+     *
+     * @return Santander
+     * @throws ValidationException
+     */
+    protected function segmentoY03(BoletoContract $boleto)
+    {
+        $tipoChave = [
+            $boleto::TIPO_CHAVEPIX_CPF       => 1,
+            $boleto::TIPO_CHAVEPIX_CNPJ      => 2,
+            $boleto::TIPO_CHAVEPIX_CELULAR   => 3,
+            $boleto::TIPO_CHAVEPIX_EMAIL     => 4,
+            $boleto::TIPO_CHAVEPIX_ALEATORIA => 5,
+        ];
+
+        $this->iniciaDetalhe();
+        $this->add(1, 3, Util::onlyNumbers($this->getCodigoBanco()));
+        $this->add(4, 7, sprintf('%04d', $this->getIdremessa()));
+        $this->add(8, 8, '3');
+        $this->add(9, 13, Util::formatCnab('9', $this->iRegistrosLote, 5));
+        $this->add(14, 14, 'Y');
+        $this->add(15, 15, '');
+        $this->add(16, 17, self::OCORRENCIA_REMESSA);
+        $pixChave = $boleto->getPixChave();
+        if (in_array($boleto->getPixChaveTipo(), [$boleto::TIPO_CHAVEPIX_CPF, $boleto::TIPO_CHAVEPIX_CNPJ], true)) {
+            $pixChave = Util::onlyNumbers($pixChave);
+        }
+
+        $this->add(18, 19, '03');
+        $this->add(20, 80, '');
+        $this->add(81, 81, Util::formatCnab('9', $tipoChave[$boleto->getPixChaveTipo()], 1));
+        $this->add(82, 158, Util::formatCnab('Z', $pixChave, 77));
+        $this->add(159, 193, Util::formatCnab('X', $boleto->getID(), 35));
+        $this->add(194, 240, '');
 
         return $this;
     }

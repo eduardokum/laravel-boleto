@@ -123,6 +123,18 @@ class Santander extends AbstractRetorno implements RetornoCnab240
         '63' => 'Entrada para título já cadastrado',
         '64' => 'Número da linha inválido',
         '90' => 'Identificador/Quantidade de Parcelas de carnê invalido',
+        '91' => 'Boleto Descontado, instrução não permitida',
+        '92' => 'Data de Desconto Inválida',
+        '93' => 'Número do lote remessa inválido',
+        'P1' => 'Registrado com QR Code Pix',
+        'P2' => 'Registrado sem QR Code Pix',
+        'P3' => 'Chave PIX Inválida',
+        'P4' => 'Chave PIX sem cadastro na DICT',
+        'P5' => 'Chave PIX não é compatível com o CNPJ',
+        'P6' => 'Identificador (TXID) em duplicidade',
+        'P7' => 'Identificador (TXID) inválido ou não encontrado',
+        'P8' => 'Alteração não permitida – QR Code concluído, removido pelo PSP ou removido pelo usuário recebedor',
+        'P9' => 'Cancelamento não permitido – QR Code concluído, removido pelo PSP ou removido pelo usuário recebedor',
     ];
 
     /**
@@ -263,14 +275,26 @@ class Santander extends AbstractRetorno implements RetornoCnab240
         }
 
         if ($this->getSegmentType($detalhe) == 'Y') {
-            $d->setCheques([
-                '1' => $this->rem(20, 53, $detalhe),
-                '2' => $this->rem(44, 87, $detalhe),
-                '3' => $this->rem(88, 121, $detalhe),
-                '4' => $this->rem(122, 155, $detalhe),
-                '5' => $this->rem(156, 189, $detalhe),
-                '6' => $this->rem(190, 223, $detalhe),
-            ]);
+            if ($this->rem(18, 19, $detalhe) == '03') {
+                // Campo 082-158: "Chave Pix / URL do QR Code". Location só na confirmação de entrada (URL).
+                $chaveOuUrl = trim($this->rem(82, 158, $detalhe));
+                $txid = trim($this->rem(159, 193, $detalhe));
+                if ($txid !== '') {
+                    $d->setId($txid);
+                }
+                if (Util::isPixLocation($chaveOuUrl)) {
+                    $d->setPixLocation($chaveOuUrl);
+                }
+            } else {
+                $d->setCheques([
+                    '1' => $this->rem(20, 53, $detalhe),
+                    '2' => $this->rem(54, 87, $detalhe),
+                    '3' => $this->rem(88, 121, $detalhe),
+                    '4' => $this->rem(122, 155, $detalhe),
+                    '5' => $this->rem(156, 189, $detalhe),
+                    '6' => $this->rem(190, 223, $detalhe),
+                ]);
+            }
         }
 
         return true;

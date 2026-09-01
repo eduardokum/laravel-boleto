@@ -1274,6 +1274,26 @@ final class Util
     }
 
     /**
+     * Indica se o valor é URL/location de QR Code dinâmico (não chave DICT).
+     * No retorno Santander o mesmo campo pode trazer chave ou URL (H7815 Y03 / H7800 tipo 2).
+     *
+     * @param mixed $pix
+     * @return bool
+     */
+    public static function isPixLocation($pix)
+    {
+        $pix = trim((string) $pix);
+        if ($pix === '') {
+            return false;
+        }
+
+        return (bool) (
+            filter_var($pix, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED)
+            || filter_var('https://' . $pix, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED)
+        );
+    }
+
+    /**
      * @param $pix
      * @param $valor
      * @param $id
@@ -1287,10 +1307,7 @@ final class Util
             throw new ValidationException('ID inválido, não pode possuir caracteres especiais');
         }
 
-        $dinamico = false;
-        if (filter_var($pix, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED) || filter_var('https://' . $pix, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED)) {
-            $dinamico = true;
-        }
+        $dinamico = self::isPixLocation($pix);
 
         $crc16 = function ($payload) {
             $payload .= '6304';
