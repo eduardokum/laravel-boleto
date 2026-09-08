@@ -57,7 +57,14 @@ $lookup = new CpfCnpjComBrLookup('SEU_TOKEN', 3, 6);
 
 O transporte HTTP usa a extensão cURL (já exigida pelo pacote), mas aceita um callable no formato `function ($url) { return $corpo; }` no construtor, o que permite reaproveitar um cliente já presente na aplicação ou simular respostas em testes.
 
-A CPF.CNPJ oferece consulta em tempo real (D+0), cobertura nacional e, no pacote 6, os dados de Simples Nacional e SIMEI. Um exemplo completo está em `exemplos/pagador_cpfcnpj.php`.
+A documentação oficial da API, com todos os pacotes e campos de retorno, está em [cpfcnpj.com.br/dev](https://www.cpfcnpj.com.br/dev/). Um exemplo completo está em `exemplos/pagador_cpfcnpj.php`.
+
+### Diferenciais da CPF.CNPJ
+
+* Consulta em tempo real (D+0), com cobertura nacional de CPF e CNPJ.
+* Endereço da matriz normalizado (logradouro, número, complemento, bairro, CEP, cidade e UF), pronto para preencher o pagador.
+* Pacote 6 acrescenta situação cadastral, porte e dados de Simples Nacional/SIMEI.
+* Segurança e governança certificadas em ISO/IEC 27001, ISO/IEC 27701 e ISO 37301.
 
 ## Doações
 

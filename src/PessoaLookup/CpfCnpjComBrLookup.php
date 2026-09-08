@@ -194,7 +194,7 @@ class CpfCnpjComBrLookup implements PessoaLookup
             'nome'         => $this->valor($dados, 'razao'),
             'nomeFantasia' => $this->valor($dados, 'fantasia'),
             'documento'    => $documento,
-            'logradouro'   => $this->valor($endereco, 'logradouro'),
+            'logradouro'   => $this->montarLogradouro($endereco),
             'numero'       => $this->valor($endereco, 'numero'),
             'complemento'  => $this->valor($endereco, 'complemento'),
             'bairro'       => $this->valor($endereco, 'bairro'),
@@ -203,6 +203,27 @@ class CpfCnpjComBrLookup implements PessoaLookup
             'uf'           => $this->valor($endereco, 'uf'),
             'ibge'         => $ibge,
         ];
+    }
+
+    /**
+     * Monta o logradouro do CNPJ juntando o tipo (Rua, Av., etc) ao nome.
+     *
+     * O pacote de CNPJ devolve o tipo do logradouro em um campo proprio (tipo)
+     * separado do nome (logradouro); sem juntar os dois o endereco perde o
+     * "Rua"/"Av." e fica incompleto no pagador do boleto.
+     *
+     * @param array $endereco
+     *
+     * @return string|null
+     */
+    protected function montarLogradouro(array $endereco)
+    {
+        $tipo = $this->valor($endereco, 'tipo');
+        $logradouro = $this->valor($endereco, 'logradouro');
+
+        $completo = trim(($tipo !== null ? $tipo . ' ' : '') . ($logradouro !== null ? $logradouro : ''));
+
+        return $completo !== '' ? $completo : null;
     }
 
     /**

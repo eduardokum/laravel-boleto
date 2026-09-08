@@ -1,5 +1,10 @@
 <?php
 
+/*
+ * Preenchimento do pagador a partir de um CPF ou CNPJ.
+ * Documentacao da API e pacotes: https://www.cpfcnpj.com.br/dev/
+ */
+
 require 'autoload.php';
 
 use Eduardokum\LaravelBoleto\PessoaLookup\PessoaResolver;

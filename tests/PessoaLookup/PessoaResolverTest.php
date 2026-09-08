@@ -6,8 +6,8 @@ use Eduardokum\LaravelBoleto\Pessoa;
 use Eduardokum\LaravelBoleto\Tests\TestCase;
 use Eduardokum\LaravelBoleto\Contracts\PessoaLookup;
 use Eduardokum\LaravelBoleto\PessoaLookup\PessoaResolver;
-use Eduardokum\LaravelBoleto\PessoaLookup\CpfCnpjComBrLookup;
 use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\PessoaLookup\CpfCnpjComBrLookup;
 
 class PessoaResolverTest extends TestCase
 {
@@ -118,7 +118,8 @@ class PessoaResolverTest extends TestCase
             'fantasia'       => 'TOKEN TEST',
             'matrizEndereco' => [
                 'cep'         => '39400-000',
-                'logradouro'  => 'Rua A',
+                'tipo'        => 'Rua',
+                'logradouro'  => 'A',
                 'numero'      => '1',
                 'complemento' => 'Sala 1',
                 'bairro'      => 'Centro',

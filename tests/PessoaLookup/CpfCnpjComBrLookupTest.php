@@ -3,8 +3,8 @@
 namespace Eduardokum\LaravelBoleto\Tests\PessoaLookup;
 
 use Eduardokum\LaravelBoleto\Tests\TestCase;
-use Eduardokum\LaravelBoleto\PessoaLookup\CpfCnpjComBrLookup;
 use Eduardokum\LaravelBoleto\Exception\ValidationException;
+use Eduardokum\LaravelBoleto\PessoaLookup\CpfCnpjComBrLookup;
 
 class CpfCnpjComBrLookupTest extends TestCase
 {
@@ -37,17 +37,17 @@ class CpfCnpjComBrLookupTest extends TestCase
             'matrizEndereco' => [
                 'cep'         => '0000-111',
                 'tipo'        => 'Rua',
-                'logradouro'  => 'Rua A',
+                'logradouro'  => 'A',
                 'numero'      => '1',
                 'complemento' => 'Sala 1',
                 'bairro'      => 'Centro',
                 'cidade'      => 'Montes Claros',
                 'uf'          => 'MG',
             ],
-            'ibge'           => [
+            'ibge' => [
                 'cidade' => ['ibge_id' => 3143302],
             ],
-            'pacoteUsado'    => 5,
+            'pacoteUsado' => 5,
         ]);
     }
 
