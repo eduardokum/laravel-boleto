@@ -13,6 +13,52 @@ Pacote para gerar boletos, remessas e leitura de retorno.
 
 [Documentação do Projeto](https://laravel-boleto.readthedocs.io/)
 
+## Preenchimento do pagador por CPF/CNPJ
+
+Recurso opcional e aditivo (não altera o núcleo de geração do boleto) para montar o pagador a partir de um CPF ou CNPJ, sem digitar nome e endereço na mão.
+
+O recurso é composto por três peças:
+
+* `Contracts\PessoaLookup`: contrato de consulta. Recebe o documento e devolve um array normalizado.
+* `PessoaLookup\CpfCnpjComBrLookup`: implementação de referência que consulta a API da [CPF.CNPJ](https://www.cpfcnpj.com.br/).
+* `PessoaLookup\PessoaResolver`: monta uma `Pessoa` nativa do pacote (via `Pessoa::create`), pronta para o `setPagador` ou para a chave `pagador` do boleto.
+
+```php
+use Eduardokum\LaravelBoleto\PessoaLookup\PessoaResolver;
+use Eduardokum\LaravelBoleto\PessoaLookup\CpfCnpjComBrLookup;
+
+$lookup = new CpfCnpjComBrLookup('SEU_TOKEN');
+$resolver = new PessoaResolver($lookup);
+
+// Detecta CPF (11 dígitos) ou CNPJ (14 dígitos) automaticamente
+$pagador = $resolver->porDocumento('27.865.757/0001-02');
+
+// Também dá para ser explícito
+$pagador = $resolver->porCpf('000.000.000-00');
+$pagador = $resolver->porCnpj('27.865.757/0001-02');
+
+$boleto = new Eduardokum\LaravelBoleto\Boleto\Banco\Bancoob([
+    // ... demais campos do boleto
+    'pagador' => $pagador,
+]);
+```
+
+O endereço da `Pessoa` é um campo único, então o resolver concatena logradouro, número e complemento; bairro, CEP, cidade e UF vão em campos próprios.
+
+### Token da API
+
+O token é gerado no painel da CPF.CNPJ em API > Tokens e fica atrelado ao IP de origem das requisições. Para testes existe um token público: `5ae973d7a997af13f0aaf2bf60e65803`.
+
+Por padrão o `CpfCnpjComBrLookup` usa o pacote 3 para CPF (nome e endereço) e o pacote 5 para CNPJ (razão social, nome fantasia e endereço da matriz). O pacote 6 pode ser passado no construtor quando se quer também situação cadastral, porte e Simples Nacional/SIMEI:
+
+```php
+$lookup = new CpfCnpjComBrLookup('SEU_TOKEN', 3, 6);
+```
+
+O transporte HTTP usa a extensão cURL (já exigida pelo pacote), mas aceita um callable no formato `function ($url) { return $corpo; }` no construtor, o que permite reaproveitar um cliente já presente na aplicação ou simular respostas em testes.
+
+A CPF.CNPJ oferece consulta em tempo real (D+0), cobertura nacional e, no pacote 6, os dados de Simples Nacional e SIMEI. Um exemplo completo está em `exemplos/pagador_cpfcnpj.php`.
+
 ## Doações
 
 **Estamos em busca de *doadores* e *patrocinadores* para ajudar a financiar parte do desenvolvimento deste pacote** 
