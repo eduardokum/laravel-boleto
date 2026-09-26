@@ -332,7 +332,7 @@ class CalculoDV
             $factor++;
         }
 
-        return 10 - $sum % 10;
+        return (10 - $sum % 10) % 10;
     }
 
     /*
@@ -489,7 +489,7 @@ class CalculoDV
             $factor++;
         }
 
-        return 10 - $sum % 10;
+        return (10 - $sum % 10) % 10;
     }
 
     /*
@@ -528,7 +528,7 @@ class CalculoDV
             $factor++;
         }
 
-        return 10 - $sum % 10;
+        return (10 - $sum % 10) % 10;
     }
 
     /*
