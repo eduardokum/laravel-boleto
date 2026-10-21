@@ -334,7 +334,7 @@ class Mail
      * @return bool
      * @throws ValidationException
      */
-    public function send($template, $subject, Boleto $boleto = null, $to = null)
+    public function send($template, $subject, ?Boleto $boleto = null, $to = null)
     {
         if ($to) {
             $this->setTo($to);
