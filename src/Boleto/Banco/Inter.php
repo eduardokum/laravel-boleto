@@ -183,7 +183,7 @@ class Inter extends AbstractBoleto implements BoletoAPIContract
         if ($this->getDesconto()) {
             $desconto = [
                 'codigo'         => 'VALORFIXODATAINFORMADA',
-                'quantidadeDias' => $this->getDataDesconto()->diffInDays($this->getDataVencimento()),
+                'quantidadeDias' => (int) $this->getDataDesconto()->diffInDays($this->getDataVencimento(), true),
                 'valor'          => Util::nFloat($this->getDesconto()),
             ];
         }

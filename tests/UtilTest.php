@@ -2,6 +2,7 @@
 
 namespace Eduardokum\LaravelBoleto\Tests;
 
+use Carbon\Carbon;
 use Eduardokum\LaravelBoleto\Boleto\AbstractBoleto;
 use Eduardokum\LaravelBoleto\Pessoa;
 use Exception;
@@ -108,6 +109,13 @@ class UtilTest extends TestCase
         $this->assertEquals('7019', Util::fatorVencimento('2016-12-25'));
         $this->assertEquals('2016-12-25', Util::fatorVencimentoBack('7019'));
         $this->assertEquals('3606', Util::dataJuliano('2016-12-25'));
+    }
+
+    public function testDatasIndependemDoHorarioEDaOrdem()
+    {
+        $this->assertSame(7019, Util::fatorVencimento(new Carbon('2016-12-25 15:30:12')));
+        $this->assertSame(2836, Util::fatorVencimento('1990-01-01'));
+        $this->assertSame('3606', Util::dataJuliano(new Carbon('2016-12-25 15:30:12')));
     }
 
     public function testNumeros()

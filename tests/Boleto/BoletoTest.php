@@ -536,6 +536,25 @@ class BoletoTest extends TestCase
         $this->assertNotNull($boleto->renderPDF());
     }
 
+    public function testBoletoInterQuantidadeDiasDescontoInteiro()
+    {
+        $boleto = new Boleto\Inter([
+            'dataVencimento' => new \Carbon\Carbon('2023-03-11 08:00:00'),
+            'dataDesconto'   => new \Carbon\Carbon('2023-03-01 10:00:00'),
+            'desconto'       => 1,
+            'valor'          => 10,
+            'numero'         => 1,
+            'pagador'        => self::$pagador,
+            'beneficiario'   => self::$beneficiario,
+            'conta'          => '123456789',
+            'operacao'       => '1234567',
+        ]);
+        $this->assertSame(9, $boleto->toAPI()['desconto']['quantidadeDias']);
+
+        $boleto->setDataDesconto(new \Carbon\Carbon('2023-03-21 08:00:00'));
+        $this->assertSame(10, $boleto->toAPI()['desconto']['quantidadeDias']);
+    }
+
     public function testBoletoFibra()
     {
         $boleto = new Boleto\Fibra([

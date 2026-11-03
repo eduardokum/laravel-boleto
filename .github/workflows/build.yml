@@ -76,6 +76,18 @@ jobs:
             unitconfig: "phpunit_gt_81.xml"
             os: "ubuntu-latest"
 
+          - php: "8.3"
+            laravel: "13.*"
+            testbench: "11.*"
+            unitconfig: "phpunit_gt_81.xml"
+            os: "ubuntu-latest"
+
+          - php: "8.4"
+            laravel: "13.*"
+            testbench: "11.*"
+            unitconfig: "phpunit_gt_81.xml"
+            os: "ubuntu-latest"
+
     runs-on: ${{ matrix.os }}
 
     name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.os }}

@@ -528,7 +528,7 @@ final class Util
     public static function fatorVencimento($date, $format = 'Y-m-d')
     {
         $date = ($date instanceof Carbon) ? $date : Carbon::createFromFormat($format, $date)->setTime(0, 0, 0);
-        $fator = (new Carbon('1997-10-07'))->diffInDays($date);
+        $fator = (int) (new Carbon('1997-10-07'))->diffInDays($date, true);
         $limit = $fator % 9000;
         if ($limit >= 1000) {
             return $limit;
@@ -546,7 +546,7 @@ final class Util
     public static function dataJuliano($date, $format = 'Y-m-d')
     {
         $date = ($date instanceof Carbon) ? $date : Carbon::createFromFormat($format, $date);
-        $dateDiff = $date->copy()->day(31)->month(12)->subYear()->diffInDays($date);
+        $dateDiff = (int) $date->copy()->day(31)->month(12)->subYear()->diffInDays($date, true);
 
         return $dateDiff . mb_substr($date->year, -1);
     }
